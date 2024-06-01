@@ -1,30 +1,31 @@
 import React, { useState } from 'react';
 import { Button, Input } from '../components/Form';
-import { BiLogInCircle } from 'react-icons/bi';
 import { useNavigate } from 'react-router-dom';
 
-function Login() {
+function Register() {
   const navigate = useNavigate();
+  const [nombre, setNombre] = useState('');
+  const [apPaterno, setApPaterno] = useState('');
+  const [apMaterno, setApMaterno] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleLogin = async (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
 
-    const response = await fetch('http://localhost:4000/api/auth/login', {
+    const response = await fetch('http://localhost:4000/api/auth/register', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ nombre, ap_paterno: apPaterno, ap_materno: apMaterno, email, password }),
     });
 
     const data = await response.json();
 
     if (response.ok) {
-      localStorage.setItem('token', data.token);
-      navigate('/');
+      navigate('/login');
     } else {
       setError(data.message);
     }
@@ -34,7 +35,7 @@ function Login() {
     <div className="w-full h-screen flex-colo bg-dry">
       <form
         className="w-2/5 p-8 rounded-2xl mx-auto bg-white flex-colo"
-        onSubmit={handleLogin}
+        onSubmit={handleRegister}
       >
         <img
           src="/images/logo.png"
@@ -44,10 +45,34 @@ function Login() {
         {error && <p className="text-red-500">{error}</p>}
         <div className="flex flex-col gap-4 w-full mb-6">
           <Input
+            label="Nombre"
+            type="text"
+            color={true}
+            placeholder={'Nombre(s)'}
+            value={nombre}
+            onChange={(e) => setNombre(e.target.value)}
+          />
+          <Input
+            label="Apellido Paterno"
+            type="text"
+            color={true}
+            placeholder={'Apellido paterno'}
+            value={apPaterno}
+            onChange={(e) => setApPaterno(e.target.value)}
+          />
+          <Input
+            label="Apellido Materno"
+            type="text"
+            color={true}
+            placeholder={'Apellido materno'}
+            value={apMaterno}
+            onChange={(e) => setApMaterno(e.target.value)}
+          />
+          <Input
             label="Email"
             type="email"
             color={true}
-            placeholder={'admin@gmail.com'}
+            placeholder={''}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
@@ -55,24 +80,18 @@ function Login() {
             label="Password"
             type="password"
             color={true}
-            placeholder={'*********'}
+            placeholder={''}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
         </div>
         <Button
-          label="Login"
-          Icon={BiLogInCircle}
+          label="Register"
           type="submit"
         />
-        <div className="mt-4">
-          <p>
-            No tienes cuenta? <span onClick={() => navigate('/register')} className="text-blue-500 cursor-pointer">Registrar usuario</span>
-          </p>
-        </div>
       </form>
     </div>
   );
 }
 
-export default Login;
+export default Register;
