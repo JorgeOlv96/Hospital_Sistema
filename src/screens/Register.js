@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Button, Input } from '../components/Form';
 import { useNavigate } from 'react-router-dom';
 
 function Register() {
@@ -9,86 +8,121 @@ function Register() {
   const [apMaterno, setApMaterno] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [nivelUsuario, setNivelUsuario] = useState('');
+  const [cedula, setCedula] = useState('');
   const [error, setError] = useState('');
 
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    const response = await fetch('http://localhost:4000/api/auth/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ nombre, ap_paterno: apPaterno, ap_materno: apMaterno, email, password }),
+    if (!nombre || !apPaterno || !apMaterno || !email || !password || !nivelUsuario || !cedula) {
+      setError('Todos los campos son obligatorios');
+      return;
+    }
+
+    // Depuración: Verifica los datos antes de enviarlos
+    console.log({
+      nombre,
+      ap_paterno: apPaterno,
+      ap_materno: apMaterno,
+      email,
+      password,
+      nivel_usuario: nivelUsuario,
+      cedula
     });
 
-    const data = await response.json();
+    try {
+      const response = await fetch('http://localhost:4000/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          nombre, 
+          ap_paterno: apPaterno, 
+          ap_materno: apMaterno, 
+          email, 
+          password,
+          nivel_usuario: nivelUsuario, 
+          cedula 
+        }),
+      });
 
-    if (response.ok) {
-      navigate('/login');
-    } else {
-      setError(data.message);
+      const data = await response.json();
+
+      if (response.ok) {
+        navigate('/login');
+      } else {
+        setError(data.message);
+      }
+    } catch (err) {
+      console.error('Error en el registro:', err);
+      setError('Error en el registro. Inténtalo de nuevo más tarde.');
     }
   };
 
   return (
     <div className="w-full h-screen flex-colo bg-dry">
-      <form
-        className="w-2/5 p-8 rounded-2xl mx-auto bg-white flex-colo"
-        onSubmit={handleRegister}
-      >
-        <img
-          src="/images/logo.png"
-          alt="logo"
-          className="w-48 h-16 object-contain"
-        />
+      <form className="w-2/5 p-8 rounded-2xl mx-auto bg-white flex-colo" onSubmit={handleRegister}>
+        <img src="/images/logo.png" alt="logo" className="w-48 h-16 object-contain" />
         {error && <p className="text-red-500">{error}</p>}
         <div className="flex flex-col gap-4 w-full mb-6">
-          <Input
-            label="Nombre"
+          <input
             type="text"
-            color={true}
-            placeholder={'Nombre(s)'}
+            placeholder="Nombre(s)"
             value={nombre}
             onChange={(e) => setNombre(e.target.value)}
+            className="w-full p-3 border border-gray-300 rounded-lg"
           />
-          <Input
-            label="Apellido Paterno"
+          <input
             type="text"
-            color={true}
-            placeholder={'Apellido paterno'}
+            placeholder="Apellido Paterno"
             value={apPaterno}
             onChange={(e) => setApPaterno(e.target.value)}
+            className="w-full p-3 border border-gray-300 rounded-lg"
           />
-          <Input
-            label="Apellido Materno"
+          <input
             type="text"
-            color={true}
-            placeholder={'Apellido materno'}
+            placeholder="Apellido Materno"
             value={apMaterno}
             onChange={(e) => setApMaterno(e.target.value)}
+            className="w-full p-3 border border-gray-300 rounded-lg"
           />
-          <Input
-            label="Email"
+          <input
             type="email"
-            color={true}
-            placeholder={''}
+            placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            className="w-full p-3 border border-gray-300 rounded-lg"
           />
-          <Input
-            label="Password"
+          <input
             type="password"
-            color={true}
-            placeholder={''}
+            placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            className="w-full p-3 border border-gray-300 rounded-lg"
+          />
+          <input
+            type="text"
+            placeholder="Nivel de Usuario"
+            value={nivelUsuario}
+            onChange={(e) => setNivelUsuario(e.target.value)}
+            className="w-full p-3 border border-gray-300 rounded-lg"
+          />
+          <input
+            type="text"
+            placeholder="Cedula"
+            value={cedula}
+            onChange={(e) => setCedula(e.target.value)}
+            className="w-full p-3 border border-gray-300 rounded-lg"
           />
         </div>
-        <Button
-          label="Register"
-          type="submit"
-        />
+        <button type="submit" className="w-full p-3 bg-blue-500 text-white rounded-lg">
+          Registrar
+        </button>
+        <div className="mt-4 text-center">
+          <p>¿Ya tienes una cuenta? <span className="text-blue-500 cursor-pointer" onClick={() => navigate('/login')}>Inicia sesión</span></p>
+        </div>
       </form>
     </div>
   );
