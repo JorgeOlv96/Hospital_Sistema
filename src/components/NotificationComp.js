@@ -10,9 +10,9 @@ function NotificationComp({ children }) {
       <Menu.Button>{children}</Menu.Button>
       <Menu.Items className="flex flex-col w-full sm:w-8/12 md:w-6/12  xl:w-2/6 top-20 right-0 gap-4 absolute bg-white rounded-md shadow-lg py-4 px-6 ring-1 ring-border focus:outline-none z-50">
         <div className="flex-btn flex-wrap gap-4">
-          <h2 className="text-md font-medium text-main">Notifications</h2>
+          <h2 className="text-md font-medium text-main">Notificaciones</h2>
           <button className="px-4 py-2 hover:bg-text rounded-md text-subMain text-sm">
-            Mark all read
+            Marcar todas como leídas
           </button>
         </div>
         {/* notif */}
