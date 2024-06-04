@@ -15,6 +15,7 @@ import './App.css';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Aos from 'aos';
 import Dashboard from './screens/Dashboard';
+import Solicitudes from './screens/Solicitudes/Solicitudes';
 import Toast from './components/Notifications/Toast';
 import Payments from './screens/Payments/Payments';
 import Appointments from './screens/Appointments';
@@ -37,6 +38,7 @@ import Receptions from './screens/Receptions';
 import NewMedicalRecode from './screens/Patients/NewMedicalRecode';
 import NotFound from './screens/NotFound';
 import Login from './screens/Login';
+import Register from './screens/Register';
 
 function App() {
   Aos.init();
@@ -60,6 +62,7 @@ function App() {
           <Route path="/payments/preview/:id" element={<PreviewPayment />} />
           {/* patient */}
           <Route path="/patients" element={<Patients />} />
+          <Route path="/solicitudes" element={<Solicitudes />} />
           <Route path="/patients/preview/:id" element={<PatientProfile />} />
           <Route path="/patients/create" element={<CreatePatient />} />
           <Route path="/patients/visiting/:id" element={<NewMedicalRecode />} />
@@ -70,6 +73,7 @@ function App() {
           <Route path="/receptions" element={<Receptions />} />
           {/* others */}
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           <Route path="/appointments" element={<Appointments />} />
           <Route path="/campaigns" element={<Campaings />} />
           <Route path="/medicine" element={<Medicine />} />

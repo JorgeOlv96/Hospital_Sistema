@@ -1,4 +1,5 @@
 import { HiOutlineHome, HiOutlineMail, HiOutlineUsers } from 'react-icons/hi';
+import { FaWpforms } from "react-icons/fa6";
 import {
   TbCalendar,
   TbChartHistogram,
@@ -34,6 +35,11 @@ export const MenuDatas = [
     title: 'Dashboard',
     path: '/',
     icon: HiOutlineHome,
+  },
+  {
+    title: 'Solicitudes ',
+    path: '/solicitudes',
+    icon: FaWpforms,
   },
   {
     title: 'Pacientes',
