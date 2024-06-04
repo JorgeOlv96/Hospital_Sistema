@@ -117,7 +117,7 @@ function Register() {
             className="w-full p-3 border border-gray-300 rounded-lg"
           />
         </div>
-        <button type="submit" className="w-full p-3 bg-blue-500 text-white rounded-lg">
+        <button type="submit" className="w-full p-3 bg-[#001B58]  text-white rounded-lg">
           Registrar
         </button>
         <div className="mt-4 text-center">

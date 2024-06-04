@@ -1,19 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from '../../Layout';
-import { memberData, sortsDatas } from '../../components/Datas';
+import { sortsDatas } from '../../components/Datas';
 import { Link, useNavigate } from 'react-router-dom';
-import { BiChevronDown, BiPlus, BiTime } from 'react-icons/bi';
+import { BiPlus, BiTime } from 'react-icons/bi';
 import { BsCalendarMonth } from 'react-icons/bs';
-import { MdFilterList, MdOutlineCalendarMonth } from 'react-icons/md';
-import { toast } from 'react-hot-toast';
-import { Button, FromToDate, Select } from '../../components/Form';
+import { MdOutlineCalendarMonth } from 'react-icons/md';
 
 function Solicitudes() {
   const [status, setStatus] = useState(sortsDatas.filterPatient[0]);
   const [gender, setGender] = useState(sortsDatas.genderFilter[0]);
   const [dateRange, setDateRange] = useState([new Date(), new Date()]);
-  const [startDate, endDate] = dateRange;
+  const [solicitudes, setSolicitudes] = useState([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchSolicitudes = async () => {
+      try {
+        const response = await fetch('http://localhost:4000/api/solicitudes'); // Ruta correcta
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        setSolicitudes(data);
+      } catch (error) {
+        console.error('Error fetching solicitudes:', error);
+      }
+    };
+
+    fetchSolicitudes();
+  }, []);
 
   const sorts = [
     {
@@ -29,7 +44,7 @@ function Solicitudes() {
       datas: sortsDatas.genderFilter,
     },
   ];
-  // boxes
+
   const boxes = [
     {
       id: 1,
@@ -54,14 +69,12 @@ function Solicitudes() {
     },
   ];
 
-  // preview
   const previewPayment = (id) => {
     navigate(`/solicitudes/preview/${id}`);
   };
 
   return (
     <Layout>
-      {/* add button */}
       <Link
         to="/solicitudes/create"
         className="w-16 animate-bounce h-16 border border-border z-50 bg-subMain text-white rounded-full flex-colo fixed bottom-8 right-12 button-fb"
@@ -70,7 +83,7 @@ function Solicitudes() {
       </Link>
       
       <h1 className="text-xl font-semibold">Solicitudes</h1>
-      {/* boxes */}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
         {boxes.map((box) => (
           <div
@@ -80,8 +93,6 @@ function Solicitudes() {
             <div className="w-3/4">
               <h2 className="text-sm font-medium">{box.title}</h2>
               <h2 className="text-xl my-6 font-medium">{box.value}</h2>
-              <p className="text-xs text-textGray">
-              </p>
             </div>
             <div
               className={`w-10 h-10 flex-colo rounded-md text-white text-md ${box.color[0]}`}
@@ -91,7 +102,45 @@ function Solicitudes() {
           </div>
         ))}
       </div>
-      {/* datas */}
+      
+      <div className="mt-8">
+        <h2 className="text-lg font-semibold mb-4">Lista de Solicitudes</h2>
+        <div className="overflow-x-auto">
+          <table className="min-w-full bg-white">
+            <thead>
+              <tr>
+                <th className="px-4 py-2">ID</th>
+                <th className="px-4 py-2">Folio</th>
+                <th className="px-4 py-2">Nombre</th>
+                <th className="px-4 py-2">Especialidad</th>
+                <th className="px-4 py-2">Fecha</th>
+                <th className="px-4 py-2">Estado</th>
+                <th className="px-4 py-2">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {solicitudes.map((solicitud) => (
+                      <tr key={solicitud.id_solicitud}>
+                      <td className="border px-4 py-2">{solicitud.id_solicitud}</td>
+                      <td className="border px-4 py-2">{solicitud.folio}</td>
+                      <td className="border px-4 py-2">{solicitud.nombre_paciente} {solicitud.ap_paterno} {solicitud.ap_materno}</td>
+                      <td className="border px-4 py-2">{solicitud.nombre_especialidad}</td>
+                      <td className="border px-4 py-2">{new Date(solicitud.fecha_solicitud).toLocaleDateString()}</td>
+                      <td className="border px-4 py-2">{solicitud.estado_solicitud}</td>
+                      <td className="border px-4 py-2">
+                    <button
+                      onClick={() => previewPayment(solicitud.id_solicitud)}
+                      className="bg-[#001B58] text-white px-4 py-2 rounded"
+                    >
+                      Ver
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </Layout>
   );
 }
