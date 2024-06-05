@@ -12,7 +12,8 @@ function Solicitudes() {
   const [gender, setGender] = useState(sortsDatas.genderFilter[0]);
   const [dateRange, setDateRange] = useState([new Date(), new Date()]);
   const [solicitudes, setSolicitudes] = useState([]);
-  const [open, setOpen] = useState(false); // Estado para controlar si la modal está abierta
+  const [open, setOpen] = useState(false); // Estado para controlar si la modal de nueva solicitud está abierta
+  const [selectedAppointment, setSelectedAppointment] = useState(null); // Estado para almacenar la solicitud seleccionada
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -36,8 +37,9 @@ function Solicitudes() {
     setOpen(!open);
   };
 
-  const previewPayment = (id) => {
-    navigate(`/solicitudes/preview/${id}`);
+  const handleViewModal = (solicitud) => {
+    setSelectedAppointment(solicitud);
+    setOpen(true); // Abre la modal al hacer clic en el botón "Ver"
   };
 
   // Definición de 'boxes'
@@ -73,7 +75,7 @@ function Solicitudes() {
           Nueva Solicitud
         </button>
       </div>
-      
+
       {open && (
         <AddAppointmentModal
           datas={solicitudes} // Asumiendo que 'datas' es un arreglo de solicitudes
@@ -127,7 +129,7 @@ function Solicitudes() {
                   <td className="border px-4 py-2">{solicitud.estado_solicitud}</td>
                   <td className="border px-4 py-2">
                     <button
-                      onClick={() => previewPayment(solicitud.id_solicitud)}
+                      onClick={() => handleViewModal(solicitud)} // Modificado para manejar la apertura de la modal de visualización
                       className="bg-[#001B58] text-white px-4 py-2 rounded"
                     >
                       Ver
