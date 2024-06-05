@@ -75,14 +75,12 @@ function Solicitudes() {
 
   return (
     <Layout>
-      <Link
-        to="/solicitudes/create"
-        className="w-16 animate-bounce h-16 border border-border z-50 bg-subMain text-white rounded-full flex-colo fixed bottom-8 right-12 button-fb"
-      >
-        <BiPlus className="text-2xl" />
-      </Link>
-      
       <h1 className="text-xl font-semibold">Solicitudes</h1>
+    <div className="my-4">
+      <Link to="/solicitudes/createsolicitud" className="btn btn-primary w-full p-3 bg-[#001B58]  text-white rounded-lg">
+        Nueva Solicitud
+      </Link>
+    </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
         {boxes.map((box) => (
@@ -120,14 +118,14 @@ function Solicitudes() {
             </thead>
             <tbody>
               {solicitudes.map((solicitud) => (
-                      <tr key={solicitud.id_solicitud}>
-                      <td className="border px-4 py-2">{solicitud.id_solicitud}</td>
-                      <td className="border px-4 py-2">{solicitud.folio}</td>
-                      <td className="border px-4 py-2">{solicitud.nombre_paciente} {solicitud.ap_paterno} {solicitud.ap_materno}</td>
-                      <td className="border px-4 py-2">{solicitud.nombre_especialidad}</td>
-                      <td className="border px-4 py-2">{new Date(solicitud.fecha_solicitud).toLocaleDateString()}</td>
-                      <td className="border px-4 py-2">{solicitud.estado_solicitud}</td>
-                      <td className="border px-4 py-2">
+                <tr key={solicitud.id_solicitud}>
+                  <td className="border px-4 py-2">{solicitud.id_solicitud}</td>
+                  <td className="border px-4 py-2">{solicitud.folio}</td>
+                  <td className="border px-4 py-2">{solicitud.nombre_paciente} {solicitud.ap_paterno} {solicitud.ap_materno}</td>
+                  <td className="border px-4 py-2">{solicitud.nombre_especialidad}</td>
+                  <td className="border px-4 py-2">{new Date(solicitud.fecha_solicitud).toLocaleDateString()}</td>
+                  <td className="border px-4 py-2">{solicitud.estado_solicitud}</td>
+                  <td className="border px-4 py-2">
                     <button
                       onClick={() => previewPayment(solicitud.id_solicitud)}
                       className="bg-[#001B58] text-white px-4 py-2 rounded"
