@@ -12,8 +12,8 @@ module.exports = {
         100: '30rem',
       },
       colors: {
-        main: '#183253',
-        subMain: '#66B5A3',
+        main: '#001B58',
+        subMain: '#001B58',
         text: '#F2FAF8',
         border: '#E8EBEE',
         textGray: '#A0A0A0',
