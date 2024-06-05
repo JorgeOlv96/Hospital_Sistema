@@ -5,12 +5,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import { BiPlus, BiTime } from 'react-icons/bi';
 import { BsCalendarMonth } from 'react-icons/bs';
 import { MdOutlineCalendarMonth } from 'react-icons/md';
+import AddAppointmentModal from '../../components/Modals/AddApointmentModal';
 
 function Solicitudes() {
   const [status, setStatus] = useState(sortsDatas.filterPatient[0]);
   const [gender, setGender] = useState(sortsDatas.genderFilter[0]);
   const [dateRange, setDateRange] = useState([new Date(), new Date()]);
   const [solicitudes, setSolicitudes] = useState([]);
+  const [open, setOpen] = useState(false); // Estado para controlar si la modal está abierta
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -30,21 +32,15 @@ function Solicitudes() {
     fetchSolicitudes();
   }, []);
 
-  const sorts = [
-    {
-      id: 2,
-      selected: status,
-      setSelected: setStatus,
-      datas: sortsDatas.filterPatient,
-    },
-    {
-      id: 3,
-      selected: gender,
-      setSelected: setGender,
-      datas: sortsDatas.genderFilter,
-    },
-  ];
+  const handleModal = () => {
+    setOpen(!open);
+  };
 
+  const previewPayment = (id) => {
+    navigate(`/solicitudes/preview/${id}`);
+  };
+
+  // Definición de 'boxes'
   const boxes = [
     {
       id: 1,
@@ -69,18 +65,22 @@ function Solicitudes() {
     },
   ];
 
-  const previewPayment = (id) => {
-    navigate(`/solicitudes/preview/${id}`);
-  };
-
   return (
     <Layout>
       <h1 className="text-xl font-semibold">Solicitudes</h1>
-    <div className="my-4">
-      <Link to="/solicitudes/createsolicitud" className="btn btn-primary w-full p-3 bg-[#001B58]  text-white rounded-lg">
-        Nueva Solicitud
-      </Link>
-    </div>
+      <div className="my-4">
+        <button onClick={handleModal} className="btn btn-sm btn-secondary p-2 bg-[#001B58] text-white rounded-lg">
+          Nueva Solicitud
+        </button>
+      </div>
+      
+      {open && (
+        <AddAppointmentModal
+          datas={solicitudes} // Asumiendo que 'datas' es un arreglo de solicitudes
+          isOpen={open}
+          closeModal={handleModal}
+        />
+      )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
         {boxes.map((box) => (
@@ -100,7 +100,7 @@ function Solicitudes() {
           </div>
         ))}
       </div>
-      
+
       <div className="mt-8">
         <h2 className="text-lg font-semibold mb-4">Lista de Solicitudes</h2>
         <div className="overflow-x-auto">

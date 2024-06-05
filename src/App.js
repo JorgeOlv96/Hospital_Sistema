@@ -39,7 +39,6 @@ import NewMedicalRecode from './screens/Patients/NewMedicalRecode';
 import NotFound from './screens/NotFound';
 import Login from './screens/Login';
 import Register from './screens/Register';
-import CreateSolicitud from './screens/Solicitudes/createsolicitud';
 
 function App() {
   Aos.init();
@@ -64,7 +63,6 @@ function App() {
           {/* patient */}
           <Route path="/patients" element={<Patients />} />
           <Route path="/solicitudes" element={<Solicitudes />} />
-          <Route path="/solicitudes/createsolicitud" element={<CreateSolicitud />} />
           <Route path="/patients/preview/:id" element={<PatientProfile />} />
           <Route path="/patients/create" element={<CreatePatient />} />
           <Route path="/patients/visiting/:id" element={<NewMedicalRecode />} />
