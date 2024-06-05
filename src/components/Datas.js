@@ -53,7 +53,7 @@ export const MenuDatas = [
   },
 
   {
-    title: 'Calendario',
+    title: 'Agenda',
     path: '/appointments',
     icon: FaRegCalendarAlt,
   },
