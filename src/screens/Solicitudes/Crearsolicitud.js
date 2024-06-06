@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '../../Layout';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom'; // Asegúrate de que useHistory esté importado
 
 function Solicitudes() {
 
@@ -166,7 +166,7 @@ function Solicitudes() {
 
       <div className="flex mt-4">
         <div className="mr-4">
-          <button onClick={handleGuardar} className="btn btn-sm btn-secondary p-2 bg-[#001B58] text-white rounded-lg">Guardar</button>
+          <Link to="/solicitudes" className="btn btn-sm btn-secondary p-2 bg-[#001B58] text-white rounded-lg">Guardar</Link>
         </div>
       </div>
 
