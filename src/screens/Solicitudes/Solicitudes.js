@@ -2,24 +2,20 @@ import React, { useState, useEffect } from 'react';
 import Layout from '../../Layout';
 import { sortsDatas } from '../../components/Datas';
 import { Link, useNavigate } from 'react-router-dom';
-import { BiPlus, BiTime } from 'react-icons/bi';
+import { BiTime } from 'react-icons/bi';
 import { BsCalendarMonth } from 'react-icons/bs';
 import { MdOutlineCalendarMonth } from 'react-icons/md';
 import AddAppointmentModal from '../../components/Modals/AddApointmentModal';
 
 function Solicitudes() {
-  const [status, setStatus] = useState(sortsDatas.filterPatient[0]);
-  const [gender, setGender] = useState(sortsDatas.genderFilter[0]);
-  const [dateRange, setDateRange] = useState([new Date(), new Date()]);
   const [solicitudes, setSolicitudes] = useState([]);
   const [open, setOpen] = useState(false); // Estado para controlar si la modal de nueva solicitud está abierta
   const [selectedAppointment, setSelectedAppointment] = useState(null); // Estado para almacenar la solicitud seleccionada
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchSolicitudes = async () => {
       try {
-        const response = await fetch('http://localhost:4000/api/solicitudes'); // Ruta correcta
+        const response = await fetch('http://localhost:4000/api/solicitudes');
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
@@ -42,7 +38,6 @@ function Solicitudes() {
     setOpen(true); // Abre la modal al hacer clic en el botón "Ver"
   };
 
-  // Definición de 'boxes'
   const boxes = [
     {
       id: 1,
@@ -71,14 +66,14 @@ function Solicitudes() {
     <Layout>
       <h1 className="text-xl font-semibold">Solicitudes</h1>
       <div className="my-4">
-        <button onClick={handleModal} className="btn btn-sm btn-secondary p-2 bg-[#001B58] text-white rounded-lg">
+        <Link to="./Crearsolicitud" className="btn btn-sm btn-secondary p-2 bg-[#001B58] text-white rounded-lg">
           Nueva Solicitud
-        </button>
+        </Link>
       </div>
 
       {open && (
         <AddAppointmentModal
-          datas={solicitudes} // Asumiendo que 'datas' es un arreglo de solicitudes
+          datas={solicitudes}
           isOpen={open}
           closeModal={handleModal}
         />
@@ -129,7 +124,7 @@ function Solicitudes() {
                   <td className="border px-4 py-2">{solicitud.estado_solicitud}</td>
                   <td className="border px-4 py-2">
                     <button
-                      onClick={() => handleViewModal(solicitud)} // Modificado para manejar la apertura de la modal de visualización
+                      onClick={() => handleViewModal(solicitud)}
                       className="bg-[#001B58] text-white px-4 py-2 rounded"
                     >
                       Ver
