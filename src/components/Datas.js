@@ -29,6 +29,8 @@ import {
 } from 'react-icons/md';
 import { AiOutlineSetting } from 'react-icons/ai';
 import { BiCalendar, BiUserPlus } from 'react-icons/bi';
+import { FaAmbulance } from "react-icons/fa";
+
 
 export const MenuDatas = [
   {
@@ -51,11 +53,15 @@ export const MenuDatas = [
     path: '/doctors',
     icon: RiUserHeartLine,
   },
-
   {
     title: 'Agenda',
     path: '/appointments',
     icon: FaRegCalendarAlt,
+  },
+  {
+    title: 'Urgencias',
+    path: '/urgencias',
+    icon: FaAmbulance,
   },
   {
     title: 'Medicina',

@@ -40,6 +40,7 @@ import NotFound from './screens/NotFound';
 import Login from './screens/Login';
 import Register from './screens/Register';
 import Crearsolicitud from './screens/Solicitudes/Crearsolicitud'
+import Urgencias from './screens/Urgencias';
 
 function App() {
   Aos.init();
@@ -80,6 +81,7 @@ function App() {
           <Route path="/appointments" element={<Appointments />} />
           <Route path="/campaigns" element={<Campaings />} />
           <Route path="/medicine" element={<Medicine />} />
+          <Route path="/urgencias" element={<Urgencias />} />
           <Route path="/services" element={<Services />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="*" element={<NotFound />} />
