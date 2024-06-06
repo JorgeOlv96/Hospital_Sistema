@@ -42,14 +42,14 @@ function Header() {
   const navigate = useNavigate();
   const DropDown1 = [
     {
-      title: 'Profile',
+      title: 'Perfil',
       icon: TbUser,
       onClick: () => {
         navigate('/settings');
       },
     },
     {
-      title: 'Logout',
+      title: 'Cerrar Sesión',
       icon: AiOutlinePoweroff,
       onClick: () => {
         navigate('/login');
