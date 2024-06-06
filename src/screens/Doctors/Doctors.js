@@ -1,5 +1,5 @@
 import React from 'react';
-import { MdOutlineCloudDownload } from 'react-icons/md';
+import { MdOutlineCloudDownload, MdOutlineCloudUpload } from 'react-icons/md'; // Importa el ícono de upload también
 import { toast } from 'react-hot-toast';
 import { BiPlus } from 'react-icons/bi';
 import Layout from '../../Layout';
@@ -19,6 +19,12 @@ function Doctors() {
 
   const preview = (data) => {
     navigate(`/doctors/preview/${data.id}`);
+  };
+
+  // Función para manejar la importación
+  const handleImport = () => {
+    // Aquí puedes agregar la lógica para manejar la importación en el backend
+    toast.error('Importación aún no está disponible');
   };
 
   return (
@@ -66,8 +72,15 @@ function Doctors() {
             label="Export"
             Icon={MdOutlineCloudDownload}
             onClick={() => {
-              toast.error('Exporting is not available yet');
+              toast.error('Exportación aún no está disponible');
             }}
+          />
+          
+          {/* import */}
+          <Button
+            label="Import"
+            Icon={MdOutlineCloudUpload}
+            onClick={handleImport}
           />
         </div>
         <div className="mt-8 w-full overflow-x-scroll">

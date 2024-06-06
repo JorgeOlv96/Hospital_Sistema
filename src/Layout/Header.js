@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { MenuSelect } from '../components/Form';
 import { TbUser } from 'react-icons/tb';
 import { AiOutlinePoweroff } from 'react-icons/ai';
@@ -7,11 +7,34 @@ import NotificationComp from '../components/NotificationComp';
 import { useNavigate } from 'react-router-dom';
 import { BiMenu } from 'react-icons/bi';
 import MenuDrawer from '../components/Drawer/MenuDrawer';
+import axios from 'axios';
 
 function Header() {
-  const [isOpen, setIsOpen] = React.useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [userName, setUserName] = useState('Nombre no disponible');
+  const [isLoading, setIsLoading] = useState(true);
 
-  // toggle drawer
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('http://localhost:4000/api/auth/user', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const { nombre, ap_paterno, ap_materno } = response.data;
+        setUserName(`${nombre} ${ap_paterno} ${ap_materno}`);
+      } catch (error) {
+        console.error('Error fetching user info:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
+
   const toggleDrawer = () => {
     setIsOpen((prevState) => !prevState);
   };
@@ -38,7 +61,6 @@ function Header() {
     <>
       {isOpen && <MenuDrawer isOpen={isOpen} toggleDrawer={toggleDrawer} />}
 
-      {/* cmp */}
       <div className="xl:w-5/6 w-full 2xl:max-w-[1640px] bg-dry grid md:grid-cols-2 grid-cols-12 items-center bg-opacity-95 fixed top-0 z-40 xs:px-8 px-2">
         <div className="md:col-span-1 sm:col-span-11 col-span-10 flex gap-4 items-center md:py-0 py-4">
           <button
@@ -47,7 +69,6 @@ function Header() {
           >
             <BiMenu />
           </button>
-          {/* search */}
           <input
             type="text"
             placeholder='Buscar "Pacientes"'
@@ -65,7 +86,7 @@ function Header() {
               </div>
             </NotificationComp>
 
-            <div className=" items-center md:flex hidden">
+            <div className="items-center md:flex hidden">
               <MenuSelect datas={DropDown1}>
                 <div className="flex gap-4 items-center p-4 rounded-lg">
                   <img
@@ -73,7 +94,7 @@ function Header() {
                     alt="user"
                     className="w-12 border border-border object-cover h-12 rounded-full"
                   />
-                  <p className="text-sm text-textGray font-medium">Dr. Arriaga</p>
+                  <p className="text-sm text-textGray font-medium">{isLoading ? 'Cargando...' : userName}</p>
                 </div>
               </MenuSelect>
             </div>
