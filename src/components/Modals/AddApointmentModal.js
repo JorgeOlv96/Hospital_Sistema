@@ -9,19 +9,15 @@ import {
   Textarea,
   TimePickerComp,
 } from '../Form';
-import { BiChevronDown, BiPlus } from 'react-icons/bi';
+import { BiChevronDown } from 'react-icons/bi';
 import { memberData, servicesData, sortsDatas } from '../Datas';
 import { HiOutlineCheckCircle } from 'react-icons/hi';
-import { toast } from 'react-hot-toast';
 import PatientMedicineServiceModal from './PatientMedicineServiceModal';
 
-// edit member data
-const doctorsData = memberData.map((item) => {
-  return {
-    id: item.id,
-    name: item.title,
-  };
-});
+const doctorsData = memberData.map((item) => ({
+  id: item.id,
+  name: item.title,
+}));
 
 function AddAppointmentModal({ closeModal, isOpen, datas }) {
   const [services, setServices] = useState(servicesData[0]);
@@ -37,12 +33,10 @@ function AddAppointmentModal({ closeModal, isOpen, datas }) {
   });
   const [open, setOpen] = useState(false);
 
-  // on change share
   const onChangeShare = (e) => {
     setShares({ ...shares, [e.target.name]: e.target.checked });
   };
 
-  // set data
   useEffect(() => {
     if (datas?.title) {
       setServices(datas?.service);
@@ -56,7 +50,7 @@ function AddAppointmentModal({ closeModal, isOpen, datas }) {
     <Modal
       closeModal={closeModal}
       isOpen={isOpen}
-      title={datas?.title ? 'Edit Appointment' : 'New Appointment'}
+      title={datas?.title ? 'Editar Solicitud' : 'Nueva Solicitud'}
       width={'max-w-3xl'}
     >
       {open && (
@@ -66,142 +60,200 @@ function AddAppointmentModal({ closeModal, isOpen, datas }) {
           patient={true}
         />
       )}
-      <div className="flex-colo gap-6">
-        <div className="grid sm:grid-cols-12 gap-4 w-full items-center">
-          <div className="sm:col-span-10">
-            <Input
-              label="Patient Name"
-              color={true}
-              placeholder={
-                datas?.title
-                  ? datas.title
-                  : 'Select Patient and patient name will appear here'
-              }
-            />
+      <d  iv className="flex-col gap-6">
+        {/* Información del Paciente */}
+        <div className="grid gap-6">
+          <h2 className="text-lg font-semibold">Información del Paciente</h2>
+          <div className="grid sm:grid-cols-2 gap-4 w-full">
+            <div>
+              <Input
+                label="Curp del paciente"
+                placeholder="CURP"
+                className="bg-gray-200 border border-gray-400 rounded-lg p-2 text-gray-800 placeholder-gray-600 focus:bg-gray-100"
+                style={{ borderRadius: '14px' }}
+              />
+            </div>
           </div>
-          <button
-            onClick={() => setOpen(!open)}
-            className="text-subMain flex-rows border border-dashed border-subMain text-sm py-3.5 sm:mt-6 sm:col-span-2 rounded"
-          >
-            <BiPlus /> Add
-          </button>
         </div>
 
-        <div className="grid sm:grid-cols-2 gap-4 w-full">
-          <div className="flex w-full flex-col gap-3">
-            <p className="text-black text-sm">Purpose of visit</p>
-            <Select
-              selectedPerson={services}
-              setSelectedPerson={setServices}
-              datas={servicesData}
-            >
-              <div className="w-full flex-btn text-textGray text-sm p-4 border border-border font-light rounded-lg focus:border focus:border-subMain">
-                {services.name} <BiChevronDown className="text-xl" />
-              </div>
-            </Select>
+        {/* Nombre Completo */}
+        <div className="grid gap-6">
+        <h2 className="text-lg font-semibold">Nombre</h2>
+          <div className="grid sm:grid-cols-3 gap-4 w-full">
+            <div>
+              <Input
+                label="Apellido paterno"
+                placeholder="Apellido paterno"
+                className="bg-gray-200 border border-gray-400 rounded-lg p-2 text-gray-800 placeholder-gray-600 focus:bg-gray-100"
+                style={{ borderRadius: '14px' }}
+              />
+            </div>
+            <div>
+              <Input
+                label="Apellido materno"
+                placeholder="Apellido materno"
+                className="bg-gray-200 border border-gray-400 rounded-lg p-2 text-gray-800 placeholder-gray-600 focus:bg-gray-100"
+                style={{ borderRadius: '14px' }}
+              />
+            </div>
+            <div>
+              <Input
+                label="Nombres"
+                className="bg-gray-200 border border-gray-400 rounded-lg p-2 text-gray-800 placeholder-gray-600 focus:bg-gray-100"
+                style={{ borderRadius: '14px' }}
+              />
+            </div>
           </div>
-          {/* date */}
+        </div>
+
+        {/* Otros Campos */}
+        <div className="grid sm:grid-cols-2 gap-4 w-full">
           <DatePickerComp
-            label="Date of visit"
+            label="Fecha de nacimiento"
             startDate={startDate}
             onChange={(date) => setStartDate(date)}
           />
+          <Select
+            selectedPerson={status}
+            setSelectedPerson={setStatus}
+            datas={[
+              { name: 'Femenino', id: 1 },
+              { name: 'Masculino', id: 2 },
+            ]}
+          >
+            <div className="w-full flex items-center justify-between text-textGray text-sm p-4 border border-border font-light rounded-lg focus:border focus:border-subMain">
+              {status.name} <BiChevronDown className="text-xl" />
+            </div>
+          </Select>
+        </div>
+
+        <div className="grid sm:grid-cols-2 gap-4 w-full">
+          <Select
+            selectedPerson={services}
+            setSelectedPerson={setServices}
+            datas={servicesData}
+          >
+            <div className="w-full flex items-center justify-between text-textGray text-sm p-4 border border-border font-light rounded-lg focus:border focus:border-subMain">
+              {services.name} <BiChevronDown className="text-xl" />
+            </div>
+          </Select>
+          <Select
+            selectedPerson={status}
+            setSelectedPerson={setStatus}
+            datas={sortsDatas.status}
+          >
+            <div className="w-full flex items-center justify-between text-textGray text-sm p-4 border border-border font-light rounded-lg focus:border focus:border-subMain">
+              {status.name} <BiChevronDown className="text-xl" />
+            </div>
+          </Select>
+        </div>
+
+        <div className="grid sm:grid-cols-2 gap-4 w-full">
+          <DatePickerComp
+            label="Fecha solicitada"
+            startDate={startDate}
+            onChange={(date) => setStartDate(date)}
+          />
+          <TimePickerComp
+            label="Hora iniciada"
+            startDate={startTime}
+            onChange={(date) => setStartTime(date)}
+          />
         </div>
 
         <div className="grid sm:grid-cols-2 gap-4 w-full">
           <TimePickerComp
-            label="Start time"
-            startDate={startTime}
-            onChange={(date) => setStartTime(date)}
+            label="Tiempo estimado de cirugía"
+            startDate={endTime}
+            onChange={(date) => setEndTime(date)}
           />
           <TimePickerComp
-            label="End time"
+            label="Turno solicitado"
             startDate={endTime}
             onChange={(date) => setEndTime(date)}
           />
         </div>
 
-        {/* status && doctor */}
         <div className="grid sm:grid-cols-2 gap-4 w-full">
-          <div className="flex w-full flex-col gap-3">
-            <p className="text-black text-sm">Doctor</p>
-            <Select
-              selectedPerson={doctors}
-              setSelectedPerson={setDoctors}
-              datas={doctorsData}
-            >
-              <div className="w-full flex-btn text-textGray text-sm p-4 border border-border font-light rounded-lg focus:border focus:border-subMain">
-                {doctors.name} <BiChevronDown className="text-xl" />
-              </div>
-            </Select>
-          </div>
-          <div className="flex w-full flex-col gap-3">
-            <p className="text-black text-sm">Status</p>
-            <Select
-              selectedPerson={status}
-              setSelectedPerson={setStatus}
-              datas={sortsDatas.status}
-            >
-              <div className="w-full flex-btn text-textGray text-sm p-4 border border-border font-light rounded-lg focus:border focus:border-subMain">
-                {status.name} <BiChevronDown className="text-xl" />
-              </div>
-            </Select>
-          </div>
+          <Select
+            selectedPerson={services}
+            setSelectedPerson={setServices}
+            datas={servicesData}
+          >
+            <div className="w-full flex items-center justify-between text-textGray text-sm p-4 border border-border font-light rounded-lg focus:border focus:border-subMain">
+              Sala solicitada <BiChevronDown className="text-xl" />
+            </div>
+          </Select>
+          <Select
+            selectedPerson={services}
+            setSelectedPerson={setServices}
+            datas={servicesData}
+          >
+            <div className="w-full flex items-center justify-between text-textGray text-sm p-4 border border-border font-light rounded-lg focus:border focus:border-subMain">
+              Procedimientos para el paciente <BiChevronDown className="text-xl" />
+            </div>
+          </Select>
         </div>
 
-        {/* des */}
+        <div className="grid sm:grid-cols-2 gap-4 w-full">
+          <Select
+            selectedPerson={doctors}
+            setSelectedPerson={setDoctors}
+            datas={doctorsData}
+          >
+            <div className="w-full flex items-center justify-between text-textGray text-sm p-4 border border-border font-light rounded-lg focus:border focus:border-subMain">
+              Cirujano encargado <BiChevronDown className="text-xl" />
+            </div>
+          </Select>
+          <Select
+            selectedPerson={status}
+            setSelectedPerson={setStatus}
+            datas={[
+              { name: 'Sí', id: 1 },
+              { name: 'No', id: 2 },
+            ]}
+          >
+            <div className="w-full flex items-center justify-between text-textGray text-sm p-4 border border-border font-light rounded-lg focus:border focus:border-subMain">
+              ¿Requiere insumos? <BiChevronDown className="text-xl" />
+            </div>
+          </Select>
+        </div>
+
+        <Select
+          selectedPerson={status}
+          setSelectedPerson={setStatus}
+          datas={[
+            { name: 'Insumo 1', id: 1 },
+            { name: 'Insumo 2', id: 2 },
+          ]}
+        >
+          <div className="w-full flex items-center justify-between text-textGray text-sm p-4 border border-border font-light rounded-lg focus:border focus:border-subMain">
+            Especifique los insumos <BiChevronDown className="text-xl" />
+          </div>
+        </Select>
+
         <Textarea
-          label="Description"
+          label="Descripción"
           placeholder={
             datas?.message
               ? datas.message
-              : 'She will be coming for a checkup.....'
+              : 'Describa los detalles adicionales...'
           }
           color={true}
           rows={5}
+          className="bg-gray-200 border border-gray-400 rounded-lg p-2 text-gray-800 placeholder-gray-600 focus:bg-gray-100"
         />
 
-        {/* share */}
-        <div className="flex-col flex gap-8 w-full">
-          <p className="text-black text-sm">Share with patient via</p>
-          <div className="flex flex-wrap sm:flex-nowrap gap-4">
-            <Checkbox
-              name="email"
-              checked={shares.email}
-              onChange={onChangeShare}
-              label="Email"
-            />
-            <Checkbox
-              name="sms"
-              checked={shares.sms}
-              onChange={onChangeShare}
-              label="SMS"
-            />
-            <Checkbox
-              checked={shares.whatsapp}
-              name="whatsapp"
-              onChange={onChangeShare}
-              label="WhatsApp"
-            />
-          </div>
-        </div>
-        {/* buttones */}
-        <div className="grid sm:grid-cols-2 gap-4 w-full">
-          <button
-            onClick={closeModal}
-            className="bg-red-600 bg-opacity-5 text-red-600 text-sm p-4 rounded-lg font-light"
-          >
-            {datas?.title ? 'Discard' : 'Cancel'}
-          </button>
+        <div className="flex justify-center w-full">
           <Button
-            label="Save"
+            label="Guardar"
             Icon={HiOutlineCheckCircle}
             onClick={() => {
-              toast.error('This feature is not available yet');
+              // Acción de guardar
             }}
           />
         </div>
-      </div>
+      </d>
     </Modal>
   );
 }
