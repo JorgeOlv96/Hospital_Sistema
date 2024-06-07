@@ -1,18 +1,6 @@
-// ********* Delight - Dentist Website is created by Zpunet ******************
-// ********* If you get an error please contact us ******
-// ******** Email:info@codemarketi.com *********
-// ********* Website:www.codemarketi.com *********
-// ********* Phone:+255 762 352 746 *********
-// ********* Youtub Channel: https://www.youtube.com/channel/UCOYwYO-LEsrjqBs6xXSfq1w *********
-
-// ******** Support my work with *********
-// ********* https://www.patreon.com/zpunet *********
-// ********* https://www.buymeacoffee.com/zpunet *********
-
-// ********* This is the main component of the website *********
-
+// src/App.js
 import './App.css';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import Aos from 'aos';
 import Dashboard from './screens/Dashboard';
 import Solicitudes from './screens/Solicitudes/Solicitudes';
@@ -39,8 +27,9 @@ import NewMedicalRecode from './screens/Patients/NewMedicalRecode';
 import NotFound from './screens/NotFound';
 import Login from './screens/Login';
 import Register from './screens/Register';
-import Crearsolicitud from './screens/Solicitudes/Crearsolicitud'
+import Crearsolicitud from './screens/Solicitudes/Crearsolicitud';
 import Urgencias from './screens/Urgencias';
+import IndexPage from './IndexPage'; // Importa el nuevo componente
 
 function App() {
   Aos.init();
@@ -52,7 +41,8 @@ function App() {
       {/* Routes */}
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Dashboard />} />
+          <Route path="/" element={<IndexPage />} />
+          <Route path="/dashboard" element={<Dashboard />} />
           {/* invoce */}
           <Route path="/invoices" element={<Invoices />} />
           <Route path="/invoices/create" element={<CreateInvoice />} />
@@ -65,8 +55,7 @@ function App() {
           {/* patient */}
           <Route path="/patients" element={<Patients />} />
           <Route path="/solicitudes" element={<Solicitudes />} />
-          <Route path="/Solicitudes/Crearsolicitud" element={<Crearsolicitud />} />
-          
+          <Route path="/solicitudes/crearsolicitud" element={<Crearsolicitud />} />
           <Route path="/patients/preview/:id" element={<PatientProfile />} />
           <Route path="/patients/create" element={<CreatePatient />} />
           <Route path="/patients/visiting/:id" element={<NewMedicalRecode />} />

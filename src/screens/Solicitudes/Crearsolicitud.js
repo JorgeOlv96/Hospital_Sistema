@@ -104,34 +104,61 @@ function Solicitudes() {
 
 
     <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
-        <div className="flex mb-4">
-            <div className="mr-4 w-full">
-                <label htmlFor="tipoConsulta" className="block font-semibold text-gray-700 mb-2">Tipo de consulta:</label>
-                <select 
-                    id="tipoConsulta" 
-                    name="tipoConsulta" 
+    <div className="flex mb-4">
+        <div className="mr-4 w-full">
+            <label htmlFor="tipoConsulta" className="block font-semibold text-gray-700 mb-2">Tipo de consulta:</label>
+            <select 
+                id="tipoConsulta" 
+                name="tipoConsulta" 
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+            >
+                <option value="consultaExterna">Consulta Externa</option>
+                <option value="urgencias">Urgencias</option>
+                <option value="cirugia">Cirugía</option>
+            </select>
+        </div>
+        
+        <div className="w-full">
+            <label htmlFor="tipoIntervencion" className="block font-semibold text-gray-700 mb-2">Tipo de intervención:</label>
+            <select 
+                id="tipoIntervencion" 
+                name="tipoIntervencion" 
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+            >
+                <option value="ninguna">Ninguna</option>
+                <option value="cirugiaMenor">Cirugía Menor</option>
+                <option value="cirugiaMayor">Cirugía Mayor</option>
+            </select>
+        </div>
+    </div>
+    
+    <div className="mb-4">
+        <label htmlFor="tipoEspecialidad" className="block font-semibold text-gray-700 mb-2">Tipo de especialidad:</label>
+        <div className="flex">
+            <div className="mr-4 w-1/2">
+                <label htmlFor="nombreEspecialidad" className="block font-semibold text-gray-700 mb-2">Nombre:</label>
+                <input 
+                    type="text" 
+                    id="nombreEspecialidad" 
+                    name="nombreEspecialidad" 
                     className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-                >
-                    <option value="consultaExterna">Consulta Externa</option>
-                    <option value="urgencias">Urgencias</option>
-                    <option value="cirugia">Cirugía</option>
-                </select>
+                />
             </div>
-            
-            <div className="w-full">
-                <label htmlFor="tipoIntervencion" className="block font-semibold text-gray-700 mb-2">Tipo de intervención:</label>
-                <select 
-                    id="tipoIntervencion" 
-                    name="tipoIntervencion" 
+            <div className="w-1/2">
+                <label htmlFor="claveEspecialidad" className="block font-semibold text-gray-700 mb-2">Clave:</label>
+                <input 
+                    type="text" 
+                    id="claveEspecialidad" 
+                    name="claveEspecialidad" 
                     className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-                >
-                    <option value="ninguna">Ninguna</option>
-                    <option value="cirugiaMenor">Cirugía Menor</option>
-                    <option value="cirugiaMayor">Cirugía Mayor</option>
-                </select>
+                />
             </div>
         </div>
     </div>
+</div>
+
+
+    
     <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
     <div className="flex mb-4">
         <div className="mr-4 w-full">
