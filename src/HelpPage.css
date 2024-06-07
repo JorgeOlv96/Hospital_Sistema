@@ -1,0 +1,74 @@
+/* HelpPage.css */
+.help-page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .titlehelp {
+    font-size: 32px;
+    margin-bottom: 30px;
+    color: #474747;
+    text-align: center;
+  }
+  
+  .contact-info {
+    margin-bottom: 30px;
+  }
+  
+  .contact-info p {
+    margin-bottom: 20px;
+    font-size: 18px;
+    color: #555;
+  }
+  
+  .contact-info ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .contact-info li {
+    margin-bottom: 10px;
+    font-size: 18px;
+    color: #333;
+  }
+  
+  .contact-info li a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+    margin-left: 10px;
+  }
+  
+  .note {
+    font-style: italic;
+    color: #666;
+    font-size: 16px;
+    text-align: center;
+  }
+/* HelpPage.css */
+/* Otros estilos permanecen igual */
+
+.back-button {
+    background-color: #001B58;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin: 0 auto; /* Centrar horizontalmente */
+    display: block; /* Asegurar que el botón ocupe toda la anchura del contenedor */
+  }
+  
+  .back-button:hover {
+    background-color: #0056b3;
+  }
+
+  
+  
