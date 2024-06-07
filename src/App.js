@@ -30,6 +30,8 @@ import Register from './screens/Register';
 import Crearsolicitud from './screens/Solicitudes/Crearsolicitud';
 import Urgencias from './screens/Urgencias';
 import IndexPage from './IndexPage'; // Importa el nuevo componente
+import Ayuda from './HelpPage'; // Importa el componente de la página de ayuda
+
 
 function App() {
   Aos.init();
@@ -73,6 +75,7 @@ function App() {
           <Route path="/urgencias" element={<Urgencias />} />
           <Route path="/services" element={<Services />} />
           <Route path="/settings" element={<Settings />} />
+          <Route path="/ayuda" element={<Ayuda />} /> 
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

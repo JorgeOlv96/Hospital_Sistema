@@ -29,6 +29,90 @@ function Solicitudes() {
     // Lógica para guardar la solicitud
     console.log('Solicitud guardada');
   };
+  const [nombreEspecialidad, setNombreEspecialidad] = useState('');
+  const [claveEspecialidad, setClaveEspecialidad] = useState('');
+
+  const handleNombreEspecialidadChange = (e) => {
+    const selectedNombreEspecialidad = e.target.value;
+    setNombreEspecialidad(selectedNombreEspecialidad);
+
+    // Mapear la especialidad seleccionada a la clave correspondiente
+    const especialidadToClave = {
+      'Algología': 'ALG',
+      'Angiología': 'ANG',
+      'C.Plástica y Reconstructiva': 'CPR',
+      'Cardiología': 'CAR',
+      'Cirigía de Torax': 'CTO',
+      'Cirugía Bariatrica':	'CBR',
+      'Cirugía Cardiaca': 'CCA',
+      'Cirugía General':	'CIG',
+      'Cirugía Hepatobiliar':	'CHE',
+      'Coloproctología':'CLP',
+      'Columna':'COL',
+      'Endoscopia':	'END',
+      'Gastroenterología': 	'GAS',
+      'Hemodinamía':	'HEM',
+      'Imagenología':	'IMG',
+      'Maxilofacial':	'MAX',
+      'Neurocirugía':	'NEU',
+      'Oftalmología':	'OFT',
+      'Oncología':	'ONC',
+      'Orbitología':	'OBT',
+      'Otorrino':	'ONG',
+      'Proctología':	'PRC',
+      'Procuración':	'PCU',
+      'T. de córnea':	'TCO',
+      'T. Hepático':	'THE',
+      'T. Renal':	'TRN',
+      'Transplantes':	'TRA',
+      'Trauma y Ortopedia':	'TYO',
+      'Urología':	'URO'     
+    };
+
+    // Actualizar la clave de la especialidad según la especialidad seleccionada
+    setClaveEspecialidad(especialidadToClave[selectedNombreEspecialidad]);
+  };
+
+  const handleClaveEspecialidadChange = (e) => {
+    const selectedClaveEspecialidad = e.target.value;
+    setClaveEspecialidad(selectedClaveEspecialidad);
+
+    // Mapear la clave de la especialidad a la especialidad correspondiente
+    const claveToEspecialidad = {
+      'ALG': 'Algología',
+      'ANG': 'Angiología',
+      'CPR': 'C.Plástica y Reconstructiva',
+      'CAR': 'Cardiología',
+      'CTO': 'Cirigía de Torax',
+      'CBR': 'Cirugía Bariatrica',
+      'CCA': 'Cirugía Cardiaca',
+      'CIG': 'Cirugía General',
+      'CHE': 'Cirugía Hepatobiliar',
+      'CLP': 'Coloproctología',
+      'COL': 'Columna',
+      'END': 'Endoscopia',
+      'GAS': 'Gastroenterología',
+      'HEM': 'Hemodinamía',
+      'IMG': 'Imagenología',
+      'MAX': 'Maxilofacial',
+      'NEU': 'Neurocirugía',
+      'OFT': 'Oftalmología',
+      'ONC': 'Oncología',
+      'OBT': 'Orbitología',
+      'ONG': 'Otorrino',
+      'PRC': 'Proctología',
+      'PCU': 'Procuración',
+      'TCO': 'T. de córnea',
+      'THE': 'T. Hepático',
+      'TRN': 'T. Renal',
+      'TRA': 'Transplantes',
+      'TYO': 'Trauma y Ortopedia',
+      'URO': 'Urología'
+    };
+
+    // Actualizar el nombre de la especialidad según la clave seleccionada
+    setNombreEspecialidad(claveToEspecialidad[selectedClaveEspecialidad]);
+  };
 
   return (
     <Layout>
@@ -125,9 +209,9 @@ function Solicitudes() {
                 name="tipoIntervencion" 
                 className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
             >
-                <option value="ninguna">Ninguna</option>
-                <option value="cirugiaMenor">Cirugía Menor</option>
-                <option value="cirugiaMayor">Cirugía Mayor</option>
+                <option value="ninguna">Cirugía</option>
+                <option value="cirugiaMenor">Cirugía Ambulatoria</option>
+                <option value="cirugiaMayor">Procedimiento</option>
             </select>
         </div>
     </div>
@@ -135,23 +219,88 @@ function Solicitudes() {
     <div className="mb-4">
         <label htmlFor="tipoEspecialidad" className="block font-semibold text-gray-700 mb-2">Tipo de especialidad:</label>
         <div className="flex">
-            <div className="mr-4 w-1/2">
-                <label htmlFor="nombreEspecialidad" className="block font-semibold text-gray-700 mb-2">Nombre:</label>
-                <input 
-                    type="text" 
-                    id="nombreEspecialidad" 
-                    name="nombreEspecialidad" 
-                    className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-                />
-            </div>
+        <div className="mr-4 w-1/2">
+            <label htmlFor="nombreEspecialidad" className="block font-semibold text-gray-700 mb-2">Especialidad:</label>
+            <select 
+                 id="nombreEspecialidad" 
+                 name="nombreEspecialidad" 
+                 value={nombreEspecialidad} // Asignar el valor seleccionado
+                 onChange={handleNombreEspecialidadChange} // Manejar cambios en la especialidad
+                 className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+                <option value="">Seleccionar especialidad</option>
+                <option value="Algología">Algología</option>
+                <option value="Angiología">Angiología</option>
+                <option value="C.Plástica y Reconstructiva">C.Plástica y Reconstructiva</option>
+                <option value="Cardiología">Cardiología</option>
+                <option value="Cirigía de Torax">Cirigía de Torax</option>
+                <option value="Cirugía Bariatrica">Cirugía Bariatrica</option>
+                <option value="Cirugía Cardiaca">Cirugía Cardiaca</option>
+                <option value="Cirugía General">Cirugía General</option>
+                <option value="Cirugía Hepatobiliar">Cirugía Hepatobiliar</option>
+                <option value="Coloproctología">Coloproctología</option>
+                <option value="Columna">Columna</option>
+                <option value="Endoscopia">Endoscopia</option>
+                <option value="Gastroenterología">Gastroenterología</option>
+                <option value="Hemodinamía">Hemodinamía</option>
+                <option value="Imagenología">Imagenología</option>
+                <option value="Maxilofacial">Maxilofacial</option>
+                <option value="Neurocirugía">Neurocirugía</option>
+                <option value="Oftalmología">Oftalmología</option>
+                <option value="Oncología">Oncología</option>
+                <option value="Orbitología">Orbitología</option>
+                <option value="Otorrino">Otorrino</option>
+                <option value="Proctología">Proctología</option>
+                <option value="Procuración">Procuración</option>
+                <option value="T. de córnea">T. de córnea</option>
+                <option value="T. Hepático">T. Hepático</option>
+                <option value="T. Renal">T. Renal</option>
+                <option value="Transplantes">Transplantes</option>
+                <option value="Trauma y Ortopedia">Trauma y Ortopedia</option>
+                <option value="Urología">Urología</option>
+            </select>
+        </div>
+
             <div className="w-1/2">
                 <label htmlFor="claveEspecialidad" className="block font-semibold text-gray-700 mb-2">Clave:</label>
-                <input 
-                    type="text" 
-                    id="claveEspecialidad" 
-                    name="claveEspecialidad" 
-                    className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-                />
+                <select 
+                id="claveEspecialidad" 
+                name="claveEspecialidad" 
+                value={claveEspecialidad} // Asignar el valor seleccionado
+                onChange={handleClaveEspecialidadChange} // Manejar cambios en la clave
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            >
+              <option value="">Seleccionar clave de especialidad</option>
+                <option value="Algología">ALG</option>
+                <option value="Angiología">ANG</option>
+                <option value="C.Plástica y Reconstructiva">CPR</option>
+                <option value="Cardiología">CAR</option>
+                <option value="Cirigía de Torax">CTO</option>
+                <option value="Cirugía Bariatrica">CBR</option>
+                <option value="Cirugía Cardiaca">CCA</option>
+                <option value="Cirugía General">CIG</option>
+                <option value="Cirugía Hepatobiliar">CHE</option>
+                <option value="Coloproctología">CLP</option>
+                <option value="Columna">COL</option>
+                <option value="Endoscopia">END</option>
+                <option value="Gastroenterología">GAS</option>
+                <option value="Hemodinamía">HEM</option>
+                <option value="Imagenología">IMG</option>
+                <option value="Maxilofacial">MAX</option>
+                <option value="Neurocirugía">NEU</option>
+                <option value="Oftalmoligía">OFT</option>
+                <option value="Oncología">ONC</option>
+                <option value="Orbitología">OBT</option>
+                <option value="Otorrino">ONG</option>
+                <option value="Proctología">PRC</option>
+                <option value="Procuración">PCU</option>
+                <option value="Procuración">TCO</option>
+                <option value="T. Hepático">THE</option>
+                <option value="T. Hepático">TRN</option>
+                <option value="Transplantes">TRA</option>
+                <option value="Trauma y Ortopedia">TYO</option>
+                <option value="Urología">URO</option>
+            </select>
             </div>
         </div>
     </div>
@@ -217,9 +366,19 @@ function Solicitudes() {
                 name="salaSolicitada" 
                 className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
             >
-                <option value="sala1">Sala 1</option>
-                <option value="sala2">Sala 2</option>
-                <option value="sala3">Sala 3</option>
+                <option value="SalaA1">A1</option>
+                <option value="SalaA2">A2</option>
+                <option value="SalaT1">T1</option>
+                <option value="SalaT2">T2</option>
+                <option value="Sala1">1</option>
+                <option value="Sala2">2</option>
+                <option value="Sala3">3</option>
+                <option value="Sala4">4</option>
+                <option value="Sala5">5</option>
+                <option value="Sala6">6</option>
+                <option value="SalaE">E</option>
+                <option value="SalaH">H</option>
+                <option value="SalaRX">RX</option>
             </select>
         </div>
         
