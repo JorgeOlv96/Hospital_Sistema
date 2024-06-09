@@ -163,6 +163,7 @@ function Solicitudes() {
               name="tipoConsulta" 
               className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
             >
+              <option value="">Seleccione el tipo de consulta</option>
               <option value="consultaExterna">Consulta Externa</option>
               <option value="urgencias">Urgencias</option>
               <option value="cirugia">Cirugía</option>
@@ -176,7 +177,8 @@ function Solicitudes() {
               name="tipoIntervencion" 
               className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
             >
-              <option value="ninguna">Cirugía</option>
+              <option value="-">Seleccione el tipo de intervención</option>
+              <option value="Cirugía">Cirugía</option>
               <option value="cirugiaMenor">Cirugía Ambulatoria</option>
               <option value="cirugiaMayor">Procedimiento</option>
             </select>
