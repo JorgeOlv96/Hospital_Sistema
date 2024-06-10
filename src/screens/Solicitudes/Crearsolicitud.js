@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '../../Layout';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
-function Solicitudes() {
-
+function CrearSolicitud() {
+    
   const [solicitudes, setSolicitudes] = useState([]);
-  const [selectedAppointment, setSelectedAppointment] = useState(null); // Estado para almacenar la solicitud seleccionada
+  const [selectedSolicitud, setSelectedSolicitud] = useState(null); // Estado para almacenar la solicitud seleccionada
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchSolicitudes = async () => {
@@ -24,17 +25,12 @@ function Solicitudes() {
     fetchSolicitudes();
   }, []);
 
-  const handleGuardar = () => {
-    // Lógica para guardar la solicitud
-    console.log('Solicitud guardada');
-  };
-
   const especialidadToClave = {
     'Algología': 'ALG',
     'Angiología': 'ANG',
     'C.Plástica y Reconstructiva': 'CPR',
     'Cardiología': 'CAR',
-    'Cirigía de Torax': 'CTO',
+    'Cirugía de Torax': 'CTO',
     'Cirugía Bariatrica': 'CBR',
     'Cirugía Cardiaca': 'CCA',
     'Cirugía General': 'CIG',
@@ -67,12 +63,49 @@ function Solicitudes() {
 
   const [nombreEspecialidad, setNombreEspecialidad] = useState('');
   const [claveEspecialidad, setClaveEspecialidad] = useState('');
+  const [formData, setFormData] = useState({
+    fecha_solicitud: '',
+    clave_esp: '',
+    nombre_especialidad: '',
+    curp: '',
+    ap_paterno: '',
+    ap_materno: '',
+    nombre_paciente: '',
+    fecha_nacimiento: '',
+    edad: '',
+    sexo: '',
+    no_expediente: '',
+    tipo_intervencion: '',
+    fecha_solicitada: '',
+    hora_solicitada: '',
+    tiempo_estimado: '',
+    turno_solicitado: '',
+    sala_quirofano: '',
+    id_cirujano: '',
+    req_insumo: '',
+    insumos: '',
+    tipo_admision: '',
+    estado_solicitud: '',
+    procedimientos_paciente: ''
+  });
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value
+    });
+  };
 
   const handleNombreEspecialidadChange = (e) => {
     const selectedNombreEspecialidad = e.target.value;
     setNombreEspecialidad(selectedNombreEspecialidad);
     const correspondingClave = especialidadToClave[selectedNombreEspecialidad] || 'Seleccionar clave de especialidad';
     setClaveEspecialidad(correspondingClave);
+    setFormData({
+      ...formData,
+      nombreEspecialidad: selectedNombreEspecialidad,
+      claveEspecialidad: correspondingClave
+    });
   };
 
   const handleClaveEspecialidadChange = (e) => {
@@ -80,300 +113,326 @@ function Solicitudes() {
     setClaveEspecialidad(selectedClaveEspecialidad);
     const correspondingNombre = claveToEspecialidad[selectedClaveEspecialidad] || '';
     setNombreEspecialidad(correspondingNombre);
+    setFormData({
+      ...formData,
+      nombreEspecialidad: correspondingNombre,
+      claveEspecialidad: selectedClaveEspecialidad
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch('http://localhost:4000/api/solicitudes', {
+        method: selectedSolicitud ? 'PUT' : 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const data = await response.json();
+      console.log('Solicitud guardada:', data);
+      navigate('/solicitudes');
+    } catch (error) {
+      console.error('Error saving solicitud:', error);
+    }
   };
 
   return (
     <Layout>
-      <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md">
-        <div className="mb-4">
-          <label htmlFor="curp" className="block font-semibold text-gray-700 mb-2">Curp del paciente:</label>
-          <input 
-            type="text" 
-            id="curp" 
-            name="curp" 
-            className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-          />
-        </div>
-
-        <div className="flex mt-4">
-          <div className="mr-4 w-full">
-            <label htmlFor="apellidoPaterno" className="block font-semibold text-gray-700 mb-2">Apellido paterno:</label>
+      <form onSubmit={handleSubmit}>
+        <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md">
+          <div className="mb-4">
+            <label htmlFor="curp" className="block font-semibold text-gray-700 mb-2">Curp del paciente:</label>
             <input 
               type="text" 
-              id="apellidoPaterno" 
-              name="apellidoPaterno" 
-              className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+              id="curp" 
+              name="curp" 
+              value={formData.curp}
+              onChange={handleInputChange}
+              className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
             />
           </div>
 
-          <div className="mr-4 w-full">
-            <label htmlFor="apellidoMaterno" className="block font-semibold text-gray-700 mb-2">Apellido materno:</label>
-            <input 
-              type="text" 
-              id="apellidoMaterno" 
-              name="apellidoMaterno" 
-              className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-            />
-          </div>
-          
-          <div className="w-full">
-            <label htmlFor="nombres" className="block font-semibold text-gray-700 mb-2">Nombres:</label>
-            <input 
-              type="text" 
-              id="nombres" 
-              name="nombres" 
-              className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-            />
-          </div>
-        </div>
-      </div>
+          <div className="flex mt-4">
+            <div className="mr-4 w-full">
+              <label htmlFor="apellidoPaterno" className="block font-semibold text-gray-700 mb-2">Apellido paterno:</label>
+              <input 
+                type="text" 
+                id="apellidoPaterno" 
+                name="apellidoPaterno" 
+                value={formData.ap_paterno}
+                onChange={handleInputChange}
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+              />
+            </div>
 
-      <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
-        <div className="flex mb-4">
-          <div className="mr-4 w-full">
-            <label htmlFor="fechaNacimiento" className="block font-semibold text-gray-700 mb-2">Fecha de nacimiento:</label>
-            <input 
-              type="date" 
-              id="fechaNacimiento" 
-              name="fechaNacimiento" 
-              className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-            />
-          </div>
-          
-          <div className="w-full">
-            <label htmlFor="sexo" className="block font-semibold text-gray-700 mb-2">Sexo:</label>
-            <select 
-              id="sexo" 
-              name="sexo" 
-              className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-            >
-              <option value="masculino">Masculino</option>
-              <option value="femenino">Femenino</option>
-            </select>
+            <div className="mr-4 w-full">
+              <label htmlFor="apellidoMaterno" className="block font-semibold text-gray-700 mb-2">Apellido materno:</label>
+              <input 
+                type="text" 
+                id="apellidoMaterno" 
+                name="apellidoMaterno" 
+                value={formData.ap_materno}
+                onChange={handleInputChange}
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+              />
+            </div>
+            
+            <div className="w-full">
+              <label htmlFor="nombres" className="block font-semibold text-gray-700 mb-2">Nombres:</label>
+              <input 
+                type="text" 
+                id="nombres" 
+                name="nombres" 
+                value={formData.nombre_paciente}
+                onChange={handleInputChange}
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+              />
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
-        <div className="flex mb-4">
-          <div className="mr-4 w-full">
-            <label htmlFor="tipoConsulta" className="block font-semibold text-gray-700 mb-2">Tipo de consulta:</label>
-            <select 
-              id="tipoConsulta" 
-              name="tipoConsulta" 
-              className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-            >
-              <option value="">Seleccione el tipo de consulta</option>
-              <option value="consultaExterna">Consulta Externa</option>
-              <option value="urgencias">Urgencias</option>
-              <option value="cirugia">Cirugía</option>
-            </select>
-          </div>
-          
-          <div className="w-full">
-            <label htmlFor="tipoIntervencion" className="block font-semibold text-gray-700 mb-2">Tipo de intervención:</label>
-            <select 
-              id="tipoIntervencion" 
-              name="tipoIntervencion" 
-              className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-            >
-              <option value="-">Seleccione el tipo de intervención</option>
-              <option value="Cirugía">Cirugía</option>
-              <option value="cirugiaMenor">Cirugía Ambulatoria</option>
-              <option value="cirugiaMayor">Procedimiento</option>
-            </select>
+        <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
+          <div className="flex mb-4">
+            <div className="mr-4 w-full">
+              <label htmlFor="fechaNacimiento" className="block font-semibold text-gray-700 mb-2">Fecha de nacimiento:</label>
+              <input 
+                type="date" 
+                id="fechaNacimiento" 
+                name="fechaNacimiento" 
+                value={formData.fecha_nacimiento}
+                onChange={handleInputChange}
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+              />
+            </div>
+            
+            <div className="w-full">
+              <label htmlFor="sexo" className="block font-semibold text-gray-700 mb-2">Sexo:</label>
+              <select 
+                id="sexo" 
+                name="sexo" 
+                value={formData.sexo}
+                onChange={handleInputChange}
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+              >
+                <option value="masculino">Masculino</option>
+                <option value="femenino">Femenino</option>
+              </select>
+            </div>
           </div>
         </div>
-        
-        <div className="mb-4">
-          <label htmlFor="tipoEspecialidad" className="block font-semibold text-gray-700 mb-2">Tipo de especialidad:</label>
-          <div className="flex">
-            <div className="mr-4 w-1/2">
+
+        <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
+          <div className="flex mb-4">
+            <div className="mr-4 w-full">
+              <label htmlFor="tipoConsulta" className="block font-semibold text-gray-700 mb-2">Tipo de consulta:</label>
+              <input 
+                type="text" 
+                id="tipoConsulta" 
+                name="tipoConsulta" 
+                value={formData.tipoConsulta}
+                onChange={handleInputChange}
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+              />
+            </div>
+            
+            <div className="w-full">
+              <label htmlFor="tipoIntervencion" className="block font-semibold text-gray-700 mb-2">Tipo de intervención:</label>
+              <input 
+                type="text" 
+                id="tipoIntervencion" 
+                name="tipoIntervencion" 
+                value={formData.tipoIntervencion}
+                onChange={handleInputChange}
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
+          <div className="flex mb-4">
+            <div className="mr-4 w-full">
               <label htmlFor="nombreEspecialidad" className="block font-semibold text-gray-700 mb-2">Especialidad:</label>
               <select 
                 id="nombreEspecialidad" 
                 name="nombreEspecialidad" 
-                value={nombreEspecialidad} // Asignar el valor seleccionado
-                onChange={handleNombreEspecialidadChange} // Evento onChange
+                value={nombreEspecialidad}
+                onChange={handleNombreEspecialidadChange}
                 className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="">Seleccione una especialidad</option>
+                <option value="">Seleccionar especialidad</option>
                 {Object.keys(especialidadToClave).map((especialidad) => (
-                  <option key={especialidad} value={especialidad}>{especialidad}</option>
+                  <option key={especialidad} value={especialidad}>
+                    {especialidad}
+                  </option>
                 ))}
               </select>
             </div>
-
-            <div className="w-1/2">
+            
+            <div className="w-full">
               <label htmlFor="claveEspecialidad" className="block font-semibold text-gray-700 mb-2">Clave de especialidad:</label>
               <select 
                 id="claveEspecialidad" 
                 name="claveEspecialidad" 
-                value={claveEspecialidad} // Asignar el valor seleccionado
-                onChange={handleClaveEspecialidadChange} // Evento onChange
+                value={claveEspecialidad}
+                onChange={handleClaveEspecialidadChange}
                 className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="">Seleccione una clave</option>
+                <option value="">Seleccionar clave de especialidad</option>
                 {Object.values(especialidadToClave).map((clave) => (
-                  <option key={clave} value={clave}>{clave}</option>
+                  <option key={clave} value={clave}>
+                    {clave}
+                  </option>
                 ))}
               </select>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
-    <div className="flex mb-4">
-        <div className="mr-4 w-full">
-            <label htmlFor="fechaSolicitada" className="block font-semibold text-gray-700 mb-2">Fecha solicitada:</label>
-            <input 
+        <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
+          <div className="flex mb-4">
+            <div className="mr-4 w-full">
+              <label htmlFor="fechaSolicitada" className="block font-semibold text-gray-700 mb-2">Fecha solicitada:</label>
+              <input 
                 type="date" 
                 id="fechaSolicitada" 
                 name="fechaSolicitada" 
+                value={formData.fecha_solicitada}
+                onChange={handleInputChange}
                 className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-            />
-        </div>
-
-        <div className="mr-4 w-full">
-            <label htmlFor="horaSolicitada" className="block font-semibold text-gray-700 mb-2">Hora solicitada:</label>
-            <input 
+              />
+            </div>
+            
+            <div className="w-full">
+              <label htmlFor="horaSolicitada" className="block font-semibold text-gray-700 mb-2">Hora solicitada:</label>
+              <input 
                 type="time" 
                 id="horaSolicitada" 
                 name="horaSolicitada" 
+                value={formData.hora_solicitada}
+                onChange={handleInputChange}
                 className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-            />
+              />
+            </div>
+          </div>
         </div>
 
-        <div className="mr-4 w-full">
-            <label htmlFor="tiempoEstimadoCirugia" className="block font-semibold text-gray-700 mb-2">Tiempo estimado de cirugía:</label>
-            <input 
-                type="time" 
+        <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
+          <div className="flex mb-4">
+            <div className="mr-4 w-full">
+              <label htmlFor="tiempoEstimadoCirugia" className="block font-semibold text-gray-700 mb-2">Tiempo estimado de cirugía:</label>
+              <input 
+                type="text" 
                 id="tiempoEstimadoCirugia" 
                 name="tiempoEstimadoCirugia" 
+                value={formData.tiempo_estimado}
+                onChange={handleInputChange}
                 className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-            />
-        </div>
-
-        <div className="w-full">
-            <label htmlFor="turnoSolicitado" className="block font-semibold text-gray-700 mb-2">Turno solicitado:</label>
-            <select 
+              />
+            </div>
+            
+            <div className="w-full">
+              <label htmlFor="turnoSolicitado" className="block font-semibold text-gray-700 mb-2">Turno solicitado:</label>
+              <input 
+                type="text" 
                 id="turnoSolicitado" 
                 name="turnoSolicitado" 
+                value={formData.turnoSolicitado}
+                onChange={handleInputChange}
                 className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-            >
-                <option value="Vespertino">Vespertino</option>
-                <option value="Matutino">Matutino</option>
-                <option value="Nocturno">Nocturno</option>
-                <option value="Especial">Especial</option>
-            </select>
+              />
+            </div>
+          </div>
         </div>
-    </div>
-</div>
 
-
-<div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
-    <div className="flex mb-4">
-        <div className="mr-4 w-full">
-            <label htmlFor="salaSolicitada" className="block font-semibold text-gray-700 mb-2">Sala solicitada:</label>
-            <select 
+        <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
+          <div className="flex mb-4">
+            <div className="mr-4 w-full">
+              <label htmlFor="salaSolicitada" className="block font-semibold text-gray-700 mb-2">Sala solicitada:</label>
+              <input 
+                type="text" 
                 id="salaSolicitada" 
                 name="salaSolicitada" 
+                value={formData.salaSolicitada}
+                onChange={handleInputChange}
                 className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-            >
-                <option value="SalaA1">A1</option>
-                <option value="SalaA2">A2</option>
-                <option value="SalaT1">T1</option>
-                <option value="SalaT2">T2</option>
-                <option value="Sala1">1</option>
-                <option value="Sala2">2</option>
-                <option value="Sala3">3</option>
-                <option value="Sala4">4</option>
-                <option value="Sala5">5</option>
-                <option value="Sala6">6</option>
-                <option value="SalaE">E</option>
-                <option value="SalaH">H</option>
-                <option value="SalaRX">RX</option>
-            </select>
-        </div>
-        
-        <div className="w-full">
-            <label htmlFor="procedimientosPaciente" className="block font-semibold text-gray-700 mb-2">Procedimientos para el paciente:</label>
-            <select 
+              />
+            </div>
+            
+            <div className="w-full">
+              <label htmlFor="procedimientosPaciente" className="block font-semibold text-gray-700 mb-2">Procedimientos que se realizarán al paciente:</label>
+              <textarea 
                 id="procedimientosPaciente" 
                 name="procedimientosPaciente" 
+                value={formData.procedimientos_paciente}
+                onChange={handleInputChange}
                 className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-            >
-                <option value="procedimiento1">Procedimiento 1</option>
-                <option value="procedimiento2">Procedimiento 2</option>
-                <option value="procedimiento3">Procedimiento 3</option>
-            </select>
+              ></textarea>
+            </div>
+          </div>
         </div>
-    </div>
-</div>
 
-
-<div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
-    <div className="flex mb-4">
-        <div className="mr-4 w-full">
-            <label htmlFor="cirujanoEncargado" className="block font-semibold text-gray-700 mb-2">Cirujano encargado:</label>
-            <select 
+        <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
+          <div className="flex mb-4">
+            <div className="mr-4 w-full">
+              <label htmlFor="cirujanoEncargado" className="block font-semibold text-gray-700 mb-2">Nombre del cirujano encargado:</label>
+              <input 
+                type="text" 
                 id="cirujanoEncargado" 
                 name="cirujanoEncargado" 
+                value={formData.id_cirujano}
+                onChange={handleInputChange}
                 className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-            >
-                <option value="cirujano1">1</option>
-                <option value="cirujano2">2</option>
-                <option value="cirujano3">3</option>
-            </select>
-        </div>
-        
-        <div className="w-full">
-            <label htmlFor="requiereInsumos" className="block font-semibold text-gray-700 mb-2">Requiere insumos:</label>
-            <select 
+              />
+            </div>
+            
+            <div className="w-full">
+              <label htmlFor="requiereInsumos" className="block font-semibold text-gray-700 mb-2">Requiere insumos:</label>
+              <input 
+                type="text" 
                 id="requiereInsumos" 
                 name="requiereInsumos" 
+                value={formData.requiereInsumos}
+                onChange={handleInputChange}
                 className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-            >
-                <option value="si">Sí</option>
-                <option value="no">No</option>
-            </select>
+              />
+            </div>
+          </div>
         </div>
-    </div>
 
-    <div className="flex mb-4">
-        <div className="mr-4 w-full">
-            <label htmlFor="especificarInsumos" className="block font-semibold text-gray-700 mb-2">Especifique los insumos:</label>
-            <select 
+        <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
+          <div className="flex mb-4">
+            <div className="w-full">
+              <label htmlFor="especificarInsumos" className="block font-semibold text-gray-700 mb-2">Especificar insumos:</label>
+              <textarea 
                 id="especificarInsumos" 
                 name="especificarInsumos" 
+                value={formData.insumos}
+                onChange={handleInputChange}
                 className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-            >
-                <option value="insumo1">Insumo 1</option>
-                <option value="insumo2">Insumo 2</option>
-                <option value="insumo3">Insumo 3</option>
-            </select>
+              ></textarea>
+            </div>
+          </div>
         </div>
-    </div>
-</div>
 
-
-
-<div className="flex mt-4">
-    <div className="mr-4">
-        <Link 
-            to="/solicitudes" 
-            className="inline-block bg-blue-500 hover:bg-blue-700 focus:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out"
-        >
-            Guardar
-        </Link>
-    </div>
-</div>
-
-
-
+        <div className="flex justify-end mt-4">
+          <button
+            type="submit"
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+          >
+            Enviar
+          </button>
+        </div>
+      </form>
     </Layout>
   );
 }
 
-export default Solicitudes;
+export default CrearSolicitud;
