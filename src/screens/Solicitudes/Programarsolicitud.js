@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Layout from '../../Layout';
 import { Link, useNavigate } from 'react-router-dom';
 
-function CrearSolicitud() {
+function Programarsolicitud() {
     
   const [solicitudes, setSolicitudes] = useState([]);
   const [selectedSolicitud, setSelectedSolicitud] = useState(null); // Estado para almacenar la solicitud seleccionada
@@ -145,8 +145,7 @@ function CrearSolicitud() {
 
   return (
     <Layout>
-
-<h2 className="text-2xl font-semibold mb-4">Crear Solicitud</h2>
+        <h2 className="text-2xl font-semibold mb-4">Programar Solicitud</h2>
       <form onSubmit={handleSubmit}>
         <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md">
           <div className="mb-4">
@@ -437,4 +436,4 @@ function CrearSolicitud() {
   );
 }
 
-export default CrearSolicitud;
+export default Programarsolicitud;

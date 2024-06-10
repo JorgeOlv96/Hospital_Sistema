@@ -8,6 +8,7 @@ import { HiOutlineViewGrid } from 'react-icons/hi';
 import { HiOutlineCalendarDays } from 'react-icons/hi2';
 import AddAppointmentModal from '../components/Modals/AddApointmentModal';
 import { servicesData } from '../components/Datas';
+import { Link, useNavigate } from 'react-router-dom';
 
 moment.locale('es'); // Configura moment para usar el idioma español
 
@@ -55,6 +56,14 @@ const CustomToolbar = (toolbar) => {
   return (
     <div className="flex flex-col gap-8 mb-8">
       <h1 className="text-xl font-semibold">Agenda</h1>
+      
+      <div className="my-4">
+      <Link to="/solicitudes/Programarsolicitud" className="btn btn-sm btn-secondary p-2 bg-[#001B58] text-white rounded-lg">
+  Programar solicitud
+</Link>
+
+      </div>
+
       <div className="grid sm:grid-cols-2 md:grid-cols-12 gap-4">
         <div className="md:col-span-1 flex sm:justify-start justify-center items-center">
           <button
@@ -81,17 +90,13 @@ const CustomToolbar = (toolbar) => {
           {viewNamesGroup.map((item, index) => (
             <button
               key={index}
-              onClick={
-                item.view === 'month'
-                  ? goToMonth
-                  : item.view === 'week'
-                  ? goToWeek
-                  : goToDay
-              }
+              onClick={() => {
+                if (item.view === 'month') goToMonth();
+                else if (item.view === 'week') goToWeek();
+                else if (item.view === 'day') goToDay();
+              }}
               className={`border-l text-xl py-2 flex-colo border-subMain ${
-                toolbar.view === item.view
-                  ? 'bg-subMain text-white'
-                  : 'text-subMain'
+                toolbar.view === item.view ? 'bg-subMain text-white' : 'text-subMain'
               }`}
             >
               {item.view === 'month' ? (
@@ -207,6 +212,7 @@ function Appointments() {
         resizable
         step={60}
         selectable={true}
+        //
         // estilo personalizado para eventos
         eventPropGetter={(event) => {
           const style = {

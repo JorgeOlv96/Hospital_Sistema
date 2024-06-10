@@ -1,5 +1,6 @@
 // src/App.js
 import './App.css';
+import React, { useState } from 'react';
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import Aos from 'aos';
 import Dashboard from './screens/Dashboard';
@@ -31,9 +32,14 @@ import Crearsolicitud from './screens/Solicitudes/Crearsolicitud';
 import Urgencias from './screens/Urgencias';
 import IndexPage from './IndexPage'; // Importa el nuevo componente
 import Ayuda from './HelpPage'; // Importa el componente de la página de ayuda
+import Programarsolicitud from './screens/Solicitudes/Programarsolicitud';
+
+
 
 
 function App() {
+  const [activeSection, setActiveSection] = useState('appointments');
+  
   Aos.init();
 
   return (
@@ -58,6 +64,7 @@ function App() {
           <Route path="/patients" element={<Patients />} />
           <Route path="/solicitudes" element={<Solicitudes />} />
           <Route path="/solicitudes/crearsolicitud" element={<Crearsolicitud />} />
+          <Route path="/solicitudes/Programarsolicitud" element={<Programarsolicitud setActiveSection={setActiveSection} />} />
           <Route path="/patients/preview/:id" element={<PatientProfile />} />
           <Route path="/patients/create" element={<CreatePatient />} />
           <Route path="/patients/visiting/:id" element={<NewMedicalRecode />} />
