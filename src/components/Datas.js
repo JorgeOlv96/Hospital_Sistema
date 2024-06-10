@@ -35,7 +35,7 @@ import { FaAmbulance } from "react-icons/fa";
 export const MenuDatas = [
   {
     title: 'Dashboard',
-    path: '/',
+    path: '/dashboard',
     icon: HiOutlineHome,
   },
   {

@@ -61,8 +61,8 @@ function CrearSolicitud() {
     Object.entries(especialidadToClave).map(([key, value]) => [value, key])
   );
 
-  const [nombreEspecialidad, setNombreEspecialidad] = useState('');
-  const [claveEspecialidad, setClaveEspecialidad] = useState('');
+  const [nombre_especialidad, setNombreEspecialidad] = useState('');
+  const [clave_esp, setClaveEspecialidad] = useState('');
   const [formData, setFormData] = useState({
     fecha_solicitud: '',
     clave_esp: '',
@@ -103,8 +103,8 @@ function CrearSolicitud() {
     setClaveEspecialidad(correspondingClave);
     setFormData({
       ...formData,
-      nombreEspecialidad: selectedNombreEspecialidad,
-      claveEspecialidad: correspondingClave
+      nombre_especialidad: selectedNombreEspecialidad,
+      clave_esp: correspondingClave
     });
   };
 
@@ -115,13 +115,17 @@ function CrearSolicitud() {
     setNombreEspecialidad(correspondingNombre);
     setFormData({
       ...formData,
-      nombreEspecialidad: correspondingNombre,
-      claveEspecialidad: selectedClaveEspecialidad
+      nombre_especialidad: correspondingNombre,
+      clave_esp: selectedClaveEspecialidad
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Log the formData to inspect its structure
+    console.log('Submitting formData:', formData);
+    
     try {
       const response = await fetch('http://localhost:4000/api/solicitudes', {
         method: selectedSolicitud ? 'PUT' : 'POST',
@@ -130,11 +134,11 @@ function CrearSolicitud() {
         },
         body: JSON.stringify(formData)
       });
-
+  
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
-
+  
       const data = await response.json();
       console.log('Solicitud guardada:', data);
       navigate('/solicitudes');
@@ -142,10 +146,28 @@ function CrearSolicitud() {
       console.error('Error saving solicitud:', error);
     }
   };
+  
 
   return (
     <Layout>
       <form onSubmit={handleSubmit}>
+      <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
+          <div className="flex mb-4">
+            <div className="mr-4 w-full">
+              <label htmlFor="fecha_solicitud" className="block font-semibold text-gray-700 mb-2">Fecha de solicitud:</label>
+              <input 
+                type="date" 
+                id="fecha_solicitud" 
+                name="fecha_solicitud" 
+                value={formData.fecha_solicitud}
+                onChange={handleInputChange}
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
+              />
+            </div>
+          </div>
+        </div>
+
+
         <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md">
           <div className="mb-4">
             <label htmlFor="curp" className="block font-semibold text-gray-700 mb-2">Curp del paciente:</label>
@@ -155,44 +177,55 @@ function CrearSolicitud() {
               name="curp" 
               value={formData.curp}
               onChange={handleInputChange}
-              className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+              className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
             />
           </div>
 
           <div className="flex mt-4">
             <div className="mr-4 w-full">
-              <label htmlFor="apellidoPaterno" className="block font-semibold text-gray-700 mb-2">Apellido paterno:</label>
+              <label htmlFor="ap_paterno" className="block font-semibold text-gray-700 mb-2">Apellido paterno:</label>
               <input 
                 type="text" 
-                id="apellidoPaterno" 
-                name="apellidoPaterno" 
+                id="ap_paterno" 
+                name="ap_paterno" 
                 value={formData.ap_paterno}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
               />
             </div>
 
             <div className="mr-4 w-full">
-              <label htmlFor="apellidoMaterno" className="block font-semibold text-gray-700 mb-2">Apellido materno:</label>
+              <label htmlFor="ap_materno" className="block font-semibold text-gray-700 mb-2">Apellido materno:</label>
               <input 
                 type="text" 
-                id="apellidoMaterno" 
-                name="apellidoMaterno" 
+                id="ap_materno" 
+                name="ap_materno" 
                 value={formData.ap_materno}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
               />
             </div>
             
             <div className="w-full">
-              <label htmlFor="nombres" className="block font-semibold text-gray-700 mb-2">Nombres:</label>
+              <label htmlFor="nombre_paciente" className="block font-semibold text-gray-700 mb-2">Nombre:</label>
               <input 
                 type="text" 
-                id="nombres" 
-                name="nombres" 
+                id="nombre_paciente" 
+                name="nombre_paciente" 
                 value={formData.nombre_paciente}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
+              />
+            </div>
+            <div className="w-full">
+              <label htmlFor="no_expediente" className="block font-semibold text-gray-700 mb-2">Número de expediente</label>
+              <input 
+                type="text" 
+                id="no_expediente" 
+                name="no_expediente" 
+                value={formData.no_expediente}
+                onChange={handleInputChange}
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
               />
             </div>
           </div>
@@ -201,17 +234,29 @@ function CrearSolicitud() {
         <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
           <div className="flex mb-4">
             <div className="mr-4 w-full">
-              <label htmlFor="fechaNacimiento" className="block font-semibold text-gray-700 mb-2">Fecha de nacimiento:</label>
+              <label htmlFor="fecha_nacimiento" className="block font-semibold text-gray-700 mb-2">Fecha de nacimiento:</label>
               <input 
                 type="date" 
-                id="fechaNacimiento" 
-                name="fechaNacimiento" 
+                id="fecha_nacimiento" 
+                name="fecha_nacimiento" 
                 value={formData.fecha_nacimiento}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
               />
             </div>
             
+            <div className="mr-4 w-full">
+              <label htmlFor="edad" className="block font-semibold text-gray-700 mb-2">Edad</label>
+              <input 
+                type="int" 
+                id="edad" 
+                name="edad" 
+                value={formData.edad}
+                onChange={handleInputChange}
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
+              />
+            </div>
+
             <div className="w-full">
               <label htmlFor="sexo" className="block font-semibold text-gray-700 mb-2">Sexo:</label>
               <select 
@@ -219,10 +264,12 @@ function CrearSolicitud() {
                 name="sexo" 
                 value={formData.sexo}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
               >
-                <option value="masculino">Masculino</option>
-                <option value="femenino">Femenino</option>
+                <option value="">-- Sexo del paciente --</option>
+                <option value="Masculino">Masculino</option>
+                <option value="Femenino">Femenino</option>
+                <option value="Otro">Otro</option>
               </select>
             </div>
           </div>
@@ -231,27 +278,35 @@ function CrearSolicitud() {
         <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
           <div className="flex mb-4">
             <div className="mr-4 w-full">
-              <label htmlFor="tipoConsulta" className="block font-semibold text-gray-700 mb-2">Tipo de consulta:</label>
-              <input 
-                type="text" 
-                id="tipoConsulta" 
-                name="tipoConsulta" 
-                value={formData.tipoConsulta}
+              <label htmlFor="tipo_admision" className="block font-semibold text-gray-700 mb-2">Tipo de admisión:</label>
+              <select 
+                id="tipo_admision" 
+                name="tipo_admision" 
+                value={formData.tipo_admision}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-              />
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
+              >
+                <option value="">-- Seleccione el tipo de consulta --</option>
+                <option value="Cama">Cama</option>
+                <option value="Consulta externa">Consulta externa</option>
+                <option value="Urgencia">Urgencia</option>
+              </select>
             </div>
             
             <div className="w-full">
-              <label htmlFor="tipoIntervencion" className="block font-semibold text-gray-700 mb-2">Tipo de intervención:</label>
-              <input 
-                type="text" 
-                id="tipoIntervencion" 
-                name="tipoIntervencion" 
-                value={formData.tipoIntervencion}
+              <label htmlFor="tipo_intervencion" className="block font-semibold text-gray-700 mb-2">Tipo de intervención:</label>
+              <select 
+                id="tipo_intervencion" 
+                name="tipo_intervencion" 
+                value={formData.tipo_intervencion}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-              />
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
+              >
+                <option value="">-- Seleccione el tipo de intervención --</option>
+                <option value="Cirugía">Cirugía</option>
+                <option value="Procedimiento">Procedimiento</option>
+                <option value="Cirugía ambulatoria">Cirugía ambulatoria</option>
+              </select>
             </div>
           </div>
         </div>
@@ -259,15 +314,15 @@ function CrearSolicitud() {
         <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
           <div className="flex mb-4">
             <div className="mr-4 w-full">
-              <label htmlFor="nombreEspecialidad" className="block font-semibold text-gray-700 mb-2">Especialidad:</label>
+              <label htmlFor="nombre_especialidad" className="block font-semibold text-gray-700 mb-2">Especialidad:</label>
               <select 
-                id="nombreEspecialidad" 
-                name="nombreEspecialidad" 
-                value={nombreEspecialidad}
+                id="nombre_especialidad" 
+                name="nombre_especialidad" 
+                value={nombre_especialidad}
                 onChange={handleNombreEspecialidadChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]"
               >
-                <option value="">Seleccionar especialidad</option>
+                <option value="">-- Seleccionar especialidad --</option>
                 {Object.keys(especialidadToClave).map((especialidad) => (
                   <option key={especialidad} value={especialidad}>
                     {especialidad}
@@ -277,15 +332,15 @@ function CrearSolicitud() {
             </div>
             
             <div className="w-full">
-              <label htmlFor="claveEspecialidad" className="block font-semibold text-gray-700 mb-2">Clave de especialidad:</label>
+              <label htmlFor="clave_esp" className="block font-semibold text-gray-700 mb-2">Clave de especialidad:</label>
               <select 
-                id="claveEspecialidad" 
-                name="claveEspecialidad" 
-                value={claveEspecialidad}
+                id="clave_esp" 
+                name="clave_esp" 
+                value={clave_esp}
                 onChange={handleClaveEspecialidadChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]"
               >
-                <option value="">Seleccionar clave de especialidad</option>
+                <option value="">-- Seleccionar clave de especialidad --</option>
                 {Object.values(especialidadToClave).map((clave) => (
                   <option key={clave} value={clave}>
                     {clave}
@@ -299,26 +354,26 @@ function CrearSolicitud() {
         <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
           <div className="flex mb-4">
             <div className="mr-4 w-full">
-              <label htmlFor="fechaSolicitada" className="block font-semibold text-gray-700 mb-2">Fecha solicitada:</label>
+              <label htmlFor="fecha_solicitada" className="block font-semibold text-gray-700 mb-2">Fecha solicitada:</label>
               <input 
                 type="date" 
-                id="fechaSolicitada" 
-                name="fechaSolicitada" 
+                id="fecha_solicitada" 
+                name="fecha_solicitada" 
                 value={formData.fecha_solicitada}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
               />
             </div>
             
             <div className="w-full">
-              <label htmlFor="horaSolicitada" className="block font-semibold text-gray-700 mb-2">Hora solicitada:</label>
+              <label htmlFor="hora_solicitada" className="block font-semibold text-gray-700 mb-2">Hora solicitada:</label>
               <input 
                 type="time" 
-                id="horaSolicitada" 
-                name="horaSolicitada" 
+                id="hora_solicitada" 
+                name="hora_solicitada" 
                 value={formData.hora_solicitada}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
               />
             </div>
           </div>
@@ -327,27 +382,32 @@ function CrearSolicitud() {
         <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
           <div className="flex mb-4">
             <div className="mr-4 w-full">
-              <label htmlFor="tiempoEstimadoCirugia" className="block font-semibold text-gray-700 mb-2">Tiempo estimado de cirugía:</label>
+              <label htmlFor="tiempo_estimado" className="block font-semibold text-gray-700 mb-2">Tiempo estimado de cirugía:</label>
               <input 
-                type="text" 
-                id="tiempoEstimadoCirugia" 
-                name="tiempoEstimadoCirugia" 
+                type="int" 
+                id="tiempo_estimado" 
+                name="tiempo_estimado" 
                 value={formData.tiempo_estimado}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
               />
             </div>
             
             <div className="w-full">
-              <label htmlFor="turnoSolicitado" className="block font-semibold text-gray-700 mb-2">Turno solicitado:</label>
-              <input 
-                type="text" 
-                id="turnoSolicitado" 
-                name="turnoSolicitado" 
-                value={formData.turnoSolicitado}
+              <label htmlFor="turno_solicitado" className="block font-semibold text-gray-700 mb-2">Turno solicitado:</label>
+              <select 
+                id="turno_solicitado" 
+                name="turno_solicitado" 
+                value={formData.turno_solicitado}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-              />
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
+              >
+                <option value="">-- Seleccione el turno --</option>
+                <option value="Matutino">Matutino</option>
+                <option value="Vespertino">Vespertino</option>
+                <option value="Nocturno">Nocturno</option>
+                <option value="Especial">Especial</option>
+              </select>
             </div>
           </div>
         </div>
@@ -355,26 +415,42 @@ function CrearSolicitud() {
         <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
           <div className="flex mb-4">
             <div className="mr-4 w-full">
-              <label htmlFor="salaSolicitada" className="block font-semibold text-gray-700 mb-2">Sala solicitada:</label>
-              <input 
+              <label htmlFor="sala_quirofano" className="block font-semibold text-gray-700 mb-2">Sala solicitada:</label>
+              <select 
                 type="text" 
-                id="salaSolicitada" 
-                name="salaSolicitada" 
-                value={formData.salaSolicitada}
+                id="sala_quirofano" 
+                name="sala_quirofano" 
+                value={formData.sala_quirofano}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-              />
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
+              >
+                <option value="">-- Seleccione la sala --</option>
+                <option value="A1">A1</option>
+                <option value="A2">A2</option>
+                <option value="T1">T1</option>
+                <option value="T2">T2</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="E">E</option>
+                <option value="H">H</option>
+                <option value="RX">RX</option>
+            </select>
             </div>
             
             <div className="w-full">
-              <label htmlFor="procedimientosPaciente" className="block font-semibold text-gray-700 mb-2">Procedimientos que se realizarán al paciente:</label>
-              <textarea 
-                id="procedimientosPaciente" 
-                name="procedimientosPaciente" 
+              <label htmlFor="procedimientos_paciente" className="block font-semibold text-gray-700 mb-2">Procedimientos que se realizarán al paciente:</label>
+              <input
+                type="text"
+                id="procedimientos_paciente" 
+                name="procedimientos_paciente" 
                 value={formData.procedimientos_paciente}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-              ></textarea>
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
+              />
             </div>
           </div>
         </div>
@@ -382,26 +458,49 @@ function CrearSolicitud() {
         <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
           <div className="flex mb-4">
             <div className="mr-4 w-full">
-              <label htmlFor="cirujanoEncargado" className="block font-semibold text-gray-700 mb-2">Nombre del cirujano encargado:</label>
-              <input 
+              <label htmlFor="id_cirujano" className="block font-semibold text-gray-700 mb-2">Cirujano encargado:</label>
+              <select
                 type="text" 
-                id="cirujanoEncargado" 
-                name="cirujanoEncargado" 
+                id="id_cirujano" 
+                name="id_cirujano" 
                 value={formData.id_cirujano}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-              />
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
+              >
+                <option value="">-- Seleccione cirujano --</option>
+                <option value="1">1</option>
+              </select>
             </div>
             
             <div className="w-full">
-              <label htmlFor="requiereInsumos" className="block font-semibold text-gray-700 mb-2">Requiere insumos:</label>
-              <input 
+              <label htmlFor="req_insumo" className="block font-semibold text-gray-700 mb-2">Requiere insumos:</label>
+              <select
                 type="text" 
-                id="requiereInsumos" 
-                name="requiereInsumos" 
-                value={formData.requiereInsumos}
+                id="req_insumo" 
+                name="req_insumo" 
+                value={formData.req_insumo}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
+              >
+                <option value="">-- Seleccione una opción --</option>
+                <option value="Si">Si</option>
+                <option value="No">No</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
+          <div className="flex mb-4">
+            <div className="w-full">
+              <label htmlFor="insumos" className="block font-semibold text-gray-700 mb-2">Especificar insumos:</label>
+              <input 
+                type="text"
+                id="insumos" 
+                name="insumos" 
+                value={formData.insumos}
+                onChange={handleInputChange}
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
               />
             </div>
           </div>
@@ -410,22 +509,28 @@ function CrearSolicitud() {
         <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
           <div className="flex mb-4">
             <div className="w-full">
-              <label htmlFor="especificarInsumos" className="block font-semibold text-gray-700 mb-2">Especificar insumos:</label>
-              <textarea 
-                id="especificarInsumos" 
-                name="especificarInsumos" 
-                value={formData.insumos}
+              <label htmlFor="estado_solicitud" className="block font-semibold text-gray-700 mb-2">Estado de solicitud</label>
+              <select 
+                type="text"
+                id="estado_solicitud" 
+                name="estado_solicitud" 
+                value={formData.estado_solicitud}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-              ></textarea>
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
+              >
+                <option value="">-- Seleccione una opción --</option>
+                <option value="Programada">Programada</option>
+                <option value="Realizada">Realizada</option>
+                <option value="Suspendida">Suspendida</option>
+              </select>
             </div>
           </div>
         </div>
 
-        <div className="flex justify-end mt-4">
+        <div className="flex justify-center mt-4">
           <button
             type="submit"
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+            className="bg-[#001B58] text-white px-4 py-2 rounded"
           >
             Enviar
           </button>
