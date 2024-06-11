@@ -30,7 +30,7 @@ function CrearSolicitud() {
     'Angiología': 'ANG',
     'C.Plástica y Reconstructiva': 'CPR',
     'Cardiología': 'CAR',
-    'Cirugía de Torax': 'CTO',
+    'Cirigía de Torax': 'CTO',
     'Cirugía Bariatrica': 'CBR',
     'Cirugía Cardiaca': 'CCA',
     'Cirugía General': 'CIG',
@@ -161,7 +161,7 @@ function CrearSolicitud() {
                 name="fecha_solicitud" 
                 value={formData.fecha_solicitud}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
               />
             </div>
           </div>
@@ -177,7 +177,7 @@ function CrearSolicitud() {
               name="curp" 
               value={formData.curp}
               onChange={handleInputChange}
-              className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
+              className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
             />
           </div>
 
@@ -190,7 +190,7 @@ function CrearSolicitud() {
                 name="ap_paterno" 
                 value={formData.ap_paterno}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
               />
             </div>
 
@@ -202,7 +202,7 @@ function CrearSolicitud() {
                 name="ap_materno" 
                 value={formData.ap_materno}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
               />
             </div>
             
@@ -214,7 +214,7 @@ function CrearSolicitud() {
                 name="nombre_paciente" 
                 value={formData.nombre_paciente}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
               />
             </div>
             <div className="w-full">
@@ -225,7 +225,7 @@ function CrearSolicitud() {
                 name="no_expediente" 
                 value={formData.no_expediente}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
               />
             </div>
           </div>
@@ -241,7 +241,7 @@ function CrearSolicitud() {
                 name="fecha_nacimiento" 
                 value={formData.fecha_nacimiento}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
               />
             </div>
             
@@ -253,7 +253,7 @@ function CrearSolicitud() {
                 name="edad" 
                 value={formData.edad}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
               />
             </div>
 
@@ -264,7 +264,7 @@ function CrearSolicitud() {
                 name="sexo" 
                 value={formData.sexo}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
               >
                 <option value="">-- Sexo del paciente --</option>
                 <option value="Masculino">Masculino</option>
@@ -284,12 +284,12 @@ function CrearSolicitud() {
                 name="tipo_admision" 
                 value={formData.tipo_admision}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
               >
                 <option value="">-- Seleccione el tipo de consulta --</option>
                 <option value="Cama">Cama</option>
                 <option value="Consulta externa">Consulta externa</option>
-                <option value="Urgencia">Urgencia</option>
+                <option value="UrgenciaS">Urgencias</option>
               </select>
             </div>
             
@@ -300,7 +300,7 @@ function CrearSolicitud() {
                 name="tipo_intervencion" 
                 value={formData.tipo_intervencion}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
               >
                 <option value="">-- Seleccione el tipo de intervención --</option>
                 <option value="Cirugía">Cirugía</option>
@@ -320,7 +320,7 @@ function CrearSolicitud() {
                 name="nombre_especialidad" 
                 value={nombre_especialidad}
                 onChange={handleNombreEspecialidadChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]"
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="">-- Seleccionar especialidad --</option>
                 {Object.keys(especialidadToClave).map((especialidad) => (
@@ -338,7 +338,7 @@ function CrearSolicitud() {
                 name="clave_esp" 
                 value={clave_esp}
                 onChange={handleClaveEspecialidadChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]"
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
                 <option value="">-- Seleccionar clave de especialidad --</option>
                 {Object.values(especialidadToClave).map((clave) => (
@@ -361,7 +361,7 @@ function CrearSolicitud() {
                 name="fecha_solicitada" 
                 value={formData.fecha_solicitada}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
               />
             </div>
             
@@ -373,7 +373,7 @@ function CrearSolicitud() {
                 name="hora_solicitada" 
                 value={formData.hora_solicitada}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
               />
             </div>
           </div>
@@ -389,7 +389,7 @@ function CrearSolicitud() {
                 name="tiempo_estimado" 
                 value={formData.tiempo_estimado}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
               />
             </div>
             
@@ -400,7 +400,7 @@ function CrearSolicitud() {
                 name="turno_solicitado" 
                 value={formData.turno_solicitado}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
               >
                 <option value="">-- Seleccione el turno --</option>
                 <option value="Matutino">Matutino</option>
@@ -422,7 +422,7 @@ function CrearSolicitud() {
                 name="sala_quirofano" 
                 value={formData.sala_quirofano}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
               >
                 <option value="">-- Seleccione la sala --</option>
                 <option value="A1">A1</option>
@@ -449,7 +449,7 @@ function CrearSolicitud() {
                 name="procedimientos_paciente" 
                 value={formData.procedimientos_paciente}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
               />
             </div>
           </div>
@@ -465,7 +465,7 @@ function CrearSolicitud() {
                 name="id_cirujano" 
                 value={formData.id_cirujano}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
               >
                 <option value="">-- Seleccione cirujano --</option>
                 <option value="1">1</option>
@@ -480,7 +480,7 @@ function CrearSolicitud() {
                 name="req_insumo" 
                 value={formData.req_insumo}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
               >
                 <option value="">-- Seleccione una opción --</option>
                 <option value="Si">Si</option>
@@ -500,7 +500,7 @@ function CrearSolicitud() {
                 name="insumos" 
                 value={formData.insumos}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
               />
             </div>
           </div>
@@ -516,12 +516,13 @@ function CrearSolicitud() {
                 name="estado_solicitud" 
                 value={formData.estado_solicitud}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
               >
                 <option value="">-- Seleccione una opción --</option>
                 <option value="Programada">Programada</option>
                 <option value="Realizada">Realizada</option>
                 <option value="Suspendida">Suspendida</option>
+                <option value="Pendiente">Pendiente</option>
               </select>
             </div>
           </div>
