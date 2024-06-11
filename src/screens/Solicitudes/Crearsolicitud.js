@@ -63,7 +63,7 @@ function CrearSolicitud() {
   const [nombre_especialidad, setNombreEspecialidad] = useState('');
   const [clave_esp, setClaveEspecialidad] = useState('');
   const [formData, setFormData] = useState({
-    fecha_solicitud: '',
+    fecha_solicitud: obtenerFechaActual(),
     clave_esp: '',
     nombre_especialidad: '',
     curp: '',
@@ -84,9 +84,18 @@ function CrearSolicitud() {
     req_insumo: '',
     insumos: '',
     tipo_admision: '',
-    estado_solicitud: '',
+    estado_solicitud: "Pendiente",
     procedimientos_paciente: ''
   });
+
+  // Función para obtener la fecha actual en el formato adecuado (YYYY-MM-DD)
+  function obtenerFechaActual() {
+    const hoy = new Date();
+    const year = hoy.getFullYear();
+    const month = String(hoy.getMonth() + 1).padStart(2, '0');
+    const day = String(hoy.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
 
   const [reqInsumos, setReqInsumos] = useState(false);
 
@@ -164,20 +173,21 @@ function CrearSolicitud() {
     <Layout>
       <form onSubmit={handleSubmit}>
       <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
-          <div className="flex mb-4">
-            <div className="mr-4 w-full">
-              <label htmlFor="fecha_solicitud" className="block font-semibold text-gray-700 mb-2">Fecha de solicitud:</label>
-              <input 
-                type="date" 
-                id="fecha_solicitud" 
-                name="fecha_solicitud" 
-                value={formData.fecha_solicitud}
-                onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-              />
-            </div>
-          </div>
+      <div className="flex mb-4">
+        <div className="mr-4 w-full">
+          <label htmlFor="fecha_solicitud" className="block font-semibold text-gray-700 mb-2">Fecha de solicitud:</label>
+          <input 
+            type="date" 
+            id="fecha_solicitud" 
+            name="fecha_solicitud" 
+            value={formData.fecha_solicitud}
+            onChange={handleInputChange}
+            readOnly // Hacer que el campo sea de solo lectura
+            className="border border-gray-200 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none" 
+          />
         </div>
+      </div>
+    </div>
 
 
         <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md">
@@ -522,27 +532,21 @@ function CrearSolicitud() {
         </div>
       )}
 
-        <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
-          <div className="flex mb-4">
-            <div className="w-full">
-              <label htmlFor="estado_solicitud" className="block font-semibold text-gray-700 mb-2">Estado de solicitud</label>
-              <select 
-                type="text"
-                id="estado_solicitud" 
-                name="estado_solicitud" 
-                value={formData.estado_solicitud}
-                onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-              >
-                <option value="">-- Seleccione una opción --</option>
-                <option value="Programada">Programada</option>
-                <option value="Realizada">Realizada</option>
-                <option value="Suspendida">Suspendida</option>
-                <option value="Pendiente">Pendiente</option>
-              </select>
-            </div>
-          </div>
+<div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
+      <div className="flex mb-4">
+        <div className="w-full">
+          <label htmlFor="estado_solicitud" className="block font-semibold text-gray-700 mb-2">Estado de solicitud</label>
+          <input 
+            type="text"
+            id="estado_solicitud" 
+            name="estado_solicitud" 
+            value={formData.estado_solicitud}
+            readOnly // Hacer que el campo sea de solo lectura
+            className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+          />
         </div>
+      </div>
+    </div>
 
         <div className="flex justify-center mt-4">
           <button
