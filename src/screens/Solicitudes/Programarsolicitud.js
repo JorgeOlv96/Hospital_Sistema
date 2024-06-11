@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Layout from '../../Layout';
 import { Link, useNavigate } from 'react-router-dom';
 
-function Programarsolicitud() {
+function ProgramarSolicitud() {
     
   const [solicitudes, setSolicitudes] = useState([]);
   const [selectedSolicitud, setSelectedSolicitud] = useState(null); // Estado para almacenar la solicitud seleccionada
@@ -436,4 +436,4 @@ function Programarsolicitud() {
   );
 }
 
-export default Programarsolicitud;
+export default ProgramarSolicitud;

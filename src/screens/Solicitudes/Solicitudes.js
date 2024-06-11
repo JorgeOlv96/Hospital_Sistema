@@ -123,6 +123,7 @@ function Solicitudes() {
                   <td className="border px-4 py-2">{new Date(solicitud.fecha_solicitud).toLocaleDateString()}</td>
                   <td className="border px-4 py-2">{solicitud.estado_solicitud}</td>
                   <td className="border px-4 py-2">
+                   
                     <button
                       onClick={() => handleViewModal(solicitud)}
                       className="bg-[#001B58] text-white px-4 py-2 rounded"

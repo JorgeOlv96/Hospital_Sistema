@@ -58,7 +58,7 @@ const CustomToolbar = (toolbar) => {
       <h1 className="text-xl font-semibold">Agenda</h1>
       
       <div className="my-4">
-      <Link to="/solicitudes/Programarsolicitud" className="btn btn-sm btn-secondary p-2 bg-[#001B58] text-white rounded-lg">
+      <Link to="/Solicitudes/ProgramarSolicitud" className="btn btn-sm btn-secondary p-2 bg-[#001B58] text-white rounded-lg">
   Programar solicitud
 </Link>
 

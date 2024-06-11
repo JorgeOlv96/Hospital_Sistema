@@ -1,207 +1,186 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Modal from './Modal';
-import {
-  Button,
-  Checkbox,
-  DatePickerComp,
-  Input,
-  Select,
-  Textarea,
-  TimePickerComp,
-} from '../Form';
-import { BiChevronDown, BiPlus } from 'react-icons/bi';
-import { memberData, servicesData, sortsDatas } from '../Datas';
-import { HiOutlineCheckCircle } from 'react-icons/hi';
-import { toast } from 'react-hot-toast';
 import PatientMedicineServiceModal from './PatientMedicineServiceModal';
 
-// edit member data
-const doctorsData = memberData.map((item) => {
-  return {
-    id: item.id,
-    name: item.title,
-  };
-});
-
 function AddAppointmentModal({ closeModal, isOpen, datas }) {
-  const [services, setServices] = useState(servicesData[0]);
-  const [startDate, setStartDate] = useState(new Date());
-  const [startTime, setStartTime] = useState(new Date());
-  const [endTime, setEndTime] = useState(new Date());
-  const [status, setStatus] = useState(sortsDatas.status[0]);
-  const [doctors, setDoctors] = useState(doctorsData[0]);
-  const [shares, setShares] = useState({
-    email: false,
-    sms: false,
-    whatsapp: false,
-  });
   const [open, setOpen] = useState(false);
-
-  // on change share
-  const onChangeShare = (e) => {
-    setShares({ ...shares, [e.target.name]: e.target.checked });
-  };
-
-  // set data
-  useEffect(() => {
-    if (datas?.title) {
-      setServices(datas?.service);
-      setStartTime(datas?.start);
-      setEndTime(datas?.end);
-      setShares(datas?.shareData);
-    }
-  }, [datas]);
+  const { patientData, serviceData } = datas || {};
 
   return (
     <Modal
       closeModal={closeModal}
       isOpen={isOpen}
-      title={datas?.title ? 'Edit Appointment' : 'New Appointment'}
+      title={datas?.title ? 'Edit Appointment' : 'Información completa'}
       width={'max-w-3xl'}
     >
       {open && (
         <PatientMedicineServiceModal
-          closeModal={() => setOpen(!isOpen)}
+          closeModal={() => setOpen(!open)}
           isOpen={open}
           patient={true}
+          patientData={patientData}
         />
       )}
-      <div className="flex-colo gap-6">
-        <div className="grid sm:grid-cols-12 gap-4 w-full items-center">
-          <div className="sm:col-span-10">
-            <Input
-              label="Patient Name"
-              color={true}
-              placeholder={
-                datas?.title
-                  ? datas.title
-                  : 'Select Patient and patient name will appear here'
-              }
-            />
-          </div>
-          <button
-            onClick={() => setOpen(!open)}
-            className="text-subMain flex-rows border border-dashed border-subMain text-sm py-3.5 sm:mt-6 sm:col-span-2 rounded"
-          >
-            <BiPlus /> Add
-          </button>
-        </div>
 
-        <div className="grid sm:grid-cols-2 gap-4 w-full">
-          <div className="flex w-full flex-col gap-3">
-            <p className="text-black text-sm">Purpose of visit</p>
-            <Select
-              selectedPerson={services}
-              setSelectedPerson={setServices}
-              datas={servicesData}
-            >
-              <div className="w-full flex-btn text-textGray text-sm p-4 border border-border font-light rounded-lg focus:border focus:border-subMain">
-                {services.name} <BiChevronDown className="text-xl" />
-              </div>
-            </Select>
+      <div className="p-4">
+        <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md">
+           <div className="mr-4 w-full">
+             <label className="block font-semibold text-gray-700 mb-2">Curp del paciente:</label>
+             <p className="bg-gray-200 p-3 rounded-lg">{patientData?.curp || 'N/A'}</p>
           </div>
-          {/* date */}
-          <DatePickerComp
-            label="Date of visit"
-            startDate={startDate}
-            onChange={(date) => setStartDate(date)}
-          />
-        </div>
 
-        <div className="grid sm:grid-cols-2 gap-4 w-full">
-          <TimePickerComp
-            label="Start time"
-            startDate={startTime}
-            onChange={(date) => setStartTime(date)}
-          />
-          <TimePickerComp
-            label="End time"
-            startDate={endTime}
-            onChange={(date) => setEndTime(date)}
-          />
-        </div>
+          <div className="flex mt-4">
+            <div className="mr-4 w-full">
+              <label className="block font-semibold text-gray-700 mb-2">Apellido paterno:</label>
+              <p className="bg-gray-200 p-3 rounded-lg">{patientData?.ap_paterno || 'N/A'}</p>
+            </div>
 
-        {/* status && doctor */}
-        <div className="grid sm:grid-cols-2 gap-4 w-full">
-          <div className="flex w-full flex-col gap-3">
-            <p className="text-black text-sm">Doctor</p>
-            <Select
-              selectedPerson={doctors}
-              setSelectedPerson={setDoctors}
-              datas={doctorsData}
-            >
-              <div className="w-full flex-btn text-textGray text-sm p-4 border border-border font-light rounded-lg focus:border focus:border-subMain">
-                {doctors.name} <BiChevronDown className="text-xl" />
-              </div>
-            </Select>
-          </div>
-          <div className="flex w-full flex-col gap-3">
-            <p className="text-black text-sm">Status</p>
-            <Select
-              selectedPerson={status}
-              setSelectedPerson={setStatus}
-              datas={sortsDatas.status}
-            >
-              <div className="w-full flex-btn text-textGray text-sm p-4 border border-border font-light rounded-lg focus:border focus:border-subMain">
-                {status.name} <BiChevronDown className="text-xl" />
-              </div>
-            </Select>
+            <div className="mr-4 w-full">
+              <label className="block font-semibold text-gray-700 mb-2">Apellido materno:</label>
+              <p className="bg-gray-200 p-3 rounded-lg">{patientData?.ap_materno || 'N/A'}</p>
+            </div>
+            
+            <div className="mr-4 w-full">
+              <label className="block font-semibold text-gray-700 mb-2">Nombre:</label>
+              <p className="bg-gray-200 p-3 rounded-lg">{patientData?.nombre_paciente || 'N/A'}</p>
+            </div>
+
+            <div className="mr-4 w-full">
+              <label className="block font-semibold text-gray-700 mb-2">Número de expediente:</label>
+              <p className="bg-gray-200 p-3 rounded-lg">{patientData?.no_expediente || 'N/A'}</p>
+            </div>
           </div>
         </div>
 
-        {/* des */}
-        <Textarea
-          label="Description"
-          placeholder={
-            datas?.message
-              ? datas.message
-              : 'She will be coming for a checkup.....'
-          }
-          color={true}
-          rows={5}
-        />
+        <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
+          <div className="flex mb-4">
+            <div className="mr-4 w-full">
+              <label className="block font-semibold text-gray-700 mb-2">Fecha de nacimiento:</label>
+              <p className="bg-gray-200 p-3 rounded-lg">{patientData?.fecha_nacimiento || 'N/A'}</p>
+            </div>
+            
+            <div className="mr-4 w-full">
+              <label className="block font-semibold text-gray-700 mb-2">Edad:</label>
+              <p className="bg-gray-200 p-3 rounded-lg">{patientData?.edad || 'N/A'}</p>
+            </div>
 
-        {/* share */}
-        <div className="flex-col flex gap-8 w-full">
-          <p className="text-black text-sm">Share with patient via</p>
-          <div className="flex flex-wrap sm:flex-nowrap gap-4">
-            <Checkbox
-              name="email"
-              checked={shares.email}
-              onChange={onChangeShare}
-              label="Email"
-            />
-            <Checkbox
-              name="sms"
-              checked={shares.sms}
-              onChange={onChangeShare}
-              label="SMS"
-            />
-            <Checkbox
-              checked={shares.whatsapp}
-              name="whatsapp"
-              onChange={onChangeShare}
-              label="WhatsApp"
-            />
+            <div className="w-full">
+              <label className="block font-semibold text-gray-700 mb-2">Sexo:</label>
+              <p className="bg-gray-200 p-3 rounded-lg">{patientData?.sexo || 'N/A'}</p>
+            </div>
           </div>
         </div>
-        {/* buttones */}
-        <div className="grid sm:grid-cols-2 gap-4 w-full">
-          <button
-            onClick={closeModal}
-            className="bg-red-600 bg-opacity-5 text-red-600 text-sm p-4 rounded-lg font-light"
-          >
-            {datas?.title ? 'Discard' : 'Cancel'}
-          </button>
-          <Button
-            label="Save"
-            Icon={HiOutlineCheckCircle}
-            onClick={() => {
-              toast.error('This feature is not available yet');
-            }}
-          />
+
+        <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
+          <div className="flex mb-4">
+            <div className="mr-4 w-full">
+              <label className="block font-semibold text-gray-700 mb-2">Tipo de admisión:</label>
+              <p className="bg-gray-200 p-3 rounded-lg">{patientData?.tipo_admision || 'N/A'}</p>
+            </div>
+            
+            <div className="w-full">
+              <label className="block font-semibold text-gray-700 mb-2">Tipo de intervención:</label>
+              <p className="bg-gray-200 p-3 rounded-lg">{patientData?.tipo_intervencion || 'N/A'}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
+          <div className="flex mb-4">
+            <div className="mr-4 w-full">
+              <label className="block font-semibold text-gray-700 mb-2">Especialidad:</label>
+              <p className="bg-gray-200 p-3 rounded-lg">{patientData?.nombre_especialidad || 'N/A'}</p>
+            </div>
+            
+            <div className="w-full">
+              <label className="block font-semibold text-gray-700 mb-2">Clave de especialidad:</label>
+              <p className="bg-gray-200 p-3 rounded-lg">{patientData?.clave_esp || 'N/A'}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
+          <div className="flex mb-4">
+            <div className="mr-4 w-full">
+              <label className="block font-semibold text-gray-700 mb-2">Fecha solicitada:</label>
+              <p className="bg-gray-200 p-3 rounded-lg">{patientData?.fecha_solicitada || 'N/A'}</p>
+            </div>
+            
+            <div className="w-full">
+              <label className="block font-semibold text-gray-700 mb-2">Hora solicitada:</label>
+              <p className="bg-gray-200 p-3 rounded-lg">{patientData?.hora_solicitada || 'N/A'}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
+          <div className="flex mb-4">
+            <div className="mr-4 w-full">
+              <label className="block font-semibold text-gray-700 mb-2">Tiempo estimado de cirugía:</label>
+              <p className="bg-gray-200 p-3 rounded-lg">{patientData?.tiempo_estimado || 'N/A'}</p>
+            </div>
+            
+            <div className="w-full">
+              <label className="block font-semibold text-gray-700 mb-2">Turno solicitado:</label>
+              <p className="bg-gray-200 p-3 rounded-lg">{patientData?.turno_solicitado || 'N/A'}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
+          <div className="flex mb-4">
+            <div className="mr-4 w-full">
+              <label className="block font-semibold text-gray-700 mb-2">Sala solicitada:</label>
+              <p className="bg-gray-200 p-3 rounded-lg">{patientData?.sala_quirofano || 'N/A'}</p>
+            </div>
+            
+            <div className="w-full">
+              <label className="block font-semibold text-gray-700 mb-2">Procedimientos que se realizarán al paciente:</label>
+              <p className="bg-gray-200 p-3 rounded-lg">{patientData?.procedimientos_paciente || 'N/A'}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
+          <div className="flex mb-4">
+            <div className="mr-4 w-full">
+              <label className="block font-semibold text-gray-700 mb-2">Cirujano encargado:</label>
+              <p className="bg-gray-200 p-3 rounded-lg">{patientData?.id_cirujano || 'N/A'}</p>
+            </div>
+            
+            <div className="w-full">
+              <label className="block font-semibold text-gray-700 mb-2">Requiere insumos:</label>
+              <p className="bg-gray-200 p-3 rounded-lg">{patientData?.requiere_inusmos || 'N/A'}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
+          <div className="flex mb-4">
+            <div className="mr-4 w-full">
+              <label className="block font-semibold text-gray-700 mb-2">Diagnóstico:</label>
+              <p className="bg-gray-200 p-3 rounded-lg">{patientData?.diagnostico || 'N/A'}</p>
+            </div>
+            
+            <div className="w-full">
+              <label className="block font-semibold text-gray-700 mb-2">Observaciones:</label>
+              <p className="bg-gray-200 p-3 rounded-lg">{patientData?.observaciones || 'N/A'}</p>
+            </div>
+          </div>
         </div>
       </div>
+
+      <div className="flex justify-center w-full">
+      <button
+        onClick={closeModal}
+        className="bg-red-600 bg-opacity-5 text-red-600 text-sm p-4 rounded-lg font-light"
+      >
+        {datas?.title ? 'Descartar' : 'Cerrar'}
+      </button>
+    </div>
+
+
+
     </Modal>
   );
 }

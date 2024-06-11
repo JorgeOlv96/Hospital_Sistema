@@ -153,6 +153,7 @@ function CrearSolicitud() {
 
 <h2 className="text-2xl font-semibold mb-4">Crear Solicitud</h2>
       <form onSubmit={handleSubmit}>
+        
       <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
           <div className="flex mb-4">
             <div className="mr-4 w-full">
@@ -171,7 +172,7 @@ function CrearSolicitud() {
 
 
         <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md">
-          <div className="mb-4">
+          <div className="mr-4 w-full">
             <label htmlFor="curp" className="block font-semibold text-gray-700 mb-2">Curp del paciente:</label>
             <input 
               type="text" 
@@ -208,18 +209,20 @@ function CrearSolicitud() {
               />
             </div>
             
-            <div className="w-full">
+            <div className="mr-4 w-full">
               <label htmlFor="nombre_paciente" className="block font-semibold text-gray-700 mb-2">Nombre:</label>
               <input 
-                type="text" 
-                id="nombre_paciente" 
-                name="nombre_paciente" 
-                value={formData.nombre_paciente}
+                 type="text" 
+                 id="nombre_paciente" 
+                 name="nombre_paciente" 
+                 value={formData.nombre_paciente}
                 onChange={handleInputChange}
                 className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
               />
             </div>
-            <div className="w-full">
+
+
+            <div className="mr-4 w-full">
               <label htmlFor="no_expediente" className="block font-semibold text-gray-700 mb-2">Número de expediente</label>
               <input 
                 type="text" 
