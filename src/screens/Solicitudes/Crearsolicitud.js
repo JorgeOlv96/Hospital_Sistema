@@ -3,7 +3,6 @@ import Layout from '../../Layout';
 import { Link, useNavigate } from 'react-router-dom';
 
 function CrearSolicitud() {
-    
   const [solicitudes, setSolicitudes] = useState([]);
   const [selectedSolicitud, setSelectedSolicitud] = useState(null); // Estado para almacenar la solicitud seleccionada
   const navigate = useNavigate();
@@ -88,6 +87,18 @@ function CrearSolicitud() {
     estado_solicitud: '',
     procedimientos_paciente: ''
   });
+
+  const [reqInsumos, setReqInsumos] = useState(false);
+
+  const handleReqInsumosChange = (e) => {
+    const value = e.target.value;
+    setFormData({
+      ...formData,
+      req_insumo: value
+    });
+    setReqInsumos(value === 'Si');
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -146,6 +157,7 @@ function CrearSolicitud() {
       console.error('Error saving solicitud:', error);
     }
   };
+
   
 
   return (
@@ -472,24 +484,25 @@ function CrearSolicitud() {
               </select>
             </div>
             
-            <div className="w-full">
+          <div className="w-full">
               <label htmlFor="req_insumo" className="block font-semibold text-gray-700 mb-2">Requiere insumos:</label>
-              <select
-                type="text" 
-                id="req_insumo" 
-                name="req_insumo" 
-                value={formData.req_insumo}
-                onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-              >
-                <option value="">-- Seleccione una opción --</option>
-                <option value="Si">Si</option>
-                <option value="No">No</option>
-              </select>
-            </div>
+          <select
+            id="req_insumo" 
+            name="req_insumo" 
+            value={formData.req_insumo}
+            onChange={handleReqInsumosChange}
+            className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+          >
+            <option value="">-- Seleccione una opción --</option>
+            <option value="Si">Si</option>
+            <option value="No">No</option>
+          </select>
+        </div>
+
           </div>
         </div>
 
+        {reqInsumos && (
         <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
           <div className="flex mb-4">
             <div className="w-full">
@@ -505,6 +518,7 @@ function CrearSolicitud() {
             </div>
           </div>
         </div>
+      )}
 
         <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
           <div className="flex mb-4">
