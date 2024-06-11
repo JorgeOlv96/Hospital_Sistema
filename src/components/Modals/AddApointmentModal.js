@@ -24,10 +24,7 @@ function AddAppointmentModal({ closeModal, isOpen, datas }) {
 
       <div className="p-4">
         <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md">
-           <div className="mr-4 w-full">
-             <label className="block font-semibold text-gray-700 mb-2">Curp del paciente:</label>
-             <p className="bg-gray-200 p-3 rounded-lg">{patientData?.curp || 'N/A'}</p>
-          </div>
+           
 
           <div className="flex mt-4">
             <div className="mr-4 w-full">
@@ -45,25 +42,6 @@ function AddAppointmentModal({ closeModal, isOpen, datas }) {
               <p className="bg-gray-200 p-3 rounded-lg">{patientData?.nombre_paciente || 'N/A'}</p>
             </div>
 
-            <div className="mr-4 w-full">
-              <label className="block font-semibold text-gray-700 mb-2">Número de expediente:</label>
-              <p className="bg-gray-200 p-3 rounded-lg">{patientData?.no_expediente || 'N/A'}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
-          <div className="flex mb-4">
-            <div className="mr-4 w-full">
-              <label className="block font-semibold text-gray-700 mb-2">Fecha de nacimiento:</label>
-              <p className="bg-gray-200 p-3 rounded-lg">{patientData?.fecha_nacimiento || 'N/A'}</p>
-            </div>
-            
-            <div className="mr-4 w-full">
-              <label className="block font-semibold text-gray-700 mb-2">Edad:</label>
-              <p className="bg-gray-200 p-3 rounded-lg">{patientData?.edad || 'N/A'}</p>
-            </div>
-
             <div className="w-full">
               <label className="block font-semibold text-gray-700 mb-2">Sexo:</label>
               <p className="bg-gray-200 p-3 rounded-lg">{patientData?.sexo || 'N/A'}</p>
@@ -73,29 +51,22 @@ function AddAppointmentModal({ closeModal, isOpen, datas }) {
 
         <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
           <div className="flex mb-4">
+           
             <div className="mr-4 w-full">
               <label className="block font-semibold text-gray-700 mb-2">Tipo de admisión:</label>
               <p className="bg-gray-200 p-3 rounded-lg">{patientData?.tipo_admision || 'N/A'}</p>
             </div>
             
-            <div className="w-full">
+            <div className="mr-4 w-full">
               <label className="block font-semibold text-gray-700 mb-2">Tipo de intervención:</label>
               <p className="bg-gray-200 p-3 rounded-lg">{patientData?.tipo_intervencion || 'N/A'}</p>
             </div>
-          </div>
-        </div>
-
-        <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
-          <div className="flex mb-4">
-            <div className="mr-4 w-full">
+            
+            <div className="w-full">
               <label className="block font-semibold text-gray-700 mb-2">Especialidad:</label>
               <p className="bg-gray-200 p-3 rounded-lg">{patientData?.nombre_especialidad || 'N/A'}</p>
             </div>
-            
-            <div className="w-full">
-              <label className="block font-semibold text-gray-700 mb-2">Clave de especialidad:</label>
-              <p className="bg-gray-200 p-3 rounded-lg">{patientData?.clave_esp || 'N/A'}</p>
-            </div>
+
           </div>
         </div>
 
@@ -151,20 +122,6 @@ function AddAppointmentModal({ closeModal, isOpen, datas }) {
             <div className="w-full">
               <label className="block font-semibold text-gray-700 mb-2">Requiere insumos:</label>
               <p className="bg-gray-200 p-3 rounded-lg">{patientData?.requiere_inusmos || 'N/A'}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
-          <div className="flex mb-4">
-            <div className="mr-4 w-full">
-              <label className="block font-semibold text-gray-700 mb-2">Diagnóstico:</label>
-              <p className="bg-gray-200 p-3 rounded-lg">{patientData?.diagnostico || 'N/A'}</p>
-            </div>
-            
-            <div className="w-full">
-              <label className="block font-semibold text-gray-700 mb-2">Observaciones:</label>
-              <p className="bg-gray-200 p-3 rounded-lg">{patientData?.observaciones || 'N/A'}</p>
             </div>
           </div>
         </div>
