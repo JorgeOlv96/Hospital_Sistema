@@ -162,8 +162,6 @@ function CrearSolicitud() {
 
   return (
     <Layout>
-
-<h2 className="text-2xl font-semibold mb-4">Crear Solicitud</h2>
       <form onSubmit={handleSubmit}>
       <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
           <div className="flex mb-4">
