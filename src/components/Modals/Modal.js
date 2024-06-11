@@ -1,3 +1,4 @@
+
 import { Dialog, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import { FaTimes } from 'react-icons/fa';
@@ -31,10 +32,9 @@ export default function Modal({ closeModal, isOpen, width, children, title }) {
                 leaveTo="opacity-0 scale-95"
               >
                 <Dialog.Panel
-                  className={` w-full ${
-                    width ? width : 'max-w-4xl'
-                  } transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all`}
-                >
+  className={`w-full md:max-w-4xl md:w-[calc(96% + 4rem)] transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all`}
+>
+
                   <div className="w-full flex-btn gap-2 mb-8">
                     <h1 className="text-md font-semibold">{title}</h1>
                     <button
