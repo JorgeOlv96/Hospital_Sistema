@@ -71,11 +71,12 @@ function Solicitudes() {
         </Link>
       </div>
 
-      {open && (
+      {open && selectedAppointment && (
         <AddAppointmentModal
           datas={solicitudes}
           isOpen={open}
           closeModal={handleModal}
+          appointmentId={selectedAppointment.id_solicitud} // Pasar el appointmentId
         />
       )}
 
