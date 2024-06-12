@@ -103,7 +103,12 @@ function CrearSolicitud() {
     const value = e.target.value;
     setFormData({
       ...formData,
-      req_insumo: value
+      req_insumo: value,
+      insumos: value === 'Si' ? formData.insumos : 'N/A',
+      curp: formData.curp || 'N/A',
+      fecha_nacimiento: formData.fecha_nacimiento || null,
+      edad: formData.edad || null,
+      no_expediente: formData.no_expediente || 'N/A'
     });
     setReqInsumos(value === 'Si');
   };
@@ -142,6 +147,16 @@ function CrearSolicitud() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const updatedFormData = {
+      ...formData,
+      insumos: formData.insumos || 'N/A',
+      curp: formData.curp || 'N/A',
+      fecha_nacimiento: formData.fecha_nacimiento || '1900-01-01', // Fecha predeterminada válida
+      edad: formData.edad || 'N/A',
+      no_expediente: formData.no_expediente || 'N/A'
+      // Añadir aquí otros campos opcionales si es necesario
+    };
     
     // Log the formData to inspect its structure
     console.log('Submitting formData:', formData);
@@ -242,16 +257,16 @@ function CrearSolicitud() {
 
 
             <div className="mr-4 w-full">
-              <label htmlFor="no_expediente" className="block font-semibold text-gray-700 mb-2">Número de expediente</label>
-              <input 
-                type="text" 
-                id="no_expediente" 
-                name="no_expediente" 
-                value={formData.no_expediente}
-                onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
-              />
-            </div>
+            <label htmlFor="no_expediente" className="block font-semibold text-gray-700 mb-2">Número de expediente</label>
+            <input 
+              type="text" 
+              id="no_expediente" 
+              name="no_expediente" 
+              value={formData.no_expediente}
+              onChange={handleInputChange}
+              className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
+            />
+          </div>
           </div>
         </div>
 
