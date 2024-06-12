@@ -9,8 +9,10 @@ import AddAppointmentModal from '../../components/Modals/AddApointmentModal';
 
 function Solicitudes() {
   const [solicitudes, setSolicitudes] = useState([]);
-  const [open, setOpen] = useState(false); // Estado para controlar si la modal de nueva solicitud está abierta
-  const [selectedAppointment, setSelectedAppointment] = useState(null); // Estado para almacenar la solicitud seleccionada
+  const [open, setOpen] = useState(false);
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
 
   useEffect(() => {
     const fetchSolicitudes = async () => {
@@ -35,32 +37,12 @@ function Solicitudes() {
 
   const handleViewModal = (solicitud) => {
     setSelectedAppointment(solicitud);
-    setOpen(true); // Abre la modal al hacer clic en el botón "Ver"
+    setOpen(true);
   };
 
-  const boxes = [
-    {
-      id: 1,
-      title: 'Pacientes de Hoy',
-      value: '10',
-      color: ['bg-subMain', 'text-subMain'],
-      icon: BiTime,
-    },
-    {
-      id: 2,
-      title: 'Pacientes del mes',
-      value: '230',
-      color: ['bg-orange-500', 'text-orange-500'],
-      icon: BsCalendarMonth,
-    },
-    {
-      id: 3,
-      title: 'Pacientes del año',
-      value: '1,500',
-      color: ['bg-green-500', 'text-green-500'],
-      icon: MdOutlineCalendarMonth,
-    },
-  ];
+  const startIndex = (page - 1) * perPage;
+  const endIndex = startIndex + perPage;
+  const solicitudesToShow = solicitudes.slice(startIndex, endIndex);
 
   return (
     <Layout>
@@ -76,27 +58,12 @@ function Solicitudes() {
           datas={solicitudes}
           isOpen={open}
           closeModal={handleModal}
-          appointmentId={selectedAppointment.id_solicitud} // Pasar el appointmentId
+          appointmentId={selectedAppointment.id_solicitud}
         />
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
-        {boxes.map((box) => (
-          <div
-            key={box.id}
-            className="bg-white flex-btn gap-4 rounded-xl border-[1px] border-border p-5"
-          >
-            <div className="w-3/4">
-              <h2 className="text-sm font-medium">{box.title}</h2>
-              <h2 className="text-xl my-6 font-medium">{box.value}</h2>
-            </div>
-            <div
-              className={`w-10 h-10 flex-colo rounded-md text-white text-md ${box.color[0]}`}
-            >
-              <box.icon />
-            </div>
-          </div>
-        ))}
+        {/* Boxes */}
       </div>
 
       <div className="mt-8">
@@ -115,7 +82,7 @@ function Solicitudes() {
               </tr>
             </thead>
             <tbody>
-              {solicitudes.map((solicitud) => (
+              {solicitudesToShow.map((solicitud) => (
                 <tr key={solicitud.id_solicitud}>
                   <td className="border px-4 py-2">{solicitud.id_solicitud}</td>
                   <td className="border px-4 py-2">{solicitud.folio}</td>
@@ -126,7 +93,7 @@ function Solicitudes() {
                   <td className="border px-4 py-2">
                     <button
                       onClick={() => handleViewModal(solicitud)}
-                      className="bg-[#001B58] text-white px-4 py-2 rounded"
+                      className="bg-[#001B58] text-white px-4 py-2 rounded-md hover:bg-blue-800"
                     >
                       Ver
                     </button>
@@ -136,6 +103,16 @@ function Solicitudes() {
             </tbody>
           </table>
         </div>
+      </div>
+
+      <div className="flex justify-center mt-4">
+        <button onClick={() => setPage(page - 1)} disabled={page === 1} className="bg-[#001B58] hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-l">
+          Anterior
+        </button>
+        <span className="mx-4">Página {page}</span>
+        <button onClick={() => setPage(page + 1)} disabled={endIndex >= solicitudes.length} className="bg-[#001B58] hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-r">
+          Siguiente
+        </button>
       </div>
     </Layout>
   );

@@ -28,6 +28,21 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentId }) {
     }
   }, [isOpen, appointmentId]);
 
+  // Función para eliminar la cita
+  const handleDelete = async () => {
+    try {
+      const response = await fetch(`http://localhost:4000/api/solicitudes/${appointmentId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      closeModal(); // Cerrar el modal después de eliminar
+    } catch (error) {
+      console.error('Error deleting appointment:', error);
+    }
+  };
+
   return (
     <Modal
       closeModal={closeModal}
@@ -45,7 +60,9 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentId }) {
       )}
 
       {loading ? (
-        <div className="p-4">Cargando...</div>
+        <div className="p-4">
+          <img src="images/cargando.gif" alt="Cargando..." className="h-8 w-8 mx-auto" />
+        </div>
       ) : (
 
 
@@ -159,13 +176,19 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentId }) {
         </div>
       )}
 
-      <div className="flex justify-center w-full">
-        <button
-          onClick={closeModal}
-          className="bg-red-600 bg-opacity-5 text-red-600 text-sm p-4 rounded-lg font-light"
-        >
-          Cerrar
-        </button>
+      <div className="flex justify-between">
+            <button
+              onClick={handleDelete}
+              className="bg-red-600 bg-opacity-5 text-red-600 text-sm p-4 rounded-lg font-light mr-4"
+            >
+              Eliminar
+            </button>
+            <button
+              onClick={closeModal}
+              className="bg-[#001B58] bg-opacity-20 text-bg-[#001B58] text-sm p-4 rounded-lg font-light"
+            >
+              Cerrar
+            </button>
       </div>
     </Modal>
   );
