@@ -55,6 +55,19 @@ function Solicitudes() {
     );
   }, [solicitudes, searchTerm, searchField]);
 
+  const sortedSolicitudes = useMemo(() => {
+    let sorted = [...filteredSolicitudes];
+    if (sortBy) {
+      sorted.sort((a, b) => {
+        const factor = sortOrder === 'asc' ? 1 : -1;
+        if (a[sortBy] < b[sortBy]) return -1 * factor;
+        if (a[sortBy] > b[sortBy]) return 1 * factor;
+        return 0;
+      });
+    }
+    return sorted;
+  }, [filteredSolicitudes, sortBy, sortOrder]);
+
   const startIndex = (page - 1) * perPage;
   const endIndex = startIndex + perPage;
 
@@ -126,7 +139,7 @@ function Solicitudes() {
               </tr>
             </thead>
             <tbody>
-              {filteredSolicitudes.slice(startIndex, endIndex).map((solicitud) => (
+              {sortedSolicitudes.slice(startIndex, endIndex).map((solicitud) => (
                 <tr key={solicitud.id_solicitud}>
                   <td className="border px-4 py-2">{solicitud.id_solicitud}</td>
                   <td className="border px-4 py-2">{solicitud.folio}</td>
@@ -154,7 +167,7 @@ function Solicitudes() {
           Anterior
         </button>
         <span className="mx-4">Página {page}</span>
-        <button onClick={() => setPage(page + 1)} disabled={endIndex >= filteredSolicitudes.length} className="bg-[#001B58] hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-r">
+        <button onClick={() => setPage(page + 1)} disabled={endIndex >= sortedSolicitudes.length} className="bg-[#001B58] hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-r">
           Siguiente
         </button>
       </div>
@@ -163,4 +176,3 @@ function Solicitudes() {
 }
 
 export default Solicitudes;
-
