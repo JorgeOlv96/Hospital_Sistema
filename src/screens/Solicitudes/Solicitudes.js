@@ -1,10 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Layout from '../../Layout';
-import { sortsDatas } from '../../components/Datas';
-import { Link, useNavigate } from 'react-router-dom';
-import { BiTime } from 'react-icons/bi';
-import { BsCalendarMonth } from 'react-icons/bs';
-import { MdOutlineCalendarMonth } from 'react-icons/md';
+import { Link } from 'react-router-dom';
 import AddAppointmentModal from '../../components/Modals/AddApointmentModal';
 
 function Solicitudes() {
@@ -13,6 +9,10 @@ function Solicitudes() {
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
+  const [sortBy, setSortBy] = useState(null);
+  const [sortOrder, setSortOrder] = useState('asc');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchField, setSearchField] = useState('nombre_paciente'); // Campo inicial de búsqueda
 
   useEffect(() => {
     const fetchSolicitudes = async () => {
@@ -40,9 +40,23 @@ function Solicitudes() {
     setOpen(true);
   };
 
+  const handleSort = (field) => {
+    if (sortBy === field) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortBy(field);
+      setSortOrder('asc');
+    }
+  };
+
+  const filteredSolicitudes = useMemo(() => {
+    return solicitudes.filter((solicitud) =>
+      solicitud[searchField].toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  }, [solicitudes, searchTerm, searchField]);
+
   const startIndex = (page - 1) * perPage;
   const endIndex = startIndex + perPage;
-  const solicitudesToShow = solicitudes.slice(startIndex, endIndex);
 
   return (
     <Layout>
@@ -62,8 +76,26 @@ function Solicitudes() {
         />
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-8">
-        {/* Boxes */}
+      <div className="flex items-center space-x-4 mt-4">
+        <input
+          type="text"
+          placeholder="Buscar..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="px-3 py-2 border border-gray-300 rounded-md w-64"
+        />
+        <select
+          value={searchField}
+          onChange={(e) => setSearchField(e.target.value)}
+          className="px-3 py-2 border border-gray-300 rounded-md"
+        >
+          <option value="id_solicitud">ID</option>
+          <option value="folio">Folio</option>
+          <option value="nombre_paciente">Nombre</option>
+          <option value="nombre_especialidad">Especialidad</option>
+          <option value="fecha_solicitud">Fecha</option>
+          <option value="estado_solicitud">Estado</option>
+        </select>
       </div>
 
       <div className="mt-8">
@@ -72,17 +104,29 @@ function Solicitudes() {
           <table className="min-w-full bg-white">
             <thead>
               <tr>
-                <th className="px-4 py-2">ID</th>
-                <th className="px-4 py-2">Folio</th>
-                <th className="px-4 py-2">Nombre</th>
-                <th className="px-4 py-2">Especialidad</th>
-                <th className="px-4 py-2">Fecha</th>
-                <th className="px-4 py-2">Estado</th>
+                <th className="px-4 py-2 cursor-pointer" onClick={() => handleSort('id_solicitud')}>
+                  ID <span>{sortBy === 'id_solicitud' && (sortOrder === 'asc' ? '▲' : '▼')}</span>
+                </th>
+                <th className="px-4 py-2 cursor-pointer" onClick={() => handleSort('folio')}>
+                  Folio <span>{sortBy === 'folio' && (sortOrder === 'asc' ? '▲' : '▼')}</span>
+                </th>
+                <th className="px-4 py-2 cursor-pointer" onClick={() => handleSort('nombre_paciente')}>
+                  Nombre <span>{sortBy === 'nombre_paciente' && (sortOrder === 'asc' ? '▲' : '▼')}</span>
+                </th>
+                <th className="px-4 py-2 cursor-pointer" onClick={() => handleSort('nombre_especialidad')}>
+                  Especialidad <span>{sortBy === 'nombre_especialidad' && (sortOrder === 'asc' ? '▲' : '▼')}</span>
+                </th>
+                <th className="px-4 py-2 cursor-pointer" onClick={() => handleSort('fecha_solicitud')}>
+                  Fecha <span>{sortBy === 'fecha_solicitud' && (sortOrder === 'asc' ? '▲' : '▼')}</span>
+                </th>
+                <th className="px-4 py-2 cursor-pointer" onClick={() => handleSort('estado_solicitud')}>
+                  Estado <span>{sortBy === 'estado_solicitud' && (sortOrder === 'asc' ? '▲' : '▼')}</span>
+                </th>
                 <th className="px-4 py-2">Acciones</th>
               </tr>
             </thead>
             <tbody>
-              {solicitudesToShow.map((solicitud) => (
+              {filteredSolicitudes.slice(startIndex, endIndex).map((solicitud) => (
                 <tr key={solicitud.id_solicitud}>
                   <td className="border px-4 py-2">{solicitud.id_solicitud}</td>
                   <td className="border px-4 py-2">{solicitud.folio}</td>
@@ -110,7 +154,7 @@ function Solicitudes() {
           Anterior
         </button>
         <span className="mx-4">Página {page}</span>
-        <button onClick={() => setPage(page + 1)} disabled={endIndex >= solicitudes.length} className="bg-[#001B58] hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-r">
+        <button onClick={() => setPage(page + 1)} disabled={endIndex >= filteredSolicitudes.length} className="bg-[#001B58] hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-r">
           Siguiente
         </button>
       </div>
@@ -119,3 +163,4 @@ function Solicitudes() {
 }
 
 export default Solicitudes;
+
