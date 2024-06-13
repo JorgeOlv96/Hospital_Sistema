@@ -187,93 +187,91 @@ function CrearSolicitud() {
   return (
     <Layout>
       <form onSubmit={handleSubmit}>
-      <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
-      <div className="flex mb-4">
-        <div className="mr-4 w-full">
-          <label htmlFor="fecha_solicitud" className="block font-semibold text-gray-700 mb-2">Fecha de solicitud:</label>
-          <input 
-            type="date" 
-            id="fecha_solicitud" 
-            name="fecha_solicitud" 
-            value={formData.fecha_solicitud}
-            onChange={handleInputChange}
-            readOnly // Hacer que el campo sea de solo lectura
-            className="border border-gray-200 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none" 
-          />
-        </div>
-      </div>
-    </div>
 
-
-        <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md">
-          <div className="mr-4 w-full">
-            <label htmlFor="curp" className="block font-semibold text-gray-700 mb-2">Curp del paciente:</label>
+      <div class="flex flex-col p-4 bg-[#304678] rounded-lg shadow-md mb-4">
+        <div class="flex mb-4">
+          <div class="w-full mr-4">
+            <label for="fecha_solicitud" class="block font-semibold text-white mb-1">Fecha de solicitud:</label>
+            <input 
+              type="date" 
+              id="fecha_solicitud" 
+              name="fecha_solicitud" 
+              value={formData.fecha_solicitud}
+              onChange={handleInputChange}
+              readOnly 
+              class="border border-gray-200 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none" 
+            />
+          </div>
+          <div class="w-full">
+            <label for="curp" class="block font-semibold text-white mb-1">CURP del paciente:</label>
             <input 
               type="text" 
               id="curp" 
               name="curp" 
               value={formData.curp}
               onChange={handleInputChange}
-              className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
+              class="border border-gray-300 rounded-lg px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full" 
             />
-          </div>
-
-          <div className="flex mt-4">
-            <div className="mr-4 w-full">
-              <label htmlFor="ap_paterno" className="block font-semibold text-gray-700 mb-2">Apellido paterno:</label>
-              <input 
-                type="text" 
-                id="ap_paterno" 
-                name="ap_paterno" 
-                value={formData.ap_paterno}
-                onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
-              />
-            </div>
-
-            <div className="mr-4 w-full">
-              <label htmlFor="ap_materno" className="block font-semibold text-gray-700 mb-2">Apellido materno:</label>
-              <input 
-                type="text" 
-                id="ap_materno" 
-                name="ap_materno" 
-                value={formData.ap_materno}
-                onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
-              />
-            </div>
-            
-            <div className="mr-4 w-full">
-              <label htmlFor="nombre_paciente" className="block font-semibold text-gray-700 mb-2">Nombre:</label>
-              <input 
-                 type="text" 
-                 id="nombre_paciente" 
-                 name="nombre_paciente" 
-                 value={formData.nombre_paciente}
-                onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
-              />
-            </div>
-
-
-            <div className="mr-4 w-full">
-            <label htmlFor="no_expediente" className="block font-semibold text-gray-700 mb-2">Número de expediente</label>
-            <input 
-              type="text" 
-              id="no_expediente" 
-              name="no_expediente" 
-              value={formData.no_expediente}
-              onChange={handleInputChange}
-              className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
-            />
-          </div>
           </div>
         </div>
+      </div>
 
-        <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
+      <div class="flex flex-col p-4 bg-[#304678] rounded-lg shadow-md mb-4">
+        <div class="flex mb-4">
+          <div class="w-full mr-4">
+            <label for="ap_paterno" class="block font-semibold text-white mb-1">Apellido paterno:</label>
+            <input 
+              type="text" 
+              id="ap_paterno" 
+              name="ap_paterno" 
+              value={formData.ap_paterno}
+              onChange={handleInputChange}
+              class="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
+            />
+          </div>
+          <div class="w-full mr-4">
+            <label for="ap_materno" class="block font-semibold text-white mb-1">Apellido materno:</label>
+            <input 
+              type="text" 
+              id="ap_materno" 
+              name="ap_materno" 
+              value={formData.ap_materno}
+              onChange={handleInputChange}
+              class="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
+            />
+          </div>
+          <div class="w-full mr-4">
+            <label for="nombre_paciente" class="block font-semibold text-white mb-1">Nombre:</label>
+            <input 
+              type="text" 
+              id="nombre_paciente" 
+              name="nombre_paciente" 
+              value={formData.nombre_paciente}
+              onChange={handleInputChange}
+              class="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
+            />
+          </div>
+
+
+        <div className="mr-4 w-full">
+                  <label htmlFor="no_expediente" className="block font-semibold text-white mb-1">Número de expediente</label>
+                  <input 
+                    type="text" 
+                    id="no_expediente" 
+                    name="no_expediente" 
+                    value={formData.no_expediente}
+                    onChange={handleInputChange}
+                    className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
+                  />
+                </div>
+                </div>
+              </div>
+
+
+        <div className="flex flex-col p-4 bg-[#304678] rounded-lg shadow-md mb-4">
           <div className="flex mb-4">
             <div className="mr-4 w-full">
-              <label htmlFor="fecha_nacimiento" className="block font-semibold text-gray-700 mb-2">Fecha de nacimiento:</label>
+              <label htmlFor="fecha_nacimiento" className="block font-semibold text-white mb-1">Fecha de nacimiento:</label>
               <input 
                 type="date" 
                 id="fecha_nacimiento" 
@@ -285,7 +283,7 @@ function CrearSolicitud() {
             </div>
             
             <div className="mr-4 w-full">
-              <label htmlFor="edad" className="block font-semibold text-gray-700 mb-2">Edad</label>
+              <label htmlFor="edad" className="block font-semibold text-white mb-1">Edad</label>
               <input 
                 type="int" 
                 id="edad" 
@@ -297,7 +295,7 @@ function CrearSolicitud() {
             </div>
 
             <div className="w-full">
-              <label htmlFor="sexo" className="block font-semibold text-gray-700 mb-2">Sexo:</label>
+              <label htmlFor="sexo" className="block font-semibold text-white mb-1">Sexo:</label>
               <select 
                 id="sexo" 
                 name="sexo" 
@@ -314,10 +312,10 @@ function CrearSolicitud() {
           </div>
         </div>
 
-        <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
+        <div className="flex flex-col p-4 bg-[#304678] rounded-lg shadow-md mb-4">
           <div className="flex mb-4">
             <div className="mr-4 w-full">
-              <label htmlFor="tipo_admision" className="block font-semibold text-gray-700 mb-2">Tipo de admisión:</label>
+              <label htmlFor="tipo_admision" className="block font-semibold text-white mb-1">Tipo de admisión:</label>
               <select 
                 id="tipo_admision" 
                 name="tipo_admision" 
@@ -332,8 +330,8 @@ function CrearSolicitud() {
               </select>
             </div>
             
-            <div className="w-full">
-              <label htmlFor="tipo_intervencion" className="block font-semibold text-gray-700 mb-2">Tipo de intervención:</label>
+            <div className="mr-4 w-full">
+              <label htmlFor="tipo_intervencion" className="block font-semibold text-white mb-1">Tipo de intervención:</label>
               <select 
                 id="tipo_intervencion" 
                 name="tipo_intervencion" 
@@ -347,13 +345,9 @@ function CrearSolicitud() {
                 <option value="Cirugía ambulatoria">Cirugía ambulatoria</option>
               </select>
             </div>
-          </div>
-        </div>
 
-        <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
-          <div className="flex mb-4">
             <div className="mr-4 w-full">
-              <label htmlFor="nombre_especialidad" className="block font-semibold text-gray-700 mb-2">Especialidad:</label>
+              <label htmlFor="nombre_especialidad" className="block font-semibold text-white mb-1">Especialidad:</label>
               <select 
                 id="nombre_especialidad" 
                 name="nombre_especialidad" 
@@ -369,9 +363,9 @@ function CrearSolicitud() {
                 ))}
               </select>
             </div>
-            
+
             <div className="w-full">
-              <label htmlFor="clave_esp" className="block font-semibold text-gray-700 mb-2">Clave de especialidad:</label>
+              <label htmlFor="clave_esp" className="block font-semibold text-white mb-1">Clave de especialidad:</label>
               <select 
                 id="clave_esp" 
                 name="clave_esp" 
@@ -387,13 +381,16 @@ function CrearSolicitud() {
                 ))}
               </select>
             </div>
+
+
           </div>
         </div>
 
-        <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
+
+        <div className="flex flex-col p-4 bg-[#304678] rounded-lg shadow-md mb-4">
           <div className="flex mb-4">
             <div className="mr-4 w-full">
-              <label htmlFor="fecha_solicitada" className="block font-semibold text-gray-700 mb-2">Fecha solicitada:</label>
+              <label htmlFor="fecha_solicitada" className="block font-semibold text-white mb-1">Fecha solicitada:</label>
               <input 
                 type="date" 
                 id="fecha_solicitada" 
@@ -404,8 +401,8 @@ function CrearSolicitud() {
               />
             </div>
             
-            <div className="w-full">
-              <label htmlFor="hora_solicitada" className="block font-semibold text-gray-700 mb-2">Hora solicitada:</label>
+            <div className="mr-4 w-full">
+              <label htmlFor="hora_solicitada" className="block font-semibold text-white mb-1">Hora solicitada:</label>
               <input 
                 type="time" 
                 id="hora_solicitada" 
@@ -415,13 +412,9 @@ function CrearSolicitud() {
                 className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
               />
             </div>
-          </div>
-        </div>
 
-        <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
-          <div className="flex mb-4">
             <div className="mr-4 w-full">
-              <label htmlFor="tiempo_estimado" className="block font-semibold text-gray-700 mb-2">Tiempo estimado de cirugía:</label>
+              <label htmlFor="tiempo_estimado" className="block font-semibold text-white mb-1">Tiempo estimado de cirugía:</label>
               <input 
                 type="int" 
                 id="tiempo_estimado" 
@@ -433,7 +426,7 @@ function CrearSolicitud() {
             </div>
             
             <div className="w-full">
-              <label htmlFor="turno_solicitado" className="block font-semibold text-gray-700 mb-2">Turno solicitado:</label>
+              <label htmlFor="turno_solicitado" className="block font-semibold text-white mb-1">Turno solicitado:</label>
               <select 
                 id="turno_solicitado" 
                 name="turno_solicitado" 
@@ -448,13 +441,14 @@ function CrearSolicitud() {
                 <option value="Especial">Especial</option>
               </select>
             </div>
+
           </div>
         </div>
 
-        <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
+        <div className="flex flex-col p-4 bg-[#304678] rounded-lg shadow-md mb-4">
           <div className="flex mb-4">
             <div className="mr-4 w-full">
-              <label htmlFor="sala_quirofano" className="block font-semibold text-gray-700 mb-2">Sala solicitada:</label>
+              <label htmlFor="sala_quirofano" className="block font-semibold text-white mb-1">Sala solicitada:</label>
               <select 
                 type="text" 
                 id="sala_quirofano" 
@@ -480,8 +474,8 @@ function CrearSolicitud() {
             </select>
             </div>
             
-            <div className="w-full">
-              <label htmlFor="procedimientos_paciente" className="block font-semibold text-gray-700 mb-2">Procedimientos que se realizarán al paciente:</label>
+            <div className="mr-4 w-full">
+              <label htmlFor="procedimientos_paciente" className="block font-semibold text-white mb-1">Procedimientos que se realizarán:</label>
               <input
                 type="text"
                 id="procedimientos_paciente" 
@@ -491,13 +485,9 @@ function CrearSolicitud() {
                 className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
               />
             </div>
-          </div>
-        </div>
 
-        <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
-          <div className="flex mb-4">
-            <div className="mr-4 w-full">
-              <label htmlFor="id_cirujano" className="block font-semibold text-gray-700 mb-2">Cirujano encargado:</label>
+            <div className="w-full">
+              <label htmlFor="id_cirujano" className="block font-semibold text-white mb-1">Cirujano encargado:</label>
               <select
                 type="text" 
                 id="id_cirujano" 
@@ -510,9 +500,13 @@ function CrearSolicitud() {
                 <option value="1">1</option>
               </select>
             </div>
-            
-          <div className="w-full">
-              <label htmlFor="req_insumo" className="block font-semibold text-gray-700 mb-2">Requiere insumos:</label>
+          </div>
+        </div>
+
+        <div className="flex flex-col p-4 bg-[#304678] rounded-lg shadow-md mb-4">
+          <div className="flex mb-4">
+          <div className="mr-4 w-full">
+          <label htmlFor="req_insumo" className="block font-semibold text-white mb-1">Requiere insumos:</label>
           <select
             id="req_insumo" 
             name="req_insumo" 
@@ -526,31 +520,8 @@ function CrearSolicitud() {
           </select>
         </div>
 
-          </div>
-        </div>
-
-        {reqInsumos && (
-        <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
-          <div className="flex mb-4">
-            <div className="w-full">
-              <label htmlFor="insumos" className="block font-semibold text-gray-700 mb-2">Especificar insumos:</label>
-              <input 
-                type="text"
-                id="insumos" 
-                name="insumos" 
-                value={formData.insumos}
-                onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-              />
-            </div>
-          </div>
-        </div>
-      )}
-
-<div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
-      <div className="flex mb-4">
         <div className="w-full">
-          <label htmlFor="estado_solicitud" className="block font-semibold text-gray-700 mb-2">Estado de solicitud</label>
+          <label htmlFor="estado_solicitud" className="block font-semibold text-white mb-1">Estado de solicitud</label>
           <input 
             type="text"
             id="estado_solicitud" 
@@ -560,8 +531,11 @@ function CrearSolicitud() {
             className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
           />
         </div>
-      </div>
-    </div>
+
+
+
+        </div>
+        </div>
 
         <div className="flex justify-center mt-4">
           <button

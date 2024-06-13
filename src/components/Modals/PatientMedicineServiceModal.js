@@ -42,20 +42,25 @@ function PatientMedicineServiceModal({ closeModal, isOpen, patient }) {
                   }
                 >
                   {({ active, checked }) => (
-                    <>
-                      <h6 className="text-sm">
-                        {patient ? user.title : user.name}
-                      </h6>
-                      {patient && (
-                        <p
-                          className={`${
-                            active && 'text-white'
-                          } text-xs group-hover:text-white text-textGray mt-1`}
-                        >
-                          {user.email}
-                        </p>
-                      )}
-                    </>
+                    <table key={user.id} className="w-full">
+                      <thead>
+                        <tr>
+                          <th className="text-sm font-semibold">Campo</th>
+                          <th className="text-sm font-semibold">Valor</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td className="border px-4 py-2">ID</td>
+                          <td className="border px-4 py-2">{user.id}</td>
+                        </tr>
+                        <tr>
+                          <td className="border px-4 py-2">Nombre</td>
+                          <td className="border px-4 py-2">{user.name}</td>
+                        </tr>
+                        {/* Agregar más campos según sea necesario */}
+                      </tbody>
+                    </table>
                   )}
                 </RadioGroup.Option>
               ))}
@@ -63,7 +68,6 @@ function PatientMedicineServiceModal({ closeModal, isOpen, patient }) {
           </RadioGroup>
         </div>
         {/* button */}
-
         <Button onClick={closeModal} label="Add" Icon={BiPlus} />
       </div>
     </Modal>
