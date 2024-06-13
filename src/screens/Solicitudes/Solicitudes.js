@@ -50,9 +50,17 @@ function Solicitudes() {
   };
 
   const filteredSolicitudes = useMemo(() => {
-    return solicitudes.filter((solicitud) =>
-      solicitud[searchField].toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    return solicitudes.filter((solicitud) => {
+      const fieldValue = solicitud[searchField];
+
+      if (typeof fieldValue === 'string') {
+        return fieldValue.toLowerCase().includes(searchTerm.toLowerCase());
+      } else if (typeof fieldValue === 'number') {
+        return fieldValue.toString().includes(searchTerm.toLowerCase());
+      } else {
+        return false; // handle other types as needed
+      }
+    });
   }, [solicitudes, searchTerm, searchField]);
 
   const sortedSolicitudes = useMemo(() => {
@@ -60,9 +68,11 @@ function Solicitudes() {
     if (sortBy) {
       sorted.sort((a, b) => {
         const factor = sortOrder === 'asc' ? 1 : -1;
-        if (a[sortBy] < b[sortBy]) return -1 * factor;
-        if (a[sortBy] > b[sortBy]) return 1 * factor;
-        return 0;
+        if (typeof a[sortBy] === 'string') {
+          return factor * a[sortBy].localeCompare(b[sortBy]);
+        } else {
+          return factor * (a[sortBy] - b[sortBy]);
+        }
       });
     }
     return sorted;
