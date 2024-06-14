@@ -82,7 +82,6 @@ function CrearSolicitud() {
     sala_quirofano: '',
     id_cirujano: '',
     req_insumo: '',
-    insumos: '',
     tipo_admision: '',
     estado_solicitud: "Pendiente",
     procedimientos_paciente: ''
@@ -315,7 +314,7 @@ function CrearSolicitud() {
         <div className="flex flex-col p-4 bg-[#304678] rounded-lg shadow-md mb-4">
           <div className="flex mb-4">
             <div className="mr-4 w-full">
-              <label htmlFor="tipo_admision" className="block font-semibold text-white mb-1">Tipo de admisión:</label>
+              <label htmlFor="tipo_admision" className="block font-semibold text-white mb-1">Procedencia del paciente:</label>
               <select 
                 id="tipo_admision" 
                 name="tipo_admision" 
@@ -323,7 +322,7 @@ function CrearSolicitud() {
                 onChange={handleInputChange}
                 className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
               >
-                <option value="">-- Seleccione el tipo de consulta --</option>
+                <option value="">-- Seleccione una opción --</option>
                 <option value="Cama">Cama</option>
                 <option value="Consulta externa">Consulta externa</option>
                 <option value="UrgenciaS">Urgencias</option>
@@ -414,7 +413,7 @@ function CrearSolicitud() {
             </div>
 
             <div className="mr-4 w-full">
-              <label htmlFor="tiempo_estimado" className="block font-semibold text-white mb-1">Tiempo estimado de cirugía:</label>
+              <label htmlFor="tiempo_estimado" className="block font-semibold text-white mb-1">Tiempo estimado de cirugía en minutos:</label>
               <input 
                 type="int" 
                 id="tiempo_estimado" 
@@ -511,7 +510,7 @@ function CrearSolicitud() {
             id="req_insumo" 
             name="req_insumo" 
             value={formData.req_insumo}
-            onChange={handleReqInsumosChange}
+            onChange={handleInputChange}
             className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
           >
             <option value="">-- Seleccione una opción --</option>
