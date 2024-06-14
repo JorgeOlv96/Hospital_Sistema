@@ -12,7 +12,10 @@ function Solicitudes() {
   const [sortBy, setSortBy] = useState(null);
   const [sortOrder, setSortOrder] = useState('asc');
   const [searchTerm, setSearchTerm] = useState('');
-  const [searchField, setSearchField] = useState('nombre_paciente'); // Campo inicial de búsqueda
+  const [searchField, setSearchField] = useState('nombre_paciente');
+  const [filterState, setFilterState] = useState('all');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
 
   useEffect(() => {
     const fetchSolicitudes = async () => {
@@ -49,19 +52,51 @@ function Solicitudes() {
     }
   };
 
-  const filteredSolicitudes = useMemo(() => {
-    return solicitudes.filter((solicitud) => {
-      const fieldValue = solicitud[searchField];
-
-      if (typeof fieldValue === 'string') {
-        return fieldValue.toLowerCase().includes(searchTerm.toLowerCase());
-      } else if (typeof fieldValue === 'number') {
-        return fieldValue.toString().includes(searchTerm.toLowerCase());
-      } else {
-        return false; // handle other types as needed
+  const handleDeleteAppointment = async (appointmentId) => {
+    try {
+      const response = await fetch(`http://localhost:4000/api/solicitudes/${appointmentId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Error deleting appointment');
       }
-    });
-  }, [solicitudes, searchTerm, searchField]);
+      // Actualizar la lista de solicitudes después de eliminar
+      const updatedSolicitudes = solicitudes.filter((solicitud) => solicitud.id_solicitud !== appointmentId);
+      setSolicitudes(updatedSolicitudes);
+      // Cerrar el modal después de eliminar
+      setOpen(false);
+    } catch (error) {
+      console.error('Error deleting appointment:', error);
+    }
+  };
+
+  const filteredSolicitudes = useMemo(() => {
+    return solicitudes
+      .filter((solicitud) => {
+        const fieldValue = solicitud[searchField];
+
+        if (typeof fieldValue === 'string') {
+          return fieldValue.toLowerCase().includes(searchTerm.toLowerCase());
+        } else if (typeof fieldValue === 'number') {
+          return fieldValue.toString().includes(searchTerm.toLowerCase());
+        } else {
+          return false;
+        }
+      })
+      .filter((solicitud) => {
+        if (filterState === 'all') return true;
+        return solicitud.estado_solicitud.toLowerCase() === filterState;
+      })
+      .filter((solicitud) => {
+        const solicitudDate = new Date(solicitud.fecha_solicitud);
+        const start = startDate ? new Date(startDate) : null;
+        const end = endDate ? new Date(endDate) : null;
+
+        if (start && solicitudDate < start) return false;
+        if (end && solicitudDate > end) return false;
+        return true;
+      });
+  }, [solicitudes, searchTerm, searchField, filterState, startDate, endDate]);
 
   const sortedSolicitudes = useMemo(() => {
     let sorted = [...filteredSolicitudes];
@@ -81,6 +116,40 @@ function Solicitudes() {
   const startIndex = (page - 1) * perPage;
   const endIndex = startIndex + perPage;
 
+  const getEstadoColor = (estado) => {
+    switch (estado.toLowerCase()) {
+      case 'programada':
+        return 'bg-green-400';
+      case 'realizada':
+        return 'bg-blue-400';
+      case 'suspendida':
+        return 'bg-yellow-400';
+      case 'pendiente':
+        return 'bg-red-400';
+      default:
+        return '';
+    }
+  };
+
+  const getEstadoColorStyle = (estado) => {
+    switch (estado.toLowerCase()) {
+      case 'programada':
+        return { backgroundColor: '#68D391' };
+      case 'realizada':
+        return { backgroundColor: '#63B3ED' };
+      case 'suspendida':
+        return { backgroundColor: '#F6E05E' };
+      case 'pendiente':
+        return { backgroundColor: '#FC8181' };
+      default:
+        return {};
+    }
+  };
+
+  const estadoButtonClasses = (estado) => {
+    return `px-3 py-2 border border-gray-300 rounded-md ${filterState === estado ? 'text-white' : ''}`;
+  };
+
   return (
     <Layout>
       <h1 className="text-xl font-semibold">Solicitudes</h1>
@@ -95,94 +164,155 @@ function Solicitudes() {
           datas={solicitudes}
           isOpen={open}
           closeModal={handleModal}
+          onDeleteAppointment={handleDeleteAppointment}
           appointmentId={selectedAppointment.id_solicitud}
         />
       )}
 
-      <div className="flex items-center space-x-4 mt-4">
-        <input
-          type="text"
-          placeholder="Buscar..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="px-3 py-2 border border-gray-300 rounded-md w-64"
-        />
-        <select
-          value={searchField}
-          onChange={(e) => setSearchField(e.target.value)}
-          className="px-3 py-2 border border-gray-300 rounded-md"
-        >
-          <option value="id_solicitud">ID</option>
-          <option value="folio">Folio</option>
-          <option value="nombre_paciente">Nombre</option>
-          <option value="nombre_especialidad">Especialidad</option>
-          <option value="fecha_solicitud">Fecha</option>
-          <option value="estado_solicitud">Estado</option>
-        </select>
-      </div>
+      <div className="flex flex-col space-y-4 mt-4">
+        <div className="flex items-center space-x-4">
+          <input
+            type="text"
+            placeholder="Buscar..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="px-3 py-2 border border-gray-300 rounded-md w-64"
+          />
+          <select
+            value={searchField}
+            onChange={(e) => setSearchField(e.target.value)}
+            className="px-3 py-2 border border-gray-300 rounded-md"
+          >
+            <option value="id_solicitud">ID</option>
+            <option value="folio">Folio</option>
+            <option value="nombre_paciente">Nombre</option>
+            <option value="nombre_especialidad">Especialidad</option>
+            <option value="fecha_solicitud">Fecha</option>
+            <option value="estado_solicitud">Estado</option>
+          </select>
 
-      <div className="mt-8">
-        <h2 className="text-lg font-semibold mb-4">Lista de Solicitudes</h2>
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white">
-            <thead>
-              <tr>
-                <th className="px-4 py-2 cursor-pointer" onClick={() => handleSort('id_solicitud')}>
-                  ID <span>{sortBy === 'id_solicitud' && (sortOrder === 'asc' ? '▲' : '▼')}</span>
-                </th>
-                <th className="px-4 py-2 cursor-pointer" onClick={() => handleSort('folio')}>
-                  Folio <span>{sortBy === 'folio' && (sortOrder === 'asc' ? '▲' : '▼')}</span>
-                </th>
-                <th className="px-4 py-2 cursor-pointer" onClick={() => handleSort('nombre_paciente')}>
-                  Nombre <span>{sortBy === 'nombre_paciente' && (sortOrder === 'asc' ? '▲' : '▼')}</span>
-                </th>
-                <th className="px-4 py-2 cursor-pointer" onClick={() => handleSort('nombre_especialidad')}>
-                  Especialidad <span>{sortBy === 'nombre_especialidad' && (sortOrder === 'asc' ? '▲' : '▼')}</span>
-                </th>
-                <th className="px-4 py-2 cursor-pointer" onClick={() => handleSort('fecha_solicitud')}>
-                  Fecha <span>{sortBy === 'fecha_solicitud' && (sortOrder === 'asc' ? '▲' : '▼')}</span>
-                </th>
-                <th className="px-4 py-2 cursor-pointer" onClick={() => handleSort('estado_solicitud')}>
-                  Estado <span>{sortBy === 'estado_solicitud' && (sortOrder === 'asc' ? '▲' : '▼')}</span>
-                </th>
-                <th className="px-4 py-2">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {sortedSolicitudes.slice(startIndex, endIndex).map((solicitud) => (
-                <tr key={solicitud.id_solicitud}>
-                  <td className="border px-4 py-2">{solicitud.id_solicitud}</td>
-                  <td className="border px-4 py-2">{solicitud.folio}</td>
-                  <td className="border px-4 py-2">{solicitud.nombre_paciente} {solicitud.ap_paterno} {solicitud.ap_materno}</td>
-                  <td className="border px-4 py-2">{solicitud.nombre_especialidad}</td>
-                  <td className="border px-4 py-2">{new Date(solicitud.fecha_solicitud).toLocaleDateString()}</td>
-                  <td className="border px-4 py-2">{solicitud.estado_solicitud}</td>
-                  <td className="border px-4 py-2">
-                    <button
-                      onClick={() => handleViewModal(solicitud)}
-                      className="bg-[#001B58] text-white px-4 py-2 rounded-md hover:bg-blue-800"
-                    >
-                      Ver
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="flex items-center space-x-2">
+            <label> Por fecha De:</label>
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-md"
+            />
+            <label>A:</label>
+            <input
+              type="date"
+              value={endDate}
+              onChange={(e) => setEndDate(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-md"
+            />
+          </div>
         </div>
-      </div>
 
-      <div className="flex justify-center mt-4">
-        <button onClick={() => setPage(page - 1)} disabled={page === 1} className="bg-[#001B58] hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-l">
-          Anterior
-        </button>
-        <span className="mx-4">Página {page}</span>
-        <button onClick={() => setPage(page + 1)} disabled={endIndex >= sortedSolicitudes.length} className="bg-[#001B58] hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-r">
-          Siguiente
-        </button>
-      </div>
-    </Layout>
-  );
-}
-
-export default Solicitudes;
+        <div className="flex flex-wrap space-x-2 mt-4">
+          <button
+            className={estadoButtonClasses('all')}
+            style={filterState === 'all' ? { backgroundColor: '#4A5568', color: '#fff' } : { backgroundColor: '#CBD5E0' }}
+            onClick={() => setFilterState('all')}
+          >
+            Todas las solicitudes
+          </button>
+          <button
+            className={estadoButtonClasses('programada')}
+            style={filterState === 'programada' ? { ...getEstadoColorStyle('programada'), opacity: 0.9 } : { ...getEstadoColorStyle('programada'), opacity: 0.7 }}
+            onClick={() => setFilterState('programada')}
+          >
+            Programada
+          </button>
+          <button
+            className={estadoButtonClasses('realizada')}
+            style={filterState === 'realizada' ? { ...getEstadoColorStyle('realizada'), opacity: 0.9 } : { ...getEstadoColorStyle('realizada'), opacity: 0.7 }}
+            onClick={() => setFilterState('realizada')}
+          >
+            Realizada
+          </button>
+          <button
+            className={estadoButtonClasses('suspendida')}
+            style={filterState === 'suspendida' ? { ...getEstadoColorStyle('suspendida'), opacity: 0.9 } : { ...getEstadoColorStyle('suspendida'), opacity: 0.7 }}
+            onClick={() => setFilterState('suspendida')}
+          >
+            Suspendida
+          </button>
+          <button
+            className={estadoButtonClasses('pendiente')}
+            style={filterState === 'pendiente' ? { ...getEstadoColorStyle('pendiente'), opacity: 0.9 } : { ...getEstadoColorStyle('pendiente'), opacity: 0.7 }}
+            onClick={() => setFilterState('pendiente')}
+            >
+              Pendiente
+            </button>
+          </div>
+        </div>
+  
+        <div className="mt-8">
+          <h2 className="text-lg font-semibold mb-4">Lista de Solicitudes</h2>
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+              <thead className="bg-[#304678] text-white">
+                <tr>
+                  <th className="px-4 py-3 cursor-pointer" onClick={() => handleSort('id_solicitud')}>
+                    ID <span>{sortBy === 'id_solicitud' && (sortOrder === 'asc' ? '▲' : '▼')}</span>
+                  </th>
+                  <th className="px-4 py-3 cursor-pointer" onClick={() => handleSort('folio')}>
+                    Folio <span>{sortBy === 'folio' && (sortOrder === 'asc' ? '▲' : '▼')}</span>
+                  </th>
+                  <th className="px-4 py-3 cursor-pointer" onClick={() => handleSort('nombre_paciente')}>
+                    Nombre <span>{sortBy === 'nombre_paciente' && (sortOrder === 'asc' ? '▲' : '▼')}</span>
+                  </th>
+                  <th className="px-4 py-3 cursor-pointer" onClick={() => handleSort('nombre_especialidad')}>
+                    Especialidad <span>{sortBy === 'nombre_especialidad' && (sortOrder === 'asc' ? '▲' : '▼')}</span>
+                  </th>
+                  <th className="px-4 py-3 cursor-pointer" onClick={() => handleSort('fecha_solicitud')}>
+                    Fecha <span>{sortBy === 'fecha_solicitud' && (sortOrder === 'asc' ? '▲' : '▼')}</span>
+                  </th>
+                  <th className="px-4 py-3 cursor-pointer" onClick={() => handleSort('estado_solicitud')}>
+                    Estado <span>{sortBy === 'estado_solicitud' && (sortOrder === 'asc' ? '▲' : '▼')}</span>
+                  </th>
+                  <th className="px-4 py-3">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sortedSolicitudes.slice(startIndex, endIndex).map((solicitud) => (
+                  <tr key={solicitud.id_solicitud} className="bg-blue-50 hover:bg-blue-100">
+                    <td className="border px-4 py-2">{solicitud.id_solicitud}</td>
+                    <td className="border px-4 py-2">{solicitud.folio}</td>
+                    <td className="border px-4 py-2">{solicitud.nombre_paciente} {solicitud.ap_paterno} {solicitud.ap_materno}</td>
+                    <td className="border px-4 py-2">{solicitud.nombre_especialidad}</td>
+                    <td className="border px-4 py-2">{new Date(solicitud.fecha_solicitud).toLocaleDateString()}</td>
+                    <td className={`border px-4 py-2 ${getEstadoColor(solicitud.estado_solicitud)}`} style={getEstadoColorStyle(solicitud.estado_solicitud)}>
+                      {solicitud.estado_solicitud}
+                    </td>
+                    <td className="border px-4 py-2">
+                      <button
+                        onClick={() => handleViewModal(solicitud)}
+                        className="bg-[#001B58] text-white px-4 py-2 rounded-md hover:bg-blue-800"
+                      >
+                        Ver
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+  
+        <div className="flex justify-center mt-4">
+          <button onClick={() => setPage(page - 1)} disabled={page === 1} className="bg-[#001B58] hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-l">
+            Anterior
+          </button>
+          <span className="mx-4">Página {page}</span>
+          <button onClick={() => setPage(page + 1)} disabled={endIndex >= sortedSolicitudes.length} className="bg-[#001B58] hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-r">
+            Siguiente
+          </button>
+        </div>
+      </Layout>
+    );
+  }
+  
+  export default Solicitudes;
+  
