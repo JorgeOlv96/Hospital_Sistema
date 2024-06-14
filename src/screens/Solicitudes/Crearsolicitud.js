@@ -414,7 +414,7 @@ function CrearSolicitud() {
             </div>
 
             <div className="mr-4 w-full">
-              <label htmlFor="tiempo_estimado" className="block font-semibold text-white mb-1">Tiempo estimado de cirugía: (Min)</label>
+              <label htmlFor="tiempo_estimado" className="block font-semibold text-white mb-1">Tiempo estimado de cirugía:</label>
               <input 
                 type="int" 
                 id="tiempo_estimado" 
