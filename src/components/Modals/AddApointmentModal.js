@@ -187,12 +187,6 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentId, onDeleteAppoin
 
       <div className="flex justify-between">
         <button
-          onClick={handlePrint}
-          className="bg-green-600 bg-opacity-5 text-green-600 text-sm p-4 rounded-lg font-light mr-4"
-        >
-          Imprimir
-        </button>
-        <button
           onClick={handleDelete}
           className="bg-red-600 bg-opacity-5 text-red-600 text-sm p-4 rounded-lg font-light mr-4"
         >
