@@ -3,7 +3,7 @@ import Layout from '../Layout';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
 import 'moment/locale/es'; // Importa el idioma español para moment
-import { BiChevronLeft, BiChevronRight, BiPlus, BiTime } from 'react-icons/bi';
+import { BiChevronLeft, BiChevronRight, BiPlus, BiTime, BiTable } from 'react-icons/bi';
 import { HiOutlineViewGrid } from 'react-icons/hi';
 import { HiOutlineCalendarDays } from 'react-icons/hi2';
 import AddAppointmentModal from '../components/Modals/AddApointmentModal';
@@ -46,6 +46,12 @@ const CustomToolbar = (toolbar) => {
     toolbar.onView('day');
   };
 
+  // table button handler (you can add your logic here)
+  const goToTable = () => {
+    console.log("Table view clicked");
+    // Add your table view logic here
+  };
+
   // view button group
   const viewNamesGroup = [
     { view: 'month', label: 'Mes' },
@@ -73,20 +79,45 @@ const CustomToolbar = (toolbar) => {
             Hoy
           </button>
         </div>
+        
         {/* label */}
-        <div className="md:col-span-9 flex-rows gap-4">
+        <div className="md:col-span-6 flex items-center justify-center">
           <button onClick={goToBack} className="text-2xl text-subMain">
             <BiChevronLeft />
           </button>
-          <span className="text-xl font-semibold">
+          <span className="text-xl font-semibold mx-4">
             {moment(toolbar.date).format('MMMM YYYY')}
           </span>
           <button onClick={goToNext} className="text-2xl text-subMain">
             <BiChevronRight />
           </button>
         </div>
+        {/* dropdown */}
+        <div className="md:col-span-3 flex justify-center">
+          <select className="px-4 py-2 border border-subMain rounded-md text-subMain">
+            <option>Sala A1</option>
+            <option>Sala A2</option>
+            <option>Sala T1</option>
+            <option>Sala T2</option>
+            <option>Sala 1</option>
+            <option>Sala 2</option>
+            <option>Sala 3</option>
+            <option>Sala 4</option>
+            <option>Sala 5</option>
+            <option>Sala 6</option>
+            <option>Sala E</option>
+            <option>Sala H</option>
+            <option>Sala RX</option>
+          </select>
+        </div>
         {/* filter */}
-        <div className="md:col-span-2 grid grid-cols-3 rounded-md border border-subMain">
+        <div className="md:col-span-2 grid grid-cols-4 rounded-md border border-subMain">
+          <button
+            onClick={goToTable}
+            className="border-l text-xl py-2 flex-colo border-subMain text-subMain"
+          >
+            <BiTable />
+          </button>
           {viewNamesGroup.map((item, index) => (
             <button
               key={index}
@@ -130,7 +161,7 @@ function Appointments() {
       id: 0,
       start: moment({ hours: 7 }).toDate(),
       end: moment({ hours: 9 }).toDate(),
-      color: '#FB923C',
+      color: '#001B58',
       title: 'John Doe',
       message: 'No está seguro sobre la hora',
       service: servicesData[1],
@@ -144,7 +175,7 @@ function Appointments() {
       id: 1,
       start: moment({ hours: 12 }).toDate(),
       end: moment({ hours: 13 }).toDate(),
-      color: '#FC8181',
+      color: '#001B58',
       title: 'Minah Mmassy',
       message: 'Viene para un chequeo',
       service: servicesData[2],
@@ -159,7 +190,7 @@ function Appointments() {
       id: 2,
       start: moment({ hours: 14 }).toDate(),
       end: moment({ hours: 17 }).toDate(),
-      color: '#FFC107',
+      color: '#001B58',
       title: 'Irene P. Smith',
       message: 'Viene para un chequeo, pero no está segura sobre la hora',
       service: servicesData[3],
