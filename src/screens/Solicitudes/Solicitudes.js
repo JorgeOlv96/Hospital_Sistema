@@ -170,146 +170,174 @@ function Solicitudes() {
       )}
 
       <div className="flex flex-col space-y-4 mt-4">
-        <div className="flex items-center space-x-4">
+
+  {/* Filtros de búsqueda */}
+  <div className="mt-8">
+  <div className="text-left">
+    <div className="flex items-center justify-center mb-4">
+      <div className="flex items-center space-x-4">
+        <input
+          type="text"
+          placeholder="Buscar..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="px-3 py-2 border border-gray-300 rounded-md w-64"
+        />
+        <select
+          value={searchField}
+          onChange={(e) => setSearchField(e.target.value)}
+          className="px-3 py-2 border border-gray-300 rounded-md"
+        >
+          <option value="id_solicitud">ID</option>
+          <option value="folio">Folio</option>
+          <option value="nombre_paciente">Nombre</option>
+          <option value="nombre_especialidad">Especialidad</option>
+          <option value="fecha_solicitud">Fecha</option>
+          <option value="estado_solicitud">Estado</option>
+        </select>
+
+        <div className="flex items-center space-x-2">
+          <label> Por fecha De:</label>
           <input
-            type="text"
-            placeholder="Buscar..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-md w-64"
-          />
-          <select
-            value={searchField}
-            onChange={(e) => setSearchField(e.target.value)}
+            type="date"
+            value={startDate}
+            onChange={(e) => setStartDate(e.target.value)}
             className="px-3 py-2 border border-gray-300 rounded-md"
-          >
-            <option value="id_solicitud">ID</option>
-            <option value="folio">Folio</option>
-            <option value="nombre_paciente">Nombre</option>
-            <option value="nombre_especialidad">Especialidad</option>
-            <option value="fecha_solicitud">Fecha</option>
-            <option value="estado_solicitud">Estado</option>
-          </select>
+          />
+          <label>A:</label>
+          <input
+            type="date"
+            value={endDate}
+            onChange={(e) => setEndDate(e.target.value)}
+            className="px-3 py-2 border border-gray-300 rounded-md"
+          />
+        </div>
+      </div>
+    </div>
 
-          <div className="flex items-center space-x-2">
-            <label> Por fecha De:</label>
-            <input
-              type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md"
-            />
-            <label>A:</label>
-            <input
-              type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
-              className="px-3 py-2 border border-gray-300 rounded-md"
-            />
-          </div>
-        </div>
+    {/* Aquí va el resto de tu código, como la lista de solicitudes */}
 
-        <div className="flex flex-wrap space-x-2 mt-4">
-          <button
-            className={estadoButtonClasses('all')}
-            style={filterState === 'all' ? { backgroundColor: '#4A5568', color: '#fff' } : { backgroundColor: '#CBD5E0' }}
-            onClick={() => setFilterState('all')}
-          >
-            Todas las solicitudes
-          </button>
-          <button
-            className={estadoButtonClasses('programada')}
-            style={filterState === 'programada' ? { ...getEstadoColorStyle('programada'), opacity: 0.9 } : { ...getEstadoColorStyle('programada'), opacity: 0.7 }}
-            onClick={() => setFilterState('programada')}
-          >
-            Programada
-          </button>
-          <button
-            className={estadoButtonClasses('realizada')}
-            style={filterState === 'realizada' ? { ...getEstadoColorStyle('realizada'), opacity: 0.9 } : { ...getEstadoColorStyle('realizada'), opacity: 0.7 }}
-            onClick={() => setFilterState('realizada')}
-          >
-            Realizada
-          </button>
-          <button
-            className={estadoButtonClasses('suspendida')}
-            style={filterState === 'suspendida' ? { ...getEstadoColorStyle('suspendida'), opacity: 0.9 } : { ...getEstadoColorStyle('suspendida'), opacity: 0.7 }}
-            onClick={() => setFilterState('suspendida')}
-          >
-            Suspendida
-          </button>
-          <button
-            className={estadoButtonClasses('pendiente')}
-            style={filterState === 'pendiente' ? { ...getEstadoColorStyle('pendiente'), opacity: 0.9 } : { ...getEstadoColorStyle('pendiente'), opacity: 0.7 }}
-            onClick={() => setFilterState('pendiente')}
-            >
-              Pendiente
-            </button>
-          </div>
-        </div>
-  
-        <div className="mt-8">
-          <h2 className="text-lg font-semibold mb-4">Lista de Solicitudes</h2>
-          <div className="overflow-x-auto">
-            <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
-              <thead className="bg-[#304678] text-white">
-                <tr>
-                  <th className="px-4 py-3 cursor-pointer" onClick={() => handleSort('id_solicitud')}>
-                    ID <span>{sortBy === 'id_solicitud' && (sortOrder === 'asc' ? '▲' : '▼')}</span>
-                  </th>
-                  <th className="px-4 py-3 cursor-pointer" onClick={() => handleSort('folio')}>
-                    Folio <span>{sortBy === 'folio' && (sortOrder === 'asc' ? '▲' : '▼')}</span>
-                  </th>
-                  <th className="px-4 py-3 cursor-pointer" onClick={() => handleSort('nombre_paciente')}>
-                    Nombre <span>{sortBy === 'nombre_paciente' && (sortOrder === 'asc' ? '▲' : '▼')}</span>
-                  </th>
-                  <th className="px-4 py-3 cursor-pointer" onClick={() => handleSort('nombre_especialidad')}>
-                    Especialidad <span>{sortBy === 'nombre_especialidad' && (sortOrder === 'asc' ? '▲' : '▼')}</span>
-                  </th>
-                  <th className="px-4 py-3 cursor-pointer" onClick={() => handleSort('fecha_solicitud')}>
-                    Fecha <span>{sortBy === 'fecha_solicitud' && (sortOrder === 'asc' ? '▲' : '▼')}</span>
-                  </th>
-                  <th className="px-4 py-3 cursor-pointer" onClick={() => handleSort('estado_solicitud')}>
-                    Estado <span>{sortBy === 'estado_solicitud' && (sortOrder === 'asc' ? '▲' : '▼')}</span>
-                  </th>
-                  <th className="px-4 py-3">Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {sortedSolicitudes.slice(startIndex, endIndex).map((solicitud) => (
-                  <tr key={solicitud.id_solicitud} className="bg-blue-50 hover:bg-blue-100">
-                    <td className="border px-4 py-2">{solicitud.id_solicitud}</td>
-                    <td className="border px-4 py-2">{solicitud.folio}</td>
-                    <td className="border px-4 py-2">{solicitud.nombre_paciente} {solicitud.ap_paterno} {solicitud.ap_materno}</td>
-                    <td className="border px-4 py-2">{solicitud.nombre_especialidad}</td>
-                    <td className="border px-4 py-2">{new Date(solicitud.fecha_solicitud).toLocaleDateString()}</td>
-                    <td className={`border px-4 py-2 ${getEstadoColor(solicitud.estado_solicitud)}`} style={getEstadoColorStyle(solicitud.estado_solicitud)}>
-                      {solicitud.estado_solicitud}
-                    </td>
-                    <td className="border px-4 py-2">
-                      <button
-                        onClick={() => handleViewModal(solicitud)}
-                        className="bg-[#001B58] text-white px-4 py-2 rounded-md hover:bg-blue-800"
-                      >
-                        Ver
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-  
-        <div className="flex justify-center mt-4">
-          <button onClick={() => setPage(page - 1)} disabled={page === 1} className="bg-[#001B58] hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-l">
-            Anterior
-          </button>
-          <span className="mx-4">Página {page}</span>
-          <button onClick={() => setPage(page + 1)} disabled={endIndex >= sortedSolicitudes.length} className="bg-[#001B58] hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-r">
-            Siguiente
-          </button>
-        </div>
+  </div>
+</div>
+
+
+  {/* Lista de Solicitudes */}
+      <div className="mt-8">
+      <div className="text-left">
+  <div className="flex items-center justify-center">
+    <div className="flex space-x-2">
+      <button
+        className={`px-4 py-2 rounded-lg ${estadoButtonClasses('all')}`}
+        style={filterState === 'all' ? { backgroundColor: '#4A5568', color: '#fff' } : { backgroundColor: '#CBD5E0' }}
+        onClick={() => setFilterState('all')}
+      >
+        Todas las solicitudes
+      </button>
+      <button
+        className={`px-4 py-2 rounded-lg ${estadoButtonClasses('programada')}`}
+        style={filterState === 'programada' ? { ...getEstadoColorStyle('programada'), opacity: 0.9 } : { ...getEstadoColorStyle('programada'), opacity: 0.7 }}
+        onClick={() => setFilterState('programada')}
+      >
+        Programada
+      </button>
+      <button
+        className={`px-4 py-2 rounded-lg ${estadoButtonClasses('realizada')}`}
+        style={filterState === 'realizada' ? { ...getEstadoColorStyle('realizada'), opacity: 0.9 } : { ...getEstadoColorStyle('realizada'), opacity: 0.7 }}
+        onClick={() => setFilterState('realizada')}
+      >
+        Realizada
+      </button>
+      <button
+        className={`px-4 py-2 rounded-lg ${estadoButtonClasses('suspendida')}`}
+        style={filterState === 'suspendida' ? { ...getEstadoColorStyle('suspendida'), opacity: 0.9 } : { ...getEstadoColorStyle('suspendida'), opacity: 0.7 }}
+        onClick={() => setFilterState('suspendida')}
+      >
+        Suspendida
+      </button>
+      <button
+        className={`px-4 py-2 rounded-lg ${estadoButtonClasses('pendiente')}`}
+        style={filterState === 'pendiente' ? { ...getEstadoColorStyle('pendiente'), opacity: 0.9 } : { ...getEstadoColorStyle('pendiente'), opacity: 0.7 }}
+        onClick={() => setFilterState('pendiente')}
+      >
+        Pendiente
+      </button>
+    </div>
+  </div>
+
+  <div className="flex items-center justify-center mt-4 mb-4">
+      <p className="text-lg font-semibold">Lista de Solicitudes</p>
+    </div>
+
+</div>
+
+
+
+
+
+    <div className="overflow-x-auto">
+      <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+        <thead className="bg-[#304678] text-white">
+          <tr>
+            <th className="px-4 py-3 cursor-pointer" onClick={() => handleSort('id_solicitud')}>
+              ID <span>{sortBy === 'id_solicitud' && (sortOrder === 'asc' ? '▲' : '▼')}</span>
+            </th>
+            <th className="px-4 py-3 cursor-pointer" onClick={() => handleSort('folio')}>
+              Folio <span>{sortBy === 'folio' && (sortOrder === 'asc' ? '▲' : '▼')}</span>
+            </th>
+            <th className="px-4 py-3 cursor-pointer" onClick={() => handleSort('nombre_paciente')}>
+              Nombre <span>{sortBy === 'nombre_paciente' && (sortOrder === 'asc' ? '▲' : '▼')}</span>
+            </th>
+            <th className="px-4 py-3 cursor-pointer" onClick={() => handleSort('nombre_especialidad')}>
+              Especialidad <span>{sortBy === 'nombre_especialidad' && (sortOrder === 'asc' ? '▲' : '▼')}</span>
+            </th>
+            <th className="px-4 py-3 cursor-pointer" onClick={() => handleSort('fecha_solicitud')}>
+              Fecha <span>{sortBy === 'fecha_solicitud' && (sortOrder === 'asc' ? '▲' : '▼')}</span>
+            </th>
+            <th className="px-4 py-3 cursor-pointer" onClick={() => handleSort('estado_solicitud')}>
+              Estado <span>{sortBy === 'estado_solicitud' && (sortOrder === 'asc' ? '▲' : '▼')}</span>
+            </th>
+            <th className="px-4 py-3">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {sortedSolicitudes.slice(startIndex, endIndex).map((solicitud) => (
+            <tr key={solicitud.id_solicitud} className="bg-blue-50 hover:bg-blue-100">
+              <td className="border px-4 py-2">{solicitud.id_solicitud}</td>
+              <td className="border px-4 py-2">{solicitud.folio}</td>
+              <td className="border px-4 py-2">{solicitud.nombre_paciente} {solicitud.ap_paterno} {solicitud.ap_materno}</td>
+              <td className="border px-4 py-2">{solicitud.nombre_especialidad}</td>
+              <td className="border px-4 py-2">{new Date(solicitud.fecha_solicitud).toLocaleDateString()}</td>
+              <td className={`border px-4 py-2 ${getEstadoColor(solicitud.estado_solicitud)}`} style={getEstadoColorStyle(solicitud.estado_solicitud)}>
+                {solicitud.estado_solicitud}
+              </td>
+              <td className="border px-4 py-2">
+                <button
+                  onClick={() => handleViewModal(solicitud)}
+                  className="bg-[#001B58] text-white px-4 py-2 rounded-md hover:bg-blue-800"
+                >
+                  Ver
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {/* Paginación */}
+  <div className="flex justify-center mt-4">
+    <button onClick={() => setPage(page - 1)} disabled={page === 1} className="bg-[#001B58] hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-l">
+      Anterior
+    </button>
+    <span className="mx-4">Página {page}</span>
+    <button onClick={() => setPage(page + 1)} disabled={endIndex >= sortedSolicitudes.length} className="bg-[#001B58] hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-r">
+      Siguiente
+    </button>
+  </div>
+
+</div>
+
       </Layout>
     );
   }

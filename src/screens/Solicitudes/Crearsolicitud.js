@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import Layout from '../../Layout';
 import { Link, useNavigate } from 'react-router-dom';
@@ -198,7 +199,7 @@ function CrearSolicitud() {
               value={formData.fecha_solicitud}
               onChange={handleInputChange}
               readOnly 
-              class="border border-gray-200 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none" 
+              class="border border-gray-200 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none bg-gray-300" 
             />
           </div>
           <div class="w-full">
@@ -527,12 +528,9 @@ function CrearSolicitud() {
             name="estado_solicitud" 
             value={formData.estado_solicitud}
             readOnly // Hacer que el campo sea de solo lectura
-            className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+            className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-red-300" 
           />
         </div>
-
-
-
         </div>
         </div>
 
