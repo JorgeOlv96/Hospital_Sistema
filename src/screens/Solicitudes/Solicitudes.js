@@ -214,9 +214,6 @@ function Solicitudes() {
         </div>
       </div>
     </div>
-
-    {/* Aquí va el resto de tu código, como la lista de solicitudes */}
-
   </div>
 </div>
 
