@@ -466,19 +466,8 @@ function CrearSolicitud() {
 
         <div className="flex flex-col p-4 bg-[#304678] rounded-lg shadow-md mb-4">
           <div className="flex mb-4">
-            <div className="mr-4 w-full">
-              <label htmlFor="fecha_solicitada" className="block font-semibold text-white mb-1">Fecha solicitada:</label>
-              <input 
-                type="date" 
-                id="fecha_solicitada" 
-                name="fecha_solicitada" 
-                value={formData.fecha_solicitada}
-                onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-              />
-            </div>
-            
-            <div className="mr-4 w-full">
+           
+          <div className="mr-4 w-full">
             <label htmlFor="hora_solicitada" className="block font-semibold text-white mb-1">
               Hora solicitada:
             </label>
@@ -498,6 +487,20 @@ function CrearSolicitud() {
             )}
             <p className="text-gray-400 mt-1">Formato válido: HH:mm</p>
           </div>
+           
+            <div className="mr-4 w-full">
+              <label htmlFor="fecha_solicitada" className="block font-semibold text-white mb-1">Fecha solicitada:</label>
+              <input 
+                type="date" 
+                id="fecha_solicitada" 
+                name="fecha_solicitada" 
+                value={formData.fecha_solicitada}
+                onChange={handleInputChange}
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+              />
+            </div>
+            
+          
 
 
             <div className="mr-4 w-full">
