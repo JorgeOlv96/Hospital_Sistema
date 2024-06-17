@@ -201,7 +201,7 @@ function CrearSolicitud() {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(updatedFormData)
+        body: JSON.stringify(formData)
       });
 
       if (!response.ok) {
@@ -254,13 +254,10 @@ function CrearSolicitud() {
 };
 
 
-
-
   return (
     <Layout>
       <form onSubmit={handleSubmit}>
-
-      <div class="flex flex-col p-4 bg-[#304678] rounded-lg shadow-md mb-4">
+      <div class="flex flex-col p-4 bg-[#304678] rounded-lg  mb-4">
         <div class="flex mb-4">
           <div class="w-full mr-4">
             <label for="fecha_solicitud" class="block font-semibold text-white mb-1">Fecha de solicitud:</label>
@@ -271,7 +268,7 @@ function CrearSolicitud() {
               value={formData.fecha_solicitud}
               onChange={handleInputChange}
               readOnly 
-              class="border border-gray-200 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none bg-gray-300" 
+              class="border border-gray-200 rounded-lg px-3 py-2 w-full bg-gray-300" 
             />
           </div>
           <div class="w-full">
@@ -282,13 +279,13 @@ function CrearSolicitud() {
               name="curp" 
               value={formData.curp}
               onChange={handleInputChange}
-              class="border border-gray-300 rounded-lg px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full" 
+              class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full" 
             />
           </div>
         </div>
       </div>
 
-      <div class="flex flex-col p-4 bg-[#304678] rounded-lg shadow-md mb-4">
+      <div class="flex flex-col p-4 bg-[#304678] rounded-lg mb-4">
         <div class="flex mb-4">
           <div class="w-full mr-4">
             <label for="ap_paterno" class="block font-semibold text-white mb-1">Apellido paterno:</label>
@@ -312,6 +309,7 @@ function CrearSolicitud() {
               class="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
             />
           </div>
+         
           <div class="w-full mr-4">
             <label for="nombre_paciente" class="block font-semibold text-white mb-1">Nombre:</label>
             <input 
@@ -325,9 +323,9 @@ function CrearSolicitud() {
           </div>
 
 
-        <div className="mr-4 w-full">
-                  <label htmlFor="no_expediente" className="block font-semibold text-white mb-1">Número de expediente</label>
-                  <input 
+          <div className="mr-4 w-full">
+            <label htmlFor="no_expediente" className="block font-semibold text-white mb-1">Número de expediente</label>
+              <input 
                     type="text" 
                     id="no_expediente" 
                     name="no_expediente" 
@@ -335,12 +333,45 @@ function CrearSolicitud() {
                     onChange={handleInputChange}
                     className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]" 
                   />
-                </div>
-                </div>
-              </div>
+            </div>
 
 
-        <div className="flex flex-col p-4 bg-[#304678] rounded-lg shadow-md mb-4">
+            <div className="mr-4 w-full">
+              <label htmlFor="sala_quirofano" className="block font-semibold text-white mb-1">Sala solicitada:</label>
+               <select 
+                type="text" 
+                id="sala_quirofano" 
+                name="sala_quirofano" 
+                value={formData.sala_quirofano}
+                onChange={handleInputChange}
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+              >
+                <option value="">-- Seleccione la sala --</option>
+                <option value="A1">A1</option>
+                <option value="A2">A2</option>
+                <option value="T1">T1</option>
+                <option value="T2">T2</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="E">E</option>
+                <option value="H">H</option>
+                <option value="RX">RX</option>
+             </select>
+            </div>
+
+
+
+
+
+          </div>
+        </div>
+
+
+        <div className="flex flex-col p-4 bg-[#304678] rounded-lg mb-4">
           <div className="flex mb-4">
             <div className="mr-4 w-full">
             <label htmlFor="fecha_nacimiento" className="block font-semibold text-white mb-1">
@@ -371,7 +402,7 @@ function CrearSolicitud() {
               />
             </div>
 
-            <div className="w-full">
+            <div className="mr-4 w-full">
               <label htmlFor="sexo" className="block font-semibold text-white mb-1">Sexo:</label>
               <select 
                 id="sexo" 
@@ -386,10 +417,31 @@ function CrearSolicitud() {
                 <option value="Otro">Otro</option>
               </select>
             </div>
+
+            <div className="w-full">
+              <label htmlFor="id_cirujano" className="block font-semibold text-white mb-1">Cirujano encargado:</label>
+              <select
+                type="text" 
+                id="id_cirujano" 
+                name="id_cirujano" 
+                value={formData.id_cirujano}
+                onChange={handleInputChange}
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+              >
+                <option value="">-- Seleccione cirujano --</option>
+                <option value="1">1</option>
+              </select>
+            </div>
+
+
+
+
+
+
           </div>
         </div>
 
-        <div className="flex flex-col p-4 bg-[#304678] rounded-lg shadow-md mb-4">
+        <div className="flex flex-col p-4 bg-[#304678] rounded-lg mb-4">
           <div className="flex mb-4">
             <div className="mr-4 w-full">
               <label htmlFor="tipo_admision" className="block font-semibold text-white mb-1">Procedencia del paciente:</label>
@@ -464,7 +516,7 @@ function CrearSolicitud() {
         </div>
 
 
-        <div className="flex flex-col p-4 bg-[#304678] rounded-lg shadow-md mb-4">
+        <div className="flex flex-col p-4 bg-[#304678] rounded-lg mb-4">
           <div className="flex mb-4">
            
           <div className="mr-4 w-full">
@@ -535,34 +587,9 @@ function CrearSolicitud() {
           </div>
         </div>
 
-        <div className="flex flex-col p-4 bg-[#304678] rounded-lg shadow-md mb-4">
+        <div className="flex flex-col p-4 bg-[#304678] rounded-lg mb-4">
           <div className="flex mb-4">
-            <div className="mr-4 w-1/3">
-              <label htmlFor="sala_quirofano" className="block font-semibold text-white mb-1">Sala solicitada:</label>
-              <select 
-                type="text" 
-                id="sala_quirofano" 
-                name="sala_quirofano" 
-                value={formData.sala_quirofano}
-                onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-              >
-                <option value="">-- Seleccione la sala --</option>
-                <option value="A1">A1</option>
-                <option value="A2">A2</option>
-                <option value="T1">T1</option>
-                <option value="T2">T2</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-                <option value="6">6</option>
-                <option value="E">E</option>
-                <option value="H">H</option>
-                <option value="RX">RX</option>
-            </select>
-            </div>
+            
             
             <div className="mr-4 w-full">
               <label htmlFor="procedimientos_paciente" className="block font-semibold text-white mb-1">Procedimientos que se realizarán:</label>
@@ -576,42 +603,23 @@ function CrearSolicitud() {
               />
             </div>
 
-            <div className="mr-4 w-1/3">
-              <label htmlFor="id_cirujano" className="block font-semibold text-white mb-1">Cirujano encargado:</label>
-              <select
-                type="text" 
-                id="id_cirujano" 
-                name="id_cirujano" 
-                value={formData.id_cirujano}
-                onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-              >
-                <option value="">-- Seleccione cirujano --</option>
-                <option value="1">1</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex flex-col p-4 bg-[#304678] rounded-lg shadow-md mb-4">
-          <div className="flex mb-4">
-          <div className="mr-4 w-full">
+        <div className="mr-4 w-1/2">
           <label htmlFor="req_insumo" className="block font-semibold text-white mb-1">Requiere insumos:</label>
-          <select
-            id="req_insumo" 
-            name="req_insumo" 
-            value={formData.req_insumo}
-            onChange={handleInputChange}
-            className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
-          >
-            <option value="">-- Seleccione una opción --</option>
-            <option value="Si">Si</option>
-            <option value="No">No</option>
+            <select
+              id="req_insumo" 
+              name="req_insumo" 
+              value={formData.req_insumo}
+              onChange={handleInputChange}
+              className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+            >
+              <option value="">-- Seleccione una opción --</option>
+              <option value="Si">Si</option>
+              <option value="No">No</option>
           </select>
         </div>
 
-        <div className="w-full">
-          <label htmlFor="estado_solicitud" className="block font-semibold text-white mb-1">Estado de solicitud</label>
+        <div className="mr-4 w-1/2">
+          <label for="estado_solicitud" className="block font-semibold text-white mb-1">Estado de solicitud</label>
           <input 
             type="text"
             id="estado_solicitud" 
@@ -621,9 +629,12 @@ function CrearSolicitud() {
             className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-red-300" 
           />
         </div>
-        </div>
-        </div>
 
+            
+
+          </div>
+        </div>
+        
         <div className="flex justify-center mt-4">
           <button
             type="submit"
