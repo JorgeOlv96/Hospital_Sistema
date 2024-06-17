@@ -1,17 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import Layout from '../../Layout';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function CrearSolicitud() {
   const [solicitudes, setSolicitudes] = useState([]);
-  const [selectedSolicitud, setSelectedSolicitud] = useState(null);
-  const [horaSolicitada, setHoraSolicitada] = useState('');
-  const [isValid, setIsValid] = useState(true);
-  const [turnoCalculado, setTurnoCalculado] = useState('');
-  const [isFechaNacimientoValid, setIsFechaNacimientoValid] = useState(true);
-
-
+  const [selectedSolicitud, setSelectedSolicitud] = useState(null); // Estado para almacenar la solicitud seleccionada
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchSolicitudes = async () => {
+      try {
+        const response = await fetch('http://localhost:4000/api/solicitudes');
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        setSolicitudes(data);
+      } catch (error) {
+        console.error('Error fetching solicitudes:', error);
+      }
+    };
+
+    fetchSolicitudes();
+  }, []);
 
   const especialidadToClave = {
     'Algología': 'ALG',
@@ -71,7 +82,8 @@ function CrearSolicitud() {
     sala_quirofano: '',
     id_cirujano: '',
     req_insumo: '',
-    estado_solicitud: 'Pendiente',
+    tipo_admision: '',
+    estado_solicitud: "Pendiente",
     procedimientos_paciente: ''
   });
 
@@ -84,80 +96,29 @@ function CrearSolicitud() {
     return `${year}-${month}-${day}`;
   }
 
-  useEffect(() => {
-    const fetchSolicitudes = async () => {
-      try {
-        const response = await fetch('http://localhost:4000/api/solicitudes');
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
-        setSolicitudes(data);
-      } catch (error) {
-        console.error('Error fetching solicitudes:', error);
-      }
-    };
+  const [reqInsumos, setReqInsumos] = useState(false);
 
-    fetchSolicitudes();
-  }, []);
-
-
-
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-  
-    // Actualizar el estado del formulario
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      [name]: value,
-    }));
-  
-    if (name === 'fecha_solicitada') {
-      const selectedDate = new Date(value);
-      const dayOfWeek = selectedDate.getDay(); // 0 = Domingo, 6 = Sábado
-  
-      if (dayOfWeek === 0 || dayOfWeek === 6) {
-        setTurnoCalculado('Nocturno');
-      } else {
-        const [hours, minutes] = (formData.hora_solicitada || '').split(':').map(Number);
-        if (!isNaN(hours) && hours >= 7 && hours < 14) {
-          setTurnoCalculado('Matutino');
-        } else if (!isNaN(hours) && hours >= 14 && hours < 21) {
-          setTurnoCalculado('Vespertino');
-        } else {
-          setTurnoCalculado('Especial');
-        }
-      }
-    } else if (name === 'hora_solicitada') {
-      const selectedDate = new Date(formData.fecha_solicitada);
-      const dayOfWeek = selectedDate.getDay(); // 0 = Domingo, 6 = Sábado
-  
-      if (dayOfWeek !== 0 && dayOfWeek !== 6 && turnoCalculado !== 'Nocturno') {
-        const [hours, minutes] = value.split(':').map(Number);
-        if (!isNaN(hours) && hours >= 7 && hours < 14) {
-          setTurnoCalculado('Matutino');
-        } else if (!isNaN(hours) && hours >= 14 && hours < 21) {
-          setTurnoCalculado('Vespertino');
-        } else {
-          setTurnoCalculado('Especial');
-        }
-      }
-    } else if (name === 'turno_solicitado') {
-      setTurnoCalculado(value);
-    }
-  
-    // Para la validación de fecha de nacimiento
-    if (name === 'fecha_nacimiento') {
-      const today = new Date().toISOString().split('T')[0]; // Fecha actual en formato YYYY-MM-DD
-      if (value > today) {
-        setIsFechaNacimientoValid(false);
-      } else {
-        setIsFechaNacimientoValid(true);
-      }
-    }
+  const handleReqInsumosChange = (e) => {
+    const value = e.target.value;
+    setFormData({
+      ...formData,
+      req_insumo: value,
+      insumos: value === 'Si' ? formData.insumos : 'N/A',
+      curp: formData.curp || 'N/A',
+      fecha_nacimiento: formData.fecha_nacimiento || null,
+      edad: formData.edad || null,
+      no_expediente: formData.no_expediente || 'N/A'
+    });
+    setReqInsumos(value === 'Si');
   };
-  
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value
+    });
+  };
 
   const handleNombreEspecialidadChange = (e) => {
     const selectedNombreEspecialidad = e.target.value;
@@ -190,24 +151,28 @@ function CrearSolicitud() {
       ...formData,
       insumos: formData.insumos || 'N/A',
       curp: formData.curp || 'N/A',
-      fecha_nacimiento: formData.fecha_nacimiento || '1900-01-01',
+      fecha_nacimiento: formData.fecha_nacimiento || '1900-01-01', // Fecha predeterminada válida
       edad: formData.edad || 'N/A',
       no_expediente: formData.no_expediente || 'N/A'
+      // Añadir aquí otros campos opcionales si es necesario
     };
-
+    
+    // Log the formData to inspect its structure
+    console.log('Submitting formData:', formData);
+    
     try {
       const response = await fetch('http://localhost:4000/api/solicitudes', {
         method: selectedSolicitud ? 'PUT' : 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(updatedFormData)
+        body: JSON.stringify(formData)
       });
-
+  
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
-
+  
       const data = await response.json();
       console.log('Solicitud guardada:', data);
       navigate('/solicitudes');
@@ -216,45 +181,7 @@ function CrearSolicitud() {
     }
   };
 
-  // Validación y formateo de la hora solicitada
-  const handleHoraSolicitadaChange = (event) => {
-    let input = event.target.value;
-
-    // Solo permitir caracteres numéricos y ':'
-    input = input.replace(/[^0-9:]/g, '');
-
-    // Autoformato básico de HH:mm
-    if (input.length === 2 && !input.includes(':')) {
-        input = `${input}:`;
-    }
-
-    // Asegurarse de que el input no sea mayor a 5 caracteres (HH:mm)
-    if (input.length > 5) {
-        setIsValid(false);
-        return;
-    }
-
-    // Validar hora y minutos
-    const [hours, minutes] = input.split(':').map(Number);
-    const hoursValid = (hours >= 0 && hours <= 23) || isNaN(hours);
-    const minutesValid = (minutes >= 0 && minutes <= 59) || isNaN(minutes);
-
-    // Actualizar estado y validación
-    setHoraSolicitada(input);
-    setIsValid(hoursValid && minutesValid);
-
-    // Calcular turno basado en la hora ingresada
-    if (hours >= 7 && hours < 14) {
-        setTurnoCalculado('Matutino');
-    } else if (hours >= 14 && hours < 21) {
-        setTurnoCalculado('Vespertino');
-    } else {
-        setTurnoCalculado('Nocturno');
-    }
-};
-
-
-
+  
 
   return (
     <Layout>
@@ -271,7 +198,7 @@ function CrearSolicitud() {
               value={formData.fecha_solicitud}
               onChange={handleInputChange}
               readOnly 
-              class="border border-gray-200 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none bg-gray-300" 
+              class="border border-gray-200 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none" 
             />
           </div>
           <div class="w-full">
@@ -343,21 +270,16 @@ function CrearSolicitud() {
         <div className="flex flex-col p-4 bg-[#304678] rounded-lg shadow-md mb-4">
           <div className="flex mb-4">
             <div className="mr-4 w-full">
-            <label htmlFor="fecha_nacimiento" className="block font-semibold text-white mb-1">
-              Fecha de nacimiento:
-            </label>
-            <input
-              type="date"
-              id="fecha_nacimiento"
-              name="fecha_nacimiento"
-              value={formData.fecha_nacimiento}
-              onChange={handleInputChange}
-              className={`border rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 ${isFechaNacimientoValid ? 'border-gray-300 focus:ring-blue-500 focus:border-blue-500' : 'border-red-500 focus:ring-red-500 focus:border-red-500'}`}
-            />
-            {!isFechaNacimientoValid && (
-              <p className="text-red-500 mt-1">La fecha de nacimiento no puede ser en el futuro.</p>
-            )}
-          </div>
+              <label htmlFor="fecha_nacimiento" className="block font-semibold text-white mb-1">Fecha de nacimiento:</label>
+              <input 
+                type="date" 
+                id="fecha_nacimiento" 
+                name="fecha_nacimiento" 
+                value={formData.fecha_nacimiento}
+                onChange={handleInputChange}
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+              />
+            </div>
             
             <div className="mr-4 w-full">
               <label htmlFor="edad" className="block font-semibold text-white mb-1">Edad</label>
@@ -466,28 +388,6 @@ function CrearSolicitud() {
 
         <div className="flex flex-col p-4 bg-[#304678] rounded-lg shadow-md mb-4">
           <div className="flex mb-4">
-           
-          <div className="mr-4 w-full">
-            <label htmlFor="hora_solicitada" className="block font-semibold text-white mb-1">
-              Hora solicitada:
-            </label>
-            <input
-              type="text"
-              id="hora_solicitada"
-              name="hora_solicitada"
-              value={horaSolicitada}
-              onChange={handleHoraSolicitadaChange}
-              className={`border rounded-lg px-3 py-2 shadow-sm w-full ${isValid ? 'border-gray-300' : 'border-red-500'}`}
-              style={{ backgroundColor: 'white', color: 'black' }} // Fondo blanco y texto negro
-              maxLength={5} // Longitud máxima de 5 caracteres (HH:mm)
-              title="Formato válido: HH:mm"
-            />
-            {!isValid && (
-              <p className="text-red-500 mt-1">Esa hora no existe :( Asegúrese de que la hora sea entre 00:00 y 23:59.</p>
-            )}
-            <p className="text-gray-400 mt-1">Formato válido: HH:mm</p>
-          </div>
-           
             <div className="mr-4 w-full">
               <label htmlFor="fecha_solicitada" className="block font-semibold text-white mb-1">Fecha solicitada:</label>
               <input 
@@ -500,11 +400,20 @@ function CrearSolicitud() {
               />
             </div>
             
-          
-
+            <div className="mr-4 w-full">
+              <label htmlFor="hora_solicitada" className="block font-semibold text-white mb-1">Hora solicitada:</label>
+              <input 
+                type="time" 
+                id="hora_solicitada" 
+                name="hora_solicitada" 
+                value={formData.hora_solicitada}
+                onChange={handleInputChange}
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+              />
+            </div>
 
             <div className="mr-4 w-full">
-              <label htmlFor="tiempo_estimado" className="block font-semibold text-white mb-1">Tiempo estimado de cirugía: (Min)</label>
+              <label htmlFor="tiempo_estimado" className="block font-semibold text-white mb-1">Tiempo estimado de cirugía en minutos:</label>
               <input 
                 type="int" 
                 id="tiempo_estimado" 
@@ -520,7 +429,7 @@ function CrearSolicitud() {
               <select 
                 id="turno_solicitado" 
                 name="turno_solicitado" 
-                value={turnoCalculado}
+                value={formData.turno_solicitado}
                 onChange={handleInputChange}
                 className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
               >
@@ -531,13 +440,13 @@ function CrearSolicitud() {
                 <option value="Especial">Especial</option>
               </select>
             </div>
-            
+
           </div>
         </div>
 
         <div className="flex flex-col p-4 bg-[#304678] rounded-lg shadow-md mb-4">
           <div className="flex mb-4">
-            <div className="mr-4 w-1/3">
+            <div className="mr-4 w-full">
               <label htmlFor="sala_quirofano" className="block font-semibold text-white mb-1">Sala solicitada:</label>
               <select 
                 type="text" 
@@ -576,7 +485,7 @@ function CrearSolicitud() {
               />
             </div>
 
-            <div className="mr-4 w-1/3">
+            <div className="w-full">
               <label htmlFor="id_cirujano" className="block font-semibold text-white mb-1">Cirujano encargado:</label>
               <select
                 type="text" 
@@ -618,9 +527,12 @@ function CrearSolicitud() {
             name="estado_solicitud" 
             value={formData.estado_solicitud}
             readOnly // Hacer que el campo sea de solo lectura
-            className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-red-300" 
+            className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
           />
         </div>
+
+
+
         </div>
         </div>
 
