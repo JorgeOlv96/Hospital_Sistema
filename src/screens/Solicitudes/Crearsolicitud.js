@@ -152,7 +152,7 @@ function CrearSolicitud() {
       insumos: formData.insumos || 'N/A',
       curp: formData.curp || 'N/A',
       fecha_nacimiento: formData.fecha_nacimiento || '1900-01-01', // Fecha predeterminada válida
-      edad: formData.edad || null,
+      edad: formData.edad || 'N/A',
       no_expediente: formData.no_expediente || 'N/A'
       // Añadir aquí otros campos opcionales si es necesario
     };
