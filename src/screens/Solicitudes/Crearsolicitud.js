@@ -183,18 +183,22 @@ function CrearSolicitud() {
     });
   };
 
-  const handleSubmit = async (e) => {
+    const handleSubmit = async (e) => {
     e.preventDefault();
 
     const updatedFormData = {
       ...formData,
       insumos: formData.insumos || 'N/A',
       curp: formData.curp || 'N/A',
-      fecha_nacimiento: formData.fecha_nacimiento || '1900-01-01',
+      fecha_nacimiento: formData.fecha_nacimiento || '1900-01-01', // Fecha predeterminada válida
       edad: formData.edad || 'N/A',
       no_expediente: formData.no_expediente || 'N/A'
+      // Añadir aquí otros campos opcionales si es necesario
     };
-
+    
+    // Log the formData to inspect its structure
+    console.log('Submitting formData:', formData);
+    
     try {
       const response = await fetch('http://localhost:4000/api/solicitudes', {
         method: selectedSolicitud ? 'PUT' : 'POST',
@@ -203,11 +207,11 @@ function CrearSolicitud() {
         },
         body: JSON.stringify(formData)
       });
-
+  
       if (!response.ok) {
         throw new Error('Network response was not ok');
       }
-
+  
       const data = await response.json();
       console.log('Solicitud guardada:', data);
       navigate('/solicitudes');
@@ -215,7 +219,7 @@ function CrearSolicitud() {
       console.error('Error saving solicitud:', error);
     }
   };
-
+  
   // Validación y formateo de la hora solicitada
   const handleHoraSolicitadaChange = (event) => {
     let input = event.target.value;
@@ -520,25 +524,16 @@ function CrearSolicitud() {
           <div className="flex mb-4">
            
           <div className="mr-4 w-full">
-            <label htmlFor="hora_solicitada" className="block font-semibold text-white mb-1">
-              Hora solicitada:
-            </label>
-            <input
-              type="text"
-              id="hora_solicitada"
-              name="hora_solicitada"
-              value={horaSolicitada}
-              onChange={handleHoraSolicitadaChange}
-              className={`border rounded-lg px-3 py-2 shadow-sm w-full ${isValid ? 'border-gray-300' : 'border-red-500'}`}
-              style={{ backgroundColor: 'white', color: 'black' }} // Fondo blanco y texto negro
-              maxLength={5} // Longitud máxima de 5 caracteres (HH:mm)
-              title="Formato válido: HH:mm"
-            />
-            {!isValid && (
-              <p className="text-red-500 mt-1">Esa hora no existe :( Asegúrese de que la hora sea entre 00:00 y 23:59.</p>
-            )}
-            <p className="text-gray-400 mt-1">Formato válido: HH:mm</p>
-          </div>
+              <label htmlFor="hora_solicitada" className="block font-semibold text-white mb-1">Hora solicitada:</label>
+              <input 
+                type="time" 
+                id="hora_solicitada" 
+                name="hora_solicitada" 
+                value={formData.hora_solicitada}
+                onChange={handleInputChange}
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+              />
+            </div>
            
             <div className="mr-4 w-full">
               <label htmlFor="fecha_solicitada" className="block font-semibold text-white mb-1">Fecha solicitada:</label>
