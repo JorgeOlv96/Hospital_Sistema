@@ -1,0 +1,15 @@
+/* Appointments.css */
+
+.appointments-container {
+    display: flex;
+  }
+  
+  .requests-list {
+    width: 200px;
+    margin-right: 20px;
+  }
+  
+  .calendar-container {
+    flex-grow: 1;
+  }
+  
