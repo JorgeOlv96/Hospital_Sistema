@@ -1,15 +1,40 @@
 /* Appointments.css */
 
 .appointments-container {
-    display: flex;
-  }
-  
-  .requests-list {
-    width: 200px;
-    margin-right: 20px;
-  }
-  
-  .calendar-container {
-    flex-grow: 1;
-  }
-  
+  display: flex;
+  justify-content: space-between;
+}
+
+.requests-list {
+  width: 250px;
+  margin-right: 20px;
+  max-height: 500px; /* Define el máximo alto de la lista */
+  overflow-y: auto;  /* Agrega un scrollbar vertical si el contenido sobrepasa el alto máximo */
+  border: 1px solid #ddd; /* Opcional: Añade un borde */
+  border-radius: 8px; /* Opcional: Esquinas redondeadas */
+  padding: 10px;
+}
+
+.requests-scroll {
+  display: flex;
+  flex-direction: column;
+}
+
+.request-item {
+  background-color: #001B58; /* Azul */
+  color: white; /* Letras blancas */
+  padding: 10px;
+  margin: 5px 0;
+  cursor: move;
+  border-radius: 4px;
+  text-align: center;
+  font-size: 14px; /* Letras más pequeñas */
+  user-select: none; /* Previene la selección del texto */
+}
+
+.calendar-container {
+  flex-grow: 1;
+  border: 1px solid #ddd; /* Opcional: Añade un borde */
+  border-radius: 8px; /* Opcional: Esquinas redondeadas */
+  padding: 10px;
+}

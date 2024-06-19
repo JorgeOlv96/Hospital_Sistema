@@ -1,32 +1,35 @@
-// Appointments.js
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from '../Layout';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { DndProvider, useDrag, useDrop } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import axios from 'axios';
 import './Appointments.css';
 
 const localizer = momentLocalizer(moment);
 
 const Appointments = () => {
   const [events, setEvents] = useState([]);
-  const [requests, setRequests] = useState([
-    { id: 1, title: 'Solicitud 1' },
-    { id: 2, title: 'Solicitud 2' },
-  ]);
+  const [requests, setRequests] = useState([]);
+
+  useEffect(() => {
+    // Fetch pending requests from the backend
+    axios.get('http://localhost:4000/api/solicitudes/pendientes')
+      .then(response => setRequests(response.data))
+      .catch(error => console.error('Error fetching requests:', error));
+  }, []);
 
   const moveRequestToCalendar = (request, start, end) => {
     const newEvent = {
-      title: request.title,
+      title: request.folio, // Use folio as title
       start,
       end,
       id: request.id,
     };
-    setEvents([...events, newEvent]);
-    setRequests(requests.filter(r => r.id !== request.id));
+    setEvents((prevEvents) => [...prevEvents, newEvent]);
+    setRequests((prevRequests) => prevRequests.filter((r) => r.id !== request.id));
   };
 
   return (
@@ -35,9 +38,11 @@ const Appointments = () => {
         <div className="appointments-container">
           <div className="requests-list">
             <h3>Solicitudes Pendientes</h3>
-            {requests.map(request => (
-              <DraggableRequest key={request.id} request={request} />
-            ))}
+            <div className="requests-scroll">
+              {requests.map(request => (
+                <DraggableRequest key={request.id} request={request} />
+              ))}
+            </div>
           </div>
           <CalendarContainer
             events={events}
@@ -62,15 +67,12 @@ const DraggableRequest = ({ request }) => {
   return (
     <div
       ref={drag}
+      className="request-item"
       style={{
         opacity: isDragging ? 0.5 : 1,
-        padding: '8px',
-        margin: '4px',
-        backgroundColor: 'lightgrey',
-        cursor: 'move',
       }}
     >
-      {request.title}
+      {request.folio}
     </div>
   );
 };
@@ -146,6 +148,17 @@ const getDroppedTimeRange = (clientOffset, calendar) => {
 
     startTime.setHours(hour);
     endTime.setHours(hour + 1);
+
+    const calendarWidth = calendarBounds.width;
+    const calendarDays = calendar.querySelectorAll('.rbc-day-slot');
+    const pixelsPerDay = calendarWidth / calendarDays.length;
+    const offsetX = clientOffset.x - calendarBounds.left;
+    const dayIndex = Math.floor(offsetX / pixelsPerDay);
+
+    if (calendarDays.length) {
+      startTime.setDate(startTime.getDate() + dayIndex);
+      endTime.setDate(endTime.getDate() + dayIndex);
+    }
   }
 
   return { start: startTime, end: endTime };
