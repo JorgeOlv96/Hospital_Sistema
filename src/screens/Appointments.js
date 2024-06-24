@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Layout from '../Layout';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
@@ -13,7 +13,11 @@ import { Link, useNavigate } from 'react-router-dom';
 moment.locale('es'); // Configura moment para usar el idioma español
 
 // custom toolbar
-const CustomToolbar = (toolbar) => {
+const CustomToolbar = ({ toolbar, goToTable, showTable }) => {
+  if (!toolbar) {
+    return null; // Manejar el caso cuando toolbar no está definido
+  }
+
   // today button handler
   const goToBack = () => {
     toolbar.date.setMonth(toolbar.date.getMonth() - 1);
@@ -46,12 +50,6 @@ const CustomToolbar = (toolbar) => {
     toolbar.onView('day');
   };
 
-  // table button handler (you can add your logic here)
-  const goToTable = () => {
-    console.log("Table view clicked");
-    // Add your table view logic here
-  };
-
   // view button group
   const viewNamesGroup = [
     { view: 'month', label: 'Mes' },
@@ -62,12 +60,11 @@ const CustomToolbar = (toolbar) => {
   return (
     <div className="flex flex-col gap-8 mb-8">
       <h1 className="text-xl font-semibold">Agenda</h1>
-      
-      <div className="my-4">
-      <Link to="/solicitudes/Programarsolicitud" className="btn btn-sm btn-secondary p-2 bg-[#001B58] text-white rounded-lg">
-  Programar solicitud
-</Link>
 
+      <div className="my-4">
+        <Link to="/solicitudes/Programarsolicitud" className="btn btn-sm btn-secondary p-2 bg-[#001B58] text-white rounded-lg">
+          Programar solicitud
+        </Link>
       </div>
 
       <div className="grid sm:grid-cols-2 md:grid-cols-12 gap-4">
@@ -79,7 +76,7 @@ const CustomToolbar = (toolbar) => {
             Hoy
           </button>
         </div>
-        
+
         {/* label */}
         <div className="md:col-span-6 flex items-center justify-center">
           <button onClick={goToBack} className="text-2xl text-subMain">
@@ -147,13 +144,41 @@ const CustomToolbar = (toolbar) => {
 
 function Appointments() {
   const localizer = momentLocalizer(moment);
-  const [open, setOpen] = React.useState(false);
-  const [data, setData] = React.useState({});
+  const [open, setOpen] = useState(false);
+  const [data, setData] = useState({});
+  const [pendingAppointments, setPendingAppointments] = useState([]);
+  const [showTable, setShowTable] = useState(false);
 
   // handle modal close
   const handleClose = () => {
     setOpen(!open);
     setData({});
+  };
+
+  const fetchPendingAppointments = async () => {
+    try {
+      const response = await fetch('http://localhost:4000/api/solicitudes/pendientes');
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      setPendingAppointments(data); // Actualiza el estado con las solicitudes pendientes obtenidas
+    } catch (error) {
+      console.error('Error fetching pending appointments:', error);
+    }
+  };
+
+  // onClick event handler
+  const handleEventClick = (event) => {
+    setData(event);
+    setOpen(!open);
+  };
+
+  const goToTable = () => {
+    setShowTable(!showTable); // Alternar entre mostrar y ocultar la tabla
+    if (!showTable) {
+      fetchPendingAppointments(); // Si se muestra la tabla, obtén las solicitudes pendientes del backend
+    }
   };
 
   const events = [
@@ -185,7 +210,6 @@ function Appointments() {
         whatsapp: false,
       },
     },
-
     {
       id: 2,
       start: moment({ hours: 14 }).toDate(),
@@ -201,12 +225,6 @@ function Appointments() {
       },
     },
   ];
-
-  // onClick event handler
-  const handleEventClick = (event) => {
-    setData(event);
-    setOpen(!open);
-  };
 
   return (
     <Layout>
@@ -226,54 +244,95 @@ function Appointments() {
       >
         <BiPlus className="text-2xl" />
       </button>
-
-      <Calendar
-        localizer={localizer}
-        events={events}
-        startAccessor="start"
-        endAccessor="end"
-        style={{
-          // altura del calendario
-          height: 900,
-          marginBottom: 50,
-        }}
-        onSelectEvent={(event) => handleEventClick(event)}
-        defaultDate={new Date()}
-        timeslots={1}
-        resizable
-        step={60}
-        selectable={true}
-        //
-        // estilo personalizado para eventos
-        eventPropGetter={(event) => {
-          const style = {
-            backgroundColor: '#66B5A3',
-            borderRadius: '10px',
-            color: 'white',
-            border: '1px',
-            borderColor: '#F2FAF8',
-            fontSize: '12px',
-            padding: '5px 5px',
-          };
-          return {
-            style,
-          };
-        }}
-        // estilo personalizado para fechas
-        dayPropGetter={(date) => {
-          const backgroundColor = 'white';
-          const style = {
-            backgroundColor,
-          };
-          return {
-            style,
-          };
-        }}
-        // eliminar vista de agenda
-        views={['month', 'day', 'week']}
-        // toolbar={false}
-        components={{ toolbar: CustomToolbar }}
-      />
+      <div className="relative">
+        {showTable ? (
+          <div className="overflow-auto" style={{ height: '800px' }}>
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Folio
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Nombre del Paciente
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Especialidad
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Fecha
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Estado
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {pendingAppointments.map((appointment) => (
+                  <tr key={appointment.folio}>
+                    <td className="px-6 py-4 whitespace-nowrap">{appointment.folio}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{`${appointment.nombre_paciente} ${appointment.ap_paterno} ${appointment.ap_materno}`}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{appointment.nombre_especialidad}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{appointment.fecha_solicitud}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{appointment.estado_solicitud}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <Calendar
+            localizer={localizer}
+            events={events}
+            startAccessor="start"
+            endAccessor="end"
+            style={{
+              // altura del calendario
+              height: 900,
+              marginBottom: 50,
+            }}
+            onSelectEvent={(event) => handleEventClick(event)}
+            defaultDate={new Date()}
+            timeslots={1}
+            resizable
+            step={60}
+            selectable={true}
+            //
+            // estilo personalizado para eventos
+            eventPropGetter={(event) => {
+              const style = {
+                backgroundColor: '#66B5A3',
+                borderRadius: '10px',
+                color: 'white',
+                border: '1px',
+                borderColor: '#F2FAF8',
+                fontSize: '12px',
+                padding: '5px 5px',
+              };
+              return {
+                style,
+              };
+            }}
+            // estilo personalizado para fechas
+            dayPropGetter={(date) => {
+              const backgroundColor = 'white';
+              const style = {
+                backgroundColor,
+              };
+              return {
+                style,
+              };
+            }}
+            // eliminar vista de agenda
+            views={['month', 'day', 'week']}
+            components={{
+              toolbar: (props) => (
+                <CustomToolbar {...props} toolbar={props} goToTable={goToTable} showTable={showTable} />
+              ),
+            }}
+          />
+        )}
+      </div>
     </Layout>
   );
 }
