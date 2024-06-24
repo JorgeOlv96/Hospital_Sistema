@@ -56,23 +56,6 @@ const CustomToolbar = (toolbar) => {
     { view: 'day', label: 'Día' },
   ];
 
-  
-const [pendingAppointments, setPendingAppointments] = useState([]);
-const [showTable, setShowTable] = useState(false);
-
-const fetchPendingAppointments = async () => {
-  try {
-    const response = await fetch('http://localhost:4000/api/solicitudes/pendientes');
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    const data = await response.json();
-    setPendingAppointments(data); // Actualiza el estado con las solicitudes pendientes obtenidas
-  } catch (error) {
-    console.error('Error fetching pending appointments:', error);
-  }
-};
-
   return (
     <div className="flex flex-col gap-8 mb-8">
       <h1 className="text-xl font-semibold">Agenda</h1>
@@ -125,7 +108,11 @@ const fetchPendingAppointments = async () => {
           </select>
         </div>
         {/* filter */}
+<<<<<<< HEAD
         <div className="md:col-span-2 grid grid-cols-3 rounded-md border border-subMain">
+=======
+        <div className="md:col-span-2 grid grid-cols-4 rounded-md border border-subMain">
+>>>>>>> 4f776795c187c5d4d7a2622b2fd73661a877bffd
           {viewNamesGroup.map((item, index) => (
             <button
               key={index}
