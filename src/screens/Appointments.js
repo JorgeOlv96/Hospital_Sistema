@@ -47,13 +47,6 @@ const CustomToolbar = (toolbar) => {
   const goToDay = () => {
     toolbar.onView('day');
   };
-
-  const goToTable = () => {
-    setShowTable(!showTable); // Alternar entre mostrar y ocultar la tabla
-    if (!showTable) {
-      fetchPendingAppointments(); // Si se muestra la tabla, obtén las solicitudes pendientes del backend
-    }
-  };
   
 
   // view button group
@@ -62,23 +55,6 @@ const CustomToolbar = (toolbar) => {
     { view: 'week', label: 'Semana' },
     { view: 'day', label: 'Día' },
   ];
-
-  
-const [pendingAppointments, setPendingAppointments] = useState([]);
-const [showTable, setShowTable] = useState(false);
-
-const fetchPendingAppointments = async () => {
-  try {
-    const response = await fetch('http://localhost:4000/api/solicitudes/pendientes');
-    if (!response.ok) {
-      throw new Error('Network response was not ok');
-    }
-    const data = await response.json();
-    setPendingAppointments(data); // Actualiza el estado con las solicitudes pendientes obtenidas
-  } catch (error) {
-    console.error('Error fetching pending appointments:', error);
-  }
-};
 
   return (
     <div className="flex flex-col gap-8 mb-8">
@@ -133,12 +109,6 @@ const fetchPendingAppointments = async () => {
         </div>
         {/* filter */}
         <div className="md:col-span-2 grid grid-cols-4 rounded-md border border-subMain">
-          <button
-            onClick={goToTable}
-            className="border-l text-xl py-2 flex-colo border-subMain text-subMain"
-          >
-            <BiTable />
-          </button>
           {viewNamesGroup.map((item, index) => (
             <button
               key={index}
