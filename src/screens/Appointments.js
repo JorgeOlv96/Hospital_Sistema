@@ -61,11 +61,13 @@ const CustomToolbar = ({ toolbar, goToTable, showTable }) => {
     <div className="flex flex-col gap-8 mb-8">
       <h1 className="text-xl font-semibold">Agenda</h1>
 
+    {/*
       <div className="my-4">
         <Link to="/solicitudes/Programarsolicitud" className="btn btn-sm btn-secondary p-2 bg-[#001B58] text-white rounded-lg">
           Programar solicitud
         </Link>
       </div>
+      */}
 
       <div className="grid sm:grid-cols-2 md:grid-cols-12 gap-4">
         <div className="md:col-span-1 flex sm:justify-start justify-center items-center">
@@ -240,7 +242,6 @@ function Appointments() {
       {/* calendario */}
       <button
         onClick={handleClose}
-        className="w-16 animate-bounce h-16 border border-border z-50 bg-subMain text-white rounded-full flex-colo fixed bottom-8 right-12 button-fb"
       >
         <BiPlus className="text-2xl" />
       </button>
