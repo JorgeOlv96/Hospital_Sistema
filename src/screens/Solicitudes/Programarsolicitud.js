@@ -136,7 +136,7 @@ function ProgramarSolicitud() {
         </div>
 
         <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
-          <thead className="bg-[#304678] text-white">
+        <thead className="bg-[#304678] text-white">
             <tr>
               <th className="px-4 py-2">Folio</th>
               <th className="px-4 py-2">Nombre del paciente</th>
@@ -144,17 +144,17 @@ function ProgramarSolicitud() {
               <th className="px-4 py-2">Fecha slicitada</th>
               <th className="px-4 py-2">Sala solcitada</th>
               <th className="px-4 py-2">Estado</th>
-              <th className="px-4 py-2">Acciones</th>
+              <th className="px-4 py-3">Acciones</th>
             </tr>
-          </thead>
+        </thead>
           <tbody>
             {filteredAppointments.map((appointment) => (
-              <tr key={appointment.id} className="border-t border-gray-300">
+              <tr key={appointment.id} className="bg-blue-50 hover:bg-blue-300">    
                 <td className="px-4 py-2">{appointment.folio}</td>
                 <td className="px-4 py-2">{appointment.nombre_paciente} {appointment.ap_paterno} {appointment.ap_materno}</td>
                 <td className="px-4 py-2">{appointment.nombre_especialidad}</td>
                 <td className="px-4 py-2">{appointment.fecha_solicitada}</td>
-                <td className="px-4 py-2">{appointment.sala_quirofano}</td>
+                <td className="px-4 py-2 flex justify-center">{appointment.sala_quirofano}</td>
                 <td
                   className="px-4 py-2"
                   style={getEstadoColorStyle(appointment.estado_solicitud)}

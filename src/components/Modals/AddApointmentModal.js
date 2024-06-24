@@ -178,7 +178,7 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentId, onDeleteAppoin
 
               <div className="w-full">
                 <label className="block font-semibold text-gray-700 mb-2">Requiere insumos:</label>
-                <p className="bg-gray-200 p-3 rounded-lg">{patientData?.requiere_inusmos || 'N/A'}</p>
+                <p className="bg-gray-200 p-3 rounded-lg">{patientData?.req_insumo}</p>
               </div>
             </div>
           </div>
