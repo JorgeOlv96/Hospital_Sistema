@@ -666,7 +666,7 @@ function CrearSolicitud() {
                 htmlFor="procedimientos_paciente"
                 className="block font-semibold text-white mb-1"
               >
-                Procedimientos que se realizarán:
+                Procedimiento planeado:
               </label>
               <input
                 type="text"
