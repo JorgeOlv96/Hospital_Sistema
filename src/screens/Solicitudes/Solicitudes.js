@@ -298,7 +298,7 @@ function Solicitudes() {
         </thead>
         <tbody>
           {sortedSolicitudes.slice(startIndex, endIndex).map((solicitud) => (
-            <tr key={solicitud.id_solicitud} className="bg-blue-50 hover:bg-blue-100">
+            <tr key={solicitud.id_solicitud} className="bg-blue-50 hover:bg-blue-300">
               <td className="border px-4 py-2">{solicitud.id_solicitud}</td>
               <td className="border px-4 py-2">{solicitud.folio}</td>
               <td className="border px-4 py-2">{solicitud.nombre_paciente} {solicitud.ap_paterno} {solicitud.ap_materno}</td>
