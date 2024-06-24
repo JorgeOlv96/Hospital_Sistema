@@ -61,7 +61,7 @@ const CustomToolbar = ({ toolbar, goToTable, showTable }) => {
     <div className="flex flex-col gap-8 mb-8">
       <h1 className="text-xl font-semibold">Agenda</h1>
 
-
+    
       <div className="my-4">
         <Link to="/solicitudes/Programarsolicitud" className="btn btn-sm btn-secondary p-2 bg-[#001B58] text-white rounded-lg">
           Programar solicitud

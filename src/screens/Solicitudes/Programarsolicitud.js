@@ -1,9 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import Layout from '../../Layout';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import Layout from "../../Layout";
+import AddAppointmentModal from "../../components/Modals/AddApointmentModal";
 
-function Programarsolicitud() {
+function ProgramarSolicitud() {
   const [pendingAppointments, setPendingAppointments] = useState([]);
+  const [filter, setFilter] = useState({
+    fecha: "",
+    especialidad: "",
+    estado: "Pendiente",
+  });
+  const [selectedAppointment, setSelectedAppointment] = useState(null);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     fetchPendingAppointments();
@@ -11,60 +18,150 @@ function Programarsolicitud() {
 
   const fetchPendingAppointments = async () => {
     try {
-      const response = await fetch('http://localhost:4000/api/solicitudes/pendientes');
+      const response = await fetch(
+        "http://localhost:4000/api/solicitudes/pendientes"
+      );
       if (!response.ok) {
-        throw new Error('Network response was not ok');
+        throw new Error("Network response was not ok");
       }
       const data = await response.json();
-      setPendingAppointments(data); // Actualiza el estado con las solicitudes pendientes obtenidas
+      setPendingAppointments(data);
     } catch (error) {
-      console.error('Error fetching pending appointments:', error);
+      console.error("Error fetching pending appointments:", error);
     }
   };
 
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilter({
+      ...filter,
+      [name]: value,
+    });
+  };
+
+  const handleViewModal = (appointment) => {
+    setSelectedAppointment(appointment);
+    setOpen(true);
+  };
+
+  const handleModal = () => {
+    setOpen(false);
+  };
+
+  const handleDeleteAppointment = (appointmentId) => {
+    // Implementa la lógica para eliminar una cita aquí
+    console.log("Eliminar cita con id:", appointmentId);
+  };
+
+  const getEstadoColorStyle = (estado) => {
+    switch (estado.toLowerCase()) {
+      case "pendiente":
+        return { backgroundColor: "#FC8181", color: "black" }; // Color de fondo rojo y texto negro
+      default:
+        return {};
+    }
+  };
+
+  const filteredAppointments = pendingAppointments.filter((appointment) => {
+    return (
+      (filter.fecha === "" ||
+        appointment.fecha_solicitud.includes(filter.fecha)) &&
+      (filter.especialidad === "" ||
+        appointment.nombre_especialidad.includes(filter.especialidad)) &&
+      (filter.estado === "" ||
+        appointment.estado_solicitud.includes(filter.estado))
+    );
+  });
+
   return (
     <Layout>
-      <div className="overflow-auto" style={{ height: '800px' }}>
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+      <div className="p-4">
+        <h1 className="text-2xl font-bold mb-4">Solicitudes Pendientes</h1>
+
+        {open && selectedAppointment && (
+          <AddAppointmentModal
+            datas={pendingAppointments}
+            isOpen={open}
+            closeModal={handleModal}
+            onDeleteAppointment={handleDeleteAppointment}
+            appointmentId={selectedAppointment.id_solicitud}
+          />
+        )}
+
+        <div className="flex mb-4 space-x-4">
+          <div className="flex-1">
+            <label className="block font-semibold">Filtrar por Fecha:</label>
+            <input
+              type="date"
+              name="fecha"
+              value={filter.fecha}
+              onChange={handleFilterChange}
+              className="border border-gray-300 rounded-lg px-2 py-1 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]"
+            />
+          </div>
+
+          <div className="flex-1">
+            <label className="block font-semibold">
+              Filtrar por Especialidad:
+            </label>
+            <input
+              type="text"
+              name="especialidad"
+              value={filter.especialidad}
+              onChange={handleFilterChange}
+              className="border border-gray-300 rounded-lg px-2 py-1 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]"
+            />
+          </div>
+
+          <div className="flex-1">
+            <label className="block font-semibold">Estado de Solicitud:</label>
+            <input
+              type="text"
+              name="estado"
+              value={filter.estado}
+              onChange={handleFilterChange}
+              readOnly
+              className="border border-gray-300 rounded-lg px-2 py-1 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]"
+            />
+          </div>
+        </div>
+
+        <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+          <thead className="bg-[#304678] text-white">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Folio
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Nombre del Paciente
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Fecha Solicitada
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Sala Solicitada
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Especialidad
-              </th>
+              <th className="px-4 py-2">Fecha de Solicitud</th>
+              <th className="px-4 py-2">Especialidad</th>
+              <th className="px-4 py-2">CURP</th>
+              <th className="px-4 py-2">Paciente</th>
+              <th className="px-4 py-2">Estado</th>
+              <th className="px-4 py-2">Acciones</th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {pendingAppointments.map((appointment) => (
-              <tr key={appointment.folio}>
-                <td className="px-6 py-4 whitespace-nowrap">{appointment.folio}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{`${appointment.nombre_paciente} ${appointment.ap_paterno} ${appointment.ap_materno}`}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{appointment.fecha_solicitud}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{appointment.sala_quirofano}</td>
-                <td className="px-6 py-4 whitespace-nowrap">{appointment.nombre_especialidad}</td>
+          <tbody>
+            {filteredAppointments.map((appointment) => (
+              <tr key={appointment.id} className="border-t border-gray-300">
+                <td className="px-4 py-2">{appointment.fecha_solicitud}</td>
+                <td className="px-4 py-2">{appointment.nombre_especialidad}</td>
+                <td className="px-4 py-2">{appointment.curp}</td>
+                <td className="px-4 py-2">{appointment.nombre_paciente}</td>
+                <td className="px-4 py-2" style={getEstadoColorStyle(appointment.estado_solicitud)}>
+                  {appointment.estado_solicitud}
+                </td>
+                <td className="px-4 py-2 flex justify-center">
+                  <button
+                    onClick={() => handleViewModal(appointment)}
+                    className="bg-[#001B58] text-white px-5 py-2 rounded-md hover:bg-blue-800"
+                  >
+                    Programar
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-      <div className="flex justify-end mt-4">
-        <Link to="/solicitudes/Programarsolicitud" className="btn btn-secondary bg-[#001B58] text-white rounded-lg px-4 py-2">
-          Programar
-        </Link>
-      </div>
     </Layout>
   );
 }
 
-export default Programarsolicitud;
+export default ProgramarSolicitud;
