@@ -245,6 +245,17 @@ function Appointments() {
         <BiPlus className="text-2xl" />
       </button>
       <div className="relative">
+        {/* Renderizamos el CustomToolbar siempre */}
+        <CustomToolbar
+          toolbar={{
+            date: new Date(),
+            view: showTable ? 'table' : 'month',
+            onNavigate: () => {},
+            onView: () => {},
+          }}
+          goToTable={goToTable}
+          showTable={showTable}
+        />
         {showTable ? (
           <div className="overflow-auto" style={{ height: '800px' }}>
             <table className="min-w-full divide-y divide-gray-200">
@@ -326,9 +337,7 @@ function Appointments() {
             // eliminar vista de agenda
             views={['month', 'day', 'week']}
             components={{
-              toolbar: (props) => (
-                <CustomToolbar {...props} toolbar={props} goToTable={goToTable} showTable={showTable} />
-              ),
+              toolbar: () => null, // No renderizamos el toolbar dentro del calendario
             }}
           />
         )}
