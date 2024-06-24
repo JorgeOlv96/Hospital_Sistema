@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../../Layout";
 import AddAppointmentModal from "../../components/Modals/AddApointmentModal";
-import { Link } from 'react-router-dom';
-
+import { Link } from "react-router-dom";
 
 function ProgramarSolicitud() {
   const [pendingAppointments, setPendingAppointments] = useState([]);
@@ -77,20 +76,16 @@ function ProgramarSolicitud() {
 
   return (
     <Layout>
-      <div className="p-4">
-        <h1 className="text-2xl font-bold mb-4">Solicitudes Pendientes</h1>
-
-      <div className="mb-4">
-        <Link to="/appointments" className="bg-[#001B58] hover:bg-[#001B58] text-white font-bold py-2 px-4 rounded inline-flex items-center">
-          <svg className="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M8.707 4.293a1 1 0 0 1 1.414 0l5 5a1 1 0 0 1 0 1.414l-5 5a1 1 0 0 1-1.414-1.414L13.586 11H3a1 1 0 1 1 0-2h10.586l-4.293-4.293a1 1 0 0 1 0-1.414z" clipRule="evenodd" />
-          </svg>
-          <span>Ver agenda</span>
-        </Link>
-      </div>
-
-
-
+        <div className="flex flex-col gap-8 mb-8">
+      <h1 className="text-xl font-semibold">Solicitudes pendientes</h1>
+      <div className="my-4">
+          <Link
+            to="/appointments"
+            className="bg-[#001B58] hover:bg-[#001B58] text-white py-2 px-4 rounded inline-flex items-center"
+          >
+            <span>Ver agenda</span>
+          </Link>
+        </div>
 
         {open && selectedAppointment && (
           <AddAppointmentModal
@@ -158,7 +153,10 @@ function ProgramarSolicitud() {
                 <td className="px-4 py-2">{appointment.nombre_especialidad}</td>
                 <td className="px-4 py-2">{appointment.curp}</td>
                 <td className="px-4 py-2">{appointment.nombre_paciente}</td>
-                <td className="px-4 py-2" style={getEstadoColorStyle(appointment.estado_solicitud)}>
+                <td
+                  className="px-4 py-2"
+                  style={getEstadoColorStyle(appointment.estado_solicitud)}
+                >
                   {appointment.estado_solicitud}
                 </td>
                 <td className="px-4 py-2 flex justify-center">
