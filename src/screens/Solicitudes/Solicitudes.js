@@ -268,9 +268,6 @@ function Solicitudes() {
 </div>
 
 
-
-
-
     <div className="overflow-x-auto">
       <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
         <thead className="bg-[#304678] text-white">
