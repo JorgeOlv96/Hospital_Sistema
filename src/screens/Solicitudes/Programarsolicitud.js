@@ -152,9 +152,9 @@ function ProgramarSolicitud() {
               <tr key={appointment.id} className="border-t border-gray-300">
                 <td className="px-4 py-2">{appointment.folio}</td>
                 <td className="px-4 py-2">{appointment.nombre_paciente} {appointment.ap_paterno} {appointment.ap_materno}</td>
-                <td className="px-4 py-2">{appointment.nombre_especialidad}</td>
-                <td className="px-4 py-2">{appointment.fecha_solicitada}</td>
-                <td className="px-4 py-2">{appointment.sala_quirofano}</td>
+                <td className="px-4 py-2 ">{appointment.nombre_especialidad}</td>
+                <td className="px-4 py-2 ">{appointment.fecha_solicitada}</td>
+                <td className="px-4 py-2 flex justify-center">{appointment.sala_quirofano}</td>
                 <td
                   className="px-4 py-2"
                   style={getEstadoColorStyle(appointment.estado_solicitud)}
