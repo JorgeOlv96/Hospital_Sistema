@@ -47,13 +47,6 @@ const CustomToolbar = (toolbar) => {
   const goToDay = () => {
     toolbar.onView('day');
   };
-
-  const goToTable = () => {
-    setShowTable(!showTable); // Alternar entre mostrar y ocultar la tabla
-    if (!showTable) {
-      fetchPendingAppointments(); // Si se muestra la tabla, obtén las solicitudes pendientes del backend
-    }
-  };
   
 
   // view button group
@@ -132,13 +125,7 @@ const fetchPendingAppointments = async () => {
           </select>
         </div>
         {/* filter */}
-        <div className="md:col-span-2 grid grid-cols-4 rounded-md border border-subMain">
-          <button
-            onClick={goToTable}
-            className="border-l text-xl py-2 flex-colo border-subMain text-subMain"
-          >
-            <BiTable />
-          </button>
+        <div className="md:col-span-2 grid grid-cols-3 rounded-md border border-subMain">
           {viewNamesGroup.map((item, index) => (
             <button
               key={index}
