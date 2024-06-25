@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../../Layout";
-import AddAppointmentModal from "../../components/Modals/AddApointmentModal";
+import AddAppointmentModalPending from "../../components/Modals/AddApointmentModalPending";
 import { Link } from "react-router-dom";
 
 function ProgramarSolicitud() {
@@ -76,19 +76,30 @@ function ProgramarSolicitud() {
 
   return (
     <Layout>
-        <div className="flex flex-col gap-8 mb-8">
-      <h1 className="text-xl font-semibold">Solicitudes pendientes</h1>
-      <div className="my-4">
-          <Link
-            to="/appointments"
-            className="bg-[#001B58] hover:bg-[#001B58] text-white py-2 px-4 rounded inline-flex items-center"
-          >
-            <span>Ver agenda</span>
-          </Link>
+      <div className="flex flex-col gap-8 mb-8">
+        <h1 className="text-xl font-semibold">Solicitudes pendientes</h1>
+        <div className="flex my-4 space-x-4">
+          <div>
+            <Link
+              to="/appointments"
+              className="bg-[#001B58] hover:bg-[#001B58] text-white py-2 px-4 rounded inline-flex items-center"
+            >
+              <span>Ver agenda</span>
+            </Link>
+          </div>
+
+          <div>
+            <Link
+              to="/solicitudes"
+              className="bg-[#001B58] hover:bg-[#001B58] text-white py-2 px-4 rounded inline-flex items-center"
+            >
+              <span>Ver todas las solicitudes</span>
+            </Link>
+          </div>
         </div>
 
         {open && selectedAppointment && (
-          <AddAppointmentModal
+          <AddAppointmentModalPending
             datas={pendingAppointments}
             isOpen={open}
             closeModal={handleModal}
@@ -136,7 +147,7 @@ function ProgramarSolicitud() {
         </div>
 
         <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
-        <thead className="bg-[#304678] text-white">
+          <thead className="bg-[#304678] text-white">
             <tr>
               <th className="px-4 py-2">Folio</th>
               <th className="px-4 py-2">Nombre del paciente</th>
@@ -146,15 +157,20 @@ function ProgramarSolicitud() {
               <th className="px-4 py-2">Estado</th>
               <th className="px-4 py-3">Acciones</th>
             </tr>
-        </thead>
+          </thead>
           <tbody>
             {filteredAppointments.map((appointment) => (
-              <tr key={appointment.id} className="bg-blue-50 hover:bg-blue-300">    
+              <tr key={appointment.id} className="bg-blue-50 hover:bg-blue-300">
                 <td className="px-4 py-2">{appointment.folio}</td>
-                <td className="px-4 py-2">{appointment.nombre_paciente} {appointment.ap_paterno} {appointment.ap_materno}</td>
+                <td className="px-4 py-2">
+                  {appointment.nombre_paciente} {appointment.ap_paterno}{" "}
+                  {appointment.ap_materno}
+                </td>
                 <td className="px-4 py-2">{appointment.nombre_especialidad}</td>
                 <td className="px-4 py-2">{appointment.fecha_solicitada}</td>
-                <td className="px-4 py-2 flex justify-center">{appointment.sala_quirofano}</td>
+                <td className="px-4 py-2 flex justify-center">
+                  {appointment.sala_quirofano}
+                </td>
                 <td
                   className="px-4 py-2"
                   style={getEstadoColorStyle(appointment.estado_solicitud)}
