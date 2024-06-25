@@ -29,16 +29,6 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentId, onDeleteAppoin
     }
   }, [isOpen, appointmentId]);
 
-  const handlePrint = () => {
-    const content = modalRef.current.innerHTML;
-    const printWindow = window.open('', '', 'width=600,height=600');
-    printWindow.document.write('<html><head><title>Print</title></head><body>');
-    printWindow.document.write(content);
-    printWindow.document.write('</body></html>');
-    printWindow.document.close();
-    printWindow.print();
-  };
-
   const handleDelete = async () => {
     try {
       const response = await fetch(`http://localhost:4000/api/solicitudes/${appointmentId}`, {
