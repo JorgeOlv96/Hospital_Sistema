@@ -12,7 +12,7 @@ import {
 } from "react-icons/bi";
 import { HiOutlineViewGrid } from "react-icons/hi";
 import { HiOutlineCalendarDays } from "react-icons/hi2";
-import AddAppointmentModalPending from "../components/Modals/AddApointmentModalPending";
+import AddAppointmentModalProgramado from "../components/Modals/AddApointmentModalProgramado"; // Importa el modal adecuado
 import { Link, useNavigate } from "react-router-dom";
 
 moment.locale("es"); // Configura moment para usar el idioma español
@@ -143,15 +143,9 @@ const CustomToolbar = (toolbar) => {
 
 function Appointments() {
   const localizer = momentLocalizer(moment);
-  const [open, setOpen] = useState(false);
-  const [data, setData] = useState({});
+  const [openModal, setOpenModal] = useState(false); // Estado para controlar la apertura del modal
+  const [selectedEvent, setSelectedEvent] = useState({}); // Estado para almacenar los datos del evento seleccionado
   const [appointments, setAppointments] = useState([]);
-
-  // handle modal close
-  const handleClose = () => {
-    setOpen(!open);
-    setData({});
-  };
 
   // Fetch appointments from API
   const fetchAppointments = async () => {
@@ -196,27 +190,28 @@ function Appointments() {
 
   // onClick event handler
   const handleEventClick = (event) => {
-    setData(event);
-    setOpen(!open);
+    setSelectedEvent(event); // Establecer el evento seleccionado
+    setOpenModal(true); // Abrir el modal
+  };
+
+  // handle modal close
+  const handleCloseModal = () => {
+    setOpenModal(false); // Cerrar el modal
+    setSelectedEvent({}); // Limpiar los datos del evento seleccionado
   };
 
   return (
     <Layout>
-      {open && (
-        <AddAppointmentModalPending
-          datas={data}
-          isOpen={open}
-          closeModal={handleClose}
-        />
-      )}
-      {/* calendario */}
-      <button
-        onClick={handleClose}
-        className="w-16 animate-bounce h-16 border border-border z-50 bg-subMain text-white rounded-full flex-colo fixed bottom-8 right-12 button-fb"
-      >
-        <BiPlus className="text-2xl" />
-      </button>
-
+      <AddAppointmentModalProgramado
+        closeModal={handleCloseModal}
+        isOpen={openModal}
+        appointmentId={selectedEvent.id} // Pasar el ID del evento seleccionado al modal
+        onSuspendAppointment={(appointmentId) => {
+          // Lógica para actualizar la lista de citas después de suspender una cita
+          // Esto puede ser una función para actualizar la lista o recargar los datos
+          fetchAppointments();
+        }}
+      />
       <Calendar
         localizer={localizer}
         events={appointments}
@@ -261,7 +256,6 @@ function Appointments() {
         }}
         // eliminar vista de agenda
         views={["month", "day", "week"]}
-        // toolbar={false}|
         components={{ toolbar: CustomToolbar }}
       />
     </Layout>
