@@ -14,6 +14,7 @@ import { HiOutlineViewGrid } from "react-icons/hi";
 import { HiOutlineCalendarDays } from "react-icons/hi2";
 import AddAppointmentModalPending from "../components/Modals/AddApointmentModalPending";
 import { Link, useNavigate } from "react-router-dom";
+import AddAppointmentModalProgramado from "../../components/Modals/AddApointmentModalProgramado";
 
 moment.locale("es"); // Configura moment para usar el idioma español
 
@@ -51,6 +52,9 @@ const CustomToolbar = (toolbar) => {
     toolbar.onView("day");
   };
 
+
+
+  
   // view button group
   const viewNamesGroup = [
     { view: "month", label: "Mes" },
@@ -147,6 +151,8 @@ function Appointments() {
   const [data, setData] = useState({});
   const [appointments, setAppointments] = useState([]);
 
+
+  
   // handle modal close
   const handleClose = () => {
     setOpen(!open);
@@ -196,19 +202,21 @@ function Appointments() {
 
   // onClick event handler
   const handleEventClick = (event) => {
-    setData(event);
-    setOpen(!open);
+    setSelectedAppointment(appointment);
+    setOpen(true);
   };
 
   return (
     <Layout>
-      {open && (
-        <AddAppointmentModalPending
-          datas={data}
-          isOpen={open}
-          closeModal={handleClose}
-        />
-      )}
+        {open && selectedAppointment && (
+          <AddAppointmentModalProgramado
+            datas={pendingAppointments}
+            isOpen={open}
+            closeModal={handleModal}
+            onDeleteAppointment={handleDeleteAppointment}
+            appointmentId={selectedAppointment.id_solicitud}
+          />
+        )}
       {/* calendario */}
       <button
         onClick={handleClose}
