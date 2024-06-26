@@ -146,49 +146,55 @@ function ProgramarSolicitud() {
           </div>
         </div>
 
-        <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
-          <thead className="bg-[#304678] text-white">
-            <tr>
-              <th className="px-4 py-2">Folio</th>
-              <th className="px-4 py-2">Nombre del paciente</th>
-              <th className="px-4 py-2">Especialidad</th>
-              <th className="px-4 py-2">Fecha slicitada</th>
-              <th className="px-4 py-2">Sala solcitada</th>
-              <th className="px-4 py-2">Estado</th>
-              <th className="px-4 py-3">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredAppointments.map((appointment) => (
-              <tr key={appointment.id} className="bg-blue-50 hover:bg-blue-300">
-                <td className="px-4 py-2">{appointment.folio}</td>
-                <td className="px-4 py-2">
-                  {appointment.nombre_paciente} {appointment.ap_paterno}{" "}
-                  {appointment.ap_materno}
-                </td>
-                <td className="px-4 py-2">{appointment.nombre_especialidad}</td>
-                <td className="px-4 py-2">{appointment.fecha_solicitada}</td>
-                <td className="px-4 py-2 flex justify-center">
-                  {appointment.sala_quirofano}
-                </td>
-                <td
-                  className="px-4 py-2"
-                  style={getEstadoColorStyle(appointment.estado_solicitud)}
-                >
-                  {appointment.estado_solicitud}
-                </td>
-                <td className="px-4 py-2 flex justify-center">
-                  <button
-                    onClick={() => handleViewModal(appointment)}
-                    className="bg-[#001B58] text-white px-5 py-2 rounded-md hover:bg-blue-800"
-                  >
-                    Programar
-                  </button>
-                </td>
+        {filteredAppointments.length === 0 ? (
+          <div className="text-center text-gray-500 mt-4">
+            No hay solicitudes pendientes :)
+          </div>
+        ) : (
+          <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+            <thead className="bg-[#304678] text-white">
+              <tr>
+                <th className="px-4 py-2">Folio</th>
+                <th className="px-4 py-2">Nombre del paciente</th>
+                <th className="px-4 py-2">Especialidad</th>
+                <th className="px-4 py-2">Fecha solicitada</th>
+                <th className="px-4 py-2">Sala solicitada</th>
+                <th className="px-4 py-2">Estado</th>
+                <th className="px-4 py-3">Acciones</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {filteredAppointments.map((appointment) => (
+                <tr key={appointment.id} className="bg-blue-50 hover:bg-blue-300">
+                  <td className="px-4 py-2">{appointment.folio}</td>
+                  <td className="px-4 py-2">
+                    {appointment.nombre_paciente} {appointment.ap_paterno}{" "}
+                    {appointment.ap_materno}
+                  </td>
+                  <td className="px-4 py-2">{appointment.nombre_especialidad}</td>
+                  <td className="px-4 py-2">{appointment.fecha_solicitada}</td>
+                  <td className="px-4 py-2 flex justify-center">
+                    {appointment.sala_quirofano}
+                  </td>
+                  <td
+                    className="px-4 py-2"
+                    style={getEstadoColorStyle(appointment.estado_solicitud)}
+                  >
+                    {appointment.estado_solicitud}
+                  </td>
+                  <td className="px-4 py-2 flex justify-center">
+                    <button
+                      onClick={() => handleViewModal(appointment)}
+                      className="bg-[#001B58] text-white px-5 py-2 rounded-md hover:bg-blue-800"
+                    >
+                      Programar
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </Layout>
   );
