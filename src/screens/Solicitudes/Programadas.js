@@ -176,7 +176,7 @@ function Solicitudesprogramadas() {
                 <th className="px-4 py-2">Folio</th>
                 <th className="px-4 py-2">Nombre del paciente</th>
                 <th className="px-4 py-2">Especialidad</th>
-                <th className="px-4 py-2">Fecha solicitada</th>
+                <th className="px-4 py-2">Fecha programada</th>
                 <th className="px-4 py-2">Sala solicitada</th>
                 <th className="px-4 py-2">Estado</th>
                 <th className="px-4 py-3">Acciones</th>
@@ -191,7 +191,7 @@ function Solicitudesprogramadas() {
                     {appointment.ap_materno}
                   </td>
                   <td className="px-4 py-2">{appointment.nombre_especialidad}</td>
-                  <td className="px-4 py-2">{appointment.fecha_solicitada}</td>
+                  <td className="px-4 py-2">{appointment.fecha_programada}</td>
                   <td className="px-4 py-2 flex justify-center">
                     {appointment.sala_quirofano}
                   </td>

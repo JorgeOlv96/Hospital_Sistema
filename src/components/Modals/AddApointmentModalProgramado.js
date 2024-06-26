@@ -197,11 +197,11 @@ function AddAppointmentModalProgramado({
                   Fecha asignada:
                 </label>
                 <input
-                  type="date"
+                  type="text"
                   name="fecha_programada"
                   value={patientData.fecha_programada || ""}
-                  onChange={handleChange}
                   className="bg-white p-3 rounded-lg w-full"
+                  readOnly
                 />
               </div>
 
@@ -210,11 +210,11 @@ function AddAppointmentModalProgramado({
                   Hora asignada:
                 </label>
                 <input
-                  type="time"
+                  type="text"
                   name="hora_asignada"
                   value={patientData.hora_asignada || ""}
-                  onChange={handleChange}
                   className="bg-white p-3 rounded-lg w-full"
+                  readOnly
                 />
               </div>
             </div>
@@ -271,8 +271,8 @@ function AddAppointmentModalProgramado({
               </div>
 
               <div className="w-full">
-                <label className="block font-semibold text-gray-700 mb-2">
-                Anestesiólogo asignado:
+                <label className="block font-semibold text-gray-700mb-2">
+                  Anestesiólogo asignado:
                 </label>
                 <input
                   type="text"
