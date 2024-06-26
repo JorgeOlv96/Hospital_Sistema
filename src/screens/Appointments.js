@@ -153,34 +153,22 @@ function Appointments() {
     setData({});
   };
 
-  // Fetch appointments from API
-  const fetchAppointments = async () => {
-    try {
-      const response = await fetch("http://localhost:4000/api/solicitudes/programadas");
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const data = await response.json();
-
-      const transformedData = data.map((appointment) => ({
-        id: appointment.id_solicitud,
-        start: moment(appointment.fecha_programada + 'T' + appointment.hora_asignada).toDate(),
-        end: moment(appointment.fecha_programada + 'T' + appointment.hora_asignada).add(1, 'hours').toDate(), // Ajusta la duración si es necesario
-        title: appointment.nombre_paciente,
-        color: "#304678",
-        message: appointment.mensaje || "",
-        service: appointment.servicio || "",
-      }));
-
-      setAppointments(transformedData);
-    } catch (error) {
-      console.error("Error fetching appointments:", error);
-    }
-  };
-
-  useEffect(() => {
-    fetchAppointments();
-  }, []);
+  const events = [
+    {
+      id: 0,
+      start: moment({ hours: 7 }).toDate(),
+      end: moment({ hours: 9 }).toDate(),
+      color: "#001B58",
+      title: "John Doe",
+      message: "No está seguro sobre la hora",
+      service: servicesData[1],
+      shareData: {
+        email: true,
+        sms: true,
+        whatsapp: false,
+      },
+    },
+  ];
 
   // onClick event handler
   const handleEventClick = (event) => {
@@ -198,12 +186,6 @@ function Appointments() {
         />
       )}
       {/* calendario */}
-      <button
-        onClick={handleClose}
-        className="w-16 animate-bounce h-16 border border-border z-50 bg-subMain text-white rounded-full flex-colo fixed bottom-8 right-12 button-fb"
-      >
-        <BiPlus className="text-2xl" />
-      </button>
 
       <Calendar
         localizer={localizer}
@@ -225,7 +207,7 @@ function Appointments() {
         // estilo personalizado para eventos
         eventPropGetter={(event) => {
           const style = {
-            backgroundColor: event.color,
+            backgroundColor: "#001B58",
             borderRadius: "10px",
             color: "white",
             border: "1px",
