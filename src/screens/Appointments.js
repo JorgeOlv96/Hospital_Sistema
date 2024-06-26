@@ -143,8 +143,8 @@ const CustomToolbar = (toolbar) => {
 
 function Appointments() {
   const localizer = momentLocalizer(moment);
-  const [open, setOpen] = React.useState(false);
-  const [data, setData] = React.useState({});
+  const [open, setOpen] = useState(false);
+  const [data, setData] = useState({});
   const [appointments, setAppointments] = useState([]);
 
   // handle modal close
@@ -163,22 +163,21 @@ function Appointments() {
       const data = await response.json();
 
       const transformedData = data.map((appointment) => {
+        // Calcular la hora de inicio y fin del evento
         const startDateTime = moment(
           `${appointment.fecha_programada}T${appointment.hora_asignada}`,
           "YYYY-MM-DDTHH:mm"
         ).toDate();
-        const endDateTime = moment(
-          `${appointment.fecha_programada}T${appointment.hora_asignada}`,
-          "YYYY-MM-DDTHH:mm"
-        )
-          .add(1, "hours")
+
+        const endDateTime = moment(startDateTime)
+          .add(appointment.tiempo_estimado, "minutes")
           .toDate();
 
         return {
           id: appointment.id_solicitud,
           start: startDateTime,
           end: endDateTime,
-          title: appointment.nombre_paciente,
+          title: appointment.folio,
           color: "#304678",
           message: appointment.mensaje || "",
           service: appointment.servicio || "",
