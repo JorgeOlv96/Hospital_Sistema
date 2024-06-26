@@ -186,35 +186,6 @@ function Appointments() {
         whatsapp: false,
       },
     },
-    {
-      id: 1,
-      start: moment({ hours: 12 }).toDate(),
-      end: moment({ hours: 13 }).toDate(),
-      color: "#001B58",
-      title: "Minah Mmassy",
-      message: "Viene para un chequeo",
-      service: servicesData[2],
-      shareData: {
-        email: false,
-        sms: true,
-        whatsapp: false,
-      },
-    },
-
-    {
-      id: 2,
-      start: moment({ hours: 14 }).toDate(),
-      end: moment({ hours: 17 }).toDate(),
-      color: "#001B58",
-      title: "Irene P. Smith",
-      message: "Viene para un chequeo, pero no está segura sobre la hora",
-      service: servicesData[3],
-      shareData: {
-        email: true,
-        sms: true,
-        whatsapp: true,
-      },
-    },
   ];
 
   // onClick event handler
@@ -235,12 +206,6 @@ function Appointments() {
         />
       )}
       {/* calendario */}
-      <button
-        onClick={handleClose}
-        className="w-16 animate-bounce h-16 border border-border z-50 bg-subMain text-white rounded-full flex-colo fixed bottom-8 right-12 button-fb"
-      >
-        <BiPlus className="text-2xl" />
-      </button>
 
       <Calendar
         localizer={localizer}
@@ -262,7 +227,7 @@ function Appointments() {
         // estilo personalizado para eventos
         eventPropGetter={(event) => {
           const style = {
-            backgroundColor: "#66B5A3",
+            backgroundColor: "#001B58",
             borderRadius: "10px",
             color: "white",
             border: "1px",
