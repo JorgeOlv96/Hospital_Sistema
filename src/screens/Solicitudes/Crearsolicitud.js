@@ -295,6 +295,7 @@ function CrearSolicitud() {
                 name="curp"
                 value={formData.curp}
                 onChange={handleInputChange}
+                maxLength={18}
                 class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full"
               />
             </div>

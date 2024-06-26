@@ -12,8 +12,7 @@ import {
 } from "react-icons/bi";
 import { HiOutlineViewGrid } from "react-icons/hi";
 import { HiOutlineCalendarDays } from "react-icons/hi2";
-import AddAppointmentModal from "../components/Modals/AddApointmentModal";
-import { servicesData } from "../components/Datas";
+import AddAppointmentModalPending from "../components/Modals/AddApointmentModalPending";
 import { Link, useNavigate } from "react-router-dom";
 
 moment.locale("es"); // Configura moment para usar el idioma español
@@ -58,24 +57,6 @@ const CustomToolbar = (toolbar) => {
     { view: "week", label: "Semana" },
     { view: "day", label: "Día" },
   ];
-
-  const [pendingAppointments, setPendingAppointments] = useState([]);
-  const [showTable, setShowTable] = useState(false);
-
-  const fetchPendingAppointments = async () => {
-    try {
-      const response = await fetch(
-        "http://localhost:4000/api/solicitudes/pendientes"
-      );
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const data = await response.json();
-      setPendingAppointments(data); // Actualiza el estado con las solicitudes pendientes obtenidas
-    } catch (error) {
-      console.error("Error fetching pending appointments:", error);
-    }
-  };
 
   return (
     <div className="flex flex-col gap-8 mb-8">
@@ -164,6 +145,7 @@ function Appointments() {
   const localizer = momentLocalizer(moment);
   const [open, setOpen] = React.useState(false);
   const [data, setData] = React.useState({});
+  const [appointments, setAppointments] = useState([]);
 
   // handle modal close
   const handleClose = () => {
@@ -171,51 +153,34 @@ function Appointments() {
     setData({});
   };
 
-  const events = [
-    {
-      id: 0,
-      start: moment({ hours: 7 }).toDate(),
-      end: moment({ hours: 9 }).toDate(),
-      color: "#001B58",
-      title: "John Doe",
-      message: "No está seguro sobre la hora",
-      service: servicesData[1],
-      shareData: {
-        email: true,
-        sms: true,
-        whatsapp: false,
-      },
-    },
-    {
-      id: 1,
-      start: moment({ hours: 12 }).toDate(),
-      end: moment({ hours: 13 }).toDate(),
-      color: "#001B58",
-      title: "Minah Mmassy",
-      message: "Viene para un chequeo",
-      service: servicesData[2],
-      shareData: {
-        email: false,
-        sms: true,
-        whatsapp: false,
-      },
-    },
+  // Fetch appointments from API
+  const fetchAppointments = async () => {
+    try {
+      const response = await fetch("http://localhost:4000/api/solicitudes/programadas");
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
 
-    {
-      id: 2,
-      start: moment({ hours: 14 }).toDate(),
-      end: moment({ hours: 17 }).toDate(),
-      color: "#001B58",
-      title: "Irene P. Smith",
-      message: "Viene para un chequeo, pero no está segura sobre la hora",
-      service: servicesData[3],
-      shareData: {
-        email: true,
-        sms: true,
-        whatsapp: true,
-      },
-    },
-  ];
+      const transformedData = data.map((appointment) => ({
+        id: appointment.id_solicitud,
+        start: moment(appointment.fecha_programada + 'T' + appointment.hora_asignada).toDate(),
+        end: moment(appointment.fecha_programada + 'T' + appointment.hora_asignada).add(1, 'hours').toDate(), // Ajusta la duración si es necesario
+        title: appointment.nombre_paciente,
+        color: "#304678",
+        message: appointment.mensaje || "",
+        service: appointment.servicio || "",
+      }));
+
+      setAppointments(transformedData);
+    } catch (error) {
+      console.error("Error fetching appointments:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchAppointments();
+  }, []);
 
   // onClick event handler
   const handleEventClick = (event) => {
@@ -226,12 +191,10 @@ function Appointments() {
   return (
     <Layout>
       {open && (
-        <AddAppointmentModal
+        <AddAppointmentModalPending
           datas={data}
           isOpen={open}
-          closeModal={() => {
-            handleClose();
-          }}
+          closeModal={handleClose}
         />
       )}
       {/* calendario */}
@@ -244,7 +207,7 @@ function Appointments() {
 
       <Calendar
         localizer={localizer}
-        events={events}
+        events={appointments}
         startAccessor="start"
         endAccessor="end"
         style={{
@@ -252,17 +215,17 @@ function Appointments() {
           height: 900,
           marginBottom: 50,
         }}
-        onSelectEvent={(event) => handleEventClick(event)}
+        onSelectEvent={handleEventClick}
         defaultDate={new Date()}
         timeslots={1}
         resizable
         step={60}
-        selectable={true}
+        selectable
         //
         // estilo personalizado para eventos
         eventPropGetter={(event) => {
           const style = {
-            backgroundColor: "#66B5A3",
+            backgroundColor: event.color,
             borderRadius: "10px",
             color: "white",
             border: "1px",
