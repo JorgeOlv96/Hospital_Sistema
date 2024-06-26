@@ -12,7 +12,7 @@ import {
 } from "react-icons/bi";
 import { HiOutlineViewGrid } from "react-icons/hi";
 import { HiOutlineCalendarDays } from "react-icons/hi2";
-import AddAppointmentModalPending from "../components/Modals/AddApointmentModalPending";
+import AddAppointmentModalProgramado from "../components/Modals/AddApointmentModalProgramado"; // Importa el modal adecuado
 import { Link, useNavigate } from "react-router-dom";
 import AddAppointmentModalProgramado from "../../components/Modals/AddApointmentModalProgramado";
 
@@ -147,10 +147,11 @@ const CustomToolbar = (toolbar) => {
 
 function Appointments() {
   const localizer = momentLocalizer(moment);
-  const [open, setOpen] = useState(false);
-  const [data, setData] = useState({});
+  const [openModal, setOpenModal] = useState(false); // Estado para controlar la apertura del modal
+  const [selectedEvent, setSelectedEvent] = useState({}); // Estado para almacenar los datos del evento seleccionado
   const [appointments, setAppointments] = useState([]);
 
+<<<<<<< HEAD
 
   
   // handle modal close
@@ -159,6 +160,8 @@ function Appointments() {
     setData({});
   };
 
+=======
+>>>>>>> 6dcdf5cd4e3b8809da1cb4dca8be920016963b17
   // Fetch appointments from API
   const fetchAppointments = async () => {
     try {
@@ -202,12 +205,24 @@ function Appointments() {
 
   // onClick event handler
   const handleEventClick = (event) => {
+<<<<<<< HEAD
     setSelectedAppointment(appointment);
     setOpen(true);
+=======
+    setSelectedEvent(event); // Establecer el evento seleccionado
+    setOpenModal(true); // Abrir el modal
+  };
+
+  // handle modal close
+  const handleCloseModal = () => {
+    setOpenModal(false); // Cerrar el modal
+    setSelectedEvent({}); // Limpiar los datos del evento seleccionado
+>>>>>>> 6dcdf5cd4e3b8809da1cb4dca8be920016963b17
   };
 
   return (
     <Layout>
+<<<<<<< HEAD
         {open && selectedAppointment && (
           <AddAppointmentModalProgramado
             datas={pendingAppointments}
@@ -225,6 +240,18 @@ function Appointments() {
         <BiPlus className="text-2xl" />
       </button>
 
+=======
+      <AddAppointmentModalProgramado
+        closeModal={handleCloseModal}
+        isOpen={openModal}
+        appointmentId={selectedEvent.id} // Pasar el ID del evento seleccionado al modal
+        onSuspendAppointment={(appointmentId) => {
+          // Lógica para actualizar la lista de citas después de suspender una cita
+          // Esto puede ser una función para actualizar la lista o recargar los datos
+          fetchAppointments();
+        }}
+      />
+>>>>>>> 6dcdf5cd4e3b8809da1cb4dca8be920016963b17
       <Calendar
         localizer={localizer}
         events={appointments}
@@ -269,7 +296,6 @@ function Appointments() {
         }}
         // eliminar vista de agenda
         views={["month", "day", "week"]}
-        // toolbar={false}|
         components={{ toolbar: CustomToolbar }}
       />
     </Layout>
