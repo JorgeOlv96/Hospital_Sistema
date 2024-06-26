@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../../Layout";
-import AddAppointmentModalPending from "../../components/Modals/AddApointmentModalPending";
+import AddAppointmentModalProgramado from "../../components/Modals/AddApointmentModalProgramado";
 import { Link } from "react-router-dom";
 
-function ProgramarSolicitud() {
+function Solicitudesprogramadas() {
   const [pendingAppointments, setPendingAppointments] = useState([]);
   const [filter, setFilter] = useState({
     fecha: "",
     especialidad: "",
-    estado: "Pendiente",
+    estado: "Programada",
   });
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [open, setOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const appointmentsPerPage = 10;
 
   useEffect(() => {
     fetchPendingAppointments();
@@ -20,7 +22,7 @@ function ProgramarSolicitud() {
   const fetchPendingAppointments = async () => {
     try {
       const response = await fetch(
-        "http://localhost:4000/api/solicitudes/pendientes"
+        "http://localhost:4000/api/solicitudes/programadas"
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -38,6 +40,7 @@ function ProgramarSolicitud() {
       ...filter,
       [name]: value,
     });
+    setCurrentPage(1); // Reset to first page on filter change
   };
 
   const handleViewModal = (appointment) => {
@@ -74,6 +77,19 @@ function ProgramarSolicitud() {
     );
   });
 
+  const indexOfLastAppointment = currentPage * appointmentsPerPage;
+  const indexOfFirstAppointment = indexOfLastAppointment - appointmentsPerPage;
+  const currentAppointments = filteredAppointments.slice(
+    indexOfFirstAppointment,
+    indexOfLastAppointment
+  );
+
+  const totalPages = Math.ceil(filteredAppointments.length / appointmentsPerPage);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
   return (
     <Layout>
       <div className="flex flex-col gap-8 mb-8">
@@ -90,7 +106,7 @@ function ProgramarSolicitud() {
 
           <div>
             <Link
-              to="/solicitudes/Solicitudesprogramadas"
+              to="/solicitudes"
               className="bg-[#001B58] hover:bg-[#001B58] text-white py-2 px-4 rounded inline-flex items-center"
             >
               <span>Ver todas las programadas</span>
@@ -99,7 +115,7 @@ function ProgramarSolicitud() {
         </div>
 
         {open && selectedAppointment && (
-          <AddAppointmentModalPending
+          <AddAppointmentModalProgramado
             datas={pendingAppointments}
             isOpen={open}
             closeModal={handleModal}
@@ -159,7 +175,7 @@ function ProgramarSolicitud() {
             </tr>
           </thead>
           <tbody>
-            {filteredAppointments.map((appointment) => (
+            {currentAppointments.map((appointment) => (
               <tr key={appointment.id} className="bg-blue-50 hover:bg-blue-300">
                 <td className="px-4 py-2">{appointment.folio}</td>
                 <td className="px-4 py-2">
@@ -182,16 +198,33 @@ function ProgramarSolicitud() {
                     onClick={() => handleViewModal(appointment)}
                     className="bg-[#001B58] text-white px-5 py-2 rounded-md hover:bg-blue-800"
                   >
-                    Programar
+                    Ver
                   </button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
+
+        <div className="flex justify-center mt-4">
+          {Array.from({ length: totalPages }, (_, index) => (
+            <button
+              key={index + 1}
+              onClick={() => handlePageChange(index + 1)}
+              className={`px-4 py-2 mx-1 rounded ${
+                currentPage === index + 1
+                  ? "bg-[#001B58] text-white"
+                  : "bg-gray-300 text-black"
+              }`}
+            >
+              {index + 1}
+            </button>
+          ))}
+        </div>
+        
       </div>
     </Layout>
   );
 }
 
-export default ProgramarSolicitud;
+export default Solicitudesprogramadas;
