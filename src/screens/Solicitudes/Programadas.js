@@ -59,8 +59,8 @@ function Solicitudesprogramadas() {
 
   const getEstadoColorStyle = (estado) => {
     switch (estado.toLowerCase()) {
-      case "pendiente":
-        return { backgroundColor: "#FC8181", color: "black" }; // Color de fondo rojo y texto negro
+      case "programada":
+        return { backgroundColor: "#68D391", color: "black" }; // Color de fondo rojo y texto negro
       default:
         return {};
     }
