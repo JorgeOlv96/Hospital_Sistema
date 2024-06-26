@@ -96,6 +96,8 @@ function ProgramarSolicitud() {
               <span>Ver todas las programadas</span>
             </Link>
           </div>
+
+
         </div>
 
         {open && selectedAppointment && (

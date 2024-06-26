@@ -93,7 +93,7 @@ function Solicitudesprogramadas() {
   return (
     <Layout>
       <div className="flex flex-col gap-8 mb-8">
-        <h1 className="text-xl font-semibold">Solicitudes pendientes</h1>
+        <h1 className="text-xl font-semibold">Solicitudes programadas</h1>
         <div className="flex my-4 space-x-4">
           <div>
             <Link
@@ -106,12 +106,15 @@ function Solicitudesprogramadas() {
 
           <div>
             <Link
-              to="/solicitudes"
+              to="/solicitudes/Programarsolicitud"
               className="bg-[#001B58] hover:bg-[#001B58] text-white py-2 px-4 rounded inline-flex items-center"
             >
-              <span>Ver todas las programadas</span>
+              <span>Ver todas las pendientes</span>
             </Link>
           </div>
+
+
+
         </div>
 
         {open && selectedAppointment && (
