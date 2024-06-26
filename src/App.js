@@ -33,6 +33,7 @@ import Urgencias from './screens/Urgencias';
 import IndexPage from './IndexPage'; // Importa el nuevo componente
 import Ayuda from './HelpPage'; // Importa el componente de la página de ayuda
 import Programarsolicitud from './screens/Solicitudes/Programarsolicitud';
+import Solicitudesprogramadas from './screens/Solicitudes/Programadas';
 
 
 
@@ -65,6 +66,7 @@ function App() {
           <Route path="/solicitudes" element={<Solicitudes />} />
           <Route path="/solicitudes/crearsolicitud" element={<Crearsolicitud />} />
           <Route path="/solicitudes/Programarsolicitud" element={<Programarsolicitud setActiveSection={setActiveSection} />} />
+          <Route path="/solicitudes/Solicitudesprogramadas" element={<Solicitudesprogramadas />} />
           <Route path="/patients/preview/:id" element={<PatientProfile />} />
           <Route path="/patients/create" element={<CreatePatient />} />
           <Route path="/patients/visiting/:id" element={<NewMedicalRecode />} />
