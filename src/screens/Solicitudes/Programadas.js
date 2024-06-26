@@ -162,65 +162,73 @@ function Solicitudesprogramadas() {
           </div>
         </div>
 
-        <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
-          <thead className="bg-[#304678] text-white">
-            <tr>
-              <th className="px-4 py-2">Folio</th>
-              <th className="px-4 py-2">Nombre del paciente</th>
-              <th className="px-4 py-2">Especialidad</th>
-              <th className="px-4 py-2">Fecha slicitada</th>
-              <th className="px-4 py-2">Sala solcitada</th>
-              <th className="px-4 py-2">Estado</th>
-              <th className="px-4 py-3">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {currentAppointments.map((appointment) => (
-              <tr key={appointment.id} className="bg-blue-50 hover:bg-blue-300">
-                <td className="px-4 py-2">{appointment.folio}</td>
-                <td className="px-4 py-2">
-                  {appointment.nombre_paciente} {appointment.ap_paterno}{" "}
-                  {appointment.ap_materno}
-                </td>
-                <td className="px-4 py-2">{appointment.nombre_especialidad}</td>
-                <td className="px-4 py-2">{appointment.fecha_solicitada}</td>
-                <td className="px-4 py-2 flex justify-center">
-                  {appointment.sala_quirofano}
-                </td>
-                <td
-                  className="px-4 py-2"
-                  style={getEstadoColorStyle(appointment.estado_solicitud)}
-                >
-                  {appointment.estado_solicitud}
-                </td>
-                <td className="px-4 py-2 flex justify-center">
-                  <button
-                    onClick={() => handleViewModal(appointment)}
-                    className="bg-[#001B58] text-white px-5 py-2 rounded-md hover:bg-blue-800"
-                  >
-                    Ver
-                  </button>
-                </td>
+        {currentAppointments.length === 0 ? (
+          <div className="text-center text-gray-500 mt-4">
+            No hay pendientes :)
+          </div>
+        ) : (
+          <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+            <thead className="bg-[#304678] text-white">
+              <tr>
+                <th className="px-4 py-2">Folio</th>
+                <th className="px-4 py-2">Nombre del paciente</th>
+                <th className="px-4 py-2">Especialidad</th>
+                <th className="px-4 py-2">Fecha solicitada</th>
+                <th className="px-4 py-2">Sala solicitada</th>
+                <th className="px-4 py-2">Estado</th>
+                <th className="px-4 py-3">Acciones</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {currentAppointments.map((appointment) => (
+                <tr key={appointment.id} className="bg-blue-50 hover:bg-blue-300">
+                  <td className="px-4 py-2">{appointment.folio}</td>
+                  <td className="px-4 py-2">
+                    {appointment.nombre_paciente} {appointment.ap_paterno}{" "}
+                    {appointment.ap_materno}
+                  </td>
+                  <td className="px-4 py-2">{appointment.nombre_especialidad}</td>
+                  <td className="px-4 py-2">{appointment.fecha_solicitada}</td>
+                  <td className="px-4 py-2 flex justify-center">
+                    {appointment.sala_quirofano}
+                  </td>
+                  <td
+                    className="px-4 py-2"
+                    style={getEstadoColorStyle(appointment.estado_solicitud)}
+                  >
+                    {appointment.estado_solicitud}
+                  </td>
+                  <td className="px-4 py-2 flex justify-center">
+                    <button
+                      onClick={() => handleViewModal(appointment)}
+                      className="bg-[#001B58] text-white px-5 py-2 rounded-md hover:bg-blue-800"
+                    >
+                      Ver
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
 
-        <div className="flex justify-center mt-4">
-          {Array.from({ length: totalPages }, (_, index) => (
-            <button
-              key={index + 1}
-              onClick={() => handlePageChange(index + 1)}
-              className={`px-4 py-2 mx-1 rounded ${
-                currentPage === index + 1
-                  ? "bg-[#001B58] text-white"
-                  : "bg-gray-300 text-black"
-              }`}
-            >
-              {index + 1}
-            </button>
-          ))}
-        </div>
+        {currentAppointments.length > 0 && (
+          <div className="flex justify-center mt-4">
+            {Array.from({ length: totalPages }, (_, index) => (
+              <button
+                key={index + 1}
+                onClick={() => handlePageChange(index + 1)}
+                className={`px-4 py-2 mx-1 rounded ${
+                  currentPage === index + 1
+                    ? "bg-[#001B58] text-white"
+                    : "bg-gray-300 text-black"
+                }`}
+              >
+                {index + 1}
+              </button>
+            ))}
+          </div>
+        )}
         
       </div>
     </Layout>
