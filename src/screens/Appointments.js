@@ -14,53 +14,53 @@ import { HiOutlineViewGrid } from "react-icons/hi";
 import { HiOutlineCalendarDays } from "react-icons/hi2";
 import AddAppointmentModalProgramado from "../components/Modals/AddApointmentModalProgramado"; // Importa el modal adecuado
 import { Link, useNavigate } from "react-router-dom";
-import AddAppointmentModalProgramado from "../../components/Modals/AddApointmentModalProgramado";
 
 moment.locale("es"); // Configura moment para usar el idioma español
 
 // custom toolbar
-const CustomToolbar = (toolbar) => {
-  // today button handler
+const CustomToolbar = ({ date, view, views, onNavigate, onView }) => {
   const goToBack = () => {
-    toolbar.date.setMonth(toolbar.date.getMonth() - 1);
-    toolbar.onNavigate("prev");
+    const newDate = new Date(date);
+    newDate.setMonth(date.getMonth() - 1);
+    onNavigate(newDate);
   };
 
-  // next button handler
   const goToNext = () => {
-    toolbar.date.setMonth(toolbar.date.getMonth() + 1);
-    toolbar.onNavigate("next");
+    const newDate = new Date(date);
+    newDate.setMonth(date.getMonth() + 1);
+    onNavigate(newDate);
   };
 
-  // today button handler
   const goToCurrent = () => {
-    toolbar.onNavigate("TODAY");
+    const today = new Date();
+    onNavigate(today);
   };
 
-  // month button handler
   const goToMonth = () => {
-    toolbar.onView("month");
+    onView("month");
   };
 
-  // week button handler
   const goToWeek = () => {
-    toolbar.onView("week");
+    onView("week");
   };
 
-  // day button handler
-  const goToDay = () => {
-    toolbar.onView("day");
+  const goToDay = (selectedDate) => {
+    onView("day");
+    onNavigate(selectedDate);
   };
 
-
-
-  
-  // view button group
   const viewNamesGroup = [
     { view: "month", label: "Mes" },
     { view: "week", label: "Semana" },
     { view: "day", label: "Día" },
   ];
+
+  const formatDateInputValue = (date) => {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${year}-${month}-${day}`;
+  };
 
   return (
     <div className="flex flex-col gap-8 mb-8">
@@ -84,37 +84,30 @@ const CustomToolbar = (toolbar) => {
           </button>
         </div>
 
-        {/* label */}
         <div className="md:col-span-6 flex items-center justify-center">
           <button onClick={goToBack} className="text-2xl text-subMain">
             <BiChevronLeft />
           </button>
           <span className="text-xl font-semibold mx-4">
-            {moment(toolbar.date).format("MMMM YYYY")}
+            {moment(date).format("MMMM YYYY")}
           </span>
           <button onClick={goToNext} className="text-2xl text-subMain">
             <BiChevronRight />
           </button>
         </div>
-        {/* dropdown */}
-        <div className="md:col-span-3 flex justify-center">
-          <select className="px-4 py-2 border border-subMain rounded-md text-subMain">
-            <option>Sala A1</option>
-            <option>Sala A2</option>
-            <option>Sala T1</option>
-            <option>Sala T2</option>
-            <option>Sala 1</option>
-            <option>Sala 2</option>
-            <option>Sala 3</option>
-            <option>Sala 4</option>
-            <option>Sala 5</option>
-            <option>Sala 6</option>
-            <option>Sala E</option>
-            <option>Sala H</option>
-            <option>Sala RX</option>
-          </select>
+
+        <div className="md:col-span-2 flex justify-center">
+          <input
+            type="date"
+            value={formatDateInputValue(date)}
+            onChange={(e) => {
+              const selectedDate = new Date(e.target.value);
+              goToDay(selectedDate);
+            }}
+            className="px-4 py-2 border border-subMain rounded-md text-subMain"
+          />
         </div>
-        {/* filter */}
+
         <div className="md:col-span-2 grid grid-cols-3 rounded-md border border-subMain">
           {viewNamesGroup.map((item, index) => (
             <button
@@ -122,12 +115,10 @@ const CustomToolbar = (toolbar) => {
               onClick={() => {
                 if (item.view === "month") goToMonth();
                 else if (item.view === "week") goToWeek();
-                else if (item.view === "day") goToDay();
+                else if (item.view === "day") goToDay(date);
               }}
               className={`border-l text-xl py-2 flex-colo border-subMain ${
-                toolbar.view === item.view
-                  ? "bg-subMain text-white"
-                  : "text-subMain"
+                view === item.view ? "bg-subMain text-white" : "text-subMain"
               }`}
             >
               {item.view === "month" ? (
@@ -145,24 +136,14 @@ const CustomToolbar = (toolbar) => {
   );
 };
 
+
 function Appointments() {
   const localizer = momentLocalizer(moment);
-  const [openModal, setOpenModal] = useState(false); // Estado para controlar la apertura del modal
-  const [selectedEvent, setSelectedEvent] = useState({}); // Estado para almacenar los datos del evento seleccionado
+  const [openModal, setOpenModal] = useState(false);
+  const [selectedEvent, setSelectedEvent] = useState({});
   const [appointments, setAppointments] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
-<<<<<<< HEAD
-
-  
-  // handle modal close
-  const handleClose = () => {
-    setOpen(!open);
-    setData({});
-  };
-
-=======
->>>>>>> 6dcdf5cd4e3b8809da1cb4dca8be920016963b17
-  // Fetch appointments from API
   const fetchAppointments = async () => {
     try {
       const response = await fetch("http://localhost:4000/api/solicitudes/programadas");
@@ -172,7 +153,6 @@ function Appointments() {
       const data = await response.json();
 
       const transformedData = data.map((appointment) => {
-        // Calcular la hora de inicio y fin del evento
         const startDateTime = moment(
           `${appointment.fecha_programada}T${appointment.hora_asignada}`,
           "YYYY-MM-DDTHH:mm"
@@ -194,6 +174,7 @@ function Appointments() {
       });
 
       setAppointments(transformedData);
+      console.log("Appointments fetched and transformed:", transformedData);
     } catch (error) {
       console.error("Error fetching appointments:", error);
     }
@@ -203,103 +184,66 @@ function Appointments() {
     fetchAppointments();
   }, []);
 
-  // onClick event handler
   const handleEventClick = (event) => {
-<<<<<<< HEAD
-    setSelectedAppointment(appointment);
-    setOpen(true);
-=======
-    setSelectedEvent(event); // Establecer el evento seleccionado
-    setOpenModal(true); // Abrir el modal
+    setSelectedEvent(event);
+    setOpenModal(true);
   };
 
-  // handle modal close
   const handleCloseModal = () => {
-    setOpenModal(false); // Cerrar el modal
-    setSelectedEvent({}); // Limpiar los datos del evento seleccionado
->>>>>>> 6dcdf5cd4e3b8809da1cb4dca8be920016963b17
+    setOpenModal(false);
+    setSelectedEvent({});
   };
+
+  const handleSelectDate = (date) => {
+    setSelectedDate(date);
+    console.log("Selected date:", date);
+  };
+
+  const eventsForSelectedDate = appointments.filter((event) => {
+    const eventStartDate = moment(event.start).format("YYYY-MM-DD");
+    const selectedFormattedDate = moment(selectedDate).format("YYYY-MM-DD");
+    return eventStartDate === selectedFormattedDate;
+  });
+
+  console.log("Events for selected date:", eventsForSelectedDate);
 
   return (
     <Layout>
-<<<<<<< HEAD
-        {open && selectedAppointment && (
-          <AddAppointmentModalProgramado
-            datas={pendingAppointments}
-            isOpen={open}
-            closeModal={handleModal}
-            onDeleteAppointment={handleDeleteAppointment}
-            appointmentId={selectedAppointment.id_solicitud}
-          />
-        )}
-      {/* calendario */}
-      <button
-        onClick={handleClose}
-        className="w-16 animate-bounce h-16 border border-border z-50 bg-subMain text-white rounded-full flex-colo fixed bottom-8 right-12 button-fb"
-      >
-        <BiPlus className="text-2xl" />
-      </button>
-
-=======
       <AddAppointmentModalProgramado
         closeModal={handleCloseModal}
         isOpen={openModal}
-        appointmentId={selectedEvent.id} // Pasar el ID del evento seleccionado al modal
+        appointmentId={selectedEvent.id}
         onSuspendAppointment={(appointmentId) => {
-          // Lógica para actualizar la lista de citas después de suspender una cita
-          // Esto puede ser una función para actualizar la lista o recargar los datos
           fetchAppointments();
         }}
       />
->>>>>>> 6dcdf5cd4e3b8809da1cb4dca8be920016963b17
       <Calendar
         localizer={localizer}
         events={appointments}
         startAccessor="start"
         endAccessor="end"
-        style={{
-          // altura del calendario
-          height: 900,
-          marginBottom: 50,
-        }}
+        style={{ height: 900, marginBottom: 50 }}
         onSelectEvent={handleEventClick}
         defaultDate={new Date()}
         timeslots={1}
         resizable
         step={60}
         selectable
-        //
-        // estilo personalizado para eventos
-        eventPropGetter={(event) => {
-          const style = {
-            backgroundColor: event.color,
-            borderRadius: "10px",
-            color: "white",
-            border: "1px",
-            borderColor: "#F2FAF8",
-            fontSize: "12px",
-            padding: "5px 5px",
-          };
-          return {
-            style,
-          };
-        }}
-        // estilo personalizado para fechas
-        dayPropGetter={(date) => {
-          const backgroundColor = "white";
-          const style = {
-            backgroundColor,
-          };
-          return {
-            style,
-          };
-        }}
-        // eliminar vista de agenda
+        date={selectedDate}
         views={["month", "day", "week"]}
-        components={{ toolbar: CustomToolbar }}
+        components={{
+          toolbar: (props) => (
+            <CustomToolbar {...props} onNavigate={(date) => handleSelectDate(date)} />
+          ),
+        }}
       />
     </Layout>
   );
 }
 
 export default Appointments;
+
+
+
+
+
