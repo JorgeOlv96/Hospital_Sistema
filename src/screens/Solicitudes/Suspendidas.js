@@ -109,7 +109,7 @@ function Solicitudessuspendidas() {
               to="/solicitudes/Solicitudesprogramadas"
               className="bg-[#001B58] hover:bg-[#001B58] text-white py-2 px-4 rounded inline-flex items-center"
             >
-              <span>Ver todas las programadass</span>
+              <span>Ver todas las programadas</span>
             </Link>
           </div>
 
