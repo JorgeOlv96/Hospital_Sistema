@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../../Layout";
-import AddAppointmentModalProgramado from "../../components/Modals/AddApointmentModalProgramado";
+import AddApointmentModalSuspendida from "../../components/Modals/AddApointmentModalSuspendida";
 import { Link } from "react-router-dom";
 
-function Solicitudesprogramadas() {
+function Solicitudessuspendidas() {
   const [pendingAppointments, setPendingAppointments] = useState([]);
   const [filter, setFilter] = useState({
     fecha: "",
     especialidad: "",
-    estado: "Programada",
+    estado: "Suspendida",
   });
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [open, setOpen] = useState(false);
@@ -22,7 +22,7 @@ function Solicitudesprogramadas() {
   const fetchPendingAppointments = async () => {
     try {
       const response = await fetch(
-        "http://localhost:4000/api/solicitudes/programadas"
+        "http://localhost:4000/api/solicitudes/suspendidas"
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -59,8 +59,8 @@ function Solicitudesprogramadas() {
 
   const getEstadoColorStyle = (estado) => {
     switch (estado.toLowerCase()) {
-      case "programada":
-        return { backgroundColor: "#68D391", color: "black" }; // Color de fondo rojo y texto negro
+      case "suspendida":
+        return { backgroundColor: "#F6E05E", color: "black" }; // Color de fondo rojo y texto negro
       default:
         return {};
     }
@@ -93,7 +93,7 @@ function Solicitudesprogramadas() {
   return (
     <Layout>
       <div className="flex flex-col gap-8 mb-8">
-        <h1 className="text-xl font-semibold">Solicitudes programadas</h1>
+        <h1 className="text-xl font-semibold">Solicitudes suspendidas</h1>
         <div className="flex my-4 space-x-4">
           <div>
             <Link
@@ -106,20 +106,10 @@ function Solicitudesprogramadas() {
 
           <div>
             <Link
-              to="/solicitudes/Programarsolicitud"
+              to="/solicitudes/Solicitudesprogramadas"
               className="bg-[#001B58] hover:bg-[#001B58] text-white py-2 px-4 rounded inline-flex items-center"
             >
-              <span>Ver todas las pendientes</span>
-            </Link>
-          </div>
-
-          
-          <div>
-            <Link
-              to="/solicitudes/Solicitudsuspendida"
-              className="bg-[#001B58] hover:bg-[#001B58] text-white py-2 px-4 rounded inline-flex items-center"
-            >
-              <span>Ver todas las suspendidas</span>
+              <span>Ver todas las programadass</span>
             </Link>
           </div>
 
@@ -128,7 +118,7 @@ function Solicitudesprogramadas() {
         </div>
 
         {open && selectedAppointment && (
-          <AddAppointmentModalProgramado
+          <AddApointmentModalSuspendida
             datas={pendingAppointments}
             isOpen={open}
             closeModal={handleModal}
@@ -177,7 +167,7 @@ function Solicitudesprogramadas() {
 
         {currentAppointments.length === 0 ? (
           <div className="text-center text-gray-500 mt-4">
-            No hay pendientes :)
+            No hay suspendidas :)
           </div>
         ) : (
           <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
@@ -248,4 +238,4 @@ function Solicitudesprogramadas() {
   );
 }
 
-export default Solicitudesprogramadas;
+export default Solicitudessuspendidas;
