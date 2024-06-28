@@ -8,7 +8,7 @@ function ProgramarSolicitud() {
   const [filter, setFilter] = useState({
     fecha: "",
     especialidad: "",
-    estado: "Pendiente",
+    estado: "Pre-programada",
   });
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [open, setOpen] = useState(false);
@@ -20,7 +20,7 @@ function ProgramarSolicitud() {
   const fetchPendingAppointments = async () => {
     try {
       const response = await fetch(
-        "http://localhost:4000/api/solicitudes/pendientes"
+        "http://localhost:4000/api/solicitudes/preprogramadas"
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -56,7 +56,7 @@ function ProgramarSolicitud() {
 
   const getEstadoColorStyle = (estado) => {
     switch (estado.toLowerCase()) {
-      case "pendiente":
+      case "Pre-programada":
         return { backgroundColor: "#FC8181", color: "black" }; // Color de fondo rojo y texto negro
       default:
         return {};
@@ -77,7 +77,7 @@ function ProgramarSolicitud() {
   return (
     <Layout>
       <div className="flex flex-col gap-8 mb-8">
-        <h1 className="text-xl font-semibold">Solicitudes pendientes</h1>
+        <h1 className="text-xl font-semibold">Solicitudes pre-programadas</h1>
         <div className="flex my-4 space-x-4">
           <div>
             <Link

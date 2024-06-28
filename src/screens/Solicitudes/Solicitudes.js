@@ -126,6 +126,8 @@ function Solicitudes() {
         return 'bg-yellow-400';
       case 'pendiente':
         return 'bg-red-400';
+      case 'Pre-programada':
+          return 'bg-red-400';  
       default:
         return '';
     }
@@ -134,14 +136,18 @@ function Solicitudes() {
   const getEstadoColorStyle = (estado) => {
     switch (estado.toLowerCase()) {
       case 'programada':
-        return { backgroundColor: '#68D391' };
+        return { backgroundColor: '#68D391' }; // Verde claro
       case 'realizada':
-        return { backgroundColor: '#63B3ED' };
+        return { backgroundColor: '#63B3ED' }; // Azul claro
       case 'suspendida':
-        return { backgroundColor: '#F6E05E' };
+        return { backgroundColor: '#F6E05E' }; // Amarillo
       case 'pendiente':
-        return { backgroundColor: '#FC8181' };
+        return { backgroundColor: '#FC8181' }; // Rojo claro
+      case 'pre-programada':
+        return { backgroundColor: '#F7BAEC' }; // Rosa claro
       default:
+        // Aquí puedes manejar el caso por defecto
+      
         return {};
     }
   };
@@ -258,6 +264,15 @@ function Solicitudes() {
       >
         Pendiente
       </button>
+      <button
+        className={`px-4 py-2 rounded-lg ${estadoButtonClasses('pre-programada')}`}
+        style={filterState === 'pre-programada' ? { ...getEstadoColorStyle('pre-programada'), opacity: 0.9 } : { ...getEstadoColorStyle('pre-programada'), opacity: 0.7 }}
+        onClick={() => setFilterState('pre-programada')}
+      >
+        Pre-programadas
+      </button>
+ 
+ 
     </div>
   </div>
 
