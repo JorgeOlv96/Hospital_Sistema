@@ -56,8 +56,8 @@ function ProgramarSolicitud() {
 
   const getEstadoColorStyle = (estado) => {
     switch (estado.toLowerCase()) {
-      case "Pre-programada":
-        return { backgroundColor: "#FC8181", color: "black" }; // Color de fondo rojo y texto negro
+      case "pre-programada":
+        return { backgroundColor: "#F7BAEC", color: "black" }; // Color de fondo rojo y texto negro
       default:
         return {};
     }
@@ -94,6 +94,15 @@ function ProgramarSolicitud() {
               className="bg-[#001B58] hover:bg-[#001B58] text-white py-2 px-4 rounded inline-flex items-center"
             >
               <span>Ver todas las programadas</span>
+            </Link>
+          </div>
+
+          <div>
+            <Link
+              to="/solicitudes/Solicitudsuspendida"
+              className="bg-[#001B58] hover:bg-[#001B58] text-white py-2 px-4 rounded inline-flex items-center"
+            >
+              <span>Ver todas las suspendidas</span>
             </Link>
           </div>
 
