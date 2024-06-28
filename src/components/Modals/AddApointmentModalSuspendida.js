@@ -103,23 +103,22 @@ function AddApointmentModalSuspendida({
     }
   };
 
-  const handleDelete = async () => {
+  const handleReprogramar = async () => {
     try {
       const response = await fetch(
-        `http://localhost:4000/api/solicitudes/${appointmentId}`,
+        `http://localhost:4000/api/solicitudes/reprogramar/${appointmentId}`,
         {
-          method: "DELETE",
+          method: "PUT",
         }
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
       closeModal(); // Cerrar el modal después de eliminar
-      onSuspendAppointment(appointmentId); // Actualizar la lista de citas después de eliminar
       // Recargar la página después de eliminar
       window.location.reload();
     } catch (error) {
-      console.error("Error deleting appointment:", error);
+      console.error("Error reprogramar appointment:", error);
     }
   };
 
@@ -309,7 +308,7 @@ function AddApointmentModalSuspendida({
 
           <div className="flex justify-center mt-8">
             <button
-              onClick={handleProgramAppointment}
+              onClick={handleReprogramar}
               className="bg-[#001B58] bg-opacity-20 text-[#001B58] text-sm p-4 rounded-lg font-light"
               style={{ marginBottom: "8px" }}
             >
