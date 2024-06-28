@@ -30,6 +30,7 @@ import {
 import { AiOutlineSetting } from 'react-icons/ai';
 import { BiCalendar, BiUserPlus } from 'react-icons/bi';
 import { FaAmbulance } from "react-icons/fa";
+import { FaSheetPlastic } from "react-icons/fa6";
 
 
 export const MenuDatas = [
@@ -42,6 +43,11 @@ export const MenuDatas = [
     title: 'Solicitudes ',
     path: '/solicitudes',
     icon: FaWpforms,
+  },
+  {
+    title: 'Evaluación',
+    path: '/evaluacion',
+    icon: FaSheetPlastic,
   },
   {
     title: 'Pacientes',

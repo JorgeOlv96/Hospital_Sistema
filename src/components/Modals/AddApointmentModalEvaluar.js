@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Modal from "./Modal";
 
-function AddAppointmentModalPending({
+function AddAppointmentModalEvaluar({
   closeModal,
   isOpen,
   appointmentId,
@@ -63,12 +63,8 @@ function AddAppointmentModalPending({
 
   const handleProgramAppointment = async () => {
     try {
-      const {
-        fecha_programada,
-        hora_asignada,
-        turno,
-        nombre_anestesiologo,
-      } = patientData;
+      const { fecha_programada, hora_asignada, turno, nombre_anestesiologo } =
+        patientData;
       console.log("Datos a enviar:", {
         fecha_programada,
         hora_asignada,
@@ -88,7 +84,7 @@ function AddAppointmentModalPending({
           }),
           headers: {
             "Content-Type": "application/json",
-          }, 
+          },
         }
       );
 
@@ -194,28 +190,51 @@ function AddAppointmentModalPending({
             <div className="flex mb-4">
               <div className="mr-4 w-full">
                 <label className="block font-semibold text-gray-700 mb-2">
-                  Fecha asignada:
+                  Tipo de admisión:
                 </label>
-                <input
-                  type="date"
-                  name="fecha_programada"
-                  value={patientData.fecha_programada || ""}
-                  onChange={handleChange}
-                  className="bg-white p-3 rounded-lg w-full"
-                />
+                <p className="bg-gray-200 p-3 rounded-lg">
+                  {patientData?.tipo_admision || "N/A"}
+                </p>
+              </div>
+
+              <div className="mr-4 w-full">
+                <label className="block font-semibold text-gray-700 mb-2">
+                  Tipo de intervención:
+                </label>
+                <p className="bg-gray-200 p-3 rounded-lg">
+                  {patientData?.tipo_intervencion || "N/A"}
+                </p>
               </div>
 
               <div className="w-full">
                 <label className="block font-semibold text-gray-700 mb-2">
-                  Hora asignada:
+                  Especialidad:
                 </label>
-                <input
-                  type="time"
-                  name="hora_asignada"
-                  value={patientData.hora_asignada || ""}
-                  onChange={handleChange}
-                  className="bg-white p-3 rounded-lg w-full"
-                />
+                <p className="bg-gray-200 p-3 rounded-lg">
+                  {patientData?.nombre_especialidad || "N/A"}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
+            <div className="flex mb-4">
+              <div className="mr-4 w-full">
+                <label className="block font-semibold text-gray-700 mb-2">
+                  Fecha solicitada:
+                </label>
+                <p className="bg-gray-200 p-3 rounded-lg">
+                  {patientData?.fecha_solicitada || "N/A"}
+                </p>
+              </div>
+
+              <div className="w-full">
+                <label className="block font-semibold text-gray-700 mb-2">
+                  Hora solicitada:
+                </label>
+                <p className="bg-gray-200 p-3 rounded-lg">
+                  {patientData?.hora_solicitada || "N/A"}
+                </p>
               </div>
             </div>
           </div>
@@ -226,61 +245,40 @@ function AddAppointmentModalPending({
                 <label className="block font-semibold text-gray-700 mb-2">
                   Tiempo estimado de cirugía:
                 </label>
-                <input
-                  type="text"
-                  name="tiempo_estimado"
-                  value={patientData.tiempo_estimado || ""}
-                  onChange={handleChange}
-                  className="bg-white p-3 rounded-lg w-full"
-                />
+                <p className="bg-gray-200 p-3 rounded-lg">
+                  {patientData?.tiempo_estimado || "N/A"}
+                </p>
               </div>
 
               <div className="w-full">
                 <label className="block font-semibold text-gray-700 mb-2">
-                  Turno asignado:
+                  Turno solicitado:
                 </label>
-                <select
-                  name="turno"
-                  value={patientData.turno || ""}
-                  onChange={handleChange}
-                  className="bg-white p-3 rounded-lg w-full"
-                >
-                  <option value="">-- Seleccione el turno --</option>
-                  <option value="Matutino">Matutino</option>
-                  <option value="Vespertino">Vespertino</option>
-                  <option value="Nocturno">Nocturno</option>
-                  <option value="Especial">Especial</option>
-                </select>
+                <p className="bg-gray-200 p-3 rounded-lg">
+                  {patientData?.turno_solicitado || "N/A"}
+                </p>
               </div>
             </div>
           </div>
 
           <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
-            <div className="flex  mb-4">
+            <div className="flex mb-4">
               <div className="mr-4 w-full">
                 <label className="block font-semibold text-gray-700 mb-2">
-                  Quirófano asignado:
+                  Sala solicitada:
                 </label>
-                <input
-                  type="text"
-                  name="sala_quirofano"
-                  value={patientData.sala_quirofano || ""}
-                  onChange={handleChange}
-                  className="bg-white p-3 rounded-lg w-full"
-                />
+                <p className="bg-gray-200 p-3 rounded-lg">
+                  {patientData?.sala_quirofano || "N/A"}
+                </p>
               </div>
 
               <div className="w-full">
                 <label className="block font-semibold text-gray-700 mb-2">
-                Anestesiólogo asignado:
+                  Procedimientos que se realizarán al paciente:
                 </label>
-                <input
-                  type="text"
-                  name="nombre_anestesiologo"
-                  value={patientData.nombre_anestesiologo || ""}
-                  onChange={handleChange}
-                  className="bg-white p-3 rounded-lg w-full"
-                />
+                <p className="bg-gray-200 p-3 rounded-lg">
+                  {patientData?.procedimientos_paciente || "N/A"}
+                </p>
               </div>
             </div>
           </div>
@@ -306,29 +304,20 @@ function AddAppointmentModalPending({
               </div>
             </div>
           </div>
-
-          <div className="flex justify-between mt-8">
-            <button
-              onClick={handleDelete}
-              className="bg-red-600 bg-opacity-5 text-red-600 text-sm p-4 rounded-lg font-light mr-4"
-              style={{ marginBottom: "8px" }}
-            >
-              Eliminar cita
-            </button>
-            <button
-              onClick={handleProgramAppointment}
-              className="bg-[#001B58] bg-opacity-20 text-[#001B58] text-sm p-4 rounded-lg font-light"
-              style={{ marginBottom: "8px" }}
-            >
-              Programar cita
-            </button>
-          </div>
         </div>
       )}
 
+      <div className="flex justify-center mt-8">
+        <button
+          onClick={handleProgramAppointment}
+          className="bg-[#001B58] bg-opacity-20 text-[#001B58] text-sm p-4 rounded-lg font-light"
+          style={{ marginBottom: "8px" }}
+        >
+          Pre-programar
+        </button>
+      </div>
     </Modal>
   );
 }
 
-export default AddAppointmentModalPending;
-
+export default AddAppointmentModalEvaluar;

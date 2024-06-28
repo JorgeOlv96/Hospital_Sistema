@@ -2,32 +2,27 @@ import React, { useState, useEffect } from "react";
 import Layout from "../Layout";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
-import "moment/locale/es"; // Importa el idioma español para moment
+import "moment/locale/es"; // Importa el idioma español
 import {
   BiChevronLeft,
   BiChevronRight,
-  BiPlus,
   BiTime,
-  BiTable,
 } from "react-icons/bi";
 import { HiOutlineViewGrid } from "react-icons/hi";
 import { HiOutlineCalendarDays } from "react-icons/hi2";
 import AddAppointmentModalProgramado from "../components/Modals/AddApointmentModalProgramado"; // Importa el modal adecuado
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 moment.locale("es"); // Configura moment para usar el idioma español
 
-// custom toolbar
-const CustomToolbar = ({ date, view, views, onNavigate, onView }) => {
+const CustomToolbar = ({ date, view, onView, onNavigate }) => {
   const goToBack = () => {
-    const newDate = new Date(date);
-    newDate.setMonth(date.getMonth() - 1);
+    const newDate = moment(date).subtract(1, view === "month" ? "month" : "day").toDate();
     onNavigate(newDate);
   };
 
   const goToNext = () => {
-    const newDate = new Date(date);
-    newDate.setMonth(date.getMonth() + 1);
+    const newDate = moment(date).add(1, view === "month" ? "month" : "day").toDate();
     onNavigate(newDate);
   };
 
@@ -36,23 +31,14 @@ const CustomToolbar = ({ date, view, views, onNavigate, onView }) => {
     onNavigate(today);
   };
 
-  const goToMonth = () => {
-    onView("month");
-  };
-
-  const goToWeek = () => {
-    onView("week");
-  };
-
-  const goToDay = (selectedDate) => {
-    onView("day");
-    onNavigate(selectedDate);
+  const goToView = (viewType) => {
+    onView(viewType);
   };
 
   const viewNamesGroup = [
-    { view: "month", label: "Mes" },
-    { view: "week", label: "Semana" },
-    { view: "day", label: "Día" },
+    { view: "month", label: "Mes", icon: <HiOutlineViewGrid /> },
+    { view: "week", label: "Semana", icon: <HiOutlineCalendarDays /> },
+    { view: "day", label: "Día", icon: <BiTime /> },
   ];
 
   const formatDateInputValue = (date) => {
@@ -102,7 +88,8 @@ const CustomToolbar = ({ date, view, views, onNavigate, onView }) => {
             value={formatDateInputValue(date)}
             onChange={(e) => {
               const selectedDate = new Date(e.target.value);
-              goToDay(selectedDate);
+              onNavigate(selectedDate);
+              onView("day"); // Cambia a la vista de día
             }}
             className="px-4 py-2 border border-subMain rounded-md text-subMain"
           />
@@ -112,22 +99,12 @@ const CustomToolbar = ({ date, view, views, onNavigate, onView }) => {
           {viewNamesGroup.map((item, index) => (
             <button
               key={index}
-              onClick={() => {
-                if (item.view === "month") goToMonth();
-                else if (item.view === "week") goToWeek();
-                else if (item.view === "day") goToDay(date);
-              }}
+              onClick={() => goToView(item.view)}
               className={`border-l text-xl py-2 flex-colo border-subMain ${
                 view === item.view ? "bg-subMain text-white" : "text-subMain"
               }`}
             >
-              {item.view === "month" ? (
-                <HiOutlineViewGrid />
-              ) : item.view === "week" ? (
-                <HiOutlineCalendarDays />
-              ) : (
-                <BiTime />
-              )}
+              {item.icon}
             </button>
           ))}
         </div>
@@ -136,13 +113,13 @@ const CustomToolbar = ({ date, view, views, onNavigate, onView }) => {
   );
 };
 
-
 function Appointments() {
   const localizer = momentLocalizer(moment);
   const [openModal, setOpenModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState({});
   const [appointments, setAppointments] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const [view, setView] = useState("month");
 
   const fetchAppointments = async () => {
     try {
@@ -199,6 +176,10 @@ function Appointments() {
     console.log("Selected date:", date);
   };
 
+  const handleViewChange = (newView) => {
+    setView(newView);
+  };
+
   const eventsForSelectedDate = appointments.filter((event) => {
     const eventStartDate = moment(event.start).format("YYYY-MM-DD");
     const selectedFormattedDate = moment(selectedDate).format("YYYY-MM-DD");
@@ -231,9 +212,20 @@ function Appointments() {
         selectable
         date={selectedDate}
         views={["month", "day", "week"]}
+        view={view}
         components={{
           toolbar: (props) => (
-            <CustomToolbar {...props} onNavigate={(date) => handleSelectDate(date)} />
+            <CustomToolbar
+              {...props}
+              onNavigate={(date) => {
+                handleSelectDate(date);
+                props.onNavigate(date);
+              }}
+              onView={(viewType) => {
+                handleViewChange(viewType);
+                props.onView(viewType);
+              }}
+            />
           ),
         }}
       />
@@ -242,8 +234,3 @@ function Appointments() {
 }
 
 export default Appointments;
-
-
-
-
-
