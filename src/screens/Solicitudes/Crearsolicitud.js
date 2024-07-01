@@ -712,7 +712,7 @@ function CrearSolicitud() {
                 name="estado_solicitud"
                 value={formData.estado_solicitud}
                 readOnly // Hacer que el campo sea de solo lectura
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-red-300"
+                className="border border-red-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-red-300 focus:border-red-300 bg-red-300"
               />
             </div>
           </div>
