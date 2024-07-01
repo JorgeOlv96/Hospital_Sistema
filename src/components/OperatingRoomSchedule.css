@@ -1,61 +1,67 @@
-/* OperatingRoomSchedule.css */
-
 .operating-room-schedule {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .schedule-header {
-    display: flex;
-    border-bottom: 1px solid #ddd;
-  }
-  
-  .schedule-time,
-  .schedule-room {
-    flex: 1;
-    padding: 8px;
-    text-align: center;
-    font-weight: bold;
-    border-right: 1px solid #ddd;
-  }
-  
-  .schedule-body {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .schedule-row {
-    display: flex;
-    border-bottom: 1px solid #eee;
-  }
-  
-  .schedule-time {
-    flex: 1;
-    padding: 8px;
-    text-align: center;
-    border-right: 1px solid #eee;
-  }
-  
-  .schedule-slot {
-    flex: 1;
-    padding: 8px;
-    text-align: center;
-    border-right: 1px solid #eee;
-    background-color: #f9f9f9;
-  }
-  
-  .schedule-slot.occupied {
-    background-color: #304678;
-    color: #fff;
-  }
-  
-  .appointment-info {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  
-  .appointment-info p {
-    margin: 0;
-  }
-  
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #ccc;
+  overflow-x: auto;
+}
+
+.schedule-header, .schedule-row {
+  display: flex;
+  align-items: stretch;
+}
+
+.schedule-time, .schedule-room, .schedule-cell {
+  flex: 1;
+  text-align: center;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+.schedule-time {
+  width: 60px; /* Asegurarse de que todas las celdas tengan el mismo tamaño */
+}
+
+.schedule-room {
+  padding: 10px;
+  background-color: #f4f4f4;
+}
+
+.schedule-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.schedule-row {
+  height: 60px;
+}
+
+.schedule-cell {
+  position: relative;
+}
+
+.schedule-slot {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  border: 1px solid #e0e0e0;
+}
+
+.schedule-slot.occupied {
+  background-color: #d9e8fb;
+  border: none;
+}
+
+.appointment-block {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background-color: #304678;
+  color: white;
+  padding: 5px;
+  box-sizing: border-box;
+  cursor: pointer;
+}
+
+.appointment-info {
+  font-size: 12px;
+}

@@ -9,6 +9,7 @@ import { HiOutlineCalendarDays } from "react-icons/hi2";
 import AddAppointmentModalProgramado from "../components/Modals/AddApointmentModalProgramado"; // Importa el modal adecuado
 import { Link } from "react-router-dom";
 import OperatingRoomSchedule from "../components/OperatingRoomSchedule";
+import { FaHospital } from 'react-icons/fa';
 
 moment.locale("es"); // Configura moment para usar el idioma español
 
@@ -36,7 +37,7 @@ const CustomToolbar = ({ date, view, onView, onNavigate }) => {
     { view: "month", label: "Mes", icon: <HiOutlineViewGrid /> },
     { view: "week", label: "Semana", icon: <HiOutlineCalendarDays /> },
     { view: "day", label: "Día", icon: <BiTime /> },
-    { view: "operatingRooms", label: "Quirófanos", icon: <BiTime /> }, // Añadir nuevo botón
+    { view: "operatingRooms", label: "Quirófanos", icon: <FaHospital /> }, // Añadir nuevo botón
   ];
 
   const formatDateInputValue = (date) => {
@@ -210,6 +211,7 @@ function Appointments() {
         <OperatingRoomSchedule
           date={selectedDate}
           appointments={appointments}
+          onEventClick={handleEventClick}
         />
       ) : (
         <Calendar
