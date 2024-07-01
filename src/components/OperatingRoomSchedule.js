@@ -75,7 +75,7 @@ const OperatingRoomSchedule = ({ date, appointments, onEventClick }) => {
   return (
     <div className="operating-room-schedule">
       <div className="schedule-header">
-        <div className="schedule-time">Hora</div>
+      <div className="schedule-time-header">Hora</div>
         {OperatingRooms.map(room => (
           <div key={room} className="schedule-room">{`Sala ${room}`}</div>
         ))}

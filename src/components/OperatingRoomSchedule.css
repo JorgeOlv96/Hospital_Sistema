@@ -5,25 +5,23 @@
   overflow-x: auto;
 }
 
-.schedule-header, .schedule-row {
+.schedule-header {
   display: flex;
-  align-items: stretch;
+  align-items: center;
+  background-color: #f4f4f4;
 }
 
-.schedule-time, .schedule-room, .schedule-cell {
+.schedule-time-header {
+  width: 100px; /* Ajusta el ancho de la celda "Hora" en el encabezado */
+  text-align: center;
+}
+
+.schedule-room {
   flex: 1;
   text-align: center;
   border: 1px solid #ccc;
   box-sizing: border-box;
-}
-
-.schedule-time {
-  width: 60px; /* Asegurarse de que todas las celdas tengan el mismo tamaño */
-}
-
-.schedule-room {
   padding: 10px;
-  background-color: #f4f4f4;
 }
 
 .schedule-body {
@@ -32,11 +30,23 @@
 }
 
 .schedule-row {
+  display: flex;
+  align-items: stretch;
   height: 60px;
 }
 
+.schedule-time {
+  width: 100px; /* Asegura que las celdas de tiempo tengan el mismo ancho */
+  text-align: center;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
 .schedule-cell {
+  flex: 1;
   position: relative;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
 }
 
 .schedule-slot {
