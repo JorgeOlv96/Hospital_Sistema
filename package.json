@@ -21,6 +21,7 @@
     "react-apexcharts": "^1.4.0",
     "react-big-calendar": "^1.6.9",
     "react-copy-to-clipboard": "^5.1.0",
+    "react-data-export": "^0.6.0",
     "react-datepicker": "^4.11.0",
     "react-dom": "^18.2.0",
     "react-dropzone": "^14.2.3",
@@ -38,6 +39,7 @@
     "socket.io-client": "^4.7.5",
     "styled-components": "^6.1.11",
     "swiper": "^9.2.0",
+    "tempa-xlsx": "^0.8.20",
     "web-vitals": "^2.1.4",
     "yup": "^1.4.0"
   },

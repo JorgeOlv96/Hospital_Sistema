@@ -12,8 +12,10 @@ function Solicitudesprogramadas() {
   });
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [open, setOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const appointmentsPerPage = 10;
+  const [sortBy, setSortBy] = useState(null);
+  const [sortOrder, setSortOrder] = useState("asc");
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     fetchPendingAppointments();
@@ -40,7 +42,7 @@ function Solicitudesprogramadas() {
       ...filter,
       [name]: value,
     });
-    setCurrentPage(1); // Reset to first page on filter change
+    setPage(1); // Reset to first page on filter change
   };
 
   const handleViewModal = (appointment) => {
@@ -60,13 +62,33 @@ function Solicitudesprogramadas() {
   const getEstadoColorStyle = (estado) => {
     switch (estado.toLowerCase()) {
       case "programada":
-        return { backgroundColor: "#68D391", color: "black" }; // Color de fondo rojo y texto negro
+        return { backgroundColor: "#68D391", color: "black" }; // Color de fondo verde y texto negro
       default:
         return {};
     }
   };
 
-  const filteredAppointments = pendingAppointments.filter((appointment) => {
+  const handleSort = (column) => {
+    if (sortBy === column) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(column);
+      setSortOrder("asc");
+    }
+  };
+
+  const sortedAppointments = [...pendingAppointments].sort((a, b) => {
+    if (!sortBy) return 0;
+
+    const aValue = a[sortBy];
+    const bValue = b[sortBy];
+
+    if (aValue < bValue) return sortOrder === "asc" ? -1 : 1;
+    if (aValue > bValue) return sortOrder === "asc" ? 1 : -1;
+    return 0;
+  });
+
+  const filteredAppointments = sortedAppointments.filter((appointment) => {
     return (
       (filter.fecha === "" ||
         appointment.fecha_solicitud.includes(filter.fecha)) &&
@@ -77,18 +99,8 @@ function Solicitudesprogramadas() {
     );
   });
 
-  const indexOfLastAppointment = currentPage * appointmentsPerPage;
-  const indexOfFirstAppointment = indexOfLastAppointment - appointmentsPerPage;
-  const currentAppointments = filteredAppointments.slice(
-    indexOfFirstAppointment,
-    indexOfLastAppointment
-  );
-
-  const totalPages = Math.ceil(filteredAppointments.length / appointmentsPerPage);
-
-  const handlePageChange = (pageNumber) => {
-    setCurrentPage(pageNumber);
-  };
+  const startIndex = (page - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
 
   return (
     <Layout>
@@ -113,7 +125,6 @@ function Solicitudesprogramadas() {
             </Link>
           </div>
 
-          
           <div>
             <Link
               to="/solicitudes/Solicitudsuspendida"
@@ -122,9 +133,6 @@ function Solicitudesprogramadas() {
               <span>Ver todas las suspendidas</span>
             </Link>
           </div>
-
-
-
         </div>
 
         {open && selectedAppointment && (
@@ -175,75 +183,88 @@ function Solicitudesprogramadas() {
           </div>
         </div>
 
-        {currentAppointments.length === 0 ? (
+        {filteredAppointments.length === 0 ? (
           <div className="text-center text-gray-500 mt-4">
             No hay pendientes :)
           </div>
         ) : (
-          <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
-            <thead className="bg-[#304678] text-white">
-              <tr>
-                <th className="px-4 py-2">Folio</th>
-                <th className="px-4 py-2">Nombre del paciente</th>
-                <th className="px-4 py-2">Especialidad</th>
-                <th className="px-4 py-2">Fecha programada</th>
-                <th className="px-4 py-2">Sala solicitada</th>
-                <th className="px-4 py-2">Estado</th>
-                <th className="px-4 py-3">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              {currentAppointments.map((appointment) => (
-                <tr key={appointment.id} className="bg-blue-50 hover:bg-blue-300">
-                  <td className="px-4 py-2">{appointment.folio}</td>
-                  <td className="px-4 py-2">
-                    {appointment.nombre_paciente} {appointment.ap_paterno}{" "}
-                    {appointment.ap_materno}
-                  </td>
-                  <td className="px-4 py-2">{appointment.nombre_especialidad}</td>
-                  <td className="px-4 py-2">{appointment.fecha_programada}</td>
-                  <td className="px-4 py-2 flex justify-center">
-                    {appointment.sala_quirofano}
-                  </td>
-                  <td
-                    className="px-4 py-2"
-                    style={getEstadoColorStyle(appointment.estado_solicitud)}
-                  >
-                    {appointment.estado_solicitud}
-                  </td>
-                  <td className="px-4 py-2 flex justify-center">
-                    <button
-                      onClick={() => handleViewModal(appointment)}
-                      className="bg-[#001B58] text-white px-5 py-2 rounded-md hover:bg-blue-800"
-                    >
-                      Ver
-                    </button>
-                  </td>
+          <div className="overflow-x-auto">
+            <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+              <thead className="bg-[#304678] text-white">
+     <tr>
+                  <th className="px-4 py-2 cursor-pointer" onClick={() => handleSort("folio")}>
+                    Folio <span>{sortBy === "folio" ? (sortOrder === "asc" ? "▲" : "▼") : ""}</span>
+                  </th>
+                  <th className="px-4 py-2 cursor-pointer" onClick={() => handleSort("nombre_paciente")}>
+                    Nombre del paciente <span>{sortBy === "nombre_paciente" ? (sortOrder === "asc" ? "▲" : "▼") : ""}</span>
+                  </th>
+                  <th className="px-4 py-2 cursor-pointer" onClick={() => handleSort("nombre_especialidad")}>
+                    Especialidad <span>{sortBy === "nombre_especialidad" ? (sortOrder === "asc" ? "▲" : "▼") : ""}</span>
+                  </th>
+                  <th className="px-4 py-2 cursor-pointer" onClick={() => handleSort("fecha_solicitada")}>
+                    Fecha solicitada <span>{sortBy === "fecha_solicitada" ? (sortOrder === "asc" ? "▲" : "▼") : ""}</span>
+                  </th>
+                  <th className="px-4 py-2 cursor-pointer" onClick={() => handleSort("sala_quirofano")}>
+                    Sala solicitada <span>{sortBy === "sala_quirofano" ? (sortOrder === "asc" ? "▲" : "▼") : ""}</span>
+                  </th>
+                  <th className="px-4 py-2 cursor-pointer">
+                    Estado 
+                  </th>
+                  <th className="px-4 py-3">Acciones</th>
                 </tr>
-              ))}
+              </thead>
+              <tbody>
+                {filteredAppointments.slice(startIndex, endIndex).map((appointment) => (
+                  <tr key={appointment.id} className="bg-blue-50 hover:bg-blue-300">
+                    <td className="px-4 py-2">{appointment.folio}</td>
+                    <td className="px-4 py-2">
+                      {appointment.nombre_paciente} {appointment.ap_paterno}{" "}
+                      {appointment.ap_materno}
+                    </td>
+                    <td className="px-4 py-2">{appointment.nombre_especialidad}</td>
+                    <td className="px-4 py-2">{appointment.fecha_programada}</td>
+                    <td className="px-4 py-2 flex justify-center">
+                      {appointment.sala_quirofano}
+                    </td>
+                    <td
+                      className="px-4 py-2"
+                      style={getEstadoColorStyle(appointment.estado_solicitud)}
+                    >
+                      {appointment.estado_solicitud}
+                    </td>
+                    <td className="px-4 py-2 flex justify-center">
+                      <button
+                        onClick={() => handleViewModal(appointment)}
+                        className="bg-[#001B58] text-white px-5 py-2 rounded-md hover:bg-blue-800"
+                      >
+                        Ver
+                      </button>
+                    </td>
+                  </tr>
+                ))}
             </tbody>
-          </table>
-        )}
-
-        {currentAppointments.length > 0 && (
-          <div className="flex justify-center mt-4">
-            {Array.from({ length: totalPages }, (_, index) => (
-              <button
-                key={index + 1}
-                onClick={() => handlePageChange(index + 1)}
-                className={`px-4 py-2 mx-1 rounded ${
-                  currentPage === index + 1
-                    ? "bg-[#001B58] text-white"
-                    : "bg-gray-300 text-black"
-                }`}
-              >
-                {index + 1}
-              </button>
-            ))}
+            </table>
           </div>
         )}
-        
-      </div>
+
+            <div className="flex justify-center mt-4">
+              <button
+               onClick={() => setPage(page - 1)}
+               disabled={page === 1}
+               className="bg-[#001B58] hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-l"
+              >
+                Anterior
+              </button>
+              <span>Página {page}</span>
+              <button
+                  onClick={() => setPage(page + 1)}
+                  disabled={endIndex >= filteredAppointments.length}
+                  className="bg-[#001B58] hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-r"
+                >
+                Siguiente
+              </button>
+            </div>
+          </div>
     </Layout>
   );
 }
