@@ -3,15 +3,12 @@ import Layout from "../Layout";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "moment/locale/es"; // Importa el idioma español
-import {
-  BiChevronLeft,
-  BiChevronRight,
-  BiTime,
-} from "react-icons/bi";
+import { BiChevronLeft, BiChevronRight, BiTime } from "react-icons/bi";
 import { HiOutlineViewGrid } from "react-icons/hi";
 import { HiOutlineCalendarDays } from "react-icons/hi2";
 import AddAppointmentModalProgramado from "../components/Modals/AddApointmentModalProgramado"; // Importa el modal adecuado
 import { Link } from "react-router-dom";
+import OperatingRoomSchedule from "../components/OperatingRoomSchedule";
 
 moment.locale("es"); // Configura moment para usar el idioma español
 
@@ -39,6 +36,7 @@ const CustomToolbar = ({ date, view, onView, onNavigate }) => {
     { view: "month", label: "Mes", icon: <HiOutlineViewGrid /> },
     { view: "week", label: "Semana", icon: <HiOutlineCalendarDays /> },
     { view: "day", label: "Día", icon: <BiTime /> },
+    { view: "operatingRooms", label: "Quirófanos", icon: <BiTime /> }, // Añadir nuevo botón
   ];
 
   const formatDateInputValue = (date) => {
@@ -95,7 +93,7 @@ const CustomToolbar = ({ date, view, onView, onNavigate }) => {
           />
         </div>
 
-        <div className="md:col-span-2 grid grid-cols-3 rounded-md border border-subMain">
+        <div className="md:col-span-3 grid grid-cols-4 rounded-md border border-subMain">
           {viewNamesGroup.map((item, index) => (
             <button
               key={index}
@@ -147,6 +145,7 @@ function Appointments() {
           color: "#304678",
           message: appointment.mensaje || "",
           service: appointment.servicio || "",
+          operatingRoom: appointment.sala_quirofano,
         };
       });
 
@@ -198,37 +197,38 @@ function Appointments() {
           fetchAppointments();
         }}
       />
-      <Calendar
-        localizer={localizer}
-        events={appointments}
-        startAccessor="start"
-        endAccessor="end"
-        style={{ height: 900, marginBottom: 50 }}
-        onSelectEvent={handleEventClick}
-        defaultDate={new Date()}
-        timeslots={1}
-        resizable
-        step={60}
-        selectable
+      <CustomToolbar
         date={selectedDate}
-        views={["month", "day", "week"]}
         view={view}
-        components={{
-          toolbar: (props) => (
-            <CustomToolbar
-              {...props}
-              onNavigate={(date) => {
-                handleSelectDate(date);
-                props.onNavigate(date);
-              }}
-              onView={(viewType) => {
-                handleViewChange(viewType);
-                props.onView(viewType);
-              }}
-            />
-          ),
+        onNavigate={(date) => {
+          setSelectedDate(date);
+          handleSelectDate(date);
         }}
+        onView={handleViewChange}
       />
+      {view === 'operatingRooms' ? (
+        <OperatingRoomSchedule
+          date={selectedDate}
+          appointments={appointments}
+        />
+      ) : (
+        <Calendar
+          localizer={localizer}
+          events={appointments}
+          startAccessor="start"
+          endAccessor="end"
+          style={{ height: 900, marginBottom: 50 }}
+          onSelectEvent={handleEventClick}
+          defaultDate={new Date()}
+          timeslots={1}
+          resizable
+          step={60}
+          selectable
+          date={selectedDate}
+          views={["month", "day", "week"]}
+          view={view}
+        />
+      )}
     </Layout>
   );
 }

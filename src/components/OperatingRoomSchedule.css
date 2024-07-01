@@ -1,0 +1,61 @@
+/* OperatingRoomSchedule.css */
+
+.operating-room-schedule {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .schedule-header {
+    display: flex;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .schedule-time,
+  .schedule-room {
+    flex: 1;
+    padding: 8px;
+    text-align: center;
+    font-weight: bold;
+    border-right: 1px solid #ddd;
+  }
+  
+  .schedule-body {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .schedule-row {
+    display: flex;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .schedule-time {
+    flex: 1;
+    padding: 8px;
+    text-align: center;
+    border-right: 1px solid #eee;
+  }
+  
+  .schedule-slot {
+    flex: 1;
+    padding: 8px;
+    text-align: center;
+    border-right: 1px solid #eee;
+    background-color: #f9f9f9;
+  }
+  
+  .schedule-slot.occupied {
+    background-color: #304678;
+    color: #fff;
+  }
+  
+  .appointment-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .appointment-info p {
+    margin: 0;
+  }
+  
