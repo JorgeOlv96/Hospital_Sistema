@@ -227,8 +227,13 @@ function Appointments() {
           step={60}
           selectable
           date={selectedDate}
-          views={["month", "day", "week"]}
           view={view}
+          onNavigate={date => {
+            setSelectedDate(date);
+            handleSelectDate(date);
+          }}
+          onView={handleViewChange}
+          toolbar={false} // Desactiva la barra de herramientas predeterminada
         />
       )}
     </Layout>
