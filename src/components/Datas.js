@@ -49,36 +49,53 @@ export const MenuDatas = [
     path: '/evaluacion',
     icon: FaSheetPlastic,
   },
+  
+ /* 
   {
     title: 'Pacientes',
     path: '/patients',
     icon: TbUsers,
   },
+ */ 
+
+   /*
   {
     title: 'Doctores',
     path: '/doctors',
     icon: RiUserHeartLine,
   },
+*/
+
   {
     title: 'Agenda',
     path: '/appointments',
     icon: FaRegCalendarAlt,
   },
+  
+   /*
   {
     title: 'Urgencias',
     path: '/urgencias',
     icon: FaAmbulance,
   },
+  */
+
+ /*
   {
     title: 'Medicina',
     path: '/medicine',
     icon: RiMedicineBottleLine,
   },
+*/
+
+ /*
   {
     title: 'Configuración',
     path: '/settings',
     icon: AiOutlineSetting,
   },
+*/
+
 ];
 export const memberData = [
   {
