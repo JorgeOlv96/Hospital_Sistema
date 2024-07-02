@@ -37,7 +37,7 @@ const CustomToolbar = ({ date, view, onView, onNavigate }) => {
     { view: "month", label: "Mes", icon: <HiOutlineViewGrid /> },
     { view: "week", label: "Semana", icon: <HiOutlineCalendarDays /> },
     { view: "day", label: "Día", icon: <BiTime /> },
-    { view: "operatingRooms", label: "Quirófanos", icon: <FaHospital /> }, // Añadir nuevo botón
+    { view: "operatingRooms", label: "Quirófanos", icon: <FaHospital /> } 
   ];
 
   const formatDateInputValue = (date) => {
