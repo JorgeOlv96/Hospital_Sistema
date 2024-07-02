@@ -16,6 +16,7 @@ function Programaranestesiologo() {
   const [sortOrder, setSortOrder] = useState("asc");
   const [page, setPage] = useState(1);
   const itemsPerPage = 10;
+  const [formData, setFormData] = useState("");
 
   useEffect(() => {
     fetchPendingAppointments();
@@ -73,6 +74,17 @@ function Programaranestesiologo() {
       setSortOrder("asc");
     }
   };
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+
+    // Actualizar el estado del formulario
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+    }));
+  };
+  
 
   const sortedAppointments = [...pendingAppointments].sort((a, b) => {
     if (!sortBy) return 0;
@@ -135,17 +147,22 @@ function Programaranestesiologo() {
               />
             </div>
             <div className="w-1/4">
-              <label className="block text-sm font-medium text-gray-700">Hora asignada</label>
-              <input
-                type="text"
-                placeholder="--:-- --"
-                className="mt-1 block w-full px-4 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
+            <label htmlFor="hora_solicitada" className="block text-sm font-medium text-gray-700">
+              Hora solicitada:
+            </label>
+            <input
+              type="time"
+              id="hora_solicitada"
+              name="hora_solicitada"
+              value={formData.hora_solicitada}
+              onChange={handleInputChange}
+              className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
             <div className="w-1/4">
               <label className="block text-sm font-medium text-gray-700">Día asignado</label>
               <input
-                type="text"
+                type="date"
                 placeholder="dd/mm/aaaa"
                 className="mt-1 block w-full px-4 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
