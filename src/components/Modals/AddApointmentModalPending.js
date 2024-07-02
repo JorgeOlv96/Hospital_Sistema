@@ -194,6 +194,38 @@ function AddAppointmentModalPending({
             <div className="flex mb-4">
               <div className="mr-4 w-full">
                 <label className="block font-semibold text-gray-700 mb-2">
+                  Fecha solicitada:
+                </label>
+                <input
+                  type="text"
+                  name="fecha_programada"
+                  value={patientData.fecha_solicitada || ""}
+                  className="bg-gray-200 p-3 rounded-lg w-full"
+                  readOnly
+                />
+              </div>
+
+              <div className="w-full">
+                <label className="block font-semibold text-gray-700 mb-2">
+                  Hora solicitada:
+                </label>
+                <input
+                  type="text"
+                  name="hora_asignada"
+                  value={patientData.hora_solicitada || ""}
+                  className="bg-gray-200 p-3 rounded-lg w-full"
+                  readOnly
+                />
+              </div>
+            </div>
+          </div>
+
+
+
+          <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
+            <div className="flex mb-4">
+              <div className="mr-4 w-full">
+                <label className="block font-semibold text-gray-700 mb-2">
                   Fecha asignada:
                 </label>
                 <input
