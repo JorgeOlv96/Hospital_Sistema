@@ -36,6 +36,7 @@ import Programarsolicitud from './screens/Solicitudes/Programarsolicitud';
 import Solicitudesprogramadas from './screens/Solicitudes/Programadas';
 import Solicitudessuspendidas from './screens/Solicitudes/Suspendidas';
 import Evaluacionmedica from './screens/Evaluacion';
+import Anestesiólogos from './screens/Anestesiologos'
 
 
 
@@ -82,6 +83,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/appointments" element={<Appointments />} />
+          <Route path="/anestesiólogos" element={<Anestesiólogos /> } />
           <Route path="/campaigns" element={<Campaings />} />
           <Route path="/medicine" element={<Medicine />} />
           <Route path="/urgencias" element={<Urgencias />} />

@@ -31,6 +31,7 @@ import { AiOutlineSetting } from 'react-icons/ai';
 import { BiCalendar, BiUserPlus } from 'react-icons/bi';
 import { FaAmbulance } from "react-icons/fa";
 import { FaSheetPlastic } from "react-icons/fa6";
+import { FaSyringe } from "react-icons/fa";
 
 
 export const MenuDatas = [
@@ -71,6 +72,12 @@ export const MenuDatas = [
     path: '/appointments',
     icon: FaRegCalendarAlt,
   },
+  {
+    title: 'Anestesiólogos',
+    path: '/anestesiólogos',
+    icon: FaSyringe,
+  },
+  
   
    /*
   {
