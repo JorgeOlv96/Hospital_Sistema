@@ -34,10 +34,11 @@ const CustomToolbar = ({ date, view, onView, onNavigate }) => {
   };
 
   const viewNamesGroup = [
-    { view: "month", label: "Mes", icon: <HiOutlineViewGrid /> },
+    /*{ view: "month", label: "Mes", icon: <HiOutlineViewGrid /> },*/
+    { view: "operatingRooms", label: "Quirófanos", icon: <FaHospital /> },
     { view: "week", label: "Semana", icon: <HiOutlineCalendarDays /> },
     { view: "day", label: "Día", icon: <BiTime /> },
-    { view: "operatingRooms", label: "Quirófanos", icon: <FaHospital /> }, // Añadir nuevo botón
+     // Añadir nuevo botón
   ];
 
   const formatDateInputValue = (date) => {
@@ -52,10 +53,10 @@ const CustomToolbar = ({ date, view, onView, onNavigate }) => {
       <h1 className="text-xl font-semibold">Anestesiólogos</h1>
       <div className="my-4">
         <Link
-          to="/solicitudes/Programarsolicitud"
+          to="/anestesio/Programaranestesiologo"
           className="btn btn-sm btn-secondary p-2 bg-[#001B58] text-white rounded-lg"
         >
-          Programar solicitud
+          Asignar Anestesiologo
         </Link>
       </div>
 
@@ -94,7 +95,7 @@ const CustomToolbar = ({ date, view, onView, onNavigate }) => {
           />
         </div>
 
-        <div className="md:col-span-3 grid grid-cols-4 rounded-md border border-subMain">
+        <div className="md:col-span-3 grid grid-cols-3 rounded-md border border-subMain">
           {viewNamesGroup.map((item, index) => (
             <button
               key={index}
@@ -118,7 +119,7 @@ function Anestesiologos() {
   const [selectedEvent, setSelectedEvent] = useState({});
   const [appointments, setAppointments] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [view, setView] = useState("month");
+  const [view, setView] = useState("operatingRooms");
 
   const fetchAppointments = async () => {
     try {
