@@ -74,6 +74,10 @@ function CrearSolicitud() {
     procedimientos_paciente: "",
   });
 
+  const [procedimientos, setProcedimientos] = useState([]);
+  const [selectedProcedimiento, setSelectedProcedimiento] = useState("");
+
+
   // Función para obtener la fecha actual en el formato adecuado (YYYY-MM-DD)
   function obtenerFechaActual() {
     const hoy = new Date();
@@ -100,7 +104,31 @@ function CrearSolicitud() {
     fetchSolicitudes();
   }, []);
 
+  useEffect(() => {
+    const fetchProcedimientos = async () => {
+      try {
+        const response = await fetch("http://localhost:4000/api/solicitudes/procedimientos");
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const data = await response.json();
+        setProcedimientos(data);
+      } catch (error) {
+        console.error("Error fetching procedimientos:", error);
+      }
+    };
   
+    fetchProcedimientos();
+  }, []);
+  
+  // Function to handle changes in procedure selection
+const handleProcedimientoChange = (e) => {
+  setSelectedProcedimiento(e.target.value);
+  setFormData({
+    ...formData,
+    procedimientos_paciente: e.target.value, // Update the form data with selected value
+  });
+};
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -192,6 +220,7 @@ function CrearSolicitud() {
 
     const updatedFormData = {
       ...formData,
+      procedimientos_paciente: selectedProcedimiento,
       insumos: formData.insumos || "N/A",
       curp: formData.curp || "N/A",
       fecha_nacimiento: formData.fecha_nacimiento || "1900-01-01", // Fecha predeterminada válida
@@ -663,20 +692,23 @@ function CrearSolicitud() {
         <div className="flex flex-col p-4 bg-[#304678] rounded-lg mb-4">
           <div className="flex mb-4">
             <div className="mr-4 w-full">
-              <label
-                htmlFor="procedimientos_paciente"
-                className="block font-semibold text-white mb-1"
-              >
-                Procedimiento planeado:
+              <label htmlFor="procedimientos_paciente" className="block font-semibold text-white mb-1">
+                Procedimientos del paciente:
               </label>
-              <input
-                type="text"
-                id="procedimientos_paciente"
-                name="procedimientos_paciente"
-                value={formData.procedimientos_paciente}
-                onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
+                <select
+                  id="procedimientos_paciente"
+                  name="procedimientos_paciente"
+                  value={selectedProcedimiento} // Bind selectedProcedimiento state to value
+                  onChange={handleProcedimientoChange} // Use handleProcedimientoChange for onChange
+                  className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="">-- Seleccionar procedimiento --</option>
+                  {procedimientos.map((procedimiento) => (
+                    <option key={procedimiento.id} value={procedimiento.nombre}>
+                      {procedimiento.nombre}
+                    </option>
+                  ))}
+                </select>
             </div>
 
             <div className="mr-4 w-1/2">

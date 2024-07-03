@@ -49,12 +49,11 @@ function AddAppointmentModalPending({
             throw new Error("Network response was not ok");
           }
           const data = await response.json();
+          console.log('data',data)
           setPatientData(data);
-          setLoading(false);
         } catch (error) {
           console.error("Error fetching appointment data:", error);
-          setLoading(false);
-        }
+        }finally{ setLoading(false) }
       };
 
       fetchAppointmentData();
