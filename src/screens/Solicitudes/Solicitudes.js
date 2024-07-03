@@ -25,14 +25,16 @@ function Solicitudes() {
           throw new Error('Network response was not ok');
         }
         const data = await response.json();
+        console.log('Fetched solicitudes:', data); // Agregar este log
         setSolicitudes(data);
       } catch (error) {
         console.error('Error fetching solicitudes:', error);
       }
     };
-
+  
     fetchSolicitudes();
   }, []);
+  
 
   const handleModal = () => {
     setOpen(!open);
@@ -309,27 +311,31 @@ function Solicitudes() {
           </tr>
         </thead>
         <tbody>
-          {sortedSolicitudes.slice(startIndex, endIndex).map((solicitud) => (
-            <tr key={solicitud.id_solicitud} className="bg-blue-50 hover:bg-blue-300">
-              <td className="border px-4 py-2">{solicitud.id_solicitud}</td>
-              <td className="border px-4 py-2">{solicitud.folio}</td>
-              <td className="border px-4 py-2">{solicitud.nombre_paciente} {solicitud.ap_paterno} {solicitud.ap_materno}</td>
-              <td className="border px-4 py-2">{solicitud.nombre_especialidad}</td>
-              <td className="border px-4 py-2">{new Date(solicitud.fecha_solicitud).toLocaleDateString()}</td>
-              <td className={`border px-4 py-2 ${getEstadoColor(solicitud.estado_solicitud)}`} style={getEstadoColorStyle(solicitud.estado_solicitud)}>
-                {solicitud.estado_solicitud}
-              </td>
-              <td className="border px-4 py-2">
-                <button
-                  onClick={() => handleViewModal(solicitud)}
-                  className="bg-[#001B58] text-white px-4 py-2 rounded-md hover:bg-blue-800"
-                >
-                  Ver
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
+  {sortedSolicitudes.slice(startIndex, endIndex).map((solicitud) => {
+    const formattedDate = new Date(solicitud.fecha_solicitud).toLocaleDateString();
+    return (
+      <tr key={solicitud.id_solicitud} className="bg-blue-50 hover:bg-blue-300">
+        <td className="border px-4 py-2">{solicitud.id_solicitud}</td>
+        <td className="border px-4 py-2">{solicitud.folio}</td>
+        <td className="border px-4 py-2">{solicitud.nombre_paciente} {solicitud.ap_paterno} {solicitud.ap_materno}</td>
+        <td className="border px-4 py-2">{solicitud.nombre_especialidad}</td>
+        <td className="border px-4 py-2">{formattedDate}</td>
+        <td className={`border px-4 py-2 ${getEstadoColor(solicitud.estado_solicitud)}`} style={getEstadoColorStyle(solicitud.estado_solicitud)}>
+          {solicitud.estado_solicitud}
+        </td>
+        <td className="border px-4 py-2">
+          <button
+            onClick={() => handleViewModal(solicitud)}
+            className="bg-[#001B58] text-white px-4 py-2 rounded-md hover:bg-blue-800"
+          >
+            Ver
+          </button>
+        </td>
+      </tr>
+    );
+  })}
+</tbody>
+
       </table>
     </div>
   </div>
