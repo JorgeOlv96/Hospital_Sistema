@@ -2,25 +2,29 @@ import React, { useState, useEffect } from "react";
 import Layout from "../Layout";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
-import "moment/locale/es"; // Importa el idioma español
+import "moment/locale/es";
 import { BiChevronLeft, BiChevronRight, BiTime } from "react-icons/bi";
 import { HiOutlineViewGrid } from "react-icons/hi";
 import { HiOutlineCalendarDays } from "react-icons/hi2";
-import AddAppointmentModalProgramado from "../components/Modals/AddApointmentModalProgramado"; // Importa el modal adecuado
+import AddAppointmentModalProgramado from "../components/Modals/AddApointmentModalProgramado";
 import { Link } from "react-router-dom";
 import OperatingRoomSchedule from "../components/OperatingRoomSchedule";
-import { FaHospital } from 'react-icons/fa';
+import { FaHospital } from "react-icons/fa";
 
-moment.locale("es"); // Configura moment para usar el idioma español
+moment.locale("es");
 
-const CustomToolbar = ({ date, view, onView, onNavigate }) => {
+const CustomToolbar = ({ date, view, onView, onNavigate, onPrint }) => {
   const goToBack = () => {
-    const newDate = moment(date).subtract(1, view === "month" ? "month" : "day").toDate();
+    const newDate = moment(date)
+      .subtract(1, view === "month" ? "month" : "day")
+      .toDate();
     onNavigate(newDate);
   };
 
   const goToNext = () => {
-    const newDate = moment(date).add(1, view === "month" ? "month" : "day").toDate();
+    const newDate = moment(date)
+      .add(1, view === "month" ? "month" : "day")
+      .toDate();
     onNavigate(newDate);
   };
 
@@ -37,12 +41,12 @@ const CustomToolbar = ({ date, view, onView, onNavigate }) => {
     { view: "month", label: "Mes", icon: <HiOutlineViewGrid /> },
     { view: "week", label: "Semana", icon: <HiOutlineCalendarDays /> },
     { view: "day", label: "Día", icon: <BiTime /> },
-    { view: "operatingRooms", label: "Quirófanos", icon: <FaHospital /> }, // Añadir nuevo botón
+    { view: "operatingRooms", label: "Quirófanos", icon: <FaHospital /> },
   ];
 
   const formatDateInputValue = (date) => {
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = date.getFullYear();
     return `${year}-${month}-${day}`;
   };
@@ -57,6 +61,12 @@ const CustomToolbar = ({ date, view, onView, onNavigate }) => {
         >
           Programar solicitud
         </Link>
+        <button
+          onClick={onPrint}
+          className="btn btn-sm btn-secondary p-2 bg-[#001B58] text-white rounded-lg ml-4"
+        >
+          Imprimir solicitudes
+        </button>
       </div>
 
       <div className="grid sm:grid-cols-2 md:grid-cols-12 gap-4">
@@ -88,7 +98,7 @@ const CustomToolbar = ({ date, view, onView, onNavigate }) => {
             onChange={(e) => {
               const selectedDate = new Date(e.target.value);
               onNavigate(selectedDate);
-              onView("day"); // Cambia a la vista de día
+              onView("day");
             }}
             className="px-4 py-2 border border-subMain rounded-md text-subMain"
           />
@@ -122,7 +132,9 @@ function Appointments() {
 
   const fetchAppointments = async () => {
     try {
-      const response = await fetch("http://localhost:4000/api/solicitudes/programadas");
+      const response = await fetch(
+        "http://localhost:4000/api/solicitudes/programadas"
+      );
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -143,9 +155,15 @@ function Appointments() {
           start: startDateTime,
           end: endDateTime,
           title: appointment.folio,
-          color: "#304678",
-          message: appointment.mensaje || "",
-          service: appointment.servicio || "",
+          ap_paterno: appointment.ap_paterno,
+          ap_materno: appointment.ap_materno,
+          nombre_paciente: appointment.nombre_paciente,
+          sexo: appointment.sexo,
+          tiempo_estimado: appointment.tiempo_estimado,
+          turno: appointment.turno,
+          anestesiologo_asignado: appointment.anestesiologo_asignado,
+          id_cirujano: appointment.id_cirujano,
+          req_insumo: appointment.req_insumo,
           operatingRoom: appointment.sala_quirofano,
         };
       });
@@ -180,13 +198,109 @@ function Appointments() {
     setView(newView);
   };
 
-  const eventsForSelectedDate = appointments.filter((event) => {
-    const eventStartDate = moment(event.start).format("YYYY-MM-DD");
-    const selectedFormattedDate = moment(selectedDate).format("YYYY-MM-DD");
-    return eventStartDate === selectedFormattedDate;
-  });
+  const printWeeklyAppointments = () => {
+    const startOfWeek = moment().startOf("week");
+    const endOfWeek = moment().endOf("week");
+    const weeklyAppointments = appointments.filter((appointment) =>
+      moment(appointment.start).isBetween(startOfWeek, endOfWeek)
+    );
 
-  console.log("Events for selected date:", eventsForSelectedDate);
+    const printableContent = `
+      <html>
+      <head>
+        <title>Solicitudes del día</title>
+        <style>
+          body {
+            background-color: #ffffff; /* Color de fondo blanco */
+            font-family: Arial, sans-serif;
+            font-size: 10px; /* Tamaño de fuente reducido */
+            margin: 0;
+            padding: 10px;
+          }
+          .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+          }
+          .header img {
+            max-width: 100px; /* Ajusta el tamaño máximo del logo */
+            height: auto;
+            margin-right: 10px;
+          }
+          .header h1 {
+            font-size: 10px; /* Tamaño de fuente del título del documento */
+            margin: 0;
+            flex-grow: 1;
+            text-align: right;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 6px; /* Tamaño de fuente de las celdas de la tabla */
+          }
+          th, td {
+            border: 1px solid black;
+            padding: 4px; /* Reducción del espaciado interno de las celdas */
+            text-align: left;
+          }
+          th {
+            background-color: #f2f2f2;
+             color: #333333; /* Color de texto para los encabezados */
+          }
+          .nowrap {
+            white-space: nowrap;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <img src="/images/logologin.png" alt="Logo">
+          <h1>Solicitudes del día</h1>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Folio</th>
+              <th>Nombre completo</th>
+              <th>Sexo</th>
+              <th>Fecha asignada</th>
+              <th>Hora asignada</th>
+              <th>Tiempo estimado de cirugía</th>
+              <th>Turno asignado</th>
+              <th>Quirófano asignado</th>
+              <th>Anestesiólogo asignado</th>
+              <th>Cirujano encargado</th>
+              <th>Requiere insumos</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${weeklyAppointments.map(appointment => `
+              <tr>
+                <td>${appointment.title}</td>
+                <td class="nowrap">${appointment.nombre_paciente} ${appointment.ap_paterno} ${appointment.ap_materno}</td>
+                <td>${appointment.sexo}</td>
+                <td>${moment(appointment.start).format('LL')}</td>
+                <td>${moment(appointment.start).format('LT')}</td>
+                <td>${appointment.tiempo_estimado} min</td>
+                <td>${appointment.turno}</td>
+                <td>${appointment.operatingRoom}</td>
+                <td>${appointment.anestesiologo_asignado}</td>
+                <td>${appointment.id_cirujano}</td>
+                <td>${appointment.req_insumo}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </body>
+    </html>
+  `;
+    const printWindow = window.open("Solicitudes");
+    printWindow.document.write(printableContent);
+    printWindow.document.close();
+    printWindow.print();
+  };
 
   return (
     <Layout>
@@ -206,8 +320,9 @@ function Appointments() {
           handleSelectDate(date);
         }}
         onView={handleViewChange}
+        onPrint={printWeeklyAppointments}
       />
-      {view === 'operatingRooms' ? (
+      {view === "operatingRooms" ? (
         <OperatingRoomSchedule
           date={selectedDate}
           appointments={appointments}
@@ -228,12 +343,12 @@ function Appointments() {
           selectable
           date={selectedDate}
           view={view}
-          onNavigate={date => {
+          onNavigate={(date) => {
             setSelectedDate(date);
             handleSelectDate(date);
           }}
           onView={handleViewChange}
-          toolbar={false} // Desactiva la barra de herramientas predeterminada
+          toolbar={false}
         />
       )}
     </Layout>
