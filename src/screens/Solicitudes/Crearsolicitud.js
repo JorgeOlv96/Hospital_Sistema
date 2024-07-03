@@ -74,8 +74,14 @@ function CrearSolicitud() {
     procedimientos_paciente: "",
   });
 
+  const [searchTerm, setSearchTerm] = useState('');
+  const [procedures, setProcedures] = useState([]);
   const [procedimientos, setProcedimientos] = useState([]);
   const [selectedProcedimiento, setSelectedProcedimiento] = useState("");
+  const filteredProcedures = procedures.filter((procedure) =>
+    procedure.nombre.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  
 
 
   // Función para obtener la fecha actual en el formato adecuado (YYYY-MM-DD)
@@ -105,21 +111,22 @@ function CrearSolicitud() {
   }, []);
 
   useEffect(() => {
-    const fetchProcedimientos = async () => {
+    const fetchProcedures = async () => {
       try {
-        const response = await fetch("http://localhost:4000/api/solicitudes/procedimientos");
+        const response = await fetch('http://localhost:4000/api/solicitudes/procedimientos');
         if (!response.ok) {
-          throw new Error("Network response was not ok");
+          throw new Error('Network response was not ok');
         }
         const data = await response.json();
-        setProcedimientos(data);
+        setProcedures(data);
       } catch (error) {
-        console.error("Error fetching procedimientos:", error);
+        console.error('Error fetching procedures:', error);
       }
     };
   
-    fetchProcedimientos();
+    fetchProcedures();
   }, []);
+  
   
   // Function to handle changes in procedure selection
 const handleProcedimientoChange = (e) => {
@@ -695,20 +702,30 @@ const handleProcedimientoChange = (e) => {
               <label htmlFor="procedimientos_paciente" className="block font-semibold text-white mb-1">
                 Procedimientos del paciente:
               </label>
-                <select
-                  id="procedimientos_paciente"
-                  name="procedimientos_paciente"
-                  value={selectedProcedimiento} // Bind selectedProcedimiento state to value
-                  onChange={handleProcedimientoChange} // Use handleProcedimientoChange for onChange
-                  className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="">-- Seleccionar procedimiento --</option>
-                  {procedimientos.map((procedimiento) => (
-                    <option key={procedimiento.id} value={procedimiento.nombre}>
-                      {procedimiento.nombre}
-                    </option>
-                  ))}
-                </select>
+              <input
+                type="text"
+                placeholder="Buscar procedimiento"
+                value={searchTerm}
+                onChange={(event) => setSearchTerm(event.target.value)}
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+                {filteredProcedures.map((procedure) => (
+                  <option key={procedure.id} value={procedure.id}>
+                    {procedure.nombre}
+                  </option>
+                ))}
+              <select
+                name="procedimientos_paciente"
+                value={formData.procedimientos_paciente}
+                onChange={handleProcedimientoChange}
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                {filteredProcedures.map((procedure) => (
+                  <option key={procedure.id} value={procedure.id}>
+                    {procedure.nombre}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div className="mr-4 w-1/2">
