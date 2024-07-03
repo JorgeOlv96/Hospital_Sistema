@@ -206,58 +206,66 @@ function Appointments() {
     );
 
     const printableContent = `
-      <html>
+       <html>
       <head>
-        <title>Solicitudes del día</title>
+        <title>Solicitudes de la Semana - Vista Previa de Impresión</title>
         <style>
-          body {
-            background-color: #ffffff; /* Color de fondo blanco */
-            font-family: Arial, sans-serif;
-            font-size: 10px; /* Tamaño de fuente reducido */
-            margin: 0;
-            padding: 10px;
-          }
-          .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 10px;
-          }
-          .header img {
-            max-width: 100px; /* Ajusta el tamaño máximo del logo */
-            height: auto;
-            margin-right: 10px;
-          }
-          .header h1 {
-            font-size: 10px; /* Tamaño de fuente del título del documento */
-            margin: 0;
-            flex-grow: 1;
-            text-align: right;
-          }
-          table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-            font-size: 6px; /* Tamaño de fuente de las celdas de la tabla */
-          }
-          th, td {
-            border: 1px solid black;
-            padding: 4px; /* Reducción del espaciado interno de las celdas */
-            text-align: left;
-          }
-          th {
-            background-color: #f2f2f2;
-             color: #333333; /* Color de texto para los encabezados */
-          }
-          .nowrap {
-            white-space: nowrap;
+          @media print {
+            body {
+              background-color: #ffffff; /* Color de fondo blanco */
+              font-family: Arial, sans-serif;
+              font-size: 6px; /* Tamaño de fuente reducido */
+              margin: 0;
+              padding: 10px;
+            }
+            .header {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              margin-bottom: 10px;
+            }
+            .header img {
+              max-width: 100px; /* Ajusta el tamaño máximo del logo */
+              height: auto;
+              margin-right: 10px;
+            }
+            .header h1 {
+              font-size: 10px; /* Tamaño de fuente del título del documento */
+              margin: 0;
+              flex-grow: 1;
+              text-align: right;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-top: 10px;
+              font-size: 6px; /* Tamaño de fuente de las celdas de la tabla */
+            }
+            th, td {
+              border: 1px solid black;
+              padding: 4px; /* Reducción del espaciado interno de las celdas */
+              text-align: left;
+            }
+            th {
+              background-color: #f2f2f2; /* Fondo gris claro para los encabezados */
+              color: #333333; /* Color de texto para los encabezados */
+            }
+            .matutino {
+              background-color: #aee4ff !important; /* Azul claro para el turno matutino */
+            }
+            .vespertino {
+              background-color: #d7f9d3 !important; /* Verde claro para el turno vespertino */
+            }
+            .nocturno {
+              background-color: #ffd8b3 !important; /* Naranja claro para el turno nocturno */
+            }
           }
         </style>
       </head>
       <body>
         <div class="header">
           <img src="/images/logologin.png" alt="Logo">
-          <h1>Solicitudes del día</h1>
+          <h1>Solicitudes de la Semana - Vista Previa de Impresión</h1>
         </div>
         <table>
           <thead>
@@ -276,21 +284,32 @@ function Appointments() {
             </tr>
           </thead>
           <tbody>
-            ${weeklyAppointments.map(appointment => `
-              <tr>
-                <td>${appointment.title}</td>
-                <td class="nowrap">${appointment.nombre_paciente} ${appointment.ap_paterno} ${appointment.ap_materno}</td>
-                <td>${appointment.sexo}</td>
-                <td>${moment(appointment.start).format('LL')}</td>
-                <td>${moment(appointment.start).format('LT')}</td>
-                <td>${appointment.tiempo_estimado} min</td>
-                <td>${appointment.turno}</td>
-                <td>${appointment.operatingRoom}</td>
-                <td>${appointment.anestesiologo_asignado}</td>
-                <td>${appointment.id_cirujano}</td>
-                <td>${appointment.req_insumo}</td>
-              </tr>
-            `).join('')}
+            ${weeklyAppointments.map(appointment => {
+              let turnoClass = '';
+              // Determinar la clase según el turno asignado
+              if (appointment.turno === 'Matutino') {
+                turnoClass = 'matutino';
+              } else if (appointment.turno === 'Vespertino') {
+                turnoClass = 'vespertino';
+              } else if (appointment.turno === 'Nocturno') {
+                turnoClass = 'nocturno';
+              }
+              return `
+                <tr class="${turnoClass}">
+                  <td>${appointment.title}</td>
+                  <td class="nowrap">${appointment.nombre_paciente} ${appointment.ap_paterno} ${appointment.ap_materno}</td>
+                  <td>${appointment.sexo}</td>
+                  <td>${moment(appointment.start).format('LL')}</td>
+                  <td>${moment(appointment.start).format('LT')}</td>
+                  <td>${appointment.tiempo_estimado} min</td>
+                  <td>${appointment.turno}</td>
+                  <td>${appointment.operatingRoom}</td>
+                  <td>${appointment.anestesiologo_asignado}</td>
+                  <td>${appointment.id_cirujano}</td>
+                  <td>${appointment.req_insumo}</td>
+                </tr>
+              `;
+            }).join('')}
           </tbody>
         </table>
       </body>
