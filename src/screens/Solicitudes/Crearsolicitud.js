@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../../Layout";
 import { useNavigate } from "react-router-dom";
+import ProcedureSelect from './ProcedureSelect';
 
 function CrearSolicitud() {
   const [solicitudes, setSolicitudes] = useState([]);
@@ -74,6 +75,10 @@ function CrearSolicitud() {
     procedimientos_paciente: "",
   });
 
+  
+
+
+
   // Función para obtener la fecha actual en el formato adecuado (YYYY-MM-DD)
   function obtenerFechaActual() {
     const hoy = new Date();
@@ -99,8 +104,6 @@ function CrearSolicitud() {
 
     fetchSolicitudes();
   }, []);
-
-  
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -184,6 +187,13 @@ function CrearSolicitud() {
       ...formData,
       nombre_especialidad: correspondingNombre,
       clave_esp: selectedClaveEspecialidad,
+    });
+  };
+
+  const handleProcedureChange = (selectedOption) => {
+    setFormData({
+      ...formData,
+      procedimientos_paciente: selectedOption ? selectedOption.value : ""
     });
   };
 
@@ -662,22 +672,12 @@ function CrearSolicitud() {
 
         <div className="flex flex-col p-4 bg-[#304678] rounded-lg mb-4">
           <div className="flex mb-4">
-            <div className="mr-4 w-full">
-              <label
-                htmlFor="procedimientos_paciente"
-                className="block font-semibold text-white mb-1"
-              >
-                Procedimiento planeado:
-              </label>
-              <input
-                type="text"
-                id="procedimientos_paciente"
-                name="procedimientos_paciente"
-                value={formData.procedimientos_paciente}
-                onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
+          <div className="mr-4 w-full">
+        <label htmlFor="procedimientos_paciente" className="block font-semibold text-white mb-1">
+          Procedimientos del paciente:
+        </label>
+        <ProcedureSelect onChange={handleProcedureChange} />
+      </div>
 
             <div className="mr-4 w-1/2">
               <label
@@ -712,7 +712,7 @@ function CrearSolicitud() {
                 name="estado_solicitud"
                 value={formData.estado_solicitud}
                 readOnly // Hacer que el campo sea de solo lectura
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-red-300"
+                className="border border-red-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-red-300 focus:border-red-300 bg-red-300"
               />
             </div>
           </div>

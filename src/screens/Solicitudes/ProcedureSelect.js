@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import AsyncSelect from 'react-select/async';
 
-const ProcedureSelect = () => {
+const ProcedureSelect = ({ onChange }) => {
   const [selectedOption, setSelectedOption] = useState(null);
 
   const loadOptions = (inputValue, callback) => {
@@ -16,12 +16,17 @@ const ProcedureSelect = () => {
       });
   };
 
+  const handleChange = (option) => {
+    setSelectedOption(option);
+    onChange(option);
+  };
+
   return (
     <AsyncSelect
       cacheOptions
       loadOptions={loadOptions}
       defaultOptions
-      onChange={setSelectedOption}
+      onChange={handleChange}
       value={selectedOption}
     />
   );

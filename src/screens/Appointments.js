@@ -200,10 +200,10 @@ function Appointments() {
   };
 
   const printWeeklyAppointments = () => {
-    const startOfWeek = moment().startOf("week");
-    const endOfWeek = moment().endOf("week");
+    const startOfDay = moment().startOf("day");
+    const endOfDay = moment().endOf("day");
     const weeklyAppointments = appointments.filter((appointment) =>
-      moment(appointment.start).isBetween(startOfWeek, endOfWeek)
+      moment(appointment.start).isBetween(startOfDay, endOfDay)
     );
 
     const printableContent = `
