@@ -208,86 +208,88 @@ function Appointments() {
     );
   
     const printableContent = `
-       <html>
-  <head>
-    <title>Solicitudes del día</title>
-    <style>
-      body {
-        background-color: #ffffff; /* Color de fondo blanco */
-        font-family: Arial, sans-serif;
-        font-size: 10px; /* Tamaño de fuente reducido */
-        margin: 20px; /* Márgenes alrededor del contenido */
-        padding: 10px;
-      }
-      .header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 20px; /* Más espacio debajo del encabezado */
-      }
-      .header img {
-        max-width: 150px; /* Ajusta el tamaño máximo del logo */
-        height: auto;
-        margin-right: 10px;
-      }
-      .header .date {
-          font-size: 10px;
-          text-align: left;
-          margin-right: 10px;
-      }
-      .header h1 {
-        font-size: 10px; /* Tamaño de fuente del título del documento */
-        margin: 2;
-        flex-grow: 2;
-        text-align: right;
-      }
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px; /* Más espacio encima de la tabla */
-        font-size: 10px; /* Tamaño de fuente de las celdas de la tabla */
-      }
-      th, td {
-        border: 1px solid black;
-        padding: 5px; /* Espaciado interno de las celdas */
-        text-align: left;
-        white-space: nowrap; /* Mantener el texto en una sola línea */
-      }
-      th {
-        
-      }
-    </style>
-  </head>
-  <body>
-    <div class="header">
-      <img src="/images/logologin.png" alt="Logo">
-      <h1>HOSPITAL GENERAL DE QUERÉTARO - HOJA DE PROGRAMACIÓN QUIRÚRJICA PRELIMINAR - FECHA: </h1>
-      <div class="date">
-        <p>${new Date().toLocaleDateString()}</p>
-      </div>
+      <html>
+<head>
+  <title>Solicitudes del día</title>
+  <style>
+    body {
+      background-color: #ffffff; /* Color de fondo blanco */
+      font-family: Arial, sans-serif;
+      font-size: 7px; /* Tamaño de fuente reducido */
+      margin: 5px; /* Márgenes alrededor del contenido */
+      padding: 2px;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 5px; /* Más espacio debajo del encabezado */
+    }
+    .header img {
+      max-width: 150px; /* Ajusta el tamaño máximo del logo */
+      height: auto;
+      margin-right: 3px;
+    }
+    .header .date {
+      font-size: 7px;
+      text-align: left;
+      margin-right: 3px;
+    }
+    .header h1 {
+      font-size: 7px; /* Tamaño de fuente del título del documento */
+      margin: 2px;
+      flex-grow: 2;
+      text-align: right;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 5px; /* Más espacio encima de la tabla */
+      font-size: 7px; /* Tamaño de fuente de las celdas de la tabla */
+    }
+    th, td {
+      border: 1px solid black;
+      padding: 2px; /* Espaciado interno de las celdas */
+      text-align: left;
+      white-space: nowrap; /* Mantener el texto en una sola línea */
+    }
+    th {
+      
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <img src="/images/logologin.png" alt="Logo">
+    <h1>HOSPITAL GENERAL DE QUERÉTARO - HOJA DE PROGRAMACIÓN QUIRÚRJICA PRELIMINAR - FECHA: </h1>
+    <div class="date">
+      <p>${new Date().toLocaleDateString()}</p>
     </div>
-    <table>
-      <thead>
-        <tr>
-          <th>Folio</th>
-          <th>Nombre completo</th>
-          <th>Sexo</th>
-          <th>Fecha asignada</th>
-          <th>Especialidad</th>
-          <th>Hora asignada</th>
-          <th>Tiempo estimado</th>
-          <th>Turno</th>
-          <th>Sala</th>
-          <th>Anestesiólogo</th>
-          <th>Cirujano</th>
-          <th>Insumos</th>
-        </tr>
-      </thead>
-      <tbody>
-        ${todaysRegistrations
-          .map(
-            (appointment) => `
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>#</th> <!-- Agregamos la columna de enumeración -->
+        <th>Folio</th>
+        <th>Nombre completo</th>
+        <th>Sexo</th>
+        <th>Fecha asignada</th>
+        <th>Especialidad</th>
+        <th>Hora asignada</th>
+        <th>Tiempo estimado</th>
+        <th>Turno</th>
+        <th>Sala</th>
+        <th>Anestesiólogo</th>
+        <th>Cirujano</th>
+        <th>Insumos</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${todaysRegistrations
+        .map(
+          (appointment, index) => `
           <tr>
+            <td>${index + 1}</td> <!-- Mostramos el número de solicitud -->
             <td>${appointment.title}</td>
             <td class="nowrap">${appointment.nombre_paciente} ${
               appointment.ap_paterno
@@ -304,12 +306,13 @@ function Appointments() {
             <td>${appointment.req_insumo}</td>
           </tr>
         `
-          )
-          .join("")}
-      </tbody>
-    </table>
-  </body>
-  </html>
+        )
+        .join("")}
+    </tbody>
+  </table>
+</body>
+</html>
+
     `;
   
     const printWindow = window.open("Solicitudes");
