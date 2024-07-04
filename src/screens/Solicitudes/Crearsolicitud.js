@@ -115,8 +115,8 @@ function CrearSolicitud() {
     }));
 
     // Validación de fecha de nacimiento
-    if (name === 'fecha_nacimiento') {
-      const today = new Date().toISOString().split('T')[0]; // Fecha actual en formato YYYY-MM-DD
+    if (name === "fecha_nacimiento") {
+      const today = new Date().toISOString().split("T")[0]; // Fecha actual en formato YYYY-MM-DD
       if (value > today) {
         setIsFechaNacimientoValid(false);
       } else {
@@ -131,15 +131,29 @@ function CrearSolicitud() {
       const dayOfWeek = selectedDate.getDay(); // 0 = Domingo, 6 = Sábado
 
       if (dayOfWeek === 0 || dayOfWeek === 6) {
-        setFormData(prevFormData => ({ ...prevFormData, turno_solicitado: 'Especial' }));
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+          turno_solicitado: "Especial",
+        }));
       } else if (formData.hora_solicitada) {
-        const [hours, minutes] = (formData.hora_solicitada || "").split(":").map(Number);
+        const [hours, minutes] = (formData.hora_solicitada || "")
+          .split(":")
+          .map(Number);
         if (!isNaN(hours) && hours >= 7 && hours < 14) {
-          setFormData(prevFormData => ({ ...prevFormData, turno_solicitado: 'Matutino' }));
+          setFormData((prevFormData) => ({
+            ...prevFormData,
+            turno_solicitado: "Matutino",
+          }));
         } else if (!isNaN(hours) && hours >= 14 && hours < 21) {
-          setFormData(prevFormData => ({ ...prevFormData, turno_solicitado: 'Vespertino' }));
+          setFormData((prevFormData) => ({
+            ...prevFormData,
+            turno_solicitado: "Vespertino",
+          }));
         } else {
-          setFormData(prevFormData => ({ ...prevFormData, turno_solicitado: 'Nocturno' }));
+          setFormData((prevFormData) => ({
+            ...prevFormData,
+            turno_solicitado: "Nocturno",
+          }));
         }
       }
     }
@@ -150,14 +164,29 @@ function CrearSolicitud() {
       const selectedDate = new Date(formData.fecha_solicitada);
       const dayOfWeek = selectedDate.getDay(); // 0 = Domingo, 6 = Sábado
 
-      if (dayOfWeek !== 0 && dayOfWeek !== 6 && formData.turno_solicitado !== 'Especial') {
-        const [hours, minutes] = formData.hora_solicitada.split(":").map(Number);
+      if (
+        dayOfWeek !== 0 &&
+        dayOfWeek !== 6 &&
+        formData.turno_solicitado !== "Especial"
+      ) {
+        const [hours, minutes] = formData.hora_solicitada
+          .split(":")
+          .map(Number);
         if (!isNaN(hours) && hours >= 7 && hours < 14) {
-          setFormData(prevFormData => ({ ...prevFormData, turno_solicitado: 'Matutino' }));
+          setFormData((prevFormData) => ({
+            ...prevFormData,
+            turno_solicitado: "Matutino",
+          }));
         } else if (!isNaN(hours) && hours >= 14 && hours < 21) {
-          setFormData(prevFormData => ({ ...prevFormData, turno_solicitado: 'Vespertino' }));
+          setFormData((prevFormData) => ({
+            ...prevFormData,
+            turno_solicitado: "Vespertino",
+          }));
         } else {
-          setFormData(prevFormData => ({ ...prevFormData, turno_solicitado: 'Nocturno' }));
+          setFormData((prevFormData) => ({
+            ...prevFormData,
+            turno_solicitado: "Nocturno",
+          }));
         }
       }
     }
@@ -601,19 +630,22 @@ function CrearSolicitud() {
 
         <div className="flex flex-col p-4 bg-[#304678] rounded-lg mb-4">
           <div className="flex mb-4">
-          <div className="mr-4 w-full">
-            <label htmlFor="hora_solicitada" className="block font-semibold text-white mb-1">
-              Hora solicitada:
-            </label>
-            <input
-              type="time"
-              id="hora_solicitada"
-              name="hora_solicitada"
-              value={formData.hora_solicitada}
-              onChange={handleInputChange}
-              className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
+            <div className="mr-4 w-full">
+              <label
+                htmlFor="hora_solicitada"
+                className="block font-semibold text-white mb-1"
+              >
+                Hora solicitada:
+              </label>
+              <input
+                type="time"
+                id="hora_solicitada"
+                name="hora_solicitada"
+                value={formData.hora_solicitada}
+                onChange={handleInputChange}
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
 
             <div className="mr-4 w-full">
               <label
@@ -650,7 +682,10 @@ function CrearSolicitud() {
             </div>
 
             <div className="w-full">
-              <label htmlFor="turno_solicitado" className="block font-semibold text-white mb-1">
+              <label
+                htmlFor="turno_solicitado"
+                className="block font-semibold text-white mb-1"
+              >
                 Turno solicitado:
               </label>
               <select
