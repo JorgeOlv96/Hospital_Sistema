@@ -77,7 +77,6 @@ function CrearSolicitud() {
   const [procedimientos, setProcedimientos] = useState([]);
   const [selectedProcedimiento, setSelectedProcedimiento] = useState("");
 
-
   // Función para obtener la fecha actual en el formato adecuado (YYYY-MM-DD)
   function obtenerFechaActual() {
     const hoy = new Date();
@@ -107,7 +106,9 @@ function CrearSolicitud() {
   useEffect(() => {
     const fetchProcedimientos = async () => {
       try {
-        const response = await fetch("http://localhost:4000/api/solicitudes/procedimientos");
+        const response = await fetch(
+          "http://localhost:4000/api/solicitudes/procedimientos"
+        );
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
@@ -117,18 +118,18 @@ function CrearSolicitud() {
         console.error("Error fetching procedimientos:", error);
       }
     };
-  
+
     fetchProcedimientos();
   }, []);
-  
+
   // Function to handle changes in procedure selection
-const handleProcedimientoChange = (e) => {
-  setSelectedProcedimiento(e.target.value);
-  setFormData({
-    ...formData,
-    procedimientos_paciente: e.target.value, // Update the form data with selected value
-  });
-};
+  const handleProcedimientoChange = (e) => {
+    setSelectedProcedimiento(e.target.value);
+    setFormData({
+      ...formData,
+      procedimientos_paciente: e.target.value, // Update the form data with selected value
+    });
+  };
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -140,8 +141,8 @@ const handleProcedimientoChange = (e) => {
     }));
 
     // Validación de fecha de nacimiento
-    if (name === 'fecha_nacimiento') {
-      const today = new Date().toISOString().split('T')[0]; // Fecha actual en formato YYYY-MM-DD
+    if (name === "fecha_nacimiento") {
+      const today = new Date().toISOString().split("T")[0]; // Fecha actual en formato YYYY-MM-DD
       if (value > today) {
         setIsFechaNacimientoValid(false);
       } else {
@@ -156,15 +157,29 @@ const handleProcedimientoChange = (e) => {
       const dayOfWeek = selectedDate.getDay(); // 0 = Domingo, 6 = Sábado
 
       if (dayOfWeek === 0 || dayOfWeek === 6) {
-        setFormData(prevFormData => ({ ...prevFormData, turno_solicitado: 'Especial' }));
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+          turno_solicitado: "Especial",
+        }));
       } else if (formData.hora_solicitada) {
-        const [hours, minutes] = (formData.hora_solicitada || "").split(":").map(Number);
+        const [hours, minutes] = (formData.hora_solicitada || "")
+          .split(":")
+          .map(Number);
         if (!isNaN(hours) && hours >= 7 && hours < 14) {
-          setFormData(prevFormData => ({ ...prevFormData, turno_solicitado: 'Matutino' }));
+          setFormData((prevFormData) => ({
+            ...prevFormData,
+            turno_solicitado: "Matutino",
+          }));
         } else if (!isNaN(hours) && hours >= 14 && hours < 21) {
-          setFormData(prevFormData => ({ ...prevFormData, turno_solicitado: 'Vespertino' }));
+          setFormData((prevFormData) => ({
+            ...prevFormData,
+            turno_solicitado: "Vespertino",
+          }));
         } else {
-          setFormData(prevFormData => ({ ...prevFormData, turno_solicitado: 'Nocturno' }));
+          setFormData((prevFormData) => ({
+            ...prevFormData,
+            turno_solicitado: "Nocturno",
+          }));
         }
       }
     }
@@ -175,14 +190,29 @@ const handleProcedimientoChange = (e) => {
       const selectedDate = new Date(formData.fecha_solicitada);
       const dayOfWeek = selectedDate.getDay(); // 0 = Domingo, 6 = Sábado
 
-      if (dayOfWeek !== 0 && dayOfWeek !== 6 && formData.turno_solicitado !== 'Especial') {
-        const [hours, minutes] = formData.hora_solicitada.split(":").map(Number);
+      if (
+        dayOfWeek !== 0 &&
+        dayOfWeek !== 6 &&
+        formData.turno_solicitado !== "Especial"
+      ) {
+        const [hours, minutes] = formData.hora_solicitada
+          .split(":")
+          .map(Number);
         if (!isNaN(hours) && hours >= 7 && hours < 14) {
-          setFormData(prevFormData => ({ ...prevFormData, turno_solicitado: 'Matutino' }));
+          setFormData((prevFormData) => ({
+            ...prevFormData,
+            turno_solicitado: "Matutino",
+          }));
         } else if (!isNaN(hours) && hours >= 14 && hours < 21) {
-          setFormData(prevFormData => ({ ...prevFormData, turno_solicitado: 'Vespertino' }));
+          setFormData((prevFormData) => ({
+            ...prevFormData,
+            turno_solicitado: "Vespertino",
+          }));
         } else {
-          setFormData(prevFormData => ({ ...prevFormData, turno_solicitado: 'Nocturno' }));
+          setFormData((prevFormData) => ({
+            ...prevFormData,
+            turno_solicitado: "Nocturno",
+          }));
         }
       }
     }
@@ -620,19 +650,22 @@ const handleProcedimientoChange = (e) => {
 
         <div className="flex flex-col p-4 bg-[#304678] rounded-lg mb-4">
           <div className="flex mb-4">
-          <div className="mr-4 w-full">
-            <label htmlFor="hora_solicitada" className="block font-semibold text-white mb-1">
-              Hora solicitada:
-            </label>
-            <input
-              type="time"
-              id="hora_solicitada"
-              name="hora_solicitada"
-              value={formData.hora_solicitada}
-              onChange={handleInputChange}
-              className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
+            <div className="mr-4 w-full">
+              <label
+                htmlFor="hora_solicitada"
+                className="block font-semibold text-white mb-1"
+              >
+                Hora solicitada:
+              </label>
+              <input
+                type="time"
+                id="hora_solicitada"
+                name="hora_solicitada"
+                value={formData.hora_solicitada}
+                onChange={handleInputChange}
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
 
             <div className="mr-4 w-full">
               <label
@@ -669,7 +702,10 @@ const handleProcedimientoChange = (e) => {
             </div>
 
             <div className="w-full">
-              <label htmlFor="turno_solicitado" className="block font-semibold text-white mb-1">
+              <label
+                htmlFor="turno_solicitado"
+                className="block font-semibold text-white mb-1"
+              >
                 Turno solicitado:
               </label>
               <select
@@ -692,23 +728,20 @@ const handleProcedimientoChange = (e) => {
         <div className="flex flex-col p-4 bg-[#304678] rounded-lg mb-4">
           <div className="flex mb-4">
             <div className="mr-4 w-full">
-              <label htmlFor="procedimientos_paciente" className="block font-semibold text-white mb-1">
-                Procedimientos del paciente:
+              <label
+                htmlFor="procedimientos_paciente"
+                className="block font-semibold text-white mb-1"
+              >
+                Procedimiento planeado:
               </label>
-                <select
-                  id="procedimientos_paciente"
-                  name="procedimientos_paciente"
-                  value={selectedProcedimiento} // Bind selectedProcedimiento state to value
-                  onChange={handleProcedimientoChange} // Use handleProcedimientoChange for onChange
-                  className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="">-- Seleccionar procedimiento --</option>
-                  {procedimientos.map((procedimiento) => (
-                    <option key={procedimiento.id} value={procedimiento.nombre}>
-                      {procedimiento.nombre}
-                    </option>
-                  ))}
-                </select>
+              <input
+                type="text"
+                id="procedimientos_paciente"
+                name="procedimientos_paciente"
+                value={formData.procedimientos_paciente}
+                onChange={handleInputChange}
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
             </div>
 
             <div className="mr-4 w-1/2">
