@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../../Layout";
 import { useNavigate } from "react-router-dom";
+import ProcedureSelect from './ProcedureSelect';
 
 function CrearSolicitud() {
   const [solicitudes, setSolicitudes] = useState([]);
@@ -74,14 +75,8 @@ function CrearSolicitud() {
     procedimientos_paciente: "",
   });
 
-  const [searchTerm, setSearchTerm] = useState('');
-  const [procedures, setProcedures] = useState([]);
-  const [procedimientos, setProcedimientos] = useState([]);
-  const [selectedProcedimiento, setSelectedProcedimiento] = useState("");
-  const filteredProcedures = procedures.filter((procedure) =>
-    procedure.nombre.toLowerCase().includes(searchTerm.toLowerCase())
-  );
   
+
 
 
   // Función para obtener la fecha actual en el formato adecuado (YYYY-MM-DD)
@@ -109,33 +104,6 @@ function CrearSolicitud() {
 
     fetchSolicitudes();
   }, []);
-
-  useEffect(() => {
-    const fetchProcedures = async () => {
-      try {
-        const response = await fetch('http://localhost:4000/api/solicitudes/procedimientos');
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const data = await response.json();
-        setProcedures(data);
-      } catch (error) {
-        console.error('Error fetching procedures:', error);
-      }
-    };
-  
-    fetchProcedures();
-  }, []);
-  
-  
-  // Function to handle changes in procedure selection
-const handleProcedimientoChange = (e) => {
-  setSelectedProcedimiento(e.target.value);
-  setFormData({
-    ...formData,
-    procedimientos_paciente: e.target.value, // Update the form data with selected value
-  });
-};
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -227,7 +195,6 @@ const handleProcedimientoChange = (e) => {
 
     const updatedFormData = {
       ...formData,
-      procedimientos_paciente: selectedProcedimiento,
       insumos: formData.insumos || "N/A",
       curp: formData.curp || "N/A",
       fecha_nacimiento: formData.fecha_nacimiento || "1900-01-01", // Fecha predeterminada válida
@@ -702,30 +669,9 @@ const handleProcedimientoChange = (e) => {
               <label htmlFor="procedimientos_paciente" className="block font-semibold text-white mb-1">
                 Procedimientos del paciente:
               </label>
-              <input
-                type="text"
-                placeholder="Buscar procedimiento"
-                value={searchTerm}
-                onChange={(event) => setSearchTerm(event.target.value)}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-                {filteredProcedures.map((procedure) => (
-                  <option key={procedure.id} value={procedure.id}>
-                    {procedure.nombre}
-                  </option>
-                ))}
-              <select
-                name="procedimientos_paciente"
-                value={formData.procedimientos_paciente}
-                onChange={handleProcedimientoChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                {filteredProcedures.map((procedure) => (
-                  <option key={procedure.id} value={procedure.id}>
-                    {procedure.nombre}
-                  </option>
-                ))}
-              </select>
+            <label>Procedimiento del Paciente:</label>
+            <ProcedureSelect />
+            <button type="submit">Submit</button>
             </div>
 
             <div className="mr-4 w-1/2">
