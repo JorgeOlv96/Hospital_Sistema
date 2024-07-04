@@ -160,6 +160,7 @@ function Appointments() {
           nombre_paciente: appointment.nombre_paciente,
           sexo: appointment.sexo,
           tiempo_estimado: appointment.tiempo_estimado,
+          clave_esp: appointment.clave_esp,
           turno: appointment.turno,
           anestesiologo_asignado: appointment.anestesiologo_asignado,
           id_cirujano: appointment.id_cirujano,
@@ -224,7 +225,7 @@ function Appointments() {
       margin-bottom: 20px; /* Más espacio debajo del encabezado */
     }
     .header img {
-      max-width: 100px; /* Ajusta el tamaño máximo del logo */
+      max-width: 150px; /* Ajusta el tamaño máximo del logo */
       height: auto;
       margin-right: 10px;
     }
@@ -252,8 +253,7 @@ function Appointments() {
       white-space: nowrap; /* Mantener el texto en una sola línea */
     }
     th {
-      background-color: #f2f2f2; /* Fondo gris claro para los encabezados */
-      color: #333333; /* Color de texto para los encabezados */
+      
     }
   </style>
 </head>
@@ -272,13 +272,14 @@ function Appointments() {
         <th>Nombre completo</th>
         <th>Sexo</th>
         <th>Fecha asignada</th>
+        <th>Especialidad</th>
         <th>Hora asignada</th>
-        <th>Tiempo estimado de cirugía</th>
-        <th>Turno asignado</th>
-        <th>Quirófano asignado</th>
-        <th>Anestesiólogo asignado</th>
-        <th>Cirujano encargado</th>
-        <th>Requiere insumos</th>
+        <th>Tiempo estimado</th>
+        <th>Turno</th>
+        <th>Sala</th>
+        <th>Anestesiólogo</th>
+        <th>Cirujano</th>
+        <th>Insumos</th>
       </tr>
     </thead>
     <tbody>
@@ -288,6 +289,7 @@ function Appointments() {
           <td class="nowrap">${appointment.nombre_paciente} ${appointment.ap_paterno} ${appointment.ap_materno}</td>
           <td>${appointment.sexo}</td>
           <td>${moment(appointment.start).format('LL')}</td>
+          <td>${appointment.clave_esp}.</td>
           <td>${moment(appointment.start).format('LT')}</td>
           <td>${appointment.tiempo_estimado} min</td>
           <td>${appointment.turno}</td>
