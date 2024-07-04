@@ -5,7 +5,7 @@ const ProcedureSelect = () => {
   const [selectedOption, setSelectedOption] = useState(null);
 
   const loadOptions = (inputValue, callback) => {
-    fetch(`/solicitudes/procedimientos?q=${inputValue}`)
+    fetch(`http://localhost:4000/api/solicitudes/procedimientos?q=${inputValue}`)
       .then(res => res.json())
       .then(data => {
         const options = data.map(procedure => ({
