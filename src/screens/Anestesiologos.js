@@ -6,9 +6,8 @@ import "moment/locale/es"; // Importa el idioma español
 import { BiChevronLeft, BiChevronRight, BiTime } from "react-icons/bi";
 import { HiOutlineViewGrid } from "react-icons/hi";
 import { HiOutlineCalendarDays } from "react-icons/hi2";
-import AddAppointmentModalProgramado from "../components/Modals/AddApointmentModalProgramado"; // Importa el modal adecuado
 import { Link } from "react-router-dom";
-import OperatingRoomSchedule from "../components/OperatingRoomSchedule";
+import OperatingRoomScheduleAnestesio from "../components/OperatingRoomScheduleAnestesio";
 import { FaHospital } from 'react-icons/fa';
 
 moment.locale("es"); // Configura moment para usar el idioma español
@@ -34,11 +33,9 @@ const CustomToolbar = ({ date, view, onView, onNavigate }) => {
   };
 
   const viewNamesGroup = [
-    /*{ view: "month", label: "Mes", icon: <HiOutlineViewGrid /> },*/
     { view: "operatingRooms", label: "Quirófanos", icon: <FaHospital /> },
     { view: "week", label: "Semana", icon: <HiOutlineCalendarDays /> },
     { view: "day", label: "Día", icon: <BiTime /> },
-     // Añadir nuevo botón
   ];
 
   const formatDateInputValue = (date) => {
@@ -117,49 +114,62 @@ function Anestesiologos() {
   const localizer = momentLocalizer(moment);
   const [openModal, setOpenModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState({});
-  const [appointments, setAppointments] = useState([]);
+  const [anesthesiologists, setAnesthesiologists] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [view, setView] = useState("operatingRooms");
 
-  const fetchAppointments = async () => {
+  const fetchAnesthesiologists = async () => {
     try {
-      const response = await fetch("http://localhost:4000/api/solicitudes/programadas");
+      const response = await fetch("http://localhost:4000/api/anestesio/anestesiologos");
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
       const data = await response.json();
 
-      const transformedData = data.map((appointment) => {
-        const startDateTime = moment(
-          `${appointment.fecha_programada}T${appointment.hora_asignada}`,
-          "YYYY-MM-DDTHH:mm"
-        ).toDate();
+      const transformedData = data.map((anesthesiologist) => {
+        let startDateTime, endDateTime;
 
-        const endDateTime = moment(startDateTime)
-          .add(appointment.tiempo_estimado, "minutes")
-          .toDate();
+        switch (anesthesiologist.turno) {
+          case "Matutino":
+            startDateTime = moment(`${anesthesiologist.dia_anestesio}T07:00`, "YYYY-MM-DDTHH:mm").toDate();
+            endDateTime = moment(startDateTime).add(7, "hours").toDate();
+            break;
+          case "Vespertino":
+            startDateTime = moment(`${anesthesiologist.dia_anestesio}T14:01`, "YYYY-MM-DDTHH:mm").toDate();
+            endDateTime = moment(startDateTime).add(6, "hours").toDate();
+            break;
+          case "Nocturno":
+            startDateTime = moment(`${anesthesiologist.dia_anestesio}T20:01`, "YYYY-MM-DDTHH:mm").toDate();
+            endDateTime = moment(startDateTime).add(10, "hours").toDate();
+            break;
+          default:
+            // Fallback to startDateTime and endDateTime as per the original logic
+            startDateTime = moment(
+              `${anesthesiologist.dia_anestesio}T${anesthesiologist.hora_anestesio}`,
+              "YYYY-MM-DDTHH:mm"
+            ).toDate();
+            endDateTime = moment(startDateTime).add(anesthesiologist.tiempo_estimado, "minutes").toDate();
+            break;
+        }
 
         return {
-          id: appointment.id_solicitud,
+          id: anesthesiologist.id_anestesiologo,
           start: startDateTime,
           end: endDateTime,
-          title: appointment.folio,
-          color: "#304678",
-          message: appointment.mensaje || "",
-          service: appointment.servicio || "",
-          operatingRoom: appointment.sala_quirofano,
+          title: anesthesiologist.nombre,
+          operatingRoom: anesthesiologist.sala_anestesio,
         };
       });
 
-      setAppointments(transformedData);
-      console.log("Appointments fetched and transformed:", transformedData);
+      setAnesthesiologists(transformedData);
+      console.log("Anesthesiologists fetched and transformed:", transformedData);
     } catch (error) {
-      console.error("Error fetching appointments:", error);
+      console.error("Error fetching anesthesiologists:", error);
     }
   };
 
   useEffect(() => {
-    fetchAppointments();
+    fetchAnesthesiologists();
   }, []);
 
   const handleEventClick = (event) => {
@@ -181,24 +191,8 @@ function Anestesiologos() {
     setView(newView);
   };
 
-  const eventsForSelectedDate = appointments.filter((event) => {
-    const eventStartDate = moment(event.start).format("YYYY-MM-DD");
-    const selectedFormattedDate = moment(selectedDate).format("YYYY-MM-DD");
-    return eventStartDate === selectedFormattedDate;
-  });
-
-  console.log("Events for selected date:", eventsForSelectedDate);
-
   return (
     <Layout>
-      <AddAppointmentModalProgramado
-        closeModal={handleCloseModal}
-        isOpen={openModal}
-        appointmentId={selectedEvent.id}
-        onSuspendAppointment={(appointmentId) => {
-          fetchAppointments();
-        }}
-      />
       <CustomToolbar
         date={selectedDate}
         view={view}
@@ -209,15 +203,15 @@ function Anestesiologos() {
         onView={handleViewChange}
       />
       {view === 'operatingRooms' ? (
-        <OperatingRoomSchedule
+        <OperatingRoomScheduleAnestesio
           date={selectedDate}
-          appointments={appointments}
+          anesthesiologists={anesthesiologists}
           onEventClick={handleEventClick}
         />
       ) : (
         <Calendar
           localizer={localizer}
-          events={appointments}
+          events={anesthesiologists}
           startAccessor="start"
           endAccessor="end"
           style={{ height: 900, marginBottom: 50 }}
