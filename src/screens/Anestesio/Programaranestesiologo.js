@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../../Layout";
+import AsyncSelect from 'react-select/async';
 import { Link } from "react-router-dom";
 
 function Programaranestesiologo() {
-  const [anesthesiologists, setAnesthesiologists] = useState([]);
   const [formData, setFormData] = useState({
     nombre: "",
     dia_anestesio: "",
@@ -13,20 +13,22 @@ function Programaranestesiologo() {
     hora_fin: ""
   });
 
-  useEffect(() => {
-    fetchAnesthesiologists();
-  }, []);
+  const [anesthesiologists, setAnesthesiologists] = useState([]); // Estado para almacenar los anestesiólogos
 
-  const fetchAnesthesiologists = async () => {
+  const fetchActiveAnesthesiologists = async (inputValue) => {
     try {
-      const response = await fetch("http://localhost:4000/api/anestesio/anestesiologos");
+      const response = await fetch(`http://localhost:4000/api/anestesiologos/activos?search=${inputValue}`);
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
       const data = await response.json();
-      setAnesthesiologists(data);
+      return data.map((anesthesiologist) => ({
+        label: anesthesiologist.nombre_completo,
+        value: anesthesiologist.nombre_completo
+      }));
     } catch (error) {
-      console.error("Error fetching anesthesiologists:", error);
+      console.error("Error fetching active anesthesiologists:", error);
+      return [];
     }
   };
 
@@ -70,8 +72,15 @@ function Programaranestesiologo() {
     }
   };
 
+  const handleSelectChange = (selectedOption) => {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      nombre: selectedOption ? selectedOption.value : ""
+    }));
+  };
+
   const handleSaveAnesthesiologist = async () => {
-    console.log("Formulario a enviar:", formData); // Agregar console.log aquí
+    console.log("Formulario a enviar:", formData);
     try {
       const response = await fetch("http://localhost:4000/api/anestesio/anestesiologos", {
         method: "POST",
@@ -85,11 +94,29 @@ function Programaranestesiologo() {
       }
       const data = await response.json();
       console.log("Anesthesiologist saved successfully:", data);
-      fetchAnesthesiologists(); // Fetch the updated list
+      // Opcional: Actualizar la lista de anestesiólogos después de guardar uno nuevo
+      fetchAnesthesiologists();
     } catch (error) {
       console.error("Error saving anesthesiologist:", error);
     }
   };
+
+  const fetchAnesthesiologists = async () => {
+    try {
+      const response = await fetch("http://localhost:4000/api/anestesio/anestesiologos");
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      setAnesthesiologists(data);
+    } catch (error) {
+      console.error("Error fetching anesthesiologists:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchAnesthesiologists();
+  }, []);
 
   return (
     <Layout>
@@ -108,13 +135,11 @@ function Programaranestesiologo() {
 
         <div className="flex flex-col">
           <div className="flex mb-2 space-x-4">
-            <div className="w-1/4">
+          <div className="w-1/4">
               <label className="block text-sm font-medium text-gray-700">Nombre de anestesiólogo</label>
-              <input
-                type="text"
-                name="nombre"
-                value={formData.nombre}
-                onChange={handleInputChange}
+              <AsyncSelect
+                loadOptions={fetchActiveAnesthesiologists}
+                onChange={handleSelectChange}
                 placeholder="Nombre"
                 className="mt-1 block w-full px-4 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -233,4 +258,3 @@ function Programaranestesiologo() {
 }
 
 export default Programaranestesiologo;
-
