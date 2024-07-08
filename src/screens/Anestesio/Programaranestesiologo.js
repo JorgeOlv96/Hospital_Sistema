@@ -162,28 +162,28 @@ function Programaranestesiologo() {
         </div>
 
         <div className="overflow-x-auto">
-  <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden border border-gray-200">
-    <thead className="bg-[#304678] text-white">
-      <tr>
-        <th className="px-4 py-3 text-center border-b border-gray-300">Nombre</th>
-        <th className="px-4 py-3 text-center border-b border-gray-300">Hora</th>
-        <th className="px-4 py-3 text-center border-b border-gray-300">Día</th>
-        <th className="px-4 py-3 text-center border-b border-gray-300">Turno</th>
-        <th className="px-4 py-3 text-center border-b border-gray-300">Sala</th>
-      </tr>
-    </thead>
-    <tbody>
-      {anesthesiologists.map((anesthesiologist) => (
-        <tr key={anesthesiologist.id_anestesiologo} className="bg-blue-50 hover:bg-blue-300">
-          <td className="px-2 py-2 text-left border-b border-gray-300">{anesthesiologist.nombre}</td>
-          <td className="px-2 py-2 text-center border-b border-gray-300">{anesthesiologist.hora_anestesio}</td>
-          <td className="px-2 py-2 text-center border-b border-gray-300">{anesthesiologist.dia_anestesio}</td>
-          <td className="px-2 py-2 text-center border-b border-gray-300">{anesthesiologist.turno_anestesio}</td>
-          <td className="px-2 py-2 text-center border-b border-gray-300">{anesthesiologist.sala_anestesio}</td>
+    <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden border border-gray-200">
+      <thead className="bg-[#304678] text-white">
+        <tr>
+          <th className="px-4 py-3 text-center border-b border-gray-300">Nombre</th>
+          <th className="px-4 py-3 text-center border-b border-gray-300">Hora</th>
+          <th className="px-4 py-3 text-center border-b border-gray-300">Día</th>
+          <th className="px-4 py-3 text-center border-b border-gray-300">Turno</th>
+          <th className="px-4 py-3 text-center border-b border-gray-300">Sala</th>
         </tr>
-      ))}
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        {anesthesiologists.map((anesthesiologist) => (
+          <tr key={anesthesiologist.id_anestesiologo} className="bg-blue-50 hover:bg-blue-300">
+            <td className="px-2 py-2 text-left border-b border-gray-300">{anesthesiologist.nombre}</td>
+            <td className="px-2 py-2 text-center border-b border-gray-300">{anesthesiologist.hora_anestesio}</td>
+            <td className="px-2 py-2 text-center border-b border-gray-300">{anesthesiologist.dia_anestesio}</td>
+            <td className="px-2 py-2 text-center border-b border-gray-300">{anesthesiologist.turno_anestesio}</td>
+            <td className="px-2 py-2 text-center border-b border-gray-300">{anesthesiologist.sala_anestesio}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
 </div>
 
       </div>

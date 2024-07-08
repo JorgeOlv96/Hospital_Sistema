@@ -32,6 +32,9 @@ import { BiCalendar, BiUserPlus } from 'react-icons/bi';
 import { FaAmbulance } from "react-icons/fa";
 import { FaSheetPlastic } from "react-icons/fa6";
 import { FaSyringe } from "react-icons/fa";
+import { LuFileSpreadsheet } from "react-icons/lu";
+import { PiSyringe } from "react-icons/pi";
+
 
 
 export const MenuDatas = [
@@ -48,7 +51,7 @@ export const MenuDatas = [
   {
     title: 'Evaluación',
     path: '/evaluacion',
-    icon: FaSheetPlastic,
+    icon: LuFileSpreadsheet,
   },
   
  /* 
@@ -75,7 +78,7 @@ export const MenuDatas = [
   {
     title: 'Anestesiólogos',
     path: '/anestesiólogos',
-    icon: FaSyringe,
+    icon: PiSyringe,
   },
   
   
