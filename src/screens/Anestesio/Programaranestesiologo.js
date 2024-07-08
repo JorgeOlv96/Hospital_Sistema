@@ -6,10 +6,11 @@ function Programaranestesiologo() {
   const [anesthesiologists, setAnesthesiologists] = useState([]);
   const [formData, setFormData] = useState({
     nombre: "",
-    hora_anestesio: "",
     dia_anestesio: "",
     turno_anestesio: "",
-    sala_anestesio: ""
+    sala_anestesio: "",
+    hora_inicio: "",
+    hora_fin: ""
   });
 
   useEffect(() => {
@@ -35,6 +36,38 @@ function Programaranestesiologo() {
       ...prevFormData,
       [name]: value,
     }));
+
+    if (name === "turno_anestesio") {
+      switch (value) {
+        case "Matutino":
+          setFormData((prevFormData) => ({
+            ...prevFormData,
+            hora_inicio: "08:00",
+            hora_fin: "14:00"
+          }));
+          break;
+        case "Vespertino":
+          setFormData((prevFormData) => ({
+            ...prevFormData,
+            hora_inicio: "14:01",
+            hora_fin: "20:00"
+          }));
+          break;
+        case "Nocturno":
+          setFormData((prevFormData) => ({
+            ...prevFormData,
+            hora_inicio: "20:01",
+            hora_fin: "06:00"
+          }));
+          break;
+        default:
+          setFormData((prevFormData) => ({
+            ...prevFormData,
+            hora_inicio: "",
+            hora_fin: ""
+          }));
+      }
+    }
   };
 
   const handleSaveAnesthesiologist = async () => {
@@ -57,7 +90,6 @@ function Programaranestesiologo() {
       console.error("Error saving anesthesiologist:", error);
     }
   };
-  
 
   return (
     <Layout>
@@ -88,19 +120,6 @@ function Programaranestesiologo() {
               />
             </div>
             <div className="w-1/4">
-              <label htmlFor="hora_anestesio" className="block text-sm font-medium text-gray-700">
-                Aignar hora:
-              </label>
-              <input
-                type="time"
-                id="hora_anestesio"
-                name="hora_anestesio"
-                value={formData.hora_anestesio}
-                onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-            <div className="w-1/4">
               <label className="block text-sm font-medium text-gray-700">Asignar día</label>
               <input
                 type="date"
@@ -123,9 +142,30 @@ function Programaranestesiologo() {
                 <option value="Matutino">Matutino</option>
                 <option value="Vespertino">Vespertino</option>
                 <option value="Nocturno">Nocturno</option>
-                <option value="Especial">Especial</option>
               </select>
             </div>
+
+            <div className="w-1/8">
+              <label className="block text-sm font-medium text-gray-700">Hora Inicio</label>
+              <input
+                type="text"
+                name="hora_inicio"
+                value={formData.hora_inicio}
+                readOnly
+                className="mt-1 block w-full px-2 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-200 cursor-default"
+              />
+            </div>
+            <div className="w-1/8">
+              <label className="block text-sm font-medium text-gray-700">Hora Fin</label>
+              <input
+                type="text"
+                name="hora_fin"
+                value={formData.hora_fin}
+                readOnly
+                className="mt-1 block w-full px-2 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-200 cursor-default"
+              />
+            </div>
+
             <div className="w-1/4">
               <label className="block text-sm font-medium text-gray-700">Asignar sala</label>
               <select
@@ -151,7 +191,7 @@ function Programaranestesiologo() {
               </select>
             </div>
           </div>
-          <div className="px-2 py-2 text-right"> 
+          <div className="px-2 py-2 text-right">
             <button
               onClick={handleSaveAnesthesiologist}
               className="bg-[#001B58] text-white px-5 py-2 rounded-md hover:bg-blue-800"
@@ -162,33 +202,35 @@ function Programaranestesiologo() {
         </div>
 
         <div className="overflow-x-auto">
-  <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden border border-gray-200">
-    <thead className="bg-[#304678] text-white">
-      <tr>
-        <th className="px-4 py-3 text-center border-b border-gray-300">Nombre</th>
-        <th className="px-4 py-3 text-center border-b border-gray-300">Hora</th>
-        <th className="px-4 py-3 text-center border-b border-gray-300">Día</th>
-        <th className="px-4 py-3 text-center border-b border-gray-300">Turno</th>
-        <th className="px-4 py-3 text-center border-b border-gray-300">Sala</th>
-      </tr>
-    </thead>
-    <tbody>
-      {anesthesiologists.map((anesthesiologist) => (
-        <tr key={anesthesiologist.id_anestesiologo} className="bg-blue-50 hover:bg-blue-300">
-          <td className="px-2 py-2 text-left border-b border-gray-300">{anesthesiologist.nombre}</td>
-          <td className="px-2 py-2 text-center border-b border-gray-300">{anesthesiologist.hora_anestesio}</td>
-          <td className="px-2 py-2 text-center border-b border-gray-300">{anesthesiologist.dia_anestesio}</td>
-          <td className="px-2 py-2 text-center border-b border-gray-300">{anesthesiologist.turno_anestesio}</td>
-          <td className="px-2 py-2 text-center border-b border-gray-300">{anesthesiologist.sala_anestesio}</td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
-</div>
-
+          <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden border border-gray-200">
+            <thead className="bg-[#304678] text-white">
+              <tr>
+                <th className="px-4 py-3 text-center border-b border-gray-300">Nombre</th>
+                <th className="px-4 py-3 text-center border-b border-gray-300">Día</th>
+                <th className="px-4 py-3 text-center border-b border-gray-300">Turno</th>
+                <th className="px-4 py-3 text-center border-b border-gray-300">Hora Inicio</th>
+                <th className="px-4 py-3 text-center border-b border-gray-300">Hora Fin</th>
+                <th className="px-4 py-3 text-center border-b border-gray-300">Sala</th>
+              </tr>
+            </thead>
+            <tbody>
+              {anesthesiologists.map((anesthesiologist) => (
+                <tr key={anesthesiologist.id_anestesiologo} className="bg-blue-50 hover:bg-blue-300">
+                  <td className="px-2 py-2 text-left border-b border-gray-300">{anesthesiologist.nombre}</td>
+                  <td className="px-2 py-2 text-center border-b border-gray-300">{anesthesiologist.dia_anestesio}</td>
+                  <td className="px-2 py-2 text-center border-b border-gray-300">{anesthesiologist.turno_anestesio}</td>
+                  <td className="px-2 py-2 text-center border-b border-gray-300">{anesthesiologist.hora_inicio}</td>
+                  <td className="px-2 py-2 text-center border-b border-gray-300">{anesthesiologist.hora_fin}</td>
+                  <td className="px-2 py-2 text-center border-b border-gray-300">{anesthesiologist.sala_anestesio}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </Layout>
   );
 }
 
 export default Programaranestesiologo;
+

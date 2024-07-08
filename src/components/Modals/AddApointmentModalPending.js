@@ -10,31 +10,62 @@ function AddAppointmentModalPending({
   const [patientData, setPatientData] = useState({
     hora_asignada: "",
     turno: "",
-    fecha_programada: "", // Agregar campo para fecha programada
-    nombre_anestesiologo: "", // Agregar campo para nombre de anestesiólogo
+    fecha_programada: "",
+    sala_quirofano: "",
+    nombre_anestesiologo: "",
   });
   const [loading, setLoading] = useState(true);
   const modalRef = useRef(null);
 
-  const handleChange = (e) => {
+  const handleChange = async (e) => {
     const { name, value } = e.target;
     setPatientData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
 
-    // Lógica para determinar y actualizar el turno asignado
     if (name === "hora_asignada") {
       const [hours, minutes] = value.split(":").map(Number);
       if (!isNaN(hours)) {
+        let turno = "";
         if (hours >= 7 && hours < 14) {
-          setPatientData((prevData) => ({ ...prevData, turno: "Matutino" }));
+          turno = "Matutino";
         } else if (hours >= 14 && hours < 21) {
-          setPatientData((prevData) => ({ ...prevData, turno: "Vespertino" }));
+          turno = "Vespertino";
         } else {
-          setPatientData((prevData) => ({ ...prevData, turno: "Nocturno" }));
+          turno = "Nocturno";
         }
+        setPatientData((prevData) => ({ ...prevData, turno }));
+        await fetchAnestesiologo(patientData.fecha_programada, turno, patientData.sala_quirofano);
       }
+    }
+
+    if (name === "fecha_programada" || name === "sala_quirofano" || name === "turno") {
+      await fetchAnestesiologo(
+        name === "fecha_programada" ? value : patientData.fecha_programada,
+        name === "turno" ? value : patientData.turno,
+        name === "sala_quirofano" ? value : patientData.sala_quirofano
+      );
+    }
+  };
+
+  const fetchAnestesiologo = async (fecha_programada, turno, sala_quirofano) => {
+    if (!fecha_programada || !turno || !sala_quirofano) return;
+
+    try {
+      const response = await fetch(
+        `http://localhost:4000/api/anestesio/anestesiologo?fecha_programada=${fecha_programada}&turno=${turno}&sala_quirofano=${sala_quirofano}`
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      setPatientData((prevData) => ({
+        ...prevData,
+        nombre_anestesiologo: data.nombre || "",
+      }));
+    } catch (error) {
+      console.error("Error fetching anestesiologo:", error);
     }
   };
 
@@ -49,11 +80,12 @@ function AddAppointmentModalPending({
             throw new Error("Network response was not ok");
           }
           const data = await response.json();
-          console.log('data',data)
           setPatientData(data);
         } catch (error) {
           console.error("Error fetching appointment data:", error);
-        }finally{ setLoading(false) }
+        } finally {
+          setLoading(false);
+        }
       };
 
       fetchAppointmentData();
@@ -68,13 +100,6 @@ function AddAppointmentModalPending({
         turno,
         nombre_anestesiologo,
       } = patientData;
-      console.log("Datos a enviar:", {
-        fecha_programada,
-        hora_asignada,
-        turno,
-        nombre_anestesiologo,
-      });
-
       const response = await fetch(
         `http://localhost:4000/api/solicitudes/programar/${appointmentId}`,
         {
@@ -87,15 +112,14 @@ function AddAppointmentModalPending({
           }),
           headers: {
             "Content-Type": "application/json",
-          }, 
+          },
         }
       );
 
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-      closeModal(); // Cerrar el modal después de eliminar
-      // Recargar la página después de eliminar
+      closeModal();
       window.location.reload();
     } catch (error) {
       console.error("Error saving changes:", error);
@@ -113,9 +137,8 @@ function AddAppointmentModalPending({
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-      closeModal(); // Cerrar el modal después de eliminar
-      onSuspendAppointment(appointmentId); // Actualizar la lista de citas después de eliminar
-      // Recargar la página después de eliminar
+      closeModal();
+      onSuspendAppointment(appointmentId);
       window.location.reload();
     } catch (error) {
       console.error("Error deleting appointment:", error);

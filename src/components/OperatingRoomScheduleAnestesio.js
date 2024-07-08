@@ -1,14 +1,16 @@
 import React from 'react';
 import moment from 'moment';
-import './OperatingRoomSchedule.css'; // Asegúrate de importar el CSS específico
+import './OperatingRoomSchedule.css';
 
 const OperatingRooms = ['A1', 'A2', 'T1', 'T2', '1', '2', '3', '4', '5', '6', 'E', 'H', 'RX'];
 
 const OperatingRoomScheduleAnestesio = ({ date, anesthesiologists, onEventClick }) => {
+  // Filtrar los anestesiólogos para la fecha seleccionada
   const filteredAnesthesiologists = anesthesiologists.filter(anes =>
     moment(anes.start).isSame(date, 'day')
   );
 
+  // Genera las filas y columnas para la tabla de horarios de quirófano
   const generateSchedule = () => {
     const hours = Array.from({ length: 24 }, (_, i) => `${String(i).padStart(2, '0')}:00`);
 
@@ -27,23 +29,41 @@ const OperatingRoomScheduleAnestesio = ({ date, anesthesiologists, onEventClick 
           return (
             <div key={hour} className="schedule-slot occupied">
               {overlappingAnesthesiologists.map((anesthesiologist, idx) => {
-                const startHour = moment(anesthesiologist.start).hour();
-                const endHour = moment(anesthesiologist.end).hour();
-                const durationInHours = moment(anesthesiologist.end).diff(anesthesiologist.start, 'hours', true);
+                let startDateTime, endDateTime;
+                switch (anesthesiologist.turno) {
+                  case 'Matutino':
+                    startDateTime = moment(`${anesthesiologist.dia_anestesio}T07:00`).toDate();
+                    endDateTime = moment(startDateTime).add(7, 'hours').toDate();
+                    break;
+                  case 'Vespertino':
+                    startDateTime = moment(`${anesthesiologist.dia_anestesio}T14:01`).toDate();
+                    endDateTime = moment(startDateTime).add(6, 'hours').toDate();
+                    break;
+                  case 'Nocturno':
+                    startDateTime = moment(`${anesthesiologist.dia_anestesio}T20:01`).toDate();
+                    endDateTime = moment(startDateTime).add(10, 'hours').toDate();
+                    break;
+                  default:
+                    startDateTime = moment(anesthesiologist.start).toDate();
+                    endDateTime = moment(anesthesiologist.end).toDate();
+                    break;
+                }
+
+                const durationInHours = moment(endDateTime).diff(startDateTime, 'hours', true);
 
                 return (
                   <div
                     key={idx}
                     className="appointment-block"
                     style={{
-                      top: `${(startHour - index) * 100}%`,
+                      top: `${(moment(startDateTime).hour() - index) * 100}%`,
                       height: `${durationInHours * 100}%`,
                     }}
                     onClick={() => onEventClick(anesthesiologist)}
                   >
                     <div className="appointment-info">
                       <p>{anesthesiologist.title}</p>
-                      <p>{moment(anesthesiologist.start).format('HH:mm')} - {moment(anesthesiologist.end).format('HH:mm')}</p>
+                      <p>{moment(startDateTime).format('HH:mm')} - {moment(endDateTime).format('HH:mm')}</p>
                     </div>
                   </div>
                 );
@@ -69,6 +89,10 @@ const OperatingRoomScheduleAnestesio = ({ date, anesthesiologists, onEventClick 
       </div>
     ));
   };
+
+  console.log('Fecha seleccionada:', date);
+  console.log('Anestesiólogos recibidos:', anesthesiologists);
+  console.log('Anestesiólogos filtrados:', filteredAnesthesiologists);
 
   return (
     <div className="operating-room-schedule">
