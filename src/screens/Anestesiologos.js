@@ -125,10 +125,12 @@ function Anestesiologos() {
         throw new Error("Network response was not ok");
       }
       const data = await response.json();
-
+      
+      console.log("Fetched Data:", data); // Verifica los datos obtenidos
+  
       const transformedData = data.map((anesthesiologist) => {
         let startDateTime, endDateTime;
-
+  
         switch (anesthesiologist.turno) {
           case "Matutino":
             startDateTime = moment(`${anesthesiologist.dia_anestesio}T07:00`, "YYYY-MM-DDTHH:mm").toDate();
@@ -143,7 +145,6 @@ function Anestesiologos() {
             endDateTime = moment(startDateTime).add(10, "hours").toDate();
             break;
           default:
-            // Fallback to startDateTime and endDateTime as per the original logic
             startDateTime = moment(
               `${anesthesiologist.dia_anestesio}T${anesthesiologist.hora_anestesio}`,
               "YYYY-MM-DDTHH:mm"
@@ -151,7 +152,7 @@ function Anestesiologos() {
             endDateTime = moment(startDateTime).add(anesthesiologist.tiempo_estimado, "minutes").toDate();
             break;
         }
-
+  
         return {
           id: anesthesiologist.id_anestesiologo,
           start: startDateTime,
@@ -160,13 +161,14 @@ function Anestesiologos() {
           operatingRoom: anesthesiologist.sala_anestesio,
         };
       });
-
+  
       setAnesthesiologists(transformedData);
-      console.log("Anesthesiologists fetched and transformed:", transformedData);
+      console.log("Transformed Data:", transformedData); // Verifica los datos transformados
     } catch (error) {
       console.error("Error fetching anesthesiologists:", error);
     }
   };
+  
 
   useEffect(() => {
     fetchAnesthesiologists();
@@ -210,26 +212,26 @@ function Anestesiologos() {
         />
       ) : (
         <Calendar
-          localizer={localizer}
-          events={anesthesiologists}
-          startAccessor="start"
-          endAccessor="end"
-          style={{ height: 900, marginBottom: 50 }}
-          onSelectEvent={handleEventClick}
-          defaultDate={new Date()}
-          timeslots={1}
-          resizable
-          step={60}
-          selectable
-          date={selectedDate}
-          view={view}
-          onNavigate={date => {
-            setSelectedDate(date);
-            handleSelectDate(date);
-          }}
-          onView={handleViewChange}
-          toolbar={false} // Desactiva la barra de herramientas predeterminada
-        />
+        localizer={localizer}
+        events={anesthesiologists}
+        startAccessor="start"
+        endAccessor="end"
+        style={{ height: 900, marginBottom: 50 }}
+        onSelectEvent={handleEventClick}
+        defaultDate={new Date()}
+        timeslots={1}
+        resizable
+        step={60}
+        selectable
+        date={selectedDate}
+        view={view}
+        onNavigate={date => {
+          setSelectedDate(date);
+          handleSelectDate(date);
+        }}
+        onView={handleViewChange}
+        toolbar={false} // Desactiva la barra de herramientas predeterminada
+      />
       )}
     </Layout>
   );
