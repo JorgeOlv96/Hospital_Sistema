@@ -129,37 +129,54 @@ function Anestesiologos() {
       const transformedData = data.map((anesthesiologist) => {
         let startDateTime, endDateTime;
 
-        switch (anesthesiologist.turno) {
-          case "Matutino":
-            startDateTime = moment(`${anesthesiologist.dia_anestesio}T07:00`, "YYYY-MM-DDTHH:mm").toDate();
-            endDateTime = moment(startDateTime).add(7, "hours").toDate();
-            break;
-          case "Vespertino":
-            startDateTime = moment(`${anesthesiologist.dia_anestesio}T14:01`, "YYYY-MM-DDTHH:mm").toDate();
-            endDateTime = moment(startDateTime).add(6, "hours").toDate();
-            break;
-          case "Nocturno":
-            startDateTime = moment(`${anesthesiologist.dia_anestesio}T20:01`, "YYYY-MM-DDTHH:mm").toDate();
-            endDateTime = moment(startDateTime).add(10, "hours").toDate();
-            break;
+        switch (view) {
+          case 'week':
+            // Filtrar por fecha dentro de la semana
+            const weekStart = moment(selectedDate).startOf('week');
+            const weekEnd = moment(selectedDate).endOf('week');
+            const dateAnestesio = moment(anesthesiologist.dia_anestesio);
+            if (dateAnestesio.isBetween(weekStart, weekEnd, null, '[]')) {
+              startDateTime = moment(`${anesthesiologist.dia_anestesio}T${anesthesiologist.hora_inicio}`, "YYYY-MM-DDTHH:mm").toDate();
+              endDateTime = moment(`${anesthesiologist.dia_anestesio}T${anesthesiologist.hora_fin}`, "YYYY-MM-DDTHH:mm").toDate();
+              return {
+                id: anesthesiologist.id_anestesiologo,
+                start: startDateTime,
+                end: endDateTime,
+                title: anesthesiologist.nombre,
+                operatingRoom: anesthesiologist.sala_anestesio,
+              };
+            }
+            return null; // Devolver null si no está en la semana seleccionada
+          case 'day':
+            // Filtrar por fecha específica
+            if (moment(anesthesiologist.dia_anestesio).isSame(selectedDate, 'day')) {
+              startDateTime = moment(`${anesthesiologist.dia_anestesio}T${anesthesiologist.hora_inicio}`, "YYYY-MM-DDTHH:mm").toDate();
+              endDateTime = moment(`${anesthesiologist.dia_anestesio}T${anesthesiologist.hora_fin}`, "YYYY-MM-DDTHH:mm").toDate();
+              return {
+                id: anesthesiologist.id_anestesiologo,
+                start: startDateTime,
+                end: endDateTime,
+                title: anesthesiologist.nombre,
+                operatingRoom: anesthesiologist.sala_anestesio,
+              };
+            }
+            return null; // Devolver null si no es el día seleccionado
           default:
-            // Fallback to startDateTime and endDateTime as per the original logic
+            // Caso por defecto, maneja como estaba antes
             startDateTime = moment(
               `${anesthesiologist.dia_anestesio}T${anesthesiologist.hora_anestesio}`,
               "YYYY-MM-DDTHH:mm"
             ).toDate();
             endDateTime = moment(startDateTime).add(anesthesiologist.tiempo_estimado, "minutes").toDate();
-            break;
+            return {
+              id: anesthesiologist.id_anestesiologo,
+              start: startDateTime,
+              end: endDateTime,
+              title: anesthesiologist.nombre,
+              operatingRoom: anesthesiologist.sala_anestesio,
+            };
         }
-
-        return {
-          id: anesthesiologist.id_anestesiologo,
-          start: startDateTime,
-          end: endDateTime,
-          title: anesthesiologist.nombre,
-          operatingRoom: anesthesiologist.sala_anestesio,
-        };
-      });
+      }).filter(Boolean); // Filtrar eventos nulos
 
       setAnesthesiologists(transformedData);
       console.log("Anesthesiologists fetched and transformed:", transformedData);
@@ -170,7 +187,7 @@ function Anestesiologos() {
 
   useEffect(() => {
     fetchAnesthesiologists();
-  }, []);
+  }, [selectedDate, view]); // Actualizar cuando cambia la fecha seleccionada o la vista
 
   const handleEventClick = (event) => {
     setSelectedEvent(event);

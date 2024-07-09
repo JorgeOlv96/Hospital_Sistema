@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Layout from "../../Layout";
 import { useNavigate } from "react-router-dom";
 import ProcedureSelect from './ProcedureSelect';
+import AsyncSelect from 'react-select/async';
 
 function CrearSolicitud() {
   const [solicitudes, setSolicitudes] = useState([]);
@@ -69,7 +70,7 @@ function CrearSolicitud() {
     tiempo_estimado: "",
     turno_solicitado: "",
     sala_quirofano: "",
-    id_cirujano: "",
+    nombre_cirujano: "",
     req_insumo: "",
     estado_solicitud: "Pendiente",
     procedimientos_paciente: "",
@@ -104,6 +105,23 @@ function CrearSolicitud() {
 
     fetchSolicitudes();
   }, []);
+
+  const fetchActiveSurgeons = async (inputValue) => {
+    try {
+      const response = await fetch(`http://localhost:4000/api/cirujanos/activos?search=${inputValue}`);
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      return data.map((surgeons) => ({
+        label: surgeons.nombre_completo,
+        value: surgeons.nombre_completo
+      }));
+    } catch (error) {
+      console.error("Error fetching active surgeons:", error);
+      return [];
+    }
+  };
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -224,6 +242,13 @@ function CrearSolicitud() {
       ...formData,
       procedimientos_paciente: selectedOption ? selectedOption.value : ""
     });
+  };
+
+  const handleSelectChange = (selectedOption) => {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      nombre_cirujano: selectedOption ? selectedOption.value : ""
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -517,17 +542,12 @@ function CrearSolicitud() {
               >
                 Cirujano encargado:
               </label>
-              <select
-                type="text"
-                id="id_cirujano"
-                name="id_cirujano"
-                value={formData.id_cirujano}
-                onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value="">-- Seleccione cirujano --</option>
-                <option value="1">1</option>
-              </select>
+              <AsyncSelect
+                loadOptions={fetchActiveSurgeons}
+                onChange={handleSelectChange}
+                placeholder="Nombre del cirujano"
+                className="mt-1 block w-full px-4 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
             </div>
           </div>
         </div>
