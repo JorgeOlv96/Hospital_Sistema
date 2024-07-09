@@ -130,6 +130,7 @@ function Anestesiologos() {
   
       const transformedData = data.map((anesthesiologist) => {
         let startDateTime, endDateTime;
+<<<<<<< HEAD
   
         switch (anesthesiologist.turno) {
           case "Matutino":
@@ -145,13 +146,57 @@ function Anestesiologos() {
             endDateTime = moment(startDateTime).add(10, "hours").toDate();
             break;
           default:
+=======
+
+        switch (view) {
+          case 'week':
+            // Filtrar por fecha dentro de la semana
+            const weekStart = moment(selectedDate).startOf('week');
+            const weekEnd = moment(selectedDate).endOf('week');
+            const dateAnestesio = moment(anesthesiologist.dia_anestesio);
+            if (dateAnestesio.isBetween(weekStart, weekEnd, null, '[]')) {
+              startDateTime = moment(`${anesthesiologist.dia_anestesio}T${anesthesiologist.hora_inicio}`, "YYYY-MM-DDTHH:mm").toDate();
+              endDateTime = moment(`${anesthesiologist.dia_anestesio}T${anesthesiologist.hora_fin}`, "YYYY-MM-DDTHH:mm").toDate();
+              return {
+                id: anesthesiologist.id_anestesiologo,
+                start: startDateTime,
+                end: endDateTime,
+                title: anesthesiologist.nombre,
+                operatingRoom: anesthesiologist.sala_anestesio,
+              };
+            }
+            return null; // Devolver null si no está en la semana seleccionada
+          case 'day':
+            // Filtrar por fecha específica
+            if (moment(anesthesiologist.dia_anestesio).isSame(selectedDate, 'day')) {
+              startDateTime = moment(`${anesthesiologist.dia_anestesio}T${anesthesiologist.hora_inicio}`, "YYYY-MM-DDTHH:mm").toDate();
+              endDateTime = moment(`${anesthesiologist.dia_anestesio}T${anesthesiologist.hora_fin}`, "YYYY-MM-DDTHH:mm").toDate();
+              return {
+                id: anesthesiologist.id_anestesiologo,
+                start: startDateTime,
+                end: endDateTime,
+                title: anesthesiologist.nombre,
+                operatingRoom: anesthesiologist.sala_anestesio,
+              };
+            }
+            return null; // Devolver null si no es el día seleccionado
+          default:
+            // Caso por defecto, maneja como estaba antes
+>>>>>>> b0fdecac2d5ce34eb06360ad082935fd3d9b81f4
             startDateTime = moment(
               `${anesthesiologist.dia_anestesio}T${anesthesiologist.hora_anestesio}`,
               "YYYY-MM-DDTHH:mm"
             ).toDate();
             endDateTime = moment(startDateTime).add(anesthesiologist.tiempo_estimado, "minutes").toDate();
-            break;
+            return {
+              id: anesthesiologist.id_anestesiologo,
+              start: startDateTime,
+              end: endDateTime,
+              title: anesthesiologist.nombre,
+              operatingRoom: anesthesiologist.sala_anestesio,
+            };
         }
+<<<<<<< HEAD
   
         return {
           id: anesthesiologist.id_anestesiologo,
@@ -162,6 +207,10 @@ function Anestesiologos() {
         };
       });
   
+=======
+      }).filter(Boolean); // Filtrar eventos nulos
+
+>>>>>>> b0fdecac2d5ce34eb06360ad082935fd3d9b81f4
       setAnesthesiologists(transformedData);
       console.log("Transformed Data:", transformedData); // Verifica los datos transformados
     } catch (error) {
@@ -172,7 +221,7 @@ function Anestesiologos() {
 
   useEffect(() => {
     fetchAnesthesiologists();
-  }, []);
+  }, [selectedDate, view]); // Actualizar cuando cambia la fecha seleccionada o la vista
 
   const handleEventClick = (event) => {
     setSelectedEvent(event);

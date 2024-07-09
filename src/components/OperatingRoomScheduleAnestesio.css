@@ -1,19 +1,34 @@
+/* OperatingRoomSchedule.css */
+
 .operating-room-schedule {
   display: flex;
   flex-direction: column;
-  width: 100%;
+  border: 1px solid #ccc;
+  overflow-x: auto;
+  margin-bottom: 20px;
 }
 
 .schedule-header {
   display: flex;
+  align-items: center;
+  background-color: #f4f4f4;
   border-bottom: 1px solid #ccc;
+  padding: 10px 0;
 }
 
-.schedule-time-header, .schedule-room {
-  flex: 1;
-  padding: 10px;
+.schedule-time-header {
+  width: 100px; /* Ancho de la celda "Hora" en el encabezado */
   text-align: center;
-  font-weight: bold;
+  border-right: 1px solid #ccc;
+  padding: 0 10px;
+}
+
+.schedule-room {
+  flex: 1;
+  text-align: center;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  padding: 10px;
 }
 
 .schedule-body {
@@ -23,51 +38,48 @@
 
 .schedule-row {
   display: flex;
-  border-bottom: 1px solid #eee;
+  align-items: stretch;
+  height: 60px;
 }
 
 .schedule-time {
-  flex: 1;
-  padding: 10px;
+  width: 100px; /* Ancho de las celdas de tiempo */
   text-align: center;
-  border-right: 1px solid #eee;
-  background-color: #f9f9f9;
+  border-right: 1px solid #ccc;
+  box-sizing: border-box;
+  padding: 10px 0;
 }
 
 .schedule-cell {
   flex: 1;
   position: relative;
-  height: 60px; /* Adjust this to change the height of each row */
-  border-right: 1px solid #eee;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
 }
 
 .schedule-slot {
   position: relative;
-  width: 100%;
   height: 100%;
+  width: 100%;
+  border: 1px solid #e0e0e0;
 }
 
 .schedule-slot.occupied {
-  background-color: #d3e5ff;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  background-color: #d9e8fb;
+  border: none;
 }
 
-.appointment-block {
+.anesthesiologist-block {
   position: absolute;
-  width: 100%;
-  background-color: rgba(0, 123, 255, 0.8);
+  left: 0;
+  right: 0;
+  background-color: #304678;
   color: white;
-  text-align: center;
-  border-radius: 4px;
-  overflow: hidden;
+  padding: 5px;
+  box-sizing: border-box;
   cursor: pointer;
-  padding: 2px;
 }
 
-.appointment-info p {
-  margin: 0;
-  font-size: 0.75em;
+.anesthesiologist-info {
+  font-size: 12px;
 }

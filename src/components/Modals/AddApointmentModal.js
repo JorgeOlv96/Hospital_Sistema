@@ -163,7 +163,7 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentId, onDeleteAppoin
             <div className="flex mb-4">
               <div className="mr-4 w-full">
                 <label className="block font-semibold text-gray-700 mb-2">Cirujano encargado:</label>
-                <p className="bg-gray-200 p-3 rounded-lg">{patientData?.id_cirujano || 'N/A'}</p>
+                <p className="bg-gray-200 p-3 rounded-lg">{patientData?.nombre_cirujano || 'N/A'}</p>
               </div>
 
               <div className="w-full">
