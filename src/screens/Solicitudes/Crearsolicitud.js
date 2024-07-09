@@ -546,7 +546,7 @@ function CrearSolicitud() {
                 loadOptions={fetchActiveSurgeons}
                 onChange={handleSelectChange}
                 placeholder="Nombre del cirujano"
-                className="mt-1 block w-full px-4 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               />
             </div>
           </div>
@@ -729,7 +729,7 @@ function CrearSolicitud() {
           <div className="flex mb-4">
           <div className="mr-4 w-full">
         <label htmlFor="procedimientos_paciente" className="block font-semibold text-white mb-1">
-          Procedimientos del paciente:
+          Procedimientos planeado del paciente:
         </label>
         <ProcedureSelect onChange={handleProcedureChange} />
       </div>
