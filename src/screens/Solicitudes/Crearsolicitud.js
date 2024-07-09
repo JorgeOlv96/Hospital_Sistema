@@ -1,12 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../../Layout";
 import { useNavigate } from "react-router-dom";
-<<<<<<< HEAD
-import ProcedureSelect from "./ProcedureSelect";
-=======
 import ProcedureSelect from './ProcedureSelect';
 import AsyncSelect from 'react-select/async';
->>>>>>> b0fdecac2d5ce34eb06360ad082935fd3d9b81f4
 
 function CrearSolicitud() {
   const [solicitudes, setSolicitudes] = useState([]);
@@ -79,6 +75,10 @@ function CrearSolicitud() {
     estado_solicitud: "Pendiente",
     procedimientos_paciente: "",
   });
+
+  
+
+
 
   // Función para obtener la fecha actual en el formato adecuado (YYYY-MM-DD)
   function obtenerFechaActual() {
@@ -240,7 +240,7 @@ function CrearSolicitud() {
   const handleProcedureChange = (selectedOption) => {
     setFormData({
       ...formData,
-      procedimientos_paciente: selectedOption ? selectedOption.value : "",
+      procedimientos_paciente: selectedOption ? selectedOption.value : ""
     });
   };
 
@@ -330,8 +330,7 @@ function CrearSolicitud() {
   return (
     <Layout>
       <form onSubmit={handleSubmit}>
-        <div class="flex flex-col p-4 bg-[#2A5479] rounded-lg ">
-          
+        <div class="flex flex-col p-4 bg-[#304678] rounded-lg  mb-4">
           <div class="flex mb-4">
             <div class="w-full mr-4">
               <label
@@ -365,7 +364,9 @@ function CrearSolicitud() {
               />
             </div>
           </div>
+        </div>
 
+        <div class="flex flex-col p-4 bg-[#304678] rounded-lg mb-4">
           <div class="flex mb-4">
             <div class="w-full mr-4">
               <label
@@ -466,7 +467,9 @@ function CrearSolicitud() {
               </select>
             </div>
           </div>
+        </div>
 
+        <div className="flex flex-col p-4 bg-[#304678] rounded-lg mb-4">
           <div className="flex mb-4">
             <div className="mr-4 w-full">
               <label
@@ -534,7 +537,7 @@ function CrearSolicitud() {
 
             <div className="w-full">
               <label
-                htmlFor="id_cirujano"
+                htmlFor="nombre_cirujano"
                 className="block font-semibold text-white mb-1"
               >
                 Cirujano encargado:
@@ -547,7 +550,9 @@ function CrearSolicitud() {
               />
             </div>
           </div>
+        </div>
 
+        <div className="flex flex-col p-4 bg-[#304678] rounded-lg mb-4">
           <div className="flex mb-4">
             <div className="mr-4 w-full">
               <label
@@ -641,7 +646,9 @@ function CrearSolicitud() {
               </select>
             </div>
           </div>
+        </div>
 
+        <div className="flex flex-col p-4 bg-[#304678] rounded-lg mb-4">
           <div className="flex mb-4">
             <div className="mr-4 w-full">
               <label
@@ -716,51 +723,64 @@ function CrearSolicitud() {
               </select>
             </div>
           </div>
-
-
-          <div className="flex mb-4">
-  <div className="mr-4 w-full">
-    <label
-      htmlFor="procedimientos_paciente"
-      className="block font-semibold text-white mb-1"
-    >
-      Procedimientos del paciente:
-    </label>
-    <ProcedureSelect onChange={handleProcedureChange} />
-  </div>
-
-  <div className="mr-4 w-1/4">
-    <label
-      htmlFor="req_insumo"
-      className="block font-semibold text-white mb-1"
-    >
-      Requiere insumos:
-    </label>
-    <select
-      id="req_insumo"
-      name="req_insumo"
-      value={formData.req_insumo}
-      onChange={handleInputChange}
-      className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-    >
-      <option value="">-- Seleccione una opción --</option>
-      <option value="Si">Si</option>
-      <option value="No">No</option>
-    </select>
-  </div>
-</div>
-
-         
         </div>
 
-         <div className="flex justify-center mt-4">
-            <button
-              type="submit"
-              className="bg-[#001B58] text-white px-4 py-2 rounded"
-            >
-              Enviar
-            </button>
+        <div className="flex flex-col p-4 bg-[#304678] rounded-lg mb-4">
+          <div className="flex mb-4">
+          <div className="mr-4 w-full">
+        <label htmlFor="procedimientos_paciente" className="block font-semibold text-white mb-1">
+          Procedimientos del paciente:
+        </label>
+        <ProcedureSelect onChange={handleProcedureChange} />
+      </div>
+
+            <div className="mr-4 w-1/2">
+              <label
+                htmlFor="req_insumo"
+                className="block font-semibold text-white mb-1"
+              >
+                Requiere insumos:
+              </label>
+              <select
+                id="req_insumo"
+                name="req_insumo"
+                value={formData.req_insumo}
+                onChange={handleInputChange}
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="">-- Seleccione una opción --</option>
+                <option value="Si">Si</option>
+                <option value="No">No</option>
+              </select>
+            </div>
+
+            <div className="mr-4 w-1/2">
+              <label
+                for="estado_solicitud"
+                className="block font-semibold text-white mb-1"
+              >
+                Estado de solicitud
+              </label>
+              <input
+                type="text"
+                id="estado_solicitud"
+                name="estado_solicitud"
+                value={formData.estado_solicitud}
+                readOnly // Hacer que el campo sea de solo lectura
+                className="border border-red-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-red-300 focus:border-red-300 bg-red-300"
+              />
+            </div>
           </div>
+        </div>
+
+        <div className="flex justify-center mt-4">
+          <button
+            type="submit"
+            className="bg-[#001B58] text-white px-4 py-2 rounded"
+          >
+            Enviar
+          </button>
+        </div>
       </form>
     </Layout>
   );

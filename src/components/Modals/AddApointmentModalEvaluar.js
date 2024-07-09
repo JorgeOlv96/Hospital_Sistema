@@ -289,7 +289,7 @@ function AddAppointmentModalEvaluar({
                   Cirujano encargado:
                 </label>
                 <p className="bg-gray-200 p-3 rounded-lg">
-                  {patientData?.id_cirujano || "N/A"}
+                  {patientData?.nombre_cirujano || "N/A"}
                 </p>
               </div>
 

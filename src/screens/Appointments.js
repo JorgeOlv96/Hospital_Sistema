@@ -163,7 +163,7 @@ function Appointments() {
           clave_esp: appointment.clave_esp,
           turno: appointment.turno,
           anestesiologo_asignado: appointment.anestesiologo_asignado,
-          id_cirujano: appointment.id_cirujano,
+          nombre_cirujano: appointment.nombre_cirujano,
           req_insumo: appointment.req_insumo,
           operatingRoom: appointment.sala_quirofano,
           fecha_solicitud: appointment.fecha_solicitud, // Asegúrate de que esto esté presente en los datos
@@ -303,7 +303,7 @@ function Appointments() {
               <td>${appointment.tiempo_estimado} min</td>
               <td>${appointment.turno}</td>              
               <td>${appointment.anestesiologo_asignado}</td>
-              <td>${appointment.id_cirujano}</td>
+              <td>${appointment.nombre_cirujano}</td>
               <td>${appointment.req_insumo}</td>
             </tr>
           `

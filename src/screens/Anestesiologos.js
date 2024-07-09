@@ -130,23 +130,6 @@ function Anestesiologos() {
   
       const transformedData = data.map((anesthesiologist) => {
         let startDateTime, endDateTime;
-<<<<<<< HEAD
-  
-        switch (anesthesiologist.turno) {
-          case "Matutino":
-            startDateTime = moment(`${anesthesiologist.dia_anestesio}T07:00`, "YYYY-MM-DDTHH:mm").toDate();
-            endDateTime = moment(startDateTime).add(7, "hours").toDate();
-            break;
-          case "Vespertino":
-            startDateTime = moment(`${anesthesiologist.dia_anestesio}T14:01`, "YYYY-MM-DDTHH:mm").toDate();
-            endDateTime = moment(startDateTime).add(6, "hours").toDate();
-            break;
-          case "Nocturno":
-            startDateTime = moment(`${anesthesiologist.dia_anestesio}T20:01`, "YYYY-MM-DDTHH:mm").toDate();
-            endDateTime = moment(startDateTime).add(10, "hours").toDate();
-            break;
-          default:
-=======
 
         switch (view) {
           case 'week':
@@ -182,7 +165,6 @@ function Anestesiologos() {
             return null; // Devolver null si no es el día seleccionado
           default:
             // Caso por defecto, maneja como estaba antes
->>>>>>> b0fdecac2d5ce34eb06360ad082935fd3d9b81f4
             startDateTime = moment(
               `${anesthesiologist.dia_anestesio}T${anesthesiologist.hora_anestesio}`,
               "YYYY-MM-DDTHH:mm"
@@ -196,21 +178,8 @@ function Anestesiologos() {
               operatingRoom: anesthesiologist.sala_anestesio,
             };
         }
-<<<<<<< HEAD
-  
-        return {
-          id: anesthesiologist.id_anestesiologo,
-          start: startDateTime,
-          end: endDateTime,
-          title: anesthesiologist.nombre,
-          operatingRoom: anesthesiologist.sala_anestesio,
-        };
-      });
-  
-=======
       }).filter(Boolean); // Filtrar eventos nulos
 
->>>>>>> b0fdecac2d5ce34eb06360ad082935fd3d9b81f4
       setAnesthesiologists(transformedData);
       console.log("Transformed Data:", transformedData); // Verifica los datos transformados
     } catch (error) {
