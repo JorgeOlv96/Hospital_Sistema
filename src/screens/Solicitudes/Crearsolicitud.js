@@ -729,7 +729,7 @@ function CrearSolicitud() {
           <div className="flex mb-4">
           <div className="mr-4 w-full">
         <label htmlFor="procedimientos_paciente" className="block font-semibold text-white mb-1">
-          Procedimientos planeado del paciente:
+          Procedimientos planeado  del paciente:
         </label>
         <ProcedureSelect onChange={handleProcedureChange} />
       </div>

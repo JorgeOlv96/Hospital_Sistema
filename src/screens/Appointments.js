@@ -273,9 +273,9 @@ function Appointments() {
           <th>Sala</th>
           <th>Nombre completo</th>
           <th>Sexo</th>
-          <th>Fecha asignada</th>
           <th>Procedimientos</th>
           <th>Especialidad</th>
+          <th>Fecha asignada</th>
           <th>Tiempo estimado</th>
           <th>Turno</th>
           <th>Anestesiólogo</th>
@@ -291,13 +291,13 @@ function Appointments() {
             <tr>
               <td>${index + 1}</td> <!-- Mostramos el número de solicitud -->
               <td>${appointment.title}</td>
-              <td>${moment(appointment.start).format("LT")}</td>
-              <td>${appointment.operatingRoom}</td>
-              <td class="nowrap">${appointment.nombre_paciente} ${
+              <td>${moment(appointment.start).format("LT")}</td> 
+              <td>${appointment.operatingRoom}</td> 
+              <td class="nowrap">${appointment.nombre_paciente} ${ 
               appointment.ap_paterno
-            } ${appointment.ap_materno}</td>
-              <td>${appointment.sexo}</td>
-              <td>${appointment.procedimientos_paciente}</td>
+            } ${appointment.ap_materno}</td> 
+              <td>${appointment.sexo}</td> 
+              <td>${appointment.procedimientos_paciente}</td> 
               <td>${appointment.clave_esp}.</td>
               <td>${moment(appointment.start).format("LL")}</td>
               <td>${appointment.tiempo_estimado} min</td>
