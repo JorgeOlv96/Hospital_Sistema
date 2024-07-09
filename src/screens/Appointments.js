@@ -247,7 +247,7 @@ function Appointments() {
         width: 100%;
         border-collapse: collapse;
         margin-top: 5px; /* Más espacio encima de la tabla */
-        font-size: 7px; /* Tamaño de fuente de las celdas de la tabla */
+        font-size: 12px; /* Tamaño de fuente de las celdas de la tabla */
       }
       th, td {
         border: 1px solid black;
@@ -269,29 +269,17 @@ function Appointments() {
           <th>#</th> <!-- Agregamos la columna de enumeración -->
           
           <th>Folio</th>
-          
           <th>Hora asignada</th>
-
           <th>Sala</th>
-          
           <th>Nombre completo</th>
-          
           <th>Sexo</th>
-          
           <th>Fecha asignada</th>
-          
           <th>Procedimientos</th>
-          
           <th>Especialidad</th>
-          
           <th>Tiempo estimado</th>
-          
           <th>Turno</th>
-          
           <th>Anestesiólogo</th>
-          
           <th>Cirujano</th>
-          
           <th>Insumos</th>
        
         </tr>
