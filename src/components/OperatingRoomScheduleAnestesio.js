@@ -12,8 +12,11 @@ const OperatingRoomScheduleAnestesio = ({ date, anesthesiologists, onEventClick 
 
   // Generar las filas y columnas para la tabla de horarios de quirófano
   const generateSchedule = () => {
-    const hours = Array.from({ length: 24 }, (_, i) => `${String(i).padStart(2, '0')}:00`);
-
+    const hours = Array.from({ length: 18 }, (_, i) => {
+      const hour = (i + 7) % 24;
+      return `${String(hour).padStart(2, '0')}:00`;
+    });
+    
     const schedule = OperatingRooms.map(room => {
       const roomAnesthesiologists = filteredAnesthesiologists.filter(anes =>
         anes.operatingRoom === room
