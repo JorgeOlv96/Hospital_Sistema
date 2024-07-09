@@ -128,7 +128,7 @@ function Appointments() {
   const [selectedEvent, setSelectedEvent] = useState({});
   const [appointments, setAppointments] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [view, setView] = useState("month");
+  const [view, setView] = useState("operatingRooms");
 
   const fetchAppointments = async () => {
     try {
