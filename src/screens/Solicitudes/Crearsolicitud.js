@@ -50,6 +50,7 @@ function CrearSolicitud() {
     Object.entries(especialidadToClave).map(([key, value]) => [value, key])
   );
 
+  const [errors, setErrors] = useState({});
   const [nombre_especialidad, setNombreEspecialidad] = useState("");
   const [clave_esp, setClaveEspecialidad] = useState("");
   const [formData, setFormData] = useState({
@@ -130,7 +131,10 @@ function CrearSolicitud() {
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value,
-    }));
+    })
+  );
+
+
 
     // Validación de fecha de nacimiento
     if (name === "fecha_nacimiento") {
@@ -251,43 +255,53 @@ function CrearSolicitud() {
     }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
 
-    const updatedFormData = {
-      ...formData,
-      insumos: formData.insumos || "N/A",
-      curp: formData.curp || "N/A",
-      fecha_nacimiento: formData.fecha_nacimiento || "1900-01-01", // Fecha predeterminada válida
-      edad: formData.edad || "N/A",
-      no_expediente: formData.no_expediente || "N/A",
-      // Añadir aquí otros campos opcionales si es necesario
-    };
-
-    // Log the formData to inspect its structure
-    console.log("Submitting formData:", formData);
-
-    try {
-      const response = await fetch("http://localhost:4000/api/solicitudes", {
-        method: selectedSolicitud ? "PUT" : "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
+  const validateForm = () => {
+    const newErrors = {};
+    Object.keys(formData).forEach((key) => {
+      if (!formData[key]) {
+        newErrors[key] = "Campo requerido";
       }
-
-      const data = await response.json();
-      console.log("Solicitud guardada:", data);
-      navigate("/solicitudes");
-    } catch (error) {
-      console.error("Error saving solicitud:", error);
-    }
+    });
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+  
+    // Validar el formulario
+    if (validateForm()) {
+      try {
+        // Enviar la solicitud a la API
+        const response = await fetch("http://localhost:4000/api/solicitudes", {
+          method: selectedSolicitud ? "PUT" : "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        });
+  
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+  
+        // Parsear la respuesta JSON
+        const data = await response.json();
+        console.log("Formulario válido y enviado:", formData);
+  
+        // Redirigir al usuario después de un envío exitoso
+        navigate("/solicitudes");
+      } catch (error) {
+        // Manejo de errores en la solicitud de red
+        console.error("Error en la solicitud:", error);
+      }
+    } else {
+      console.log("Formulario inválido");
+    }
+  };
+  
   // Validación y formateo de la hora solicitada
   const handleHoraSolicitadaChange = (event) => {
     let input = event.target.value;
@@ -346,11 +360,12 @@ function CrearSolicitud() {
                 value={formData.fecha_solicitud}
                 onChange={handleInputChange}
                 readOnly
-                class="border border-gray-200 rounded-lg px-3 py-2 w-full bg-gray-300"
-              />
-            </div>
-            <div class="w-full">
-              <label for="curp" class="block font-semibold text-white mb-1">
+                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-gray-300`}
+                />
+                
+              </div>
+                <div class="w-full">
+                  <label for="curp" class="block font-semibold text-white mb-1">
                 CURP del paciente:
               </label>
 
@@ -362,7 +377,7 @@ function CrearSolicitud() {
                 value={formData.curp}
                 onChange={handleInputChange}
                 maxLength={18}
-                class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full"
+                className={`border "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
               />
             </div>
           </div>
@@ -382,9 +397,10 @@ function CrearSolicitud() {
                 name="ap_paterno"
                 value={formData.ap_paterno}
                 onChange={handleInputChange}
-                class="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]"
-              />
-            </div>
+                className={`border ${errors.ap_paterno ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+                />
+                {errors.ap_paterno && <p className="text-red-500">{errors.ap_paterno}</p>}
+              </div>
             <div class="w-full mr-4">
               <label
                 for="ap_materno"
@@ -399,9 +415,10 @@ function CrearSolicitud() {
                 name="ap_materno"
                 value={formData.ap_materno}
                 onChange={handleInputChange}
-                class="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]"
-              />
-            </div>
+                className={`border ${errors.ap_materno ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+                />
+                {errors.ap_materno && <p className="text-red-500">{errors.ap_materno}</p>}
+              </div>
 
             <div class="w-full mr-4">
               <label
@@ -417,9 +434,10 @@ function CrearSolicitud() {
                 name="nombre_paciente"
                 value={formData.nombre_paciente}
                 onChange={handleInputChange}
-                class="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]"
-              />
-            </div>
+                className={`border ${errors.nombre_paciente ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+                />
+                {errors.nombre_paciente && <p className="text-red-500">{errors.nombre_paciente}</p>}
+              </div>
 
             <div className="mr-4 w-full">
               <label
@@ -452,7 +470,8 @@ function CrearSolicitud() {
                 name="sala_quirofano"
                 value={formData.sala_quirofano}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className={`border ${errors.nombre_paciente ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+                
               >
                 <option value=""> Seleccionar </option>
                 <option value="A1">SALA A1</option>
@@ -469,6 +488,7 @@ function CrearSolicitud() {
                 <option value="H">SALA H</option>
                 <option value="RX">SALA RX</option>
               </select>
+                {errors.nombre_paciente && <p className="text-red-500">{errors.nombre_paciente}</p>}
             </div>
           </div>
 
@@ -536,6 +556,7 @@ function CrearSolicitud() {
                 <option value="Femenino">Femenino</option>
                 <option value="Otro">Otro</option>
               </select>
+              {errors.sexo && <p className="text-red-500">{errors.sexo}</p>}
             </div>
 
             <div className="w-full" style={{ width: "105%" }}>
@@ -549,9 +570,10 @@ function CrearSolicitud() {
                 loadOptions={fetchActiveSurgeons}
                 onChange={handleSelectChange}
                 placeholder="Nombre del cirujano"
-                className="rounded-lg px-3 py-2 shadow-sm w-full  focus:border-blue-50"
-              />
-            </div>
+                className={` ${errors.nombre_cirujano ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+                />
+                {errors.nombre_cirujano && <p className="text-red-500">{errors.nombre_cirujano}</p>}
+              </div>
           </div>
 
           <div className="flex mb-4">
@@ -567,14 +589,15 @@ function CrearSolicitud() {
                 name="tipo_admision"
                 value={formData.tipo_admision}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
+                className={`border ${errors.ap_paterno ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+                >
                 <option value=""> Seleccionar </option>
                 <option value="Cama">Cama</option>
                 <option value="Consulta externa">Consulta externa</option>
                 <option value="UrgenciaS">Urgencias</option>
               </select>
-            </div>
+                {errors.ap_materno && <p className="text-red-500">{errors.ap_materno}</p>}
+              </div>
 
             <div className="mr-4 w-full">
               <label
@@ -588,13 +611,14 @@ function CrearSolicitud() {
                 name="tipo_intervencion"
                 value={formData.tipo_intervencion}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
+                className={`border ${errors.tipo_intervencion ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+                >
                 <option value=""> Seleccionar </option>
                 <option value="Cirugía">Cirugía</option>
                 <option value="Procedimiento">Procedimiento</option>
                 <option value="Cirugía ambulatoria">Cirugía ambulatoria</option>
               </select>
+              {errors.tipo_intervencion && <p className="text-red-500">{errors.tipo_intervencion}</p>}
             </div>
 
             <div className="mr-4 w-full">
@@ -609,8 +633,8 @@ function CrearSolicitud() {
                 name="nombre_especialidad"
                 value={nombre_especialidad}
                 onChange={handleNombreEspecialidadChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
+                className={`border ${errors.nombre_especialidad ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+                >
                 <option value=""> Seleccionar </option>
                 {Object.keys(especialidadToClave).map((especialidad) => (
                   <option key={especialidad} value={especialidad}>
@@ -618,7 +642,8 @@ function CrearSolicitud() {
                   </option>
                 ))}
               </select>
-            </div>
+              {errors.nombre_especialidad && <p className="text-red-500">{errors.nombre_especialidad}</p>}
+              </div>
 
             <div className="w-full">
               <label
@@ -658,9 +683,10 @@ function CrearSolicitud() {
                 name="hora_solicitada"
                 value={formData.hora_solicitada}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
+                className={`border ${errors.hora_solicitada ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+                />
+                {errors.hora_solicitada && <p className="text-red-500">{errors.hora_solicitada}</p>}
+              </div>
 
             <div className="mr-4 w-full">
               <label
@@ -675,9 +701,10 @@ function CrearSolicitud() {
                 name="fecha_solicitada"
                 value={formData.fecha_solicitada}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
+                className={`border ${errors.fecha_solicitada ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+                />
+                {errors.fecha_solicitada && <p className="text-red-500">{errors.fecha_solicitada}</p>}
+              </div>
 
             <div className="mr-4 w-full">
               <label
@@ -693,9 +720,10 @@ function CrearSolicitud() {
                 name="tiempo_estimado"
                 value={formData.tiempo_estimado}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
+                className={`border ${errors.tiempo_estimado ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+                />
+                {errors.tiempo_estimado && <p className="text-red-500">{errors.tiempo_estimado}</p>}
+              </div>
 
             <div className="w-full">
               <label
@@ -709,14 +737,15 @@ function CrearSolicitud() {
                 name="turno_solicitado"
                 value={formData.turno_solicitado}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
+                className={`border ${errors.turno_solicitado ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+                >
                 <option value=""> Seleccionar </option>
                 <option value="Matutino">Matutino</option>
                 <option value="Vespertino">Vespertino</option>
                 <option value="Nocturno">Nocturno</option>
                 <option value="Especial">Especial</option>
               </select>
+              {errors.turno_solicitado && <p className="text-red-500">{errors.turno_solicitado}</p>}
             </div>
           </div>
 
@@ -729,6 +758,7 @@ function CrearSolicitud() {
                 Procedimientos del paciente:
               </label>
               <ProcedureSelect onChange={handleProcedureChange} />
+              {errors.procedimientos_paciente && <p className="text-red-500">{errors.procedimientos_paciente}</p>}
             </div>
 
             <div className="mr-4" style={{ width: "15%" }}>
@@ -747,8 +777,8 @@ function CrearSolicitud() {
               >
                 <option value=""> Seleccionar </option>
                 {[...Array(99)].map((_, i) => (
-                  <option key={i + 1} value={i + 1}>
-                    {i + 1}
+                  <option key={i+0} value={i+0}>
+                    {i+0}
                   </option>
                 ))}
               </select>
@@ -759,20 +789,21 @@ function CrearSolicitud() {
                 htmlFor="req_insumo"
                 className="block font-semibold text-white mb-1"
               >
-                insumos:
+                Insumos:
               </label>
               <select
                 id="req_insumo"
                 name="req_insumo"
                 value={formData.req_insumo}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
+                className={` ${errors.req_insumo ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+                >
                 <option value="">Seleccionar</option>
                 <option value="Si">Si</option>
                 <option value="No">No</option>
               </select>
-            </div>
+              {errors.req_insumo && <p className="text-red-500">{errors.req_insumo}</p>}
+              </div>
           </div>
 
           <div className="flex mb-4">
@@ -788,10 +819,10 @@ function CrearSolicitud() {
                 id="diagnostico"
                 name="diagnostico"
                 rows="4"
-                value={formData.diagnostico} // Use the controlled state value
-                onChange={(e) => setFormData({ ...formData, diagnostico: e.target.value })} // Update the state on change
-                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+                className={`border ${errors.diagnostico? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+                >
+              </textarea>
+              {errors.req_insumo && <p className="text-red-500">{errors.req_insumo}</p>}
             </div>
           </div>
         </div>
