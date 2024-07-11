@@ -7,12 +7,12 @@ const OperatingRooms = ['A1', 'A2', 'T1', 'T2', '1', '2', '3', '4', '5', '6', 'E
 const OperatingRoomSchedule = ({ date, appointments, onEventClick }) => {
   // Filtrar las citas para la fecha seleccionada
   const filteredAppointments = appointments.filter(app =>
-    moment(app.start).isSame(date, 'day')
+    moment(app.start).isSame(date, 'day') || moment(app.end).isSame(date, 'day')
   );
 
   // Genera las filas y columnas para la tabla de horarios de quirófano
   const generateSchedule = () => {
-    const hours = Array.from({ length: 18 }, (_, i) => {
+    const hours = Array.from({ length: 24 }, (_, i) => {
       const hour = (i + 7) % 24;
       return `${String(hour).padStart(2, '0')}:00`;
     });
@@ -21,7 +21,7 @@ const OperatingRoomSchedule = ({ date, appointments, onEventClick }) => {
       const roomAppointments = filteredAppointments.filter(app => app.operatingRoom === room);
 
       const cells = hours.map((hour, index) => {
-        const startOfHour = moment(date).startOf('day').add(index, 'hours');
+        const startOfHour = moment(date).startOf('day').add(index + 7, 'hours');
         const endOfHour = moment(startOfHour).add(1, 'hour');
 
         const overlappingAppointments = roomAppointments.filter(app =>
@@ -32,17 +32,16 @@ const OperatingRoomSchedule = ({ date, appointments, onEventClick }) => {
           return (
             <div key={hour} className="schedule-slot occupied">
               {overlappingAppointments.map((appointment, idx) => {
-                const startHour = moment(appointment.start).hour();
-                const endHour = moment(appointment.end).hour();
-                const durationInHours = moment(appointment.end).diff(appointment.start, 'hours', true);
+                const startMinute = moment(appointment.start).diff(startOfHour, 'minutes');
+                const durationInMinutes = moment(appointment.end).diff(appointment.start, 'minutes');
 
                 return (
                   <div
                     key={idx}
                     className="appointment-block"
                     style={{
-                      top: `${(startHour - index) * 100}%`,
-                      height: `${durationInHours * 100}%`,
+                      top: `${(startMinute / 60) * 100}%`,
+                      height: `${(durationInMinutes / 60) * 100}%`,
                     }}
                     onClick={() => onEventClick(appointment)}
                   >
@@ -78,7 +77,7 @@ const OperatingRoomSchedule = ({ date, appointments, onEventClick }) => {
   return (
     <div className="operating-room-schedule">
       <div className="schedule-header">
-      <div className="schedule-time-header">Hora</div>
+        <div className="schedule-time-header">Hora</div>
         {OperatingRooms.map(room => (
           <div key={room} className="schedule-room">{`Sala ${room}`}</div>
         ))}
