@@ -1,26 +1,19 @@
-/* OperatingRoomSchedule.css */
-
 .operating-room-schedule {
   display: flex;
   flex-direction: column;
   border: 1px solid #ccc;
   overflow-x: auto;
-  margin-bottom: 20px;
 }
 
 .schedule-header {
   display: flex;
   align-items: center;
   background-color: #f4f4f4;
-  border-bottom: 1px solid #ccc;
-  padding: 10px 0;
 }
 
 .schedule-time-header {
-  width: 100px; /* Ancho de la celda "Hora" en el encabezado */
+  width: 100px;
   text-align: center;
-  border-right: 1px solid #ccc;
-  padding: 0 10px;
 }
 
 .schedule-room {
@@ -43,11 +36,10 @@
 }
 
 .schedule-time {
-  width: 100px; /* Ancho de las celdas de tiempo */
+  width: 100px;
   text-align: center;
-  border-right: 1px solid #ccc;
+  border: 1px solid #ccc;
   box-sizing: border-box;
-  padding: 10px 0;
 }
 
 .schedule-cell {

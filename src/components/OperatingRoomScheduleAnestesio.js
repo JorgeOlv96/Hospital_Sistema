@@ -5,10 +5,15 @@ import './OperatingRoomScheduleAnestesio.css';
 const OperatingRooms = ['A1', 'A2', 'T1', 'T2', '1', '2', '3', '4', '5', '6', 'E', 'H', 'RX'];
 
 const OperatingRoomScheduleAnestesio = ({ date, anesthesiologists, onEventClick }) => {
+  console.log("Rendering OperatingRoomScheduleAnestesio with date:", date);
+  console.log("Anesthesiologists for the date:", anesthesiologists);
+
   // Filtrar los anestesiólogos para la fecha seleccionada
   const filteredAnesthesiologists = anesthesiologists.filter(anesthesiologist =>
-    moment(anesthesiologist.start).isSame(date, 'day') || moment(anesthesiologist.end).isSame(date, 'day')
+    moment(anesthesiologist.start).isSame(date, 'day')
   );
+
+  console.log("Filtered Anesthesiologists:", filteredAnesthesiologists);
 
   // Generar las filas y columnas para la tabla de horarios de quirófano
   const generateSchedule = () => {
@@ -27,15 +32,15 @@ const OperatingRoomScheduleAnestesio = ({ date, anesthesiologists, onEventClick 
         const endOfHour = moment(startOfHour).add(1, 'hour');
 
         const overlappingAnesthesiologists = roomAnesthesiologists.filter(anes =>
-          moment(anes.hora_inicio).isBefore(endOfHour) && moment(anes.hora_fin).isAfter(startOfHour)
+          moment(anes.start).isBefore(endOfHour) && moment(anes.end).isAfter(startOfHour)
         );
 
         if (overlappingAnesthesiologists.length > 0) {
           return (
             <div key={hour} className="schedule-slot occupied">
               {overlappingAnesthesiologists.map((anesthesiologist, idx) => {
-                const startMinute = moment(anesthesiologist.hora_inicio).diff(startOfHour, 'minutes');
-                const durationInMinutes = moment(anesthesiologist.hora_fin).diff(anesthesiologist.hora_inicio, 'minutes');
+                const startMinute = moment(anesthesiologist.start).diff(startOfHour, 'minutes');
+                const durationInMinutes = moment(anesthesiologist.end).diff(anesthesiologist.start, 'minutes');
 
                 return (
                   <div
@@ -49,7 +54,7 @@ const OperatingRoomScheduleAnestesio = ({ date, anesthesiologists, onEventClick 
                   >
                     <div className="anesthesiologist-info">
                       <p>{anesthesiologist.title}</p>
-                      <p>{moment(anesthesiologist.hora_inicio).format('HH:mm')} - {moment(anesthesiologist.hora_fin).format('HH:mm')}</p>
+                      <p>{moment(anesthesiologist.start).format('HH:mm')} - {moment(anesthesiologist.end).format('HH:mm')}</p>
                     </div>
                   </div>
                 );

@@ -74,6 +74,8 @@ function CrearSolicitud() {
     req_insumo: "",
     estado_solicitud: "Pendiente",
     procedimientos_paciente: "",
+    procedimientos_extra: "",
+    diagnostico: ""
   });
 
   // Función para obtener la fecha actual en el formato adecuado (YYYY-MM-DD)
@@ -737,9 +739,9 @@ function CrearSolicitud() {
                 Se preveén: (más)
               </label>
               <select
-                id="se_preveen"
-                name="se_preveen"
-                value={formData.se_preveen}
+                id="procedimientos_extra"
+                name="procedimientos_extra"
+                value={formData.procedimientos_extra}
                 onChange={handleInputChange}
                 className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
@@ -782,12 +784,14 @@ function CrearSolicitud() {
                 Diagnóstico del paciente
               </label>
               <textarea
-              placeholder="Diagnóstico del paciente"
-                id="diagnostico_paciente"
-                name="diagnostico_paciente"
+                placeholder="Diagnóstico del paciente"
+                id="diagnostico"
+                name="diagnostico"
                 rows="4"
+                value={formData.diagnostico} // Use the controlled state value
+                onChange={(e) => setFormData({ ...formData, diagnostico: e.target.value })} // Update the state on change
                 className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              ></textarea>
+              />
             </div>
           </div>
         </div>
