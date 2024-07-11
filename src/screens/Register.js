@@ -11,12 +11,26 @@ function Register() {
   const [nivelUsuario, setNivelUsuario] = useState('');
   const [cedula, setCedula] = useState('');
   const [error, setError] = useState('');
+  const [errors, setErrors] = useState({});
+
+  const validateForm = () => {
+    const newErrors = {};
+    if (!nombre) newErrors.nombre = "Campo requerido";
+    if (!apPaterno) newErrors.apPaterno = "Campo requerido";
+    if (!apMaterno) newErrors.apMaterno = "Campo requerido";
+    if (!email) newErrors.email = "Campo requerido";
+    if (!password) newErrors.password = "Campo requerido";
+    if (!nivelUsuario) newErrors.nivelUsuario = "Campo requerido";
+    if (!cedula) newErrors.cedula = "Campo requerido";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    if (!nombre || !apPaterno || !apMaterno || !email || !password || !nivelUsuario || !cedula) {
-      setError('Todos los campos son obligatorios');
+    if (!validateForm()) {
       return;
     }
 
@@ -72,52 +86,59 @@ function Register() {
             placeholder="Nombre(s)"
             value={nombre}
             onChange={(e) => setNombre(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-lg"
+            className={`w-full p-3 border ${errors.nombre ? 'border-red-500' : 'border-gray-300'} rounded-lg`}
           />
+          {errors.nombre && <span className="text-red-500">{errors.nombre}</span>}
           <input
             type="text"
             placeholder="Apellido Paterno"
             value={apPaterno}
             onChange={(e) => setApPaterno(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-lg"
+            className={`w-full p-3 border ${errors.apPaterno ? 'border-red-500' : 'border-gray-300'} rounded-lg`}
           />
+          {errors.apPaterno && <span className="text-red-500">{errors.apPaterno}</span>}
           <input
             type="text"
             placeholder="Apellido Materno"
             value={apMaterno}
             onChange={(e) => setApMaterno(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-lg"
+            className={`w-full p-3 border ${errors.apMaterno ? 'border-red-500' : 'border-gray-300'} rounded-lg`}
           />
+          {errors.apMaterno && <span className="text-red-500">{errors.apMaterno}</span>}
           <input
             type="email"
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-lg"
+            className={`w-full p-3 border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-lg`}
           />
+          {errors.email && <span className="text-red-500">{errors.email}</span>}
           <input
             type="password"
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-lg"
+            className={`w-full p-3 border ${errors.password ? 'border-red-500' : 'border-gray-300'} rounded-lg`}
           />
+          {errors.password && <span className="text-red-500">{errors.password}</span>}
           <input
             type="text"
             placeholder="Nivel de Usuario"
             value={nivelUsuario}
             onChange={(e) => setNivelUsuario(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-lg"
+            className={`w-full p-3 border ${errors.nivelUsuario ? 'border-red-500' : 'border-gray-300'} rounded-lg`}
           />
+          {errors.nivelUsuario && <span className="text-red-500">{errors.nivelUsuario}</span>}
           <input
             type="text"
             placeholder="Cedula"
             value={cedula}
             onChange={(e) => setCedula(e.target.value)}
-            className="w-full p-3 border border-gray-300 rounded-lg"
+            className={`w-full p-3 border ${errors.cedula ? 'border-red-500' : 'border-gray-300'} rounded-lg`}
           />
+          {errors.cedula && <span className="text-red-500">{errors.cedula}</span>}
         </div>
-        <button type="submit" className="w-full p-3 bg-[#001B58]  text-white rounded-lg">
+        <button type="submit" className="w-full p-3 bg-[#001B58] text-white rounded-lg">
           Registrar
         </button>
         <div className="mt-4 text-center">
