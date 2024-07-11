@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../../Layout";
 import { useNavigate } from "react-router-dom";
-import ProcedureSelect from './ProcedureSelect';
-import AsyncSelect from 'react-select/async';
+import ProcedureSelect from "./ProcedureSelect";
+import AsyncSelect from "react-select/async";
 
 function CrearSolicitud() {
   const [solicitudes, setSolicitudes] = useState([]);
@@ -76,10 +76,6 @@ function CrearSolicitud() {
     procedimientos_paciente: "",
   });
 
-  
-
-
-
   // Función para obtener la fecha actual en el formato adecuado (YYYY-MM-DD)
   function obtenerFechaActual() {
     const hoy = new Date();
@@ -108,14 +104,16 @@ function CrearSolicitud() {
 
   const fetchActiveSurgeons = async (inputValue) => {
     try {
-      const response = await fetch(`http://localhost:4000/api/cirujanos/activos?search=${inputValue}`);
+      const response = await fetch(
+        `http://localhost:4000/api/cirujanos/activos?search=${inputValue}`
+      );
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
       const data = await response.json();
       return data.map((surgeons) => ({
         label: surgeons.nombre_completo,
-        value: surgeons.nombre_completo
+        value: surgeons.nombre_completo,
       }));
     } catch (error) {
       console.error("Error fetching active surgeons:", error);
@@ -240,14 +238,14 @@ function CrearSolicitud() {
   const handleProcedureChange = (selectedOption) => {
     setFormData({
       ...formData,
-      procedimientos_paciente: selectedOption ? selectedOption.value : ""
+      procedimientos_paciente: selectedOption ? selectedOption.value : "",
     });
   };
 
   const handleSelectChange = (selectedOption) => {
     setFormData((prevFormData) => ({
       ...prevFormData,
-      nombre_cirujano: selectedOption ? selectedOption.value : ""
+      nombre_cirujano: selectedOption ? selectedOption.value : "",
     }));
   };
 
@@ -330,7 +328,7 @@ function CrearSolicitud() {
   return (
     <Layout>
       <form onSubmit={handleSubmit}>
-        <div class="flex flex-col p-4 bg-[#304678] rounded-lg  mb-4">
+        <div class="flex flex-col p-4 bg-[#557996] rounded-lg ">
           <div class="flex mb-4">
             <div class="w-full mr-4">
               <label
@@ -353,10 +351,12 @@ function CrearSolicitud() {
               <label for="curp" class="block font-semibold text-white mb-1">
                 CURP del paciente:
               </label>
+
               <input
                 type="text"
                 id="curp"
                 name="curp"
+                placeholder="Curp del paciente"
                 value={formData.curp}
                 onChange={handleInputChange}
                 maxLength={18}
@@ -364,9 +364,7 @@ function CrearSolicitud() {
               />
             </div>
           </div>
-        </div>
 
-        <div class="flex flex-col p-4 bg-[#304678] rounded-lg mb-4">
           <div class="flex mb-4">
             <div class="w-full mr-4">
               <label
@@ -376,6 +374,7 @@ function CrearSolicitud() {
                 Apellido paterno:
               </label>
               <input
+                placeholder="Apellido paterno paciente"
                 type="text"
                 id="ap_paterno"
                 name="ap_paterno"
@@ -392,6 +391,7 @@ function CrearSolicitud() {
                 Apellido materno:
               </label>
               <input
+                placeholder="Apellido materno paciente"
                 type="text"
                 id="ap_materno"
                 name="ap_materno"
@@ -409,6 +409,7 @@ function CrearSolicitud() {
                 Nombre:
               </label>
               <input
+                placeholder="Nombre del paciente"
                 type="text"
                 id="nombre_paciente"
                 name="nombre_paciente"
@@ -426,6 +427,7 @@ function CrearSolicitud() {
                 Número de expediente
               </label>
               <input
+               placeholder="Expediente de paciente"
                 type="text"
                 id="no_expediente"
                 name="no_expediente"
@@ -435,7 +437,7 @@ function CrearSolicitud() {
               />
             </div>
 
-            <div className="mr-4 w-full">
+            <div className="mr-4" style={{ width: "50%" }}>
               <label
                 htmlFor="sala_quirofano"
                 className="block font-semibold text-white mb-1"
@@ -450,26 +452,24 @@ function CrearSolicitud() {
                 onChange={handleInputChange}
                 className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="">-- Seleccione la sala --</option>
-                <option value="A1">A1</option>
-                <option value="A2">A2</option>
-                <option value="T1">T1</option>
-                <option value="T2">T2</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-                <option value="6">6</option>
-                <option value="E">E</option>
-                <option value="H">H</option>
-                <option value="RX">RX</option>
+                <option value=""> Seleccionar </option>
+                <option value="A1">SALA A1</option>
+                <option value="A2">SALA A2</option>
+                <option value="T1">SALA T1</option>
+                <option value="T2">SALA T2</option>
+                <option value="1">SALA 1</option>
+                <option value="2">SALA 2</option>
+                <option value="3">SALA 3</option>
+                <option value="4">SALA 4</option>
+                <option value="5">SALA 5</option>
+                <option value="6">SALA 6</option>
+                <option value="E">SALA E</option>
+                <option value="H">SALA H</option>
+                <option value="RX">SALA RX</option>
               </select>
             </div>
           </div>
-        </div>
 
-        <div className="flex flex-col p-4 bg-[#304678] rounded-lg mb-4">
           <div className="flex mb-4">
             <div className="mr-4 w-full">
               <label
@@ -484,7 +484,7 @@ function CrearSolicitud() {
                 name="fecha_nacimiento"
                 value={formData.fecha_nacimiento}
                 onChange={handleInputChange}
-                className={`border rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 ${
+                className={`border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mt-2 ${
                   isFechaNacimientoValid
                     ? "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
                     : "border-red-500 focus:ring-red-500 focus:border-red-500"
@@ -505,16 +505,17 @@ function CrearSolicitud() {
                 Edad
               </label>
               <input
+              placeholder="Edad de paciente"
                 type="int"
                 id="edad"
                 name="edad"
                 value={formData.edad}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mt-2"
               />
             </div>
 
-            <div className="mr-4 w-full">
+            <div className="mr-4 w-full" style={{ width: "100%" }}>
               <label
                 htmlFor="sexo"
                 className="block font-semibold text-white mb-1"
@@ -526,18 +527,18 @@ function CrearSolicitud() {
                 name="sexo"
                 value={formData.sexo}
                 onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mt-2"
               >
-                <option value="">-- Sexo del paciente --</option>
+                <option value=""> Seleccionar </option>
                 <option value="Masculino">Masculino</option>
                 <option value="Femenino">Femenino</option>
                 <option value="Otro">Otro</option>
               </select>
             </div>
 
-            <div className="w-full">
+            <div className="w-full" style={{ width: "105%" }}>
               <label
-                htmlFor="nombre_cirujano"
+                htmlFor="id_cirujano"
                 className="block font-semibold text-white mb-1"
               >
                 Cirujano encargado:
@@ -546,13 +547,11 @@ function CrearSolicitud() {
                 loadOptions={fetchActiveSurgeons}
                 onChange={handleSelectChange}
                 placeholder="Nombre del cirujano"
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="rounded-lg px-3 py-2 shadow-sm w-full  focus:border-blue-50"
               />
             </div>
           </div>
-        </div>
 
-        <div className="flex flex-col p-4 bg-[#304678] rounded-lg mb-4">
           <div className="flex mb-4">
             <div className="mr-4 w-full">
               <label
@@ -568,7 +567,7 @@ function CrearSolicitud() {
                 onChange={handleInputChange}
                 className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="">-- Seleccione una opción --</option>
+                <option value=""> Seleccionar </option>
                 <option value="Cama">Cama</option>
                 <option value="Consulta externa">Consulta externa</option>
                 <option value="UrgenciaS">Urgencias</option>
@@ -589,9 +588,7 @@ function CrearSolicitud() {
                 onChange={handleInputChange}
                 className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="">
-                  -- Seleccione el tipo de intervención --
-                </option>
+                <option value=""> Seleccionar </option>
                 <option value="Cirugía">Cirugía</option>
                 <option value="Procedimiento">Procedimiento</option>
                 <option value="Cirugía ambulatoria">Cirugía ambulatoria</option>
@@ -612,7 +609,7 @@ function CrearSolicitud() {
                 onChange={handleNombreEspecialidadChange}
                 className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="">-- Seleccionar especialidad --</option>
+                <option value=""> Seleccionar </option>
                 {Object.keys(especialidadToClave).map((especialidad) => (
                   <option key={especialidad} value={especialidad}>
                     {especialidad}
@@ -635,9 +632,7 @@ function CrearSolicitud() {
                 onChange={handleClaveEspecialidadChange}
                 className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="">
-                  -- Seleccionar clave de especialidad --
-                </option>
+                <option value=""> Seleccionar </option>
                 {Object.values(especialidadToClave).map((clave) => (
                   <option key={clave} value={clave}>
                     {clave}
@@ -646,9 +641,7 @@ function CrearSolicitud() {
               </select>
             </div>
           </div>
-        </div>
 
-        <div className="flex flex-col p-4 bg-[#304678] rounded-lg mb-4">
           <div className="flex mb-4">
             <div className="mr-4 w-full">
               <label
@@ -689,9 +682,10 @@ function CrearSolicitud() {
                 htmlFor="tiempo_estimado"
                 className="block font-semibold text-white mb-1"
               >
-                Tiempo estimado de cirugía: (Min)
+                Tiempo estimado de cirugía:
               </label>
               <input
+              placeholder="Minutos"
                 type="int"
                 id="tiempo_estimado"
                 name="tiempo_estimado"
@@ -715,7 +709,7 @@ function CrearSolicitud() {
                 onChange={handleInputChange}
                 className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="">-- Seleccione el turno --</option>
+                <option value=""> Seleccionar </option>
                 <option value="Matutino">Matutino</option>
                 <option value="Vespertino">Vespertino</option>
                 <option value="Nocturno">Nocturno</option>
@@ -723,23 +717,47 @@ function CrearSolicitud() {
               </select>
             </div>
           </div>
-        </div>
 
-        <div className="flex flex-col p-4 bg-[#304678] rounded-lg mb-4">
           <div className="flex mb-4">
-          <div className="mr-4 w-full">
-        <label htmlFor="procedimientos_paciente" className="block font-semibold text-white mb-1">
-          Procedimientos planeado  del paciente:
-        </label>
-        <ProcedureSelect onChange={handleProcedureChange} />
-      </div>
+            <div className="mr-4 w-full">
+              <label
+                htmlFor="procedimientos_paciente"
+                className="block font-semibold text-white mb-1"
+              >
+                Procedimientos del paciente:
+              </label>
+              <ProcedureSelect onChange={handleProcedureChange} />
+            </div>
 
-            <div className="mr-4 w-1/2">
+            <div className="mr-4" style={{ width: "15%" }}>
+              <label
+                htmlFor="se_preveen"
+                className="block font-semibold text-white mb-1"
+              >
+                Se preveén: (más)
+              </label>
+              <select
+                id="se_preveen"
+                name="se_preveen"
+                value={formData.se_preveen}
+                onChange={handleInputChange}
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value=""> Seleccionar </option>
+                {[...Array(99)].map((_, i) => (
+                  <option key={i + 1} value={i + 1}>
+                    {i + 1}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="mr-4" style={{ width: "14%" }}>
               <label
                 htmlFor="req_insumo"
                 className="block font-semibold text-white mb-1"
               >
-                Requiere insumos:
+                insumos:
               </label>
               <select
                 id="req_insumo"
@@ -748,27 +766,28 @@ function CrearSolicitud() {
                 onChange={handleInputChange}
                 className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="">-- Seleccione una opción --</option>
+                <option value="">Seleccionar</option>
                 <option value="Si">Si</option>
                 <option value="No">No</option>
               </select>
             </div>
+          </div>
 
-            <div className="mr-4 w-1/2">
+          <div className="flex mb-4">
+            <div className="mr-4" style={{ width: "50%" }}>
               <label
-                for="estado_solicitud"
+                htmlFor="diagnostico_paciente"
                 className="block font-semibold text-white mb-1"
               >
-                Estado de solicitud
+                Diagnóstico del paciente
               </label>
-              <input
-                type="text"
-                id="estado_solicitud"
-                name="estado_solicitud"
-                value={formData.estado_solicitud}
-                readOnly // Hacer que el campo sea de solo lectura
-                className="border border-red-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-red-300 focus:border-red-300 bg-red-300"
-              />
+              <textarea
+              placeholder="Diagnóstico del paciente"
+                id="diagnostico_paciente"
+                name="diagnostico_paciente"
+                rows="4"
+                className="w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              ></textarea>
             </div>
           </div>
         </div>
@@ -776,7 +795,7 @@ function CrearSolicitud() {
         <div className="flex justify-center mt-4">
           <button
             type="submit"
-            className="bg-[#001B58] text-white px-4 py-2 rounded"
+            className="bg-[#365b77] text-white px-4 py-2 rounded"
           >
             Enviar
           </button>
