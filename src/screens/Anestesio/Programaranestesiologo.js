@@ -51,14 +51,14 @@ function Programaranestesiologo() {
         case "Vespertino":
           setFormData((prevFormData) => ({
             ...prevFormData,
-            hora_inicio: "14:01",
+            hora_inicio: "14:00",
             hora_fin: "20:00"
           }));
           break;
         case "Nocturno":
           setFormData((prevFormData) => ({
             ...prevFormData,
-            hora_inicio: "20:01",
+            hora_inicio: "20:00",
             hora_fin: "06:00"
           }));
           break;
@@ -200,19 +200,19 @@ function Programaranestesiologo() {
                 className="mt-1 block w-full px-4 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               >
                 <option value="">-- Seleccione la sala --</option>
-                <option value="A1">A1</option>
-                <option value="A2">A2</option>
-                <option value="T1">T1</option>
-                <option value="T2">T2</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-                <option value="6">6</option>
-                <option value="E">E</option>
-                <option value="H">H</option>
-                <option value="RX">RX</option>
+                <option value="A1">Sala A1</option>
+                <option value="A2">Sala A2</option>
+                <option value="T1">Sala T1</option>
+                <option value="T2">Sala T2</option>
+                <option value="1">Sala 1</option>
+                <option value="2">Sala 2</option>
+                <option value="3">Sala 3</option>
+                <option value="4">Sala 4</option>
+                <option value="5">Sala 5</option>
+                <option value="6">Sala 6</option>
+                <option value="E">Sala E</option>
+                <option value="H">Sala H</option>
+                <option value="RX">Sala RX</option>
               </select>
             </div>
           </div>
