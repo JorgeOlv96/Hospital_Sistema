@@ -34,6 +34,8 @@ import { FaSheetPlastic } from "react-icons/fa6";
 import { FaSyringe } from "react-icons/fa";
 import { LuFileSpreadsheet } from "react-icons/lu";
 import { PiSyringe } from "react-icons/pi";
+import { LiaUserNurseSolid } from "react-icons/lia";
+
 
 
 
@@ -105,6 +107,12 @@ export const MenuDatas = [
     icon: AiOutlineSetting,
   },
 */
+
+{
+  title: 'Enfermeria',
+  path: '/enfermeria',
+  icon: LiaUserNurseSolid,
+},
 
 ];
 export const memberData = [

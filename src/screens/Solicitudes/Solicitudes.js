@@ -162,7 +162,7 @@ function Solicitudes() {
     <Layout>
       <h1 className="text-xl font-semibold">Solicitudes</h1>
       <div className="my-4">
-        <Link to="./Crearsolicitud" className="btn btn-sm btn-secondary p-2 bg-[#001B58] text-white rounded-lg">
+        <Link to="./Crearsolicitud" className="btn btn-sm btn-secondary p-2 bg-[#365b77] text-white rounded-lg">
           Nueva Solicitud
         </Link>
       </div>
@@ -286,8 +286,8 @@ function Solicitudes() {
 
 
     <div className="overflow-x-auto">
-      <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
-        <thead className="bg-[#304678] text-white">
+      <table className="min-w-full shadow-md rounded-lg overflow-hidden">
+        <thead className="bg-[#365b77] text-white">
           <tr>
             <th className="px-4 py-3 cursor-pointer" onClick={() => handleSort('id_solicitud')}>
               ID <span>{sortBy === 'id_solicitud' && (sortOrder === 'asc' ? '▲' : '▼')}</span>
@@ -314,19 +314,20 @@ function Solicitudes() {
   {sortedSolicitudes.slice(startIndex, endIndex).map((solicitud) => {
     const formattedDate = new Date(solicitud.fecha_solicitud).toLocaleDateString();
     return (
-      <tr key={solicitud.id_solicitud} className="bg-blue-50 hover:bg-blue-300">
+      <tr key={solicitud.id_solicitud} className="bg-blue-50 hover:bg-[#7498b6]">
         <td className="border px-4 py-2">{solicitud.id_solicitud}</td>
         <td className="border px-4 py-2">{solicitud.folio}</td>
         <td className="border px-4 py-2">{solicitud.nombre_paciente} {solicitud.ap_paterno} {solicitud.ap_materno}</td>
         <td className="border px-4 py-2">{solicitud.nombre_especialidad}</td>
         <td className="border px-4 py-2">{formattedDate}</td>
-        <td className={`border px-4 py-2 ${getEstadoColor(solicitud.estado_solicitud)}`} style={getEstadoColorStyle(solicitud.estado_solicitud)}>
-          {solicitud.estado_solicitud}
+        <td  className={`inline-block px-1 py-1 rounded-lg ${getEstadoColor(solicitud.estado_solicitud)}`} 
+    style={getEstadoColorStyle(solicitud.estado_solicitud)}>
+    {solicitud.estado_solicitud}
         </td>
         <td className="border px-4 py-2">
           <button
             onClick={() => handleViewModal(solicitud)}
-            className="bg-[#001B58] text-white px-4 py-2 rounded-md hover:bg-blue-800"
+            className="bg-[#365b77] text-white px-4 py-2 rounded-md hover:bg-[#7498b6]"
           >
             Ver
           </button>
@@ -342,11 +343,11 @@ function Solicitudes() {
 
   {/* Paginación */}
   <div className="flex justify-center mt-4">
-    <button onClick={() => setPage(page - 1)} disabled={page === 1} className="bg-[#001B58] hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-l">
+    <button onClick={() => setPage(page - 1)} disabled={page === 1} className="bg-[#365b77] hover:bg-[#7498b6] text-white font-bold py-2 px-4 rounded-l">
       Anterior
     </button>
     <span className="mx-4">Página {page}</span>
-    <button onClick={() => setPage(page + 1)} disabled={endIndex >= sortedSolicitudes.length} className="bg-[#001B58] hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-r">
+    <button onClick={() => setPage(page + 1)} disabled={endIndex >= sortedSolicitudes.length} className="bg-[#365b77] hover:bg-[#7498b6] text-white font-bold py-2 px-4 rounded-r">
       Siguiente
     </button>
   </div>

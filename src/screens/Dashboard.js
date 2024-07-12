@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Layout from '../Layout';
 import {
   BsArrowDownLeft,
@@ -17,16 +17,47 @@ import {
 } from '../components/Datas';
 import { Transactiontable } from '../components/Tables';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 function Dashboard() {
+  const [userName, setUserName] = useState('Nombre no disponible');
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('http://localhost:4000/api/auth/user', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const { nombre, ap_paterno, ap_materno } = response.data;
+        setUserName(`${nombre} ${ap_paterno} ${ap_materno}`);
+      } catch (error) {
+        console.error('Error fetching user info:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
+
   return (
     <Layout>
+      {/* Welcome message */}
+      <div className="bg-gradient-to-r from-[#365b77] to-[#7498b6] text-white px-6 py-4 rounded-lg shadow-lg mb-6 flex items-center">
+        <span className="text-lg font-semibold">
+          {isLoading ? 'Cargando...' : `¡Bienvenido, ${userName}! Estamos contentos de verte.`}
+        </span>
+      </div>
       {/* boxes */}
       <div className="w-full grid xl:grid-cols-4 gap-6 lg:grid-cols-3 sm:grid-cols-2 grid-cols-1">
         {dashboardCards.map((card, index) => (
           <div
             key={card.id}
-            className=" bg-white rounded-xl border-[1px] border-border p-5"
+            className="bg-white rounded-xl border-[1px] border-border p-5 shadow-md transition-transform transform hover:scale-105"
           >
             <div className="flex gap-4 items-center">
               <div
@@ -44,10 +75,7 @@ function Dashboard() {
               <div className="flex flex-col gap-4 col-span-3">
                 <h4 className="text-md font-medium">
                   {card.value}
-                  {
-                    // if the id === 4 then add the $ sign
-                    card.id === 4 ? '$' : '+'
-                  }
+                  {card.id === 4 ? '$' : '+'}
                 </h4>
                 <p className={`text-sm flex gap-2 ${card.color[1]}`}>
                   {card.percent > 50 && <BsArrowUpRight />}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../../Layout";
-import AsyncSelect from 'react-select/async';
+import AsyncSelect from "react-select/async";
 import { Link } from "react-router-dom";
 
 function Programaranestesiologo() {
@@ -10,21 +10,23 @@ function Programaranestesiologo() {
     turno_anestesio: "",
     sala_anestesio: "",
     hora_inicio: "",
-    hora_fin: ""
+    hora_fin: "",
   });
 
   const [anesthesiologists, setAnesthesiologists] = useState([]); // Estado para almacenar los anestesiólogos
 
   const fetchActiveAnesthesiologists = async (inputValue) => {
     try {
-      const response = await fetch(`http://localhost:4000/api/anestesiologos/activos?search=${inputValue}`);
+      const response = await fetch(
+        `http://localhost:4000/api/anestesiologos/activos?search=${inputValue}`
+      );
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
       const data = await response.json();
       return data.map((anesthesiologist) => ({
         label: anesthesiologist.nombre_completo,
-        value: anesthesiologist.nombre_completo
+        value: anesthesiologist.nombre_completo,
       }));
     } catch (error) {
       console.error("Error fetching active anesthesiologists:", error);
@@ -45,7 +47,7 @@ function Programaranestesiologo() {
           setFormData((prevFormData) => ({
             ...prevFormData,
             hora_inicio: "08:00",
-            hora_fin: "14:00"
+            hora_fin: "14:00",
           }));
           break;
         case "Vespertino":
@@ -66,7 +68,7 @@ function Programaranestesiologo() {
           setFormData((prevFormData) => ({
             ...prevFormData,
             hora_inicio: "",
-            hora_fin: ""
+            hora_fin: "",
           }));
       }
     }
@@ -75,20 +77,23 @@ function Programaranestesiologo() {
   const handleSelectChange = (selectedOption) => {
     setFormData((prevFormData) => ({
       ...prevFormData,
-      nombre: selectedOption ? selectedOption.value : ""
+      nombre: selectedOption ? selectedOption.value : "",
     }));
   };
 
   const handleSaveAnesthesiologist = async () => {
     console.log("Formulario a enviar:", formData);
     try {
-      const response = await fetch("http://localhost:4000/api/anestesio/anestesiologos", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+      const response = await fetch(
+        "http://localhost:4000/api/anestesio/anestesiologos",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -103,7 +108,9 @@ function Programaranestesiologo() {
 
   const fetchAnesthesiologists = async () => {
     try {
-      const response = await fetch("http://localhost:4000/api/anestesio/anestesiologos");
+      const response = await fetch(
+        "http://localhost:4000/api/anestesio/anestesiologos"
+      );
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -135,8 +142,10 @@ function Programaranestesiologo() {
 
         <div className="flex flex-col">
           <div className="flex mb-2 space-x-4">
-          <div className="w-1/4">
-              <label className="block text-sm font-medium text-gray-700">Nombre de anestesiólogo</label>
+            <div className="w-1/4">
+              <label className="block text-sm font-medium text-gray-700">
+                Nombre de anestesiólogo
+              </label>
               <AsyncSelect
                 loadOptions={fetchActiveAnesthesiologists}
                 onChange={handleSelectChange}
@@ -145,7 +154,9 @@ function Programaranestesiologo() {
               />
             </div>
             <div className="w-1/4">
-              <label className="block text-sm font-medium text-gray-700">Asignar día</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Asignar día
+              </label>
               <input
                 type="date"
                 name="dia_anestesio"
@@ -156,7 +167,9 @@ function Programaranestesiologo() {
               />
             </div>
             <div className="w-1/4">
-              <label className="block text-sm font-medium text-gray-700">Asignar turno</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Asignar turno
+              </label>
               <select
                 name="turno_anestesio"
                 value={formData.turno_anestesio}
@@ -171,7 +184,9 @@ function Programaranestesiologo() {
             </div>
 
             <div className="w-1/8">
-              <label className="block text-sm font-medium text-gray-700">Hora Inicio</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Hora Inicio
+              </label>
               <input
                 type="text"
                 name="hora_inicio"
@@ -181,7 +196,9 @@ function Programaranestesiologo() {
               />
             </div>
             <div className="w-1/8">
-              <label className="block text-sm font-medium text-gray-700">Hora Fin</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Hora Fin
+              </label>
               <input
                 type="text"
                 name="hora_fin"
@@ -192,7 +209,9 @@ function Programaranestesiologo() {
             </div>
 
             <div className="w-1/4">
-              <label className="block text-sm font-medium text-gray-700">Asignar sala</label>
+              <label className="block text-sm font-medium text-gray-700">
+                Asignar sala
+              </label>
               <select
                 name="sala_anestesio"
                 value={formData.sala_anestesio}
@@ -230,23 +249,50 @@ function Programaranestesiologo() {
           <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden border border-gray-200">
             <thead className="bg-[#304678] text-white">
               <tr>
-                <th className="px-4 py-3 text-center border-b border-gray-300">Nombre</th>
-                <th className="px-4 py-3 text-center border-b border-gray-300">Día</th>
-                <th className="px-4 py-3 text-center border-b border-gray-300">Turno</th>
-                <th className="px-4 py-3 text-center border-b border-gray-300">Hora Inicio</th>
-                <th className="px-4 py-3 text-center border-b border-gray-300">Hora Fin</th>
-                <th className="px-4 py-3 text-center border-b border-gray-300">Sala</th>
+                <th className="px-4 py-3 text-center border-b border-gray-300">
+                  Nombre
+                </th>
+                <th className="px-4 py-3 text-center border-b border-gray-300">
+                  Día
+                </th>
+                <th className="px-4 py-3 text-center border-b border-gray-300">
+                  Turno
+                </th>
+                <th className="px-4 py-3 text-center border-b border-gray-300">
+                  Hora Inicio
+                </th>
+                <th className="px-4 py-3 text-center border-b border-gray-300">
+                  Hora Fin
+                </th>
+                <th className="px-4 py-3 text-center border-b border-gray-300">
+                  Sala
+                </th>
               </tr>
             </thead>
             <tbody>
               {anesthesiologists.map((anesthesiologist) => (
-                <tr key={anesthesiologist.id_anestesiologo} className="bg-blue-50 hover:bg-blue-300">
-                  <td className="px-2 py-2 text-left border-b border-gray-300">{anesthesiologist.nombre}</td>
-                  <td className="px-2 py-2 text-center border-b border-gray-300">{anesthesiologist.dia_anestesio}</td>
-                  <td className="px-2 py-2 text-center border-b border-gray-300">{anesthesiologist.turno_anestesio}</td>
-                  <td className="px-2 py-2 text-center border-b border-gray-300">{anesthesiologist.hora_inicio}</td>
-                  <td className="px-2 py-2 text-center border-b border-gray-300">{anesthesiologist.hora_fin}</td>
-                  <td className="px-2 py-2 text-center border-b border-gray-300">{anesthesiologist.sala_anestesio}</td>
+                <tr
+                  key={anesthesiologist.id_anestesiologo}
+                  className="bg-blue-50 hover:bg-blue-300"
+                >
+                  <td className="px-2 py-2 text-left border-b border-gray-300 border-r border-gray-300">
+                    {anesthesiologist.nombre}
+                  </td>
+                  <td className="px-2 py-2 text-center border-b border-gray-300 border-r border-gray-300">
+                    {anesthesiologist.dia_anestesio}
+                  </td>
+                  <td className="px-2 py-2 text-center border-b border-gray-300 border-r border-gray-300">
+                    {anesthesiologist.turno_anestesio}
+                  </td>
+                  <td className="px-2 py-2 text-center border-b border-gray-300 border-r border-gray-300">
+                    {anesthesiologist.hora_inicio}
+                  </td>
+                  <td className="px-2 py-2 text-center border-b border-gray-300 border-r border-gray-300">
+                    {anesthesiologist.hora_fin}
+                  </td>
+                  <td className="px-2 py-2 text-center border-b border-gray-300">
+                    {anesthesiologist.sala_anestesio}
+                  </td>
                 </tr>
               ))}
             </tbody>
