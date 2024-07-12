@@ -109,8 +109,8 @@ export const MenuDatas = [
 */
 
 {
-  title: 'Enfermeria',
-  path: '/enfermeria',
+  title: 'Bitácora',
+  path: '/Bitacora',
   icon: LiaUserNurseSolid,
 },
 

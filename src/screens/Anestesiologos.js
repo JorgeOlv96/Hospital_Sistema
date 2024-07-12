@@ -4,7 +4,6 @@ import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "moment/locale/es"; // Importa el idioma español
 import { BiChevronLeft, BiChevronRight, BiTime } from "react-icons/bi";
-import { HiOutlineViewGrid } from "react-icons/hi";
 import { HiOutlineCalendarDays } from "react-icons/hi2";
 import { Link } from "react-router-dom";
 import OperatingRoomScheduleAnestesio from "../components/OperatingRoomScheduleAnestesio";
@@ -112,8 +111,8 @@ const CustomToolbar = ({ date, view, onView, onNavigate }) => {
 
 function Anestesiologos() {
   const localizer = momentLocalizer(moment);
-  const [openModal, setOpenModal] = useState(false);
-  const [selectedEvent, setSelectedEvent] = useState({});
+  const [setOpenModal] = useState(false);
+  const [setSelectedEvent] = useState({});
   const [anesthesiologists, setAnesthesiologists] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [view, setView] = useState("operatingRooms");

@@ -5,11 +5,7 @@ import ProcedureSelect from "./ProcedureSelect";
 import AsyncSelect from "react-select/async";
 
 function CrearSolicitud() {
-  const [solicitudes, setSolicitudes] = useState([]);
-  const [selectedSolicitud, setSelectedSolicitud] = useState(null);
-  const [horaSolicitada, setHoraSolicitada] = useState("");
-  const [isValid, setIsValid] = useState(true);
-  const [turnoCalculado, setTurnoCalculado] = useState("");
+  const [selectedSolicitud] = useState(null);
   const [isFechaNacimientoValid, setIsFechaNacimientoValid] = useState(true);
 
   const navigate = useNavigate();
@@ -95,8 +91,6 @@ function CrearSolicitud() {
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
-        const data = await response.json();
-        setSolicitudes(data);
       } catch (error) {
         console.error("Error fetching solicitudes:", error);
       }
@@ -158,7 +152,7 @@ function CrearSolicitud() {
           turno_solicitado: "Especial",
         }));
       } else if (formData.hora_solicitada) {
-        const [hours, minutes] = (formData.hora_solicitada || "")
+        const [hours] = (formData.hora_solicitada || "")
           .split(":")
           .map(Number);
         if (!isNaN(hours) && hours >= 7 && hours < 14) {
@@ -191,7 +185,7 @@ function CrearSolicitud() {
         dayOfWeek !== 6 &&
         formData.turno_solicitado !== "Especial"
       ) {
-        const [hours, minutes] = formData.hora_solicitada
+        const [hours] = formData.hora_solicitada
           .split(":")
           .map(Number);
         if (!isNaN(hours) && hours >= 7 && hours < 14) {
@@ -302,44 +296,6 @@ function CrearSolicitud() {
     }
   };
   
-  // Validación y formateo de la hora solicitada
-  const handleHoraSolicitadaChange = (event) => {
-    let input = event.target.value;
-
-    // Solo permitir caracteres numéricos y ':'
-    input = input.replace(/[^0-9:]/g, "");
-
-    // Autoformato básico de HH:mm
-    if (input.length === 2 && !input.includes(":")) {
-      input = `${input}:`;
-    }
-
-    // Asegurarse de que el input no sea mayor a 5 caracteres (HH:mm)
-    if (input.length > 5) {
-      setIsValid(false);
-      return;
-    }
-
-    // Validar hora y minutos
-    const [hours, minutes] = input.split(":").map(Number);
-    const hoursValid = (hours >= 0 && hours <= 23) || isNaN(hours);
-    const minutesValid = (minutes >= 0 && minutes <= 59) || isNaN(minutes);
-
-    // Actualizar estado y validación
-    setHoraSolicitada(input);
-    setIsValid(hoursValid && minutesValid);
-
-    // Calcular turno basado en la hora ingresada
-    if (hours >= 7 && hours < 14) {
-      setTurnoCalculado("Matutino");
-    } else if (hours >= 14 && hours < 21) {
-      setTurnoCalculado("Vespertino");
-    } else if (hours >= 21 || hours < 7) {
-      setTurnoCalculado("Nocturno");
-    } else {
-      setTurnoCalculado("Especial");
-    }
-  };
 
   return (
     <Layout>
