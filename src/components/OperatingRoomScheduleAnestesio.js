@@ -1,82 +1,72 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import './OperatingRoomScheduleAnestesio.css';
 
 const OperatingRooms = ['A1', 'A2', 'T1', 'T2', '1', '2', '3', '4', '5', '6', 'E', 'H', 'RX'];
 
 const OperatingRoomScheduleAnestesio = ({ date, anesthesiologists, onEventClick }) => {
-  console.log("Rendering OperatingRoomScheduleAnestesio with date:", date);
-  console.log("Anesthesiologists for the date:", anesthesiologists);
+  const [filteredAnesthesiologists, setFilteredAnesthesiologists] = useState([]);
 
-  // Filtrar los anestesiólogos para la fecha seleccionada
-  const filteredAnesthesiologists = anesthesiologists.filter(anesthesiologist =>
-    moment(anesthesiologist.start).isSame(date, 'day')
-  );
+  useEffect(() => {
+    const filtered = anesthesiologists.filter(anesthesiologist =>
+      moment(anesthesiologist.start).isSame(date, 'day')
+    );
+    setFilteredAnesthesiologists(filtered);
+  }, [anesthesiologists, date]);
 
-  console.log("Filtered Anesthesiologists:", filteredAnesthesiologists);
-
-  // Generar las filas y columnas para la tabla de horarios de quirófano
   const generateSchedule = () => {
     const hours = Array.from({ length: 24 }, (_, i) => {
       const hour = (i + 7) % 24;
       return `${String(hour).padStart(2, '0')}:00`;
     });
 
-    const schedule = OperatingRooms.map(room => {
-      const roomAnesthesiologists = filteredAnesthesiologists.filter(anes =>
-        anes.operatingRoom === room
-      );
-
-      const cells = hours.map((hour, index) => {
-        const startOfHour = moment(date).startOf('day').add(index + 7, 'hours');
-        const endOfHour = moment(startOfHour).add(1, 'hour');
-
-        const overlappingAnesthesiologists = roomAnesthesiologists.filter(anes =>
-          moment(anes.start).isBefore(endOfHour) && moment(anes.end).isAfter(startOfHour)
-        );
-
-        if (overlappingAnesthesiologists.length > 0) {
-          return (
-            <div key={hour} className="schedule-slot occupied">
-              {overlappingAnesthesiologists.map((anesthesiologist, idx) => {
-                const startMinute = moment(anesthesiologist.start).diff(startOfHour, 'minutes');
-                const durationInMinutes = moment(anesthesiologist.end).diff(anesthesiologist.start, 'minutes');
-
-                return (
-                  <div
-                    key={idx}
-                    className="anesthesiologist-block"
-                    style={{
-                      top: `${(startMinute / 60) * 100}%`,
-                      height: `${(durationInMinutes / 60) * 100}%`,
-                    }}
-                    onClick={() => onEventClick(anesthesiologist)}
-                  >
-                    <div className="anesthesiologist-info">
-                      <p>{anesthesiologist.title}</p>
-                      <p>{moment(anesthesiologist.start).format('HH:mm')} - {moment(anesthesiologist.end).format('HH:mm')}</p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          );
-        }
-
-        return <div key={hour} className="schedule-slot"></div>;
-      });
-
-      return cells;
-    });
-
     return hours.map((hour, index) => (
       <div key={hour} className="schedule-row">
         <div className="schedule-time">{hour}</div>
-        {schedule.map((cells, roomIndex) => (
-          <div key={OperatingRooms[roomIndex]} className="schedule-cell">
-            {cells[index]}
-          </div>
-        ))}
+        {OperatingRooms.map(room => {
+          const roomAnesthesiologists = filteredAnesthesiologists.filter(anes =>
+            anes.operatingRoom === room
+          );
+
+          const startOfHour = moment(date).startOf('day').add(index + 7, 'hours');
+          const endOfHour = moment(startOfHour).add(1, 'hour');
+
+          const overlappingAnesthesiologists = roomAnesthesiologists.filter(anes =>
+            moment(anes.start).isBefore(endOfHour) && moment(anes.end).isAfter(startOfHour)
+          );
+
+          if (overlappingAnesthesiologists.length > 0) {
+            return (
+              <div key={room} className="schedule-cell">
+                <div key={hour} className="schedule-slot occupied">
+                  {overlappingAnesthesiologists.map((anesthesiologist, idx) => {
+                    const startMinute = moment(anesthesiologist.start).diff(startOfHour, 'minutes');
+                    const durationInMinutes = moment(anesthesiologist.end).diff(anesthesiologist.start, 'minutes');
+
+                    return (
+                      <div
+                        key={idx}
+                        className="anesthesiologist-block"
+                        style={{
+                          top: `${(startMinute / 60) * 100}%`,
+                          height: `${(durationInMinutes / 60) * 100}%`,
+                        }}
+                        onClick={() => onEventClick(anesthesiologist)}
+                      >
+                        <div className="anesthesiologist-info">
+                          <p>{anesthesiologist.title}</p>
+                          <p>{moment(anesthesiologist.start).format('HH:mm')} - {moment(anesthesiologist.end).format('HH:mm')}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          }
+
+          return <div key={room} className="schedule-cell"><div className="schedule-slot"></div></div>;
+        })}
       </div>
     ));
   };
@@ -95,5 +85,8 @@ const OperatingRoomScheduleAnestesio = ({ date, anesthesiologists, onEventClick 
     </div>
   );
 };
+
+// Añadir la propiedad title para cumplir con las expectativas de react-big-calendar
+OperatingRoomScheduleAnestesio.title = 'Quirófanos';
 
 export default OperatingRoomScheduleAnestesio;

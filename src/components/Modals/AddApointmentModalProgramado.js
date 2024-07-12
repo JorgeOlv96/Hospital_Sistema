@@ -60,37 +60,35 @@ function AddAppointmentModalProgramado({
     }
   }, [isOpen, appointmentId]);
 
-  const handleProgramAppointment = async () => {
+  const handleSaveChanges = async () => {
     try {
       const {
         fecha_programada,
         hora_asignada,
         turno,
         nombre_anestesiologo,
+        tiempo_estimado,
+        sala_quirofano,
       } = patientData;
-      console.log("Datos a enviar:", {
-        fecha_programada,
-        hora_asignada,
-        turno,
-        nombre_anestesiologo,
-      });
-
+  
       const response = await fetch(
-        `http://localhost:4000/api/solicitudes/programar/${appointmentId}`,
+        `http://localhost:4000/api/solicitudes/actualizar/${appointmentId}`,
         {
-          method: "PUT",
+          method: "PATCH",
           body: JSON.stringify({
             fecha_programada,
             hora_asignada,
             turno,
             nombre_anestesiologo,
+            tiempo_estimado,
+            sala_quirofano,
           }),
           headers: {
             "Content-Type": "application/json",
           },
         }
       );
-
+  
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -100,6 +98,7 @@ function AddAppointmentModalProgramado({
       console.error("Error saving changes:", error);
     }
   };
+  
 
   const handleSuspend = async () => {
     try {
@@ -196,11 +195,11 @@ function AddAppointmentModalProgramado({
                   Fecha asignada:
                 </label>
                 <input
-                  type="text"
+                  type="date"
                   name="fecha_programada"
                   value={patientData.fecha_programada || ""}
+                  onChange={handleChange}
                   className="bg-white p-3 rounded-lg w-full"
-                  readOnly
                 />
               </div>
 
@@ -209,11 +208,11 @@ function AddAppointmentModalProgramado({
                   Hora asignada:
                 </label>
                 <input
-                  type="text"
+                  type="time"
                   name="hora_asignada"
                   value={patientData.hora_asignada || ""}
+                  onChange={handleChange}
                   className="bg-white p-3 rounded-lg w-full"
-                  readOnly
                 />
               </div>
             </div>
@@ -260,13 +259,30 @@ function AddAppointmentModalProgramado({
                 <label className="block font-semibold text-gray-700 mb-2">
                   Quirófano asignado:
                 </label>
-                <input
-                  type="text"
-                  name="sala_quirofano"
-                  value={patientData.sala_quirofano || ""}
-                  onChange={handleChange}
-                  className="bg-white p-3 rounded-lg w-full"
-                />
+              <select
+                type="text"
+                id="sala_quirofano"
+                name="sala_quirofano"
+                value={patientData.sala_quirofano}
+                onChange={handleChange}
+                className={`border rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+                
+              >
+                <option value=""> Seleccionar </option>
+                <option value="A1">SALA A1</option>
+                <option value="A2">SALA A2</option>
+                <option value="T1">SALA T1</option>
+                <option value="T2">SALA T2</option>
+                <option value="1">SALA 1</option>
+                <option value="2">SALA 2</option>
+                <option value="3">SALA 3</option>
+                <option value="4">SALA 4</option>
+                <option value="5">SALA 5</option>
+                <option value="6">SALA 6</option>
+                <option value="E">SALA E</option>
+                <option value="H">SALA H</option>
+                <option value="RX">SALA RX</option>
+              </select>
               </div>
 
               <div className="w-full">
@@ -313,6 +329,13 @@ function AddAppointmentModalProgramado({
               style={{ marginBottom: "8px" }}
             >
               Suspender cita
+            </button>
+            <button
+              onClick={handleSaveChanges}
+              className="bg-[#83e9aa] bg-opacity-20 text-green-500 text-sm p-4 rounded-lg font-light"
+              style={{ marginBottom: "8px" }}
+            >
+              Guardar cambios
             </button>
             <button
               onClick={closeModal}
