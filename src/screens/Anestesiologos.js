@@ -129,17 +129,7 @@ function Anestesiologos() {
   
       const transformedData = data.map((anesthesiologist) => {
         let startDateTime, endDateTime;
-  
-        if (!anesthesiologist.hora_inicio || !anesthesiologist.hora_fin) {
-          console.error("Missing hora_inicio or hora_fin for anesthesiologist:", anesthesiologist);
-          return null; // Saltar este registro si faltan datos
-        }
-  
-        const startHour = anesthesiologist.hora_inicio.split(':')[0];
-        const startMinute = anesthesiologist.hora_inicio.split(':')[1];
-        const endHour = anesthesiologist.hora_fin.split(':')[0];
-        const endMinute = anesthesiologist.hora_fin.split(':')[1];
-  
+
         switch (view) {
           case 'week':
             // Filtrar por fecha dentro de la semana
@@ -147,10 +137,8 @@ function Anestesiologos() {
             const weekEnd = moment(selectedDate).endOf('week');
             const dateAnestesio = moment(anesthesiologist.dia_anestesio);
             if (dateAnestesio.isBetween(weekStart, weekEnd, null, '[]')) {
-              startDateTime = new Date(anesthesiologist.dia_anestesio);
-              startDateTime.setHours(startHour, startMinute);
-              endDateTime = new Date(anesthesiologist.dia_anestesio);
-              endDateTime.setHours(endHour, endMinute);
+              startDateTime = moment(`${anesthesiologist.dia_anestesio}T${anesthesiologist.hora_inicio}`, "YYYY-MM-DDTHH:mm").toDate();
+              endDateTime = moment(`${anesthesiologist.dia_anestesio}T${anesthesiologist.hora_fin}`, "YYYY-MM-DDTHH:mm").toDate();
               return {
                 id: anesthesiologist.id_anestesiologo,
                 start: startDateTime,
@@ -163,10 +151,8 @@ function Anestesiologos() {
           case 'day':
             // Filtrar por fecha específica
             if (moment(anesthesiologist.dia_anestesio).isSame(selectedDate, 'day')) {
-              startDateTime = new Date(anesthesiologist.dia_anestesio);
-              startDateTime.setHours(startHour, startMinute);
-              endDateTime = new Date(anesthesiologist.dia_anestesio);
-              endDateTime.setHours(endHour, endMinute);
+              startDateTime = moment(`${anesthesiologist.dia_anestesio}T${anesthesiologist.hora_inicio}`, "YYYY-MM-DDTHH:mm").toDate();
+              endDateTime = moment(`${anesthesiologist.dia_anestesio}T${anesthesiologist.hora_fin}`, "YYYY-MM-DDTHH:mm").toDate();
               return {
                 id: anesthesiologist.id_anestesiologo,
                 start: startDateTime,
@@ -178,10 +164,11 @@ function Anestesiologos() {
             return null; // Devolver null si no es el día seleccionado
           default:
             // Caso por defecto, maneja como estaba antes
-            startDateTime = new Date(anesthesiologist.dia_anestesio);
-            startDateTime.setHours(startHour, startMinute);
-            endDateTime = new Date(anesthesiologist.dia_anestesio);
-            endDateTime.setHours(endHour, endMinute);
+            startDateTime = moment(
+              `${anesthesiologist.dia_anestesio}T${anesthesiologist.hora_anestesio}`,
+              "YYYY-MM-DDTHH:mm"
+            ).toDate();
+            endDateTime = moment(startDateTime).add(anesthesiologist.tiempo_estimado, "minutes").toDate();
             return {
               id: anesthesiologist.id_anestesiologo,
               start: startDateTime,
@@ -190,15 +177,16 @@ function Anestesiologos() {
               operatingRoom: anesthesiologist.sala_anestesio,
             };
         }
-      }).filter(anesthesiologist => anesthesiologist !== null); // Filtrar los valores nulos
-  
-      console.log("Transformed Data:", transformedData); // Verifica los datos transformados
+      }).filter(Boolean); // Filtrar eventos nulos
+
       setAnesthesiologists(transformedData);
+      console.log("Transformed Data:", transformedData); // Verifica los datos transformados
     } catch (error) {
       console.error("Error fetching anesthesiologists:", error);
     }
   };
   
+
   useEffect(() => {
     fetchAnesthesiologists();
   }, [selectedDate, view]); // Actualizar cuando cambia la fecha seleccionada o la vista
