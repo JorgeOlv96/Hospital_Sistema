@@ -38,6 +38,7 @@ import Solicitudessuspendidas from './screens/Solicitudes/Suspendidas';
 import Evaluacionmedica from './screens/Evaluacion';
 import Anestesiólogos from './screens/Anestesiologos'
 import Programaranestesiologo from './screens/Anestesio/Programaranestesiologo';
+import Enfermeria from './screens/Enfermeria';
 
 
 
@@ -89,6 +90,7 @@ function App() {
           <Route path="/campaigns" element={<Campaings />} />
           <Route path="/medicine" element={<Medicine />} />
           <Route path="/urgencias" element={<Urgencias />} />
+          <Route path="/enfermeria" element={<Enfermeria /> } />
           <Route path="/services" element={<Services />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/ayuda" element={<Ayuda />} /> 

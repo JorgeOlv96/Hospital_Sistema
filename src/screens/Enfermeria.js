@@ -122,7 +122,7 @@ const CustomToolbar = ({ date, view, onView, onNavigate, onPrint }) => {
   );
 };
 
-function Appointments() {
+function Enfermeria() {
   const localizer = momentLocalizer(moment);
   const [openModal, setOpenModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState({});
@@ -374,4 +374,4 @@ function Appointments() {
   );
 }
 
-export default Appointments;
+export default Enfermeria;
