@@ -265,6 +265,9 @@ function CrearSolicitud() {
   const handleSubmit = async (e) => {
     e.preventDefault();
   
+        // Log the formData to inspect its structure
+        console.log("Submitting formData:", formData);
+
     // Validar el formulario
     if (validateForm()) {
       try {
@@ -774,6 +777,8 @@ function CrearSolicitud() {
                 placeholder="Diagnóstico del paciente"
                 id="diagnostico"
                 name="diagnostico"
+                value={formData.diagnostico}
+                onChange={handleInputChange}
                 rows="4"
                 className={`border ${errors.diagnostico? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
                 >

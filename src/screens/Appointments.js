@@ -154,7 +154,7 @@ function Appointments() {
           id: appointment.id_solicitud,
           start: startDateTime,
           end: endDateTime,
-          title: appointment.folio,
+          title:`${appointment.folio} - ${appointment.nombre_paciente}`,
           ap_paterno: appointment.ap_paterno,
           ap_materno: appointment.ap_materno,
           nombre_paciente: appointment.nombre_paciente,

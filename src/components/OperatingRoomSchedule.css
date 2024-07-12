@@ -66,11 +66,15 @@
   left: 0;
   right: 0;
   background-color: #304678;
+  border: 1px solid #748dc7; /* Asegúrate de especificar 'solid' para el tipo de borde */
   color: white;
-  padding: 5px;
+  padding: 8px;
   box-sizing: border-box;
   cursor: pointer;
+  border-radius: 2px; /* Agrega un borde más redondeado */
+  border-color: #a5b8d2; /* Cambia el color del borde a un tono más claro de azul */
 }
+
 
 .appointment-info {
   font-size: 12px;
