@@ -109,7 +109,7 @@ function Solicitudessuspendidas() {
           <div>
             <Link
               to="/appointments"
-              className="bg-[#001B58] hover:bg-[#001B58] text-white py-2 px-4 rounded inline-flex items-center"
+              className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
             >
               <span>Ver agenda</span>
             </Link>
@@ -118,7 +118,7 @@ function Solicitudessuspendidas() {
           <div>
             <Link
               to="/solicitudes/Programarsolicitud"
-              className="bg-[#001B58] hover:bg-[#001B58] text-white py-2 px-4 rounded inline-flex items-center"
+              className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
             >
               <span>Ver todas las pre-programadas</span>
             </Link>
@@ -127,7 +127,7 @@ function Solicitudessuspendidas() {
           <div>
             <Link
               to="/solicitudes/Solicitudesprogramadas"
-              className="bg-[#001B58] hover:bg-[#001B58] text-white py-2 px-4 rounded inline-flex items-center"
+              className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
             >
               <span>Ver todas las programadas</span>
             </Link>
@@ -189,7 +189,7 @@ function Solicitudessuspendidas() {
         ) : (
           <div className="overflow-x-auto">
             <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
-              <thead className="bg-[#304678] text-white">
+              <thead className="bg-[#365b77] text-white">
                  <tr>
                   <th className="px-4 py-2 cursor-pointer" onClick={() => handleSort("folio")}>
                     Folio <span>{sortBy === "folio" ? (sortOrder === "asc" ? "▲" : "▼") : ""}</span>
@@ -234,7 +234,7 @@ function Solicitudessuspendidas() {
                     <td className="px-4 py-2 flex justify-center">
                       <button
                         onClick={() => handleViewModal(appointment)}
-                        className="bg-[#001B58] text-white px-5 py-2 rounded-md hover:bg-blue-800"
+                        className="bg-[#365b77] text-white px-5 py-2 rounded-md hover:bg-[#7498b6]"
                       >
                         Ver
                       </button>

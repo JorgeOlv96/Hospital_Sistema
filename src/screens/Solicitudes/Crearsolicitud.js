@@ -120,13 +120,17 @@ function CrearSolicitud() {
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-
-    // Actualizar el estado del formulario
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value,
-    })
-  );
+    }));
+  
+    // Remove error message for the field that has been filled out
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: value ? "" : "Campo requerido",
+    }));
+  
 
 
 
@@ -245,7 +249,13 @@ function CrearSolicitud() {
   const handleSelectChange = (selectedOption) => {
     setFormData((prevFormData) => ({
       ...prevFormData,
-      nombre_cirujano: selectedOption ? selectedOption.value : "",
+      nombre: selectedOption ? selectedOption.value : "",
+    }));
+  
+    // Remove error message for the field that has been filled out
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      nombre: selectedOption ? "" : "Campo requerido",
     }));
   };
 

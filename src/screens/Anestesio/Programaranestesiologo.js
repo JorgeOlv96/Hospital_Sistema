@@ -14,6 +14,7 @@ function Programaranestesiologo() {
   });
 
   const [anesthesiologists, setAnesthesiologists] = useState([]); // Estado para almacenar los anestesiólogos
+  const [errors, setErrors] = useState({});
 
   const fetchActiveAnesthesiologists = async (inputValue) => {
     try {
@@ -35,11 +36,17 @@ function Programaranestesiologo() {
   };
 
   const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      [name]: value,
-    }));
+  const { name, value } = event.target;
+  setFormData((prevFormData) => ({
+    ...prevFormData,
+    [name]: value,
+  }));
+
+  // Remove error message for the field that has been filled out
+  setErrors((prevErrors) => ({
+    ...prevErrors,
+    [name]: value ? "" : "Campo requerido",
+  }));
 
     if (name === "turno_anestesio") {
       switch (value) {
@@ -54,14 +61,14 @@ function Programaranestesiologo() {
           setFormData((prevFormData) => ({
             ...prevFormData,
             hora_inicio: "14:00",
-            hora_fin: "20:00"
+            hora_fin: "20:00",
           }));
           break;
         case "Nocturno":
           setFormData((prevFormData) => ({
             ...prevFormData,
             hora_inicio: "20:00",
-            hora_fin: "06:00"
+            hora_fin: "06:00",
           }));
           break;
         default:
@@ -79,30 +86,56 @@ function Programaranestesiologo() {
       ...prevFormData,
       nombre: selectedOption ? selectedOption.value : "",
     }));
+  
+    // Remove error message for the field that has been filled out
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      nombre: selectedOption ? "" : "Campo requerido",
+    }));
   };
 
-  const handleSaveAnesthesiologist = async () => {
-    console.log("Formulario a enviar:", formData);
-    try {
-      const response = await fetch(
-        "http://localhost:4000/api/anestesio/anestesiologos",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        }
-      );
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
+  const validateForm = () => {
+    const newErrors = {};
+    Object.keys(formData).forEach((key) => {
+      if (!formData[key]) {
+        newErrors[key] = "Campo requerido";
       }
-      const data = await response.json();
-      console.log("Anesthesiologist saved successfully:", data);
-      // Opcional: Actualizar la lista de anestesiólogos después de guardar uno nuevo
-      fetchAnesthesiologists();
-    } catch (error) {
-      console.error("Error saving anesthesiologist:", error);
+    });
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSaveAnesthesiologist = async (e) => {
+    e.preventDefault();
+
+    // Log the formData to inspect its structure
+    console.log("Submitting formData:", formData);
+
+    // Validar el formulario
+    if (validateForm()) {
+      try {
+        const response = await fetch(
+          "http://localhost:4000/api/anestesio/anestesiologos",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
+          }
+        );
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const data = await response.json();
+        console.log("Anesthesiologist saved successfully:", data);
+        // Opcional: Actualizar la lista de anestesiólogos después de guardar uno nuevo
+        fetchAnesthesiologists();
+      } catch (error) {
+        console.error("Error saving anesthesiologist:", error);
+      }
+    } else {
+      console.log("Formulario inválido");
     }
   };
 
@@ -133,7 +166,7 @@ function Programaranestesiologo() {
           <div>
             <Link
               to="/anestesiólogos"
-              className="bg-[#001B58] hover:bg-[#001B58] text-white py-2 px-4 rounded inline-flex items-center"
+              className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
             >
               <span>Ver agenda de anestesiologos</span>
             </Link>
@@ -150,8 +183,10 @@ function Programaranestesiologo() {
                 loadOptions={fetchActiveAnesthesiologists}
                 onChange={handleSelectChange}
                 placeholder="Nombre"
-                className="mt-1 block w-full px-4 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={` ${errors.nombre ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
               />
+              {errors.nombre && ( <p className="text-red-500 text-sm mt-1"> {errors.nombre} </p>
+              )}
             </div>
             <div className="w-1/4">
               <label className="block text-sm font-medium text-gray-700">
@@ -163,8 +198,15 @@ function Programaranestesiologo() {
                 value={formData.dia_anestesio}
                 onChange={handleInputChange}
                 placeholder="dd/mm/aaaa"
-                className="mt-1 block w-full px-4 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={`mt-1 block w-full px-4 py-2 border ${
+                  errors.dia_anestesio ? "border-red-500" : "border-gray-300"
+                } rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500`}
               />
+              {errors.dia_anestesio && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.dia_anestesio}
+                </p>
+              )}
             </div>
             <div className="w-1/4">
               <label className="block text-sm font-medium text-gray-700">
@@ -174,15 +216,21 @@ function Programaranestesiologo() {
                 name="turno_anestesio"
                 value={formData.turno_anestesio}
                 onChange={handleInputChange}
-                className="mt-1 block w-full px-4 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={`mt-1 block w-full px-4 py-2 border ${
+                  errors.turno_anestesio ? "border-red-500" : "border-gray-300"
+                } rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500`}
               >
                 <option value="">-- Seleccione el turno --</option>
                 <option value="Matutino">Matutino</option>
                 <option value="Vespertino">Vespertino</option>
                 <option value="Nocturno">Nocturno</option>
               </select>
+              {errors.turno_anestesio && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.turno_anestesio}
+                </p>
+              )}
             </div>
-
             <div className="w-1/8">
               <label className="block text-sm font-medium text-gray-700">
                 Hora Inicio
@@ -216,7 +264,9 @@ function Programaranestesiologo() {
                 name="sala_anestesio"
                 value={formData.sala_anestesio}
                 onChange={handleInputChange}
-                className="mt-1 block w-full px-4 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={`mt-1 block w-full px-4 py-2 border ${
+                  errors.sala_anestesio ? "border-red-500" : "border-gray-300"
+                } rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500`}
               >
                 <option value="">-- Seleccione la sala --</option>
                 <option value="A1">Sala A1</option>
@@ -233,12 +283,17 @@ function Programaranestesiologo() {
                 <option value="H">Sala H</option>
                 <option value="RX">Sala RX</option>
               </select>
+              {errors.sala_anestesio && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.sala_anestesio}
+                </p>
+              )}
             </div>
           </div>
           <div className="px-2 py-2 text-right">
             <button
               onClick={handleSaveAnesthesiologist}
-              className="bg-[#001B58] text-white px-5 py-2 rounded-md hover:bg-blue-800"
+              className="bg-[#365b77] text-white px-5 py-2 rounded-md hover:bg-[#7498b6]"
             >
               Guardar
             </button>
@@ -247,7 +302,7 @@ function Programaranestesiologo() {
 
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden border border-gray-200">
-            <thead className="bg-[#304678] text-white">
+            <thead className="bg-[#365b77] text-white">
               <tr>
                 <th className="px-4 py-3 text-center border-b border-gray-300">
                   Nombre

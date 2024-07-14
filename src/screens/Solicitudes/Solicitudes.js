@@ -162,7 +162,7 @@ function Solicitudes() {
     <Layout>
       <h1 className="text-xl font-semibold">Solicitudes</h1>
       <div className="my-4">
-        <Link to="./Crearsolicitud" className="btn btn-sm btn-secondary p-2 bg-[#365b77] text-white rounded-lg">
+        <Link to="./Crearsolicitud" className="btn btn-sm btn-secondary p-2 bg-[#365b77] hover:bg-[#7498b6] text-white rounded-lg">
           Nueva Solicitud
         </Link>
       </div>

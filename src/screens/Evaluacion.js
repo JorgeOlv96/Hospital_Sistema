@@ -206,7 +206,7 @@ function Evaluacion() {
                     <td className="px-4 py-2 flex justify-center">
                       <button
                         onClick={() => handleViewModal(appointment)}
-                        className="bg-[#365b77] text-white px-5 py-2 rounded-md hover:bg-blue-800"
+                        className="bg-[#365b77] text-white px-5 py-2 rounded-md hover:bg-[#7498b6]"
                       >
                         Ver
                       </button>

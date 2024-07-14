@@ -50,7 +50,7 @@ const CustomToolbar = ({ date, view, onView, onNavigate }) => {
       <div className="my-4">
         <Link
           to="/anestesio/Programaranestesiologo"
-          className="btn btn-sm btn-secondary p-2 bg-[#001B58] text-white rounded-lg"
+          className="btn btn-sm btn-secondary p-2 bg-[#365b77] text-white rounded-lg"
         >
           Asignar Anestesiologo
         </Link>
