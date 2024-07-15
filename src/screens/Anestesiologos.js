@@ -58,7 +58,7 @@ const CustomToolbar = ({ date, view, onView, onNavigate }) => {
           to="/anestesio/Programaranestesiologo"
           className="btn btn-sm btn-secondary p-2 bg-[#001B58] text-white rounded-lg"
         >
-          Asignar Anestesiologo
+          Asignar Anestesiólogo
         </Link>
       </div>
       <div className="grid sm:grid-cols-2 md:grid-cols-12 gap-4">
