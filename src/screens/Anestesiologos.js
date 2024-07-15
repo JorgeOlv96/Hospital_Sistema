@@ -56,7 +56,7 @@ const CustomToolbar = ({ date, view, onView, onNavigate }) => {
       <div className="my-4">
         <Link
           to="/anestesio/Programaranestesiologo"
-          className="btn btn-sm btn-secondary p-2 bg-[#001B58] text-white rounded-lg"
+          className="btn btn-sm btn-secondary p-2 bg-[#365b77] hover:bg-[#7498b6] text-white rounded-lg"
         >
           Asignar Anestesiologo
         </Link>
@@ -96,7 +96,7 @@ const CustomToolbar = ({ date, view, onView, onNavigate }) => {
           />
         </div>
 
-        <div className="md:col-span-3 grid grid-cols-4 rounded-md border border-subMain">
+        <div className="md:col-span-3 grid grid-cols-3 rounded-md border border-subMain">
           {viewNamesGroup.map((item, index) => (
             <button
               key={index}

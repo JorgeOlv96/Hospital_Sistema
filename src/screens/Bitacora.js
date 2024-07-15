@@ -10,7 +10,7 @@ const CustomToolbar = ({onPrint}) => {
       <div>
             <Link
               to="/appointments"
-              className="bg-[#001B58] hover:bg-[#001B58] text-white py-2 px-4 rounded inline-flex items-center"
+              className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
             >
               <span>Enfermera</span>
             </Link>
@@ -19,7 +19,7 @@ const CustomToolbar = ({onPrint}) => {
           <div>
             <Link
               to="/solicitudes/Solicitudesprogramadas"
-              className="bg-[#001B58] hover:bg-[#001B58] text-white py-2 px-4 rounded inline-flex items-center"
+              className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
             >
               <span>Anestesiólogo</span>
             </Link>
