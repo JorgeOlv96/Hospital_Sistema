@@ -39,6 +39,7 @@ import Evaluacionmedica from './screens/Evaluacion';
 import Anestesiólogos from './screens/Anestesiologos'
 import Programaranestesiologo from './screens/Anestesio/Programaranestesiologo';
 import Bitacora from './screens/Bitacora';
+import Bitacoraenfermeria from './screens/BitacoraEnfermeria/Bitaenfermeria'
 
 
 
@@ -91,6 +92,7 @@ function App() {
           <Route path="/medicine" element={<Medicine />} />
           <Route path="/urgencias" element={<Urgencias />} />
           <Route path="/bitacora" element={<Bitacora /> } />
+          <Route path="/bitacora/Bitaenfermeria" element={<Bitacoraenfermeria /> } />
           <Route path="/services" element={<Services />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/ayuda" element={<Ayuda />} /> 
