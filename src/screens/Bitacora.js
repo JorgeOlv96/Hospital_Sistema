@@ -9,7 +9,7 @@ const CustomToolbar = ({onPrint}) => {
       <div className="flex justify-center my-4 space-x-4  mt-64"> {/* Ajusta el valor de mt-32 según sea necesario */}
       <div>
             <Link
-              to="/appointments"
+              to="/bitacora/Bitaenfermeria"
               className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
             >
               <span>Enfermera</span>
@@ -18,7 +18,7 @@ const CustomToolbar = ({onPrint}) => {
 
           <div>
             <Link
-              to="/solicitudes/Solicitudesprogramadas"
+              to="/bitacora/Bitaenfermeria"
               className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
             >
               <span>Anestesiólogo</span>

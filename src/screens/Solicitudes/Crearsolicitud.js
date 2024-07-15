@@ -120,17 +120,13 @@ function CrearSolicitud() {
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
+
+    // Actualizar el estado del formulario
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value,
-    }));
-  
-    // Remove error message for the field that has been filled out
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      [name]: value ? "" : "Campo requerido",
-    }));
-  
+    })
+  );
 
 
 
@@ -249,13 +245,7 @@ function CrearSolicitud() {
   const handleSelectChange = (selectedOption) => {
     setFormData((prevFormData) => ({
       ...prevFormData,
-      nombre: selectedOption ? selectedOption.value : "",
-    }));
-  
-    // Remove error message for the field that has been filled out
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      nombre: selectedOption ? "" : "Campo requerido",
+      nombre_cirujano: selectedOption ? selectedOption.value : "",
     }));
   };
 
@@ -275,9 +265,6 @@ function CrearSolicitud() {
   const handleSubmit = async (e) => {
     e.preventDefault();
   
-        // Log the formData to inspect its structure
-        console.log("Submitting formData:", formData);
-
     // Validar el formulario
     if (validateForm()) {
       try {
@@ -294,6 +281,7 @@ function CrearSolicitud() {
           throw new Error("Network response was not ok");
         }
   
+  
         // Parsear la respuesta JSON
         const data = await response.json();
         console.log("Formulario válido y enviado:", formData);
@@ -309,6 +297,7 @@ function CrearSolicitud() {
     }
   };
   
+  console.log("Submiting formData:", formData);
 
   return (
     <Layout>
@@ -787,13 +776,13 @@ function CrearSolicitud() {
                 placeholder="Diagnóstico del paciente"
                 id="diagnostico"
                 name="diagnostico"
+                rows="4"
                 value={formData.diagnostico}
                 onChange={handleInputChange}
-                rows="4"
                 className={`border ${errors.diagnostico? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
                 >
               </textarea>
-              {errors.req_insumo && <p className="text-red-500">{errors.req_insumo}</p>}
+              {errors.diagnostico && <p className="text-red-500">{errors.diagnostico}</p>}
             </div>
           </div>
         </div>
