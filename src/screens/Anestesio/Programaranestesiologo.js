@@ -133,7 +133,7 @@ function Programaranestesiologo() {
           <div>
             <Link
               to="/anestesiólogos"
-              className="bg-[#001B58] hover:bg-[#001B58] text-white py-2 px-4 rounded inline-flex items-center"
+              className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
             >
               <span>Ver agenda de anestesiologos</span>
             </Link>
@@ -238,7 +238,7 @@ function Programaranestesiologo() {
           <div className="px-2 py-2 text-right">
             <button
               onClick={handleSaveAnesthesiologist}
-              className="bg-[#001B58] text-white px-5 py-2 rounded-md hover:bg-blue-800"
+              className="bg-[#365b77] text-white px-5 py-2 rounded-md hover:bg-[#7498b6]"
             >
               Guardar
             </button>
@@ -247,7 +247,7 @@ function Programaranestesiologo() {
 
         <div className="overflow-x-auto">
           <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden border border-gray-200">
-            <thead className="bg-[#304678] text-white">
+            <thead className="bg-[#365b77] text-white">
               <tr>
                 <th className="px-4 py-3 text-center border-b border-gray-300">
                   Nombre
