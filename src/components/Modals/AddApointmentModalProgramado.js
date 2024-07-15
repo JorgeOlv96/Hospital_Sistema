@@ -105,7 +105,7 @@ function AddAppointmentModalProgramado({
       const response = await fetch(
         `http://localhost:4000/api/solicitudes/suspender/${appointmentId}`,
         {
-          method: "PUT",
+          method: "PATCH",
         }
       );
       if (!response.ok) {
