@@ -67,7 +67,7 @@ const CustomToolbar = ({ date, view, onView, onNavigate }) => {
             onClick={goToCurrent}
             className="px-6 py-2 border border-subMain rounded-md text-subMain"
           >
-            Solo hoy
+            Hoy
           </button>
         </div>
 
