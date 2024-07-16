@@ -28,10 +28,7 @@ function AddAppointmentModalEnfermeria({ closeModal, isOpen, appointmentId }) {
           setPatientData({
             ...data,
             procedimientos_extra: Array.isArray(data.procedimientos_extra)
-              ? data.procedimientos_extra.map(() => ({
-                  hi_extra: "",
-                  hf_extra: "",
-                }))
+              ? data.procedimientos_extra
               : [],
           });
           setLoading(false);
@@ -63,6 +60,16 @@ function AddAppointmentModalEnfermeria({ closeModal, isOpen, appointmentId }) {
         procedimientos_extra,
       };
     });
+  };
+
+  const handleAddProcedimientoExtra = () => {
+    setPatientData((prevData) => ({
+      ...prevData,
+      procedimientos_extra: [
+        ...prevData.procedimientos_extra,
+        { hi_extra: "", hf_extra: "", procedimiento_extra: "" },
+      ],
+    }));
   };
 
   const handleSave = async () => {
@@ -175,6 +182,22 @@ function AddAppointmentModalEnfermeria({ closeModal, isOpen, appointmentId }) {
             </div>
           </div>
         </div>
+        <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
+          <div className="flex mb-4">
+            <div className="mr-4 w-full">
+              <label className="block font-semibold text-gray-700 mb-2">
+                Diagnóstico del paciente
+              </label>
+              <input
+                type="text"
+                name="diagnostico"
+                value={patientData.diagnostico || ""}
+                className="bg-gray-200 p-3 rounded-lg w-full cursor-default"
+                readOnly
+              />
+            </div>
+          </div>
+        </div>
 
         <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
           <div className="flex mb-4">
@@ -219,45 +242,55 @@ function AddAppointmentModalEnfermeria({ closeModal, isOpen, appointmentId }) {
           </div>
         </div>
 
-        {patientData.procedimientos_extra.length > 0 && (
-          <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
-            <h3 className="font-semibold text-gray-700 mb-4">
-              Procedimientos adicionales:
-            </h3>
-            {patientData.procedimientos_extra.map((_, index) => (
-              <div className="flex mb-4" key={index}>
-                <div className="w-full mr-4">
-                  <label className="block font-semibold text-gray-700 mb-2">
-                    Procedimiento extra {index + 1} - Hora de inicio:
-                  </label>
-                  <input
-                    type="time"
-                    name="hi_extra"
-                    value={
-                      patientData.procedimientos_extra[index].hi_extra || ""
-                    }
-                    className="bg-gray-200 p-3 rounded-lg w-full"
-                    onChange={(e) => handleProcedimientoExtraChange(index, e)}
-                  />
-                </div>
-                <div className="w-full">
-                  <label className="block font-semibold text-gray-700 mb-2">
-                    Hora de fin:
-                  </label>
-                  <input
-                    type="time"
-                    name="hf_extra"
-                    value={
-                      patientData.procedimientos_extra[index].hf_extra || ""
-                    }
-                    className="bg-gray-200 p-3 rounded-lg w-full"
-                    onChange={(e) => handleProcedimientoExtraChange(index, e)}
-                  />
-                </div>
+        <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
+          <button
+            type="button"
+            className="bg-blue-500 text-white px-4 py-2 rounded-lg mb-4"
+            onClick={handleAddProcedimientoExtra}
+          >
+            Agregar procedimiento adicional
+          </button>
+          {patientData.procedimientos_extra.map((procedimiento, index) => (
+            <div key={index} className="flex mb-4">
+              <div className="mr-4 w-full">
+                <label className="block font-semibold text-gray-700 mb-2">
+                  Nombre del procedimiento:
+                </label>
+                <input
+                  type="text"
+                  name={`procedimientos_extra[${index}].procedimiento_extra`}
+                  value={procedimiento.procedimiento_extra}
+                  className="bg-white p-3 rounded-lg w-full"
+                  onChange={(e) => handleProcedimientoExtraChange(index, e)}
+                />
               </div>
-            ))}
-          </div>
-        )}
+              <div className="mr-4 w-full">
+                <label className="block font-semibold text-gray-700 mb-2">
+                  Hora de inicio:
+                </label>
+                <input
+                  type="time"
+                  name={`procedimientos_extra[${index}].hi_extra`}
+                  value={procedimiento.hi_extra}
+                  className="bg-white p-3 rounded-lg w-full"
+                  onChange={(e) => handleProcedimientoExtraChange(index, e)}
+                />
+              </div>
+              <div className="w-full">
+                <label className="block font-semibold text-gray-700 mb-2">
+                  Hora de fin:
+                </label>
+                <input
+                  type="time"
+                  name={`procedimientos_extra[${index}].hf_extra`}
+                  value={procedimiento.hf_extra}
+                  className="bg-white p-3 rounded-lg w-full"
+                  onChange={(e) => handleProcedimientoExtraChange(index, e)}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
 
         <div className="flex justify-end mt-4">
           <button
