@@ -168,6 +168,17 @@ function Appointments() {
           operatingRoom: appointment.sala_quirofano,
           fecha_solicitud: appointment.fecha_solicitud, // Asegúrate de que esto esté presente en los datos
           procedimientos_paciente: appointment.procedimientos_paciente,
+          
+          // Meedicos de guardia
+
+
+          Rec_Matutino: appointment.Rec_Matutino,
+          Con_Ext_P1_mat: appointment.Con_Ext_P1_mat,
+          Con_Ext_P2_mat: appointment.Con_Ext_P2_mat,
+          Rec_Vespertino: appointment.Rec_Vespertino,
+          Con_Ext_P1_vesp: appointment.Con_Ext_P1_vesp,
+          Con_Ext_P2_vesp: appointment.Con_Ext_P2_vesp,
+
         };
       });
 
@@ -322,6 +333,23 @@ function Appointments() {
           <th>Consulta Externa Piso 2</th>
         </tr>
       </thead>
+      <tbody>
+
+        ${todaysRegistrations
+          .map(
+            (appointment, index) => `
+        <tr>
+          <td>${appointment.Rec_Matutino}</td>
+          <td>${appointment.Con_Ext_P1_mat}</td>
+          <td>${appointment.Con_Ext_P2_mat}</td>
+          <td>${appointment.Rec_Vespertino}</td>
+          <td>${appointment.Con_Ext_P1_vesp}</td>
+          <td>${appointment.Con_Ext_P2_vesp}</td>
+        </tr>
+      `
+          )
+          .join("")}
+      </tbody>
     </table>
   </body>
 </html>
