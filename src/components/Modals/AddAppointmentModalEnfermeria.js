@@ -8,6 +8,8 @@ function AddAppointmentModalEnfermeria({ closeModal, isOpen, appointmentId }) {
     fecha_programada: "",
     nombre_anestesiologo: "",
     procedimientos_extra: [],
+    hi_principal: "",
+    hf_principal: "",
   });
   const [loading, setLoading] = useState(true);
   const modalRef = useRef(null);
@@ -23,7 +25,13 @@ function AddAppointmentModalEnfermeria({ closeModal, isOpen, appointmentId }) {
             throw new Error("Network response was not ok");
           }
           const data = await response.json();
-          setPatientData(data);
+          setPatientData({
+            ...data,
+            procedimientos_extra: data.procedimientos_extra.map(() => ({
+              hi_extra: "",
+              hf_extra: ""
+            }))
+          });
           setLoading(false);
         } catch (error) {
           console.error("Error fetching appointment data:", error);
@@ -34,6 +42,49 @@ function AddAppointmentModalEnfermeria({ closeModal, isOpen, appointmentId }) {
       fetchAppointmentData();
     }
   }, [isOpen, appointmentId]);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setPatientData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+  const handleProcedimientoExtraChange = (index, e) => {
+    const { name, value } = e.target;
+    setPatientData((prevData) => {
+      const procedimientos_extra = [...prevData.procedimientos_extra];
+      procedimientos_extra[index][name] = value;
+      return {
+        ...prevData,
+        procedimientos_extra,
+      };
+    });
+  };
+
+  const handleSave = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:4000/api/solicitudes/enfermeria/${appointmentId}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(patientData),
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      console.log("Appointment updated successfully:", data);
+      closeModal();
+    } catch (error) {
+      console.error("Error updating appointment:", error);
+    }
+  };
 
   return (
     <Modal
@@ -134,95 +185,82 @@ function AddAppointmentModalEnfermeria({ closeModal, isOpen, appointmentId }) {
 
           <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
             <div className="flex mb-4">
-              <div className="mr-4 w-full">
-                <label className="block font-semibold text-gray-700 mb-2">
-                  Tiempo estimado de cirugía:
-                </label>
-                <input
-                  type="text"
-                  name="tiempo_estimado"
-                  value={patientData.tiempo_estimado || ""}
-                  className="bg-gray-200 p-3 rounded-lg w-full cursor-default"
-                  readOnly
-                />
-              </div>
-
               <div className="w-full">
                 <label className="block font-semibold text-gray-700 mb-2">
-                  Turno asignado:
+                  Procedimiento principal:
                 </label>
                 <input
                   type="text"
-                  name="turno"
-                  value={patientData.turno || ""}
-                  className="bg-gray-200 p-3 rounded-lg w-full cursor-default"
-                  readOnly
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
-            <div className="flex mb-4">
-              <div className="mr-4 w-full">
-                <label className="block font-semibold text-gray-700 mb-2">
-                  Quirófano asignado:
-                </label>
-                <input
-                  type="text"
-                  name="sala_quirofano"
-                  value={patientData.sala_quirofano || ""}
-                  className="bg-gray-200 p-3 rounded-lg w-full cursor-default"
-                  readOnly
-                />
-              </div>
-
-              <div className="w-full">
-                <label className="block font-semibold text-gray-700 mb-2">
-                  Nombre del anestesiólogo:
-                </label>
-                <input
-                  type="text"
-                  name="nombre_anestesiologo"
-                  value={patientData.nombre_anestesiologo || ""}
-                  className="bg-gray-200 p-3 rounded-lg w-full cursor-default"
-                  readOnly
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
-            <div className="flex mb-4">
-              <div className="w-full">
-                <label className="block font-semibold text-gray-700 mb-2">
-                  Diagnóstico:
-                </label>
-                <input
-                  type="text"
-                  name="diagnostico"
-                  value={patientData.diagnostico || ""}
-                  className="bg-gray-200 p-3 rounded-lg w-full cursor-default"
-                  readOnly
-                />
-              </div>
-            </div>
-
-            <div className="flex mb-4">
-              <div className="w-full">
-                <label className="block font-semibold text-gray-700 mb-2">
-                  Procedimiento(s) a realizar:
-                </label>
-                <textarea
-                  name="procedimientos"
+                  name="procedimiento_principal"
                   value={patientData.procedimientos_paciente || ""}
                   className="bg-gray-200 p-3 rounded-lg w-full cursor-default"
                   readOnly
                 />
               </div>
             </div>
-
+            <div className="flex mb-4">
+              <div className="mr-4 w-full">
+                <label className="block font-semibold text-gray-700 mb-2">
+                  Hora de inicio:
+                </label>
+                <input
+                  type="time"
+                  name="hi_principal"
+                  value={patientData.hi_principal || ""}
+                  className="bg-gray-200 p-3 rounded-lg w-full"
+                  onChange={handleInputChange}
+                />
+              </div>
+              <div className="w-full">
+                <label className="block font-semibold text-gray-700 mb-2">
+                  Hora de fin:
+                </label>
+                <input
+                  type="time"
+                  name="hf_principal"
+                  value={patientData.hf_principal || ""}
+                  className="bg-gray-200 p-3 rounded-lg w-full"
+                  onChange={handleInputChange}
+                />
+              </div>
+            </div>
           </div>
+
+          {patientData.procedimientos_extra.length > 0 && (
+            <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
+              <h3 className="font-semibold text-gray-700 mb-4">
+                Procedimientos adicionales:
+              </h3>
+              {patientData.procedimientos_extra.map((_, index) => (
+                <div className="flex mb-4" key={index}>
+                  <div className="w-full mr-4">
+                    <label className="block font-semibold text-gray-700 mb-2">
+                      Procedimiento extra {index + 1} - Hora de inicio:
+                    </label>
+                    <input
+                      type="time"
+                      name="hi_extra"
+                      value={patientData.procedimientos_extra[index].hi_extra || ""}
+                      className="bg-gray-200 p-3 rounded-lg w-full"
+                      onChange={(e) => handleProcedimientoExtraChange(index, e)}
+                    />
+                  </div>
+                  <div className="w-full">
+                    <label className="block font-semibold text-gray-700 mb-2">
+                      Hora de fin:
+                    </label>
+                    <input
+                      type="time"
+                      name="hf_extra"
+                      value={patientData.procedimientos_extra[index].hf_extra || ""}
+                      className="bg-gray-200 p-3 rounded-lg w-full"
+                      onChange={(e) => handleProcedimientoExtraChange(index, e)}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
 
           <div className="flex justify-end mt-4">
             <button
@@ -231,6 +269,13 @@ function AddAppointmentModalEnfermeria({ closeModal, isOpen, appointmentId }) {
               onClick={closeModal}
             >
               Cerrar
+            </button>
+            <button
+              type="button"
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg"
+              onClick={handleSave}
+            >
+              Guardar
             </button>
           </div>
         </div>
