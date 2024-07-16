@@ -27,10 +27,12 @@ function AddAppointmentModalEnfermeria({ closeModal, isOpen, appointmentId }) {
           const data = await response.json();
           setPatientData({
             ...data,
-            procedimientos_extra: data.procedimientos_extra.map(() => ({
-              hi_extra: "",
-              hf_extra: ""
-            }))
+            procedimientos_extra: data.procedimientos_extra
+              ? data.procedimientos_extra.map(() => ({
+                  hi_extra: "",
+                  hf_extra: "",
+                }))
+              : [],
           });
           setLoading(false);
         } catch (error) {
@@ -94,15 +96,6 @@ function AddAppointmentModalEnfermeria({ closeModal, isOpen, appointmentId }) {
       title={"Información completa"}
       width={"max-w-3xl"}
     >
-      {loading ? (
-        <div className="p-4">
-          <img
-            src="images/cargando.gif"
-            alt="Cargando..."
-            className="h-8 w-8 mx-auto"
-          />
-        </div>
-      ) : (
         <div className="p-4">
           <div className="mr-4 w-full">
             <label className="block font-semibold text-gray-700 mb-2">
@@ -206,8 +199,8 @@ function AddAppointmentModalEnfermeria({ closeModal, isOpen, appointmentId }) {
                 <input
                   type="time"
                   name="hi_principal"
-                  value={patientData.hi_principal || ""}
-                  className="bg-gray-200 p-3 rounded-lg w-full"
+                  value={patientData.hi_principal}
+                  className="bg-white p-3 rounded-lg w-full"
                   onChange={handleInputChange}
                 />
               </div>
@@ -218,8 +211,8 @@ function AddAppointmentModalEnfermeria({ closeModal, isOpen, appointmentId }) {
                 <input
                   type="time"
                   name="hf_principal"
-                  value={patientData.hf_principal || ""}
-                  className="bg-gray-200 p-3 rounded-lg w-full"
+                  value={patientData.hf_principal}
+                  className="bg-white p-3 rounded-lg w-full"
                   onChange={handleInputChange}
                 />
               </div>
@@ -279,7 +272,6 @@ function AddAppointmentModalEnfermeria({ closeModal, isOpen, appointmentId }) {
             </button>
           </div>
         </div>
-      )}
     </Modal>
   );
 }

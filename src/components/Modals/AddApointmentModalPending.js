@@ -361,6 +361,28 @@ function AddAppointmentModalPending({
             </div>
           </div>
 
+          <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
+            <div className="flex mb-4">
+              <div className="mr-4 w-full">
+                <label className="block font-semibold text-gray-700 mb-2">
+                  Diagnóstico
+                </label>
+                <p className="bg-gray-200 p-3 rounded-lg">
+                  {patientData?.diagnostico || "N/A"}
+                </p>
+              </div>
+
+              <div className="w-full">
+                <label className="block font-semibold text-gray-700 mb-2">
+                  Cantidad de procedimietos adicionales
+                </label>
+                <p className="bg-gray-200 p-3 rounded-lg">
+                  {patientData?.procedimientos_extra}
+                </p>
+              </div>
+            </div>
+          </div>
+
           <div className="flex justify-between mt-8">
             <button
               onClick={handleDelete}
