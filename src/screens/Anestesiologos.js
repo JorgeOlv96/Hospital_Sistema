@@ -6,7 +6,6 @@ import "moment/locale/es";
 import { BiChevronLeft, BiChevronRight, BiTime } from "react-icons/bi";
 import { HiOutlineViewGrid } from "react-icons/hi";
 import { HiOutlineCalendarDays } from "react-icons/hi2";
-import AddAppointmentModalProgramado from "../components/Modals/AddApointmentModalProgramado";
 import { Link } from "react-router-dom";
 import OperatingRoomSchedule from "../components/OperatingRoomSchedule";
 import { FaHospital } from "react-icons/fa";
@@ -58,7 +57,7 @@ const CustomToolbar = ({ date, view, onView, onNavigate }) => {
           to="/anestesio/Programaranestesiologo"
           className="btn btn-sm btn-secondary p-2 bg-[#365b77] hover:bg-[#7498b6] text-white rounded-lg"
         >
-          Asignar Anestesiólogo
+          Asignar Anestesiologo
         </Link>
       </div>
       <div className="grid sm:grid-cols-2 md:grid-cols-12 gap-4">
@@ -116,7 +115,6 @@ const CustomToolbar = ({ date, view, onView, onNavigate }) => {
 
 function Anesthesiologos() {
   const localizer = momentLocalizer(moment);
-  const [openModal, setOpenModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState({});
   const [anesthesiologists, setAnesthesiologists] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -166,13 +164,8 @@ function Anesthesiologos() {
 
   const handleEventClick = (event) => {
     setSelectedEvent(event);
-    setOpenModal(true);
   };
 
-  const handleCloseModal = () => {
-    setOpenModal(false);
-    setSelectedEvent({});
-  };
 
   const handleSelectDate = (date) => {
     setSelectedDate(date);
@@ -185,14 +178,6 @@ function Anesthesiologos() {
 
   return (
     <Layout>
-      <AddAppointmentModalProgramado
-        closeModal={handleCloseModal}
-        isOpen={openModal}
-        appointmentId={selectedEvent.id}
-        onSuspendAppointment={(appointmentId) => {
-          fetchAnesthesiologists();
-        }}
-      />
       <CustomToolbar
         date={selectedDate}
         view={view}
