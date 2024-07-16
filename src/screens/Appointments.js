@@ -210,7 +210,7 @@ function Appointments() {
     );
 
     const printableContent = `
-      <html>
+     <html>
   <head>
     <h1>PRELIMINAR</h1>
     <style>
@@ -311,8 +311,20 @@ function Appointments() {
           .join("")}
       </tbody>
     </table>
+    <table>
+      <thead>
+        <tr>
+          <th>Recuperación Matutino</th>
+          <th>Consulta Externa Piso 1</th>
+          <th>Consulta Externa Piso 2</th>
+          <th>Recuperación Vespertino</th>
+          <th>Consulta Externa Piso 1</th>
+          <th>Consulta Externa Piso 2</th>
+        </tr>
+      </thead>
+    </table>
   </body>
-  </html>
+</html>
     `;
 
     const printWindow = window.open("Solicitudes");
