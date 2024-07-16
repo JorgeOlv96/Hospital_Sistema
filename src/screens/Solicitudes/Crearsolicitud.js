@@ -297,7 +297,6 @@ function CrearSolicitud() {
     }
   };
   
-  console.log("Submiting formData:", formData);
 
   return (
     <Layout>
