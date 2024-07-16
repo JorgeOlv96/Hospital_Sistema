@@ -233,12 +233,12 @@ function Programaranestesiologo() {
                 <option value="H">Sala H</option>
                 <option value="RX">Sala RX</option>
 
-                <option value="RX">Recuperación Matutino</option>
-                <option value="RX">Consulta Externa Piso 1</option>
-                <option value="RX">Consulta Externa Piso 2</option>
-                <option value="RX">Recuperación Vespertino</option>
-                <option value="RX">Consulta Externa Piso 1</option>
-                <option value="RX">Consulta Externa Piso 2</option>
+                <option value="Rec_Matutino">Recuperación Matutino</option>
+                <option value="Con_Ext_P1">Consulta Externa Piso 1</option>
+                <option value="Con_Ext_P2">Consulta Externa Piso 2</option>
+                <option value="Rec_Vespertino">Recuperación Vespertino</option>
+                <option value="Con_Ext_P1">Consulta Externa Piso 1</option>
+                <option value="Con_Ext_P2">Consulta Externa Piso 2</option>
               </select>
             </div>
           </div>
