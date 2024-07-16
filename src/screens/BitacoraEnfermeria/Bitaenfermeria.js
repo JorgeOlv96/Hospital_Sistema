@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../../Layout";
-import AddAppointmentModalProgramado from "../../components/Modals/AddApointmentModalProgramado";
+import AddAppointmentModalEnfermeria from "../../components/Modals/AddAppointmentModalEnfermeria";
 import { Link } from "react-router-dom";
 
 function Bitacoraenfermeria() {
@@ -108,7 +108,7 @@ function Bitacoraenfermeria() {
         <h1 className="text-xl font-semibold">Bitacora Enfermería</h1>
 
         {open && selectedAppointment && (
-          <AddAppointmentModalProgramado
+          <AddAppointmentModalEnfermeria
             datas={pendingAppointments}
             isOpen={open}
             closeModal={handleModal}
