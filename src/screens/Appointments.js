@@ -154,7 +154,11 @@ function Appointments() {
           id: appointment.id_solicitud,
           start: startDateTime,
           end: endDateTime,
+<<<<<<< HEAD
           title: appointment.folio,
+=======
+          title:appointment.folio,
+>>>>>>> 6977e3d9f8542a86191067cdce71830d39c33d2c
           ap_paterno: appointment.ap_paterno,
           ap_materno: appointment.ap_materno,
           nombre_paciente: appointment.nombre_paciente,
@@ -162,7 +166,7 @@ function Appointments() {
           tiempo_estimado: appointment.tiempo_estimado,
           clave_esp: appointment.clave_esp,
           turno: appointment.turno,
-          anestesiologo_asignado: appointment.anestesiologo_asignado,
+          nombre_anestesiologo: appointment.nombre_anestesiologo,
           nombre_cirujano: appointment.nombre_cirujano,
           req_insumo: appointment.req_insumo,
           operatingRoom: appointment.sala_quirofano,
@@ -313,7 +317,7 @@ function Appointments() {
               <td>${moment(appointment.start).format("DD-MM-YYYY")}</td>
               <td>${appointment.tiempo_estimado} min</td>
               <td>${appointment.turno}</td>              
-              <td>${appointment.anestesiologo_asignado}</td>
+              <td>${appointment.nombre_anestesiologo}</td>
               <td>${appointment.nombre_cirujano}</td>
               <td>${appointment.req_insumo}</td>
             </tr>
