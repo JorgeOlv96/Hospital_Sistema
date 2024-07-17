@@ -199,7 +199,7 @@ function AddApointmentModalSuspendida({
                   type="text"
                   name="fecha_programada"
                   value={patientData.fecha_programada || ""}
-                  className="bg-white p-3 rounded-lg w-full"
+                  className="bg-gray-200 p-3 rounded-lg cursor-default w-full"
                   readOnly
                 />
               </div>
@@ -212,7 +212,7 @@ function AddApointmentModalSuspendida({
                   type="text"
                   name="hora_asignada"
                   value={patientData.hora_asignada || ""}
-                  className="bg-white p-3 rounded-lg w-full"
+                  className="bg-gray-200 p-3 rounded-lg cursor-default w-full"
                   readOnly
                 />
               </div>
@@ -230,7 +230,7 @@ function AddApointmentModalSuspendida({
                   name="tiempo_estimado"
                   value={patientData.tiempo_estimado || ""}
                   onChange={handleChange}
-                  className="bg-white p-3 rounded-lg w-full"
+                  className="bg-gray-200 p-3 rounded-lg cursor-default w-full"
                 />
               </div>
 
@@ -238,18 +238,13 @@ function AddApointmentModalSuspendida({
                 <label className="block font-semibold text-gray-700 mb-2">
                   Turno asignado:
                 </label>
-                <select
+                <input
                   name="turno"
                   value={patientData.turno || ""}
                   onChange={handleChange}
-                  className="bg-white p-3 rounded-lg w-full"
+                  className="bg-gray-200 p-3 rounded-lg cursor-default w-full"
                 >
-                  <option value="">-- Seleccione el turno --</option>
-                  <option value="Matutino">Matutino</option>
-                  <option value="Vespertino">Vespertino</option>
-                  <option value="Nocturno">Nocturno</option>
-                  <option value="Especial">Especial</option>
-                </select>
+                </input>
               </div>
             </div>
           </div>
@@ -265,7 +260,7 @@ function AddApointmentModalSuspendida({
                   name="sala_quirofano"
                   value={patientData.sala_quirofano || ""}
                   onChange={handleChange}
-                  className="bg-white p-3 rounded-lg w-full"
+                  className="bg-gray-200 p-3 rounded-lg cursor-default w-full"
                 />
               </div>
 
@@ -278,7 +273,7 @@ function AddApointmentModalSuspendida({
                   name="nombre_anestesiologo"
                   value={patientData.nombre_anestesiologo || ""}
                   onChange={handleChange}
-                  className="bg-white p-3 rounded-lg w-full"
+                  className="bg-gray-200 p-3 rounded-lg cursor-default w-full"
                 />
               </div>
             </div>
@@ -301,6 +296,19 @@ function AddApointmentModalSuspendida({
                 </label>
                 <p className="bg-gray-200 p-3 rounded-lg">
                   {patientData?.req_insumo}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
+            <div className="flex mb-4">
+              <div className="mr-4 w-full">
+                <label className="block font-semibold text-gray-700 mb-2">
+                  Motivo de suspensión
+                </label>
+                <p className="bg-gray-200 p-3 rounded-lg">
+                  {patientData?.motivo_suspension || "N/A"}
                 </p>
               </div>
             </div>
