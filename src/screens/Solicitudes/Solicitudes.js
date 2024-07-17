@@ -160,6 +160,7 @@ function Solicitudes() {
 
   return (
     <Layout>
+      <div className="flex flex-col gap-4 mb-6">
       <h1 className="text-xl font-semibold">Solicitudes</h1>
       <div className="my-4">
         <Link to="./Crearsolicitud" className="btn btn-sm btn-secondary p-2 bg-[#365b77] text-white rounded-lg">
@@ -353,7 +354,7 @@ function Solicitudes() {
   </div>
 
 </div>
-
+</div>
       </Layout>
     );
   }

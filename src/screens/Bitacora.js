@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 
 const CustomToolbar = ({onPrint}) => {
   return (
-    <div className="flex flex-col gap-8 mb-8">
+    <div className="flex flex-col gap-4 mb-6">
       <h1 className="text-xl font-semibold">Enfermería</h1>
       <div className="flex justify-center my-4 space-x-4  mt-64"> {/* Ajusta el valor de mt-32 según sea necesario */}
       <div>

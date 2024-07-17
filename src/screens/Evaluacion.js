@@ -104,7 +104,7 @@ function Evaluacion() {
   return (
     <Layout>
       <div className="flex flex-col gap-8 mb-8">
-        <h1 className="text-xl font-semibold">Solicitudes pendientes</h1>
+        <h1 className="text-xl font-semibold">Evaluación pendientes</h1>
 
         {open && selectedAppointment && (
           <AddAppointmentModalEvaluar

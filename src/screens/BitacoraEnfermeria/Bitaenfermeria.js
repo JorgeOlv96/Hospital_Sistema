@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../../Layout";
-import AddAppointmentModalEnfermeria from "../../components/Modals/AddAppointmentModalEnfermeria";
-import { Link } from "react-router-dom";
+import Consultabitacora from "../../screens/BitacoraEnfermeria/Consultabitacora";
+import { useNavigate } from 'react-router-dom';
 
 function Bitacoraenfermeria() {
+  const navigate = useNavigate();
   const [pendingAppointments, setPendingAppointments] = useState([]);
   const [filter, setFilter] = useState({
     fecha: "",
@@ -16,6 +17,15 @@ function Bitacoraenfermeria() {
   const [sortOrder, setSortOrder] = useState("asc");
   const [page, setPage] = useState(1);
   const itemsPerPage = 10;
+  
+  const handleViewClick = (appointment) => {
+    if (appointment.id_solicitud) {
+      navigate(`/bitacora/Consultabitacora/${appointment.id_solicitud}`);
+    } else {
+      console.error('El ID de la cita no está definido:', appointment);
+      // Puedes manejar este caso de otra manera, como mostrar un mensaje de error o redirigir a una página predeterminada.
+    }
+  };
 
   useEffect(() => {
     fetchPendingAppointments();
@@ -36,28 +46,7 @@ function Bitacoraenfermeria() {
     }
   };
 
-  const handleFilterChange = (e) => {
-    const { name, value } = e.target;
-    setFilter({
-      ...filter,
-      [name]: value,
-    });
-    setPage(1); // Reset to first page on filter change
-  };
-
-  const handleViewModal = (appointment) => {
-    setSelectedAppointment(appointment);
-    setOpen(true);
-  };
-
-  const handleModal = () => {
-    setOpen(false);
-  };
-
-  const handleDeleteAppointment = (appointmentId) => {
-    // Implementa la lógica para eliminar una cita aquí
-    console.log("Eliminar cita con id:", appointmentId);
-  };
+  
 
   const getEstadoColorStyle = (estado) => {
     switch (estado.toLowerCase()) {
@@ -107,52 +96,8 @@ function Bitacoraenfermeria() {
       <div className="flex flex-col gap-8 mb-8">
         <h1 className="text-xl font-semibold">Bitacora Enfermería</h1>
 
-        {open && selectedAppointment && (
-          <AddAppointmentModalEnfermeria
-            datas={pendingAppointments}
-            isOpen={open}
-            closeModal={handleModal}
-            onDeleteAppointment={handleDeleteAppointment}
-            appointmentId={selectedAppointment.id_solicitud}
-          />
-        )}
-
         <div className="flex mb-4 space-x-4">
-          <div className="flex-1">
-            <label className="block font-semibold">Filtrar por Fecha:</label>
-            <input
-              type="date"
-              name="fecha"
-              value={filter.fecha}
-              onChange={handleFilterChange}
-              className="border border-gray-300 rounded-lg px-2 py-1 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]"
-            />
-          </div>
-
-          <div className="flex-1">
-            <label className="block font-semibold">
-              Filtrar por Especialidad:
-            </label>
-            <input
-              type="text"
-              name="especialidad"
-              value={filter.especialidad}
-              onChange={handleFilterChange}
-              className="border border-gray-300 rounded-lg px-2 py-1 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]"
-            />
-          </div>
-
-          <div className="flex-1">
-            <label className="block font-semibold">Estado de Solicitud:</label>
-            <input
-              type="text"
-              name="estado"
-              value={filter.estado}
-              onChange={handleFilterChange}
-              readOnly
-              className="border border-gray-300 rounded-lg px-2 py-1 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]"
-            />
-          </div>
+          {/* Código del filtro y otras entradas */}
         </div>
 
         {filteredAppointments.length === 0 ? (
@@ -163,7 +108,7 @@ function Bitacoraenfermeria() {
           <div className="overflow-x-auto">
             <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
               <thead className="bg-[#365b77] text-white">
-     <tr>
+                <tr>
                   <th className="px-4 py-2 cursor-pointer" onClick={() => handleSort("folio")}>
                     Folio <span>{sortBy === "folio" ? (sortOrder === "asc" ? "▲" : "▼") : ""}</span>
                   </th>
@@ -206,7 +151,7 @@ function Bitacoraenfermeria() {
                     </td>
                     <td className="px-4 py-2 flex justify-center">
                       <button
-                        onClick={() => handleViewModal(appointment)}
+                        onClick={() => handleViewClick(appointment)}
                         className="bg-[#365b77] text-white px-5 py-2 rounded-md hover:bg-[#7498b6]"
                       >
                         Ver
@@ -214,31 +159,31 @@ function Bitacoraenfermeria() {
                     </td>
                   </tr>
                 ))}
-            </tbody>
+              </tbody>
             </table>
           </div>
         )}
 
-            <div className="flex justify-center mt-4">
-              <button
-               onClick={() => setPage(page - 1)}
-               disabled={page === 1}
-               className="bg-[#365b77] hover:bg-[#7498b6] text-white font-bold py-2 px-4 rounded-l"
-              >
-                Anterior
-              </button>
-              <span>Página {page}</span>
-              <button
-                  onClick={() => setPage(page + 1)}
-                  disabled={endIndex >= filteredAppointments.length}
-                  className="bg-[#365b77] hover:bg-[#7498b6] text-white font-bold py-2 px-4 rounded-r"
-                >
-                Siguiente
-              </button>
-            </div>
-          </div>
+        <div className="flex justify-center mt-4">
+          <button
+            onClick={() => setPage(page - 1)}
+            disabled={page === 1}
+            className="bg-[#365b77] hover:bg-[#7498b6] text-white font-bold py-2 px-4 rounded-l"
+          >
+            Anterior
+          </button>
+          <span>Página {page}</span>
+          <button
+            onClick={() => setPage(page + 1)}
+            disabled={endIndex >= filteredAppointments.length}
+            className="bg-[#365b77] hover:bg-[#7498b6] text-white font-bold py-2 px-4 rounded-r"
+          >
+            Siguiente
+          </button>
+        </div>
+      </div>
     </Layout>
   );
-}
-
+};
+  
 export default Bitacoraenfermeria;

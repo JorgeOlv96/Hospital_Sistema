@@ -9,19 +9,54 @@ import {
   BsXCircleFill,
 } from 'react-icons/bs';
 import { DashboardBigChart, DashboardSmallChart } from '../components/Charts';
-import {
-  appointmentsData,
-  dashboardCards,
-  memberData,
-  transactionData,
-} from '../components/Datas';
 import { Transactiontable } from '../components/Tables';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
+const initialDashboardCards = [
+  {
+    id: 1,
+    title: 'Totales',
+    icon: BsCheckCircleFill,
+    value: 0,
+    percent: 0,
+    color: ['bg-subMain', 'text-subMain', '#66B5A3'],
+    datas: [],
+  },
+  {
+    id: 2,
+    title: 'Por aprobar',
+    icon: BsClockFill,
+    value: 0,
+    percent: 0,
+    color: ['bg-yellow-500', 'text-yellow-500', '#F9C851'],
+    datas: [],
+  },
+  {
+    id: 3,
+    title: 'Realizadas',
+    icon: BsCheckCircleFill,
+    value: 0,
+    percent: 0,
+    color: ['bg-green-500', 'text-green-500', '#34C759'],
+    datas: [],
+  },
+  {
+    id: 4,
+    title: 'Suspendidas',
+    icon: BsXCircleFill,
+    value: 0,
+    percent: 0,
+    color: ['bg-red-500', 'text-red-500', '#FF3B30'],
+    datas: [],
+  },
+];
+
 function Dashboard() {
   const [userName, setUserName] = useState('Nombre no disponible');
   const [isLoading, setIsLoading] = useState(true);
+  const [dashboardCards, setDashboardCards] = useState(initialDashboardCards);
+  const [solicitudes, setSolicitudes] = useState([]);
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -42,6 +77,24 @@ function Dashboard() {
     };
 
     fetchUserInfo();
+  }, []);
+
+  useEffect(() => {
+    const fetchSolicitudes = async () => {
+      try {
+        const response = await fetch('http://localhost:4000/api/solicitudes');
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        const data = await response.json();
+        console.log('Fetched solicitudes for dashboard:', data); // Agregar este log
+        setSolicitudes(data);
+      } catch (error) {
+        console.error('Error fetching solicitudes:', error);
+      }
+    };
+
+    fetchSolicitudes();
   }, []);
 
   return (
@@ -83,7 +136,7 @@ function Dashboard() {
                     <BsArrowDownRight />
                   )}
                   {card.percent < 30 && <BsArrowDownLeft />}
-                  {card.percent}%
+                  {card.percent.toFixed(2)}%
                 </p>
               </div>
             </div>

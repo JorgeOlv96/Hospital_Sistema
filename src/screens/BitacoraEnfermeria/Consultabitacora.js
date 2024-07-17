@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../../Layout";
-import { useNavigate } from "react-router-dom";
-import ProcedureSelect from "./ProcedureSelect";
+import { Link } from "react-router-dom";
+import ProcedureSelect from "../../screens/Solicitudes/ProcedureSelect";
 import AsyncSelect from "react-select/async";
 
-function CrearSolicitud() {
-  const [selectedSolicitud] = useState(null);
+function Consultabitacora({ appointmentId }) {
   const [isFechaNacimientoValid, setIsFechaNacimientoValid] = useState(true);
-
-  const navigate = useNavigate();
 
   const especialidadToClave = {
     Algología: "ALG",
@@ -49,30 +46,7 @@ function CrearSolicitud() {
   const [errors, setErrors] = useState({});
   const [nombre_especialidad, setNombreEspecialidad] = useState("");
   const [clave_esp, setClaveEspecialidad] = useState("");
-  const [formData, setFormData] = useState({
-    fecha_solicitud: obtenerFechaActual(),
-    clave_esp: "",
-    nombre_especialidad: "",
-    curp: "",
-    ap_paterno: "",
-    ap_materno: "",
-    nombre_paciente: "",
-    fecha_nacimiento: "",
-    edad: "",
-    sexo: "",
-    no_expediente: "",
-    tipo_intervencion: "",
-    fecha_solicitada: "",
-    hora_solicitada: "",
-    tiempo_estimado: "",
-    turno_solicitado: "",
-    sala_quirofano: "",
-    nombre_cirujano: "",
-    req_insumo: "",
-    estado_solicitud: "Pendiente",
-    procedimientos_paciente: "",
-    procedimientos_extra: "",
-    diagnostico: ""
+  const [patientData, setPatientData] = useState({
   });
 
   // Función para obtener la fecha actual en el formato adecuado (YYYY-MM-DD)
@@ -87,17 +61,21 @@ function CrearSolicitud() {
   useEffect(() => {
     const fetchSolicitudes = async () => {
       try {
-        const response = await fetch("http://localhost:4000/api/solicitudes");
+        const response = await fetch(
+          `http://localhost:4000/api/solicitudes/${appointmentId}`
+        );
         if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-      } catch (error) {
+            throw new Error("Network response was not ok");
+          }
+          const data = await response.json();
+          setPatientData(data);
+        } catch (error) {
         console.error("Error fetching solicitudes:", error);
       }
     };
 
     fetchSolicitudes();
-  }, []);
+  }, [appointmentId]);
 
   const fetchActiveSurgeons = async (inputValue) => {
     try {
@@ -122,13 +100,10 @@ function CrearSolicitud() {
     const { name, value } = event.target;
 
     // Actualizar el estado del formulario
-    setFormData((prevFormData) => ({
-      ...prevFormData,
+    setPatientData((prevpatientData) => ({
+      ...prevpatientData,
       [name]: value,
-    })
-  );
-
-
+    }));
 
     // Validación de fecha de nacimiento
     if (name === "fecha_nacimiento") {
@@ -142,71 +117,69 @@ function CrearSolicitud() {
   };
 
   useEffect(() => {
-    if (formData.fecha_solicitada) {
-      const selectedDate = new Date(formData.fecha_solicitada);
-      const dayOfWeek = selectedDate.getDay(); // 0 = Domingo, 6 = Sábado
+    if (patientData.fecha_solicitada) {
+      const selectedDate = new Date(patientData.fecha_solicitada);
+      const dayOfWeek = selectedDate.getDay();
 
       if (dayOfWeek === 0 || dayOfWeek === 6) {
-        setFormData((prevFormData) => ({
-          ...prevFormData,
+        setPatientData((prevpatientData) => ({
+          ...prevpatientData,
           turno_solicitado: "Especial",
         }));
-      } else if (formData.hora_solicitada) {
-        const [hours] = (formData.hora_solicitada || "")
+      } else if (patientData.hora_solicitada) {
+        const [hours] = (patientData.hora_solicitada || "")
           .split(":")
           .map(Number);
         if (!isNaN(hours) && hours >= 7 && hours < 14) {
-          setFormData((prevFormData) => ({
-            ...prevFormData,
+          setPatientData((prevpatientData) => ({
+            ...prevpatientData,
             turno_solicitado: "Matutino",
           }));
         } else if (!isNaN(hours) && hours >= 14 && hours < 21) {
-          setFormData((prevFormData) => ({
-            ...prevFormData,
+          setPatientData((prevpatientData) => ({
+            ...prevpatientData,
             turno_solicitado: "Vespertino",
           }));
         } else {
-          setFormData((prevFormData) => ({
-            ...prevFormData,
+          setPatientData((prevpatientData) => ({
+            ...prevpatientData,
             turno_solicitado: "Nocturno",
           }));
         }
       }
     }
-  }, [formData.fecha_solicitada, formData.hora_solicitada]);
+  }, [patientData.fecha_solicitada, patientData.hora_solicitada]);
 
   useEffect(() => {
-    if (formData.hora_solicitada) {
-      const selectedDate = new Date(formData.fecha_solicitada);
+    if (patientData.hora_solicitada) {
+      const selectedDate = new Date(patientData.fecha_solicitada);
       const dayOfWeek = selectedDate.getDay(); // 0 = Domingo, 6 = Sábado
 
       if (
         dayOfWeek !== 0 &&
         dayOfWeek !== 6 &&
-        formData.turno_solicitado !== "Especial"
+        patientData.turno_solicitado !== "Especial"
       ) {
-        const [hours] = formData.hora_solicitada
-          .split(":")
-          .map(Number);
+        const [hours] = patientData.hora_solicitada.split(":").map(Number);
         if (!isNaN(hours) && hours >= 7 && hours < 14) {
-          setFormData((prevFormData) => ({
-            ...prevFormData,
+          setPatientData((prevpatientData) => ({
+            ...prevpatientData,
             turno_solicitado: "Matutino",
           }));
         } else if (!isNaN(hours) && hours >= 14 && hours < 21) {
-          setFormData((prevFormData) => ({
-            ...prevFormData,
+          setPatientData((prevpatientData) => ({
+            ...prevpatientData,
             turno_solicitado: "Vespertino",
           }));
         } else {
-          setFormData((prevFormData) => ({
-            ...prevFormData,
+          setPatientData((prevpatientData) => ({
+            ...prevpatientData,
             turno_solicitado: "Nocturno",
           }));
         }
       }
     }
-  }, [formData.hora_solicitada]);
+  }, [patientData.hora_solicitada]);
 
   const handleNombreEspecialidadChange = (e) => {
     const selectedNombreEspecialidad = e.target.value;
@@ -215,8 +188,8 @@ function CrearSolicitud() {
       especialidadToClave[selectedNombreEspecialidad] ||
       "Seleccionar clave de especialidad";
     setClaveEspecialidad(correspondingClave);
-    setFormData({
-      ...formData,
+    setPatientData({
+      ...patientData,
       nombre_especialidad: selectedNombreEspecialidad,
       clave_esp: correspondingClave,
     });
@@ -228,82 +201,48 @@ function CrearSolicitud() {
     const correspondingNombre =
       claveToEspecialidad[selectedClaveEspecialidad] || "";
     setNombreEspecialidad(correspondingNombre);
-    setFormData({
-      ...formData,
+    setPatientData({
+      ...patientData,
       nombre_especialidad: correspondingNombre,
       clave_esp: selectedClaveEspecialidad,
     });
   };
 
   const handleProcedureChange = (selectedOption) => {
-    setFormData({
-      ...formData,
+    setPatientData({
+      ...patientData,
       procedimientos_paciente: selectedOption ? selectedOption.value : "",
     });
   };
 
   const handleSelectChange = (selectedOption) => {
-    setFormData((prevFormData) => ({
-      ...prevFormData,
+    setPatientData((prevpatientData) => ({
+      ...prevpatientData,
       nombre_cirujano: selectedOption ? selectedOption.value : "",
     }));
   };
 
 
-  const validateForm = () => {
-    const newErrors = {};
-    Object.keys(formData).forEach((key) => {
-      if (!formData[key]) {
-        newErrors[key] = "Campo requerido";
-      }
-    });
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-  
-    // Validar el formulario
-    if (validateForm()) {
-      try {
-        // Enviar la solicitud a la API
-        const response = await fetch("http://localhost:4000/api/solicitudes", {
-          method: selectedSolicitud ? "PUT" : "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        });
-  
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-  
-  
-        // Parsear la respuesta JSON
-        const data = await response.json();
-        console.log("Formulario válido y enviado:", formData);
-  
-        // Redirigir al usuario después de un envío exitoso
-        navigate("/solicitudes");
-      } catch (error) {
-        // Manejo de errores en la solicitud de red
-        console.error("Error en la solicitud:", error);
-      }
-    } else {
-      console.log("Formulario inválido");
-    }
-  };
-  
 
   return (
     <Layout>
-      <div className="flex flex-col gap-4 mb-6">
-        <h1 className="text-xl font-semibold">Crear solicitud</h1>
+      <div className="flex flex-col gap-2 mb-4">
+        <h1 className="text-xl font-semibold">Consulta Paciente</h1>
+       
+        <div className="flex my-4 space-x-4">
+          <div>
+            <Link
+              to="/bitacora/Bitaenfermeria"
+              className="bg-[#365b77] hover:bg-[#7498b6]  text-white py-2 px-4 rounded inline-flex items-center"
+            >
+              <span style={{ display: "inline-flex", alignItems: "center" }}>
+                <span>&lt;</span>
+                <span style={{ marginLeft: "5px" }}>Regresar a bitácora</span>
+              </span>
+            </Link>
+          </div>
+        </div>
 
-      <form onSubmit={handleSubmit}>
         <div class="flex flex-col p-4 bg-[#557996] rounded-lg ">
           <div class="flex mb-4">
             <div class="w-full mr-4">
@@ -317,8 +256,7 @@ function CrearSolicitud() {
                 type="date"
                 id="fecha_solicitud"
                 name="fecha_solicitud"
-                value={formData.fecha_solicitud}
-                onChange={handleInputChange}
+                value={patientData.fecha_solicitud}
                 readOnly
                 className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-gray-300`}
                 />
@@ -334,7 +272,7 @@ function CrearSolicitud() {
                 id="curp"
                 name="curp"
                 placeholder="Curp del paciente"
-                value={formData.curp}
+                value={patientData.curp}
                 onChange={handleInputChange}
                 maxLength={18}
                 className={`border "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
@@ -343,42 +281,30 @@ function CrearSolicitud() {
           </div>
 
           <div class="flex mb-4">
+            
             <div class="w-full mr-4">
-              <label
+            <label
                 for="ap_paterno"
                 class="block font-semibold text-white mb-1"
               >
-                Apellido paterno:
-              </label>
-              <input
-                placeholder="Apellido paterno paciente"
-                type="text"
-                id="ap_paterno"
-                name="ap_paterno"
-                value={formData.ap_paterno}
-                onChange={handleInputChange}
-                className={`border ${errors.ap_paterno ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-                />
-                {errors.ap_paterno && <p className="text-red-500">{errors.ap_paterno}</p>}
-              </div>
+                Apellido materno:
+               </label>
+              <p className="bg-gray-200 p-2 rounded-lg cursor-default">
+                {patientData?.ap_paterno || "N/A"}
+              </p>
+            </div>
+            
             <div class="w-full mr-4">
               <label
                 for="ap_materno"
                 class="block font-semibold text-white mb-1"
               >
                 Apellido materno:
-              </label>
-              <input
-                placeholder="Apellido materno paciente"
-                type="text"
-                id="ap_materno"
-                name="ap_materno"
-                value={formData.ap_materno}
-                onChange={handleInputChange}
-                className={`border ${errors.ap_materno ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-                />
-                {errors.ap_materno && <p className="text-red-500">{errors.ap_materno}</p>}
-              </div>
+               </label>
+              <p className="bg-gray-200 p-2 rounded-lg cursor-default">
+                {patientData?.ap_materno || "N/A"}
+              </p>
+            </div>
 
             <div class="w-full mr-4">
               <label
@@ -392,7 +318,7 @@ function CrearSolicitud() {
                 type="text"
                 id="nombre_paciente"
                 name="nombre_paciente"
-                value={formData.nombre_paciente}
+                value={patientData.nombre_paciente}
                 onChange={handleInputChange}
                 className={`border ${errors.nombre_paciente ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
                 />
@@ -411,7 +337,7 @@ function CrearSolicitud() {
                 type="text"
                 id="no_expediente"
                 name="no_expediente"
-                value={formData.no_expediente}
+                value={patientData.no_expediente}
                 onChange={handleInputChange}
                 className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]"
               />
@@ -428,7 +354,7 @@ function CrearSolicitud() {
                 type="text"
                 id="sala_quirofano"
                 name="sala_quirofano"
-                value={formData.sala_quirofano}
+                value={patientData.sala_quirofano}
                 onChange={handleInputChange}
                 className={`border ${errors.nombre_paciente ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
                 
@@ -464,7 +390,7 @@ function CrearSolicitud() {
                 type="date"
                 id="fecha_nacimiento"
                 name="fecha_nacimiento"
-                value={formData.fecha_nacimiento}
+                value={patientData.fecha_nacimiento}
                 onChange={handleInputChange}
                 className={`border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mt-2 ${
                   isFechaNacimientoValid
@@ -491,7 +417,7 @@ function CrearSolicitud() {
                 type="int"
                 id="edad"
                 name="edad"
-                value={formData.edad}
+                value={patientData.edad}
                 onChange={handleInputChange}
                 className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mt-2"
               />
@@ -507,7 +433,7 @@ function CrearSolicitud() {
               <select
                 id="sexo"
                 name="sexo"
-                value={formData.sexo}
+                value={patientData.sexo}
                 onChange={handleInputChange}
                 className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mt-2"
               >
@@ -547,7 +473,7 @@ function CrearSolicitud() {
               <select
                 id="tipo_admision"
                 name="tipo_admision"
-                value={formData.tipo_admision}
+                value={patientData.tipo_admision}
                 onChange={handleInputChange}
                 className={`border ${errors.ap_paterno ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
                 >
@@ -569,7 +495,7 @@ function CrearSolicitud() {
               <select
                 id="tipo_intervencion"
                 name="tipo_intervencion"
-                value={formData.tipo_intervencion}
+                value={patientData.tipo_intervencion}
                 onChange={handleInputChange}
                 className={`border ${errors.tipo_intervencion ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
                 >
@@ -641,7 +567,7 @@ function CrearSolicitud() {
                 type="time"
                 id="hora_solicitada"
                 name="hora_solicitada"
-                value={formData.hora_solicitada}
+                value={patientData.hora_solicitada}
                 onChange={handleInputChange}
                 className={`border ${errors.hora_solicitada ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
                 />
@@ -659,7 +585,7 @@ function CrearSolicitud() {
                 type="date"
                 id="fecha_solicitada"
                 name="fecha_solicitada"
-                value={formData.fecha_solicitada}
+                value={patientData.fecha_solicitada}
                 onChange={handleInputChange}
                 className={`border ${errors.fecha_solicitada ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
                 />
@@ -678,7 +604,7 @@ function CrearSolicitud() {
                 type="int"
                 id="tiempo_estimado"
                 name="tiempo_estimado"
-                value={formData.tiempo_estimado}
+                value={patientData.tiempo_estimado}
                 onChange={handleInputChange}
                 className={`border ${errors.tiempo_estimado ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
                 />
@@ -695,7 +621,7 @@ function CrearSolicitud() {
               <select
                 id="turno_solicitado"
                 name="turno_solicitado"
-                value={formData.turno_solicitado}
+                value={patientData.turno_solicitado}
                 onChange={handleInputChange}
                 className={`border ${errors.turno_solicitado ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
                 >
@@ -731,7 +657,7 @@ function CrearSolicitud() {
               <select
                 id="procedimientos_extra"
                 name="procedimientos_extra"
-                value={formData.procedimientos_extra}
+                value={patientData.procedimientos_extra}
                 onChange={handleInputChange}
                 className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
@@ -754,7 +680,7 @@ function CrearSolicitud() {
               <select
                 id="req_insumo"
                 name="req_insumo"
-                value={formData.req_insumo}
+                value={patientData.req_insumo}
                 onChange={handleInputChange}
                 className={` ${errors.req_insumo ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
                 >
@@ -779,7 +705,7 @@ function CrearSolicitud() {
                 id="diagnostico"
                 name="diagnostico"
                 rows="4"
-                value={formData.diagnostico}
+                value={patientData.diagnostico}
                 onChange={handleInputChange}
                 className={`border ${errors.diagnostico? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
                 >
@@ -788,19 +714,9 @@ function CrearSolicitud() {
             </div>
           </div>
         </div>
-
-        <div className="flex justify-center mt-4">
-          <button
-            type="submit"
-            className="bg-[#365b77] text-white px-4 py-2 rounded"
-          >
-            Enviar
-          </button>
-        </div>
-      </form>
       </div>
     </Layout>
   );
 }
 
-export default CrearSolicitud;
+export default Consultabitacora;

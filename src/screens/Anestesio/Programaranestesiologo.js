@@ -127,7 +127,7 @@ function Programaranestesiologo() {
 
   return (
     <Layout>
-      <div className="flex flex-col gap-8 mb-8">
+      <div className="flex flex-col gap-4 mb-6">
         <h1 className="text-xl font-semibold">Anestesiologos asignados</h1>
         <div className="flex my-4 space-x-4">
           <div>

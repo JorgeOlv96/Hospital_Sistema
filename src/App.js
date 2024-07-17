@@ -1,7 +1,7 @@
 // src/App.js
 import './App.css';
 import React, { useState } from 'react';
-import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
+import { BrowserRouter,Route, Router, Routes, Navigate } from 'react-router-dom';
 import Aos from 'aos';
 import Dashboard from './screens/Dashboard';
 import Solicitudes from './screens/Solicitudes/Solicitudes';
@@ -40,6 +40,7 @@ import Anestesiólogos from './screens/Anestesiologos'
 import Programaranestesiologo from './screens/Anestesio/Programaranestesiologo';
 import Bitacora from './screens/Bitacora';
 import Bitacoraenfermeria from './screens/BitacoraEnfermeria/Bitaenfermeria'
+import Consultabitacora from './screens/BitacoraEnfermeria/Consultabitacora';
 
 
 
@@ -93,6 +94,7 @@ function App() {
           <Route path="/urgencias" element={<Urgencias />} />
           <Route path="/bitacora" element={<Bitacora /> } />
           <Route path="/bitacora/Bitaenfermeria" element={<Bitacoraenfermeria /> } />
+          <Route path="/bitacora/Consultabitacora/:id" element={<Consultabitacora />} />
           <Route path="/services" element={<Services />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/ayuda" element={<Ayuda />} /> 

@@ -52,7 +52,7 @@ const CustomToolbar = ({ date, view, onView, onNavigate, onPrint }) => {
   };
 
   return (
-    <div className="flex flex-col gap-8 mb-8">
+    <div className="flex flex-col gap-4 mb-6">
       <h1 className="text-xl font-semibold">Agenda</h1>
       <div className="my-4">
         <Link
@@ -154,7 +154,7 @@ function Appointments() {
           id: appointment.id_solicitud,
           start: startDateTime,
           end: endDateTime,
-          title:`${appointment.folio} - ${appointment.nombre_paciente}`,
+          title: appointment.folio,
           ap_paterno: appointment.ap_paterno,
           ap_materno: appointment.ap_materno,
           nombre_paciente: appointment.nombre_paciente,
@@ -285,7 +285,7 @@ function Appointments() {
           <th>Nombre completo</th>
           <th>Sexo</th>
           <th>Procedimientos</th>
-          <th>Especialidad</th>
+          <th>Esp</th>
           <th>Fecha asignada</th>
           <th>Tiempo estimado</th>
           <th>Turno</th>
@@ -310,7 +310,7 @@ function Appointments() {
               <td>${appointment.sexo}</td> 
               <td>${appointment.procedimientos_paciente}</td> 
               <td>${appointment.clave_esp}.</td>
-              <td>${moment(appointment.start).format("LL")}</td>
+              <td>${moment(appointment.start).format("DD-MM-YYYY")}</td>
               <td>${appointment.tiempo_estimado} min</td>
               <td>${appointment.turno}</td>              
               <td>${appointment.anestesiologo_asignado}</td>
