@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import Layout from "../../Layout";
 import AsyncSelect from "react-select/async";
 import { Link } from "react-router-dom";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Programaranestesiologo() {
   const [formData, setFormData] = useState({
@@ -13,7 +15,9 @@ function Programaranestesiologo() {
     hora_fin: "",
   });
 
-  const [anesthesiologists, setAnesthesiologists] = useState([]); // Estado para almacenar los anestesiólogos
+  const [anesthesiologists, setAnesthesiologists] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [anesthesiologistsPerPage] = useState(10);
 
   const fetchActiveAnesthesiologists = async (inputValue) => {
     try {
@@ -82,7 +86,6 @@ function Programaranestesiologo() {
   };
 
   const handleSaveAnesthesiologist = async () => {
-    console.log("Formulario a enviar:", formData);
     try {
       const response = await fetch(
         "http://localhost:4000/api/anestesio/anestesiologos",
@@ -99,10 +102,26 @@ function Programaranestesiologo() {
       }
       const data = await response.json();
       console.log("Anesthesiologist saved successfully:", data);
-      // Opcional: Actualizar la lista de anestesiólogos después de guardar uno nuevo
+
+      // Mostrar notificación de éxito
+      toast.success("¡Anestesiólogo asignado con éxito!");
+
+      // Limpiar el formulario
+      setFormData({
+        nombre: "",
+        dia_anestesio: "",
+        turno_anestesio: "",
+        sala_anestesio: "",
+        hora_inicio: "",
+        hora_fin: "",
+      });
+
+      // Actualizar la lista de anestesiólogos después de guardar uno nuevo
       fetchAnesthesiologists();
     } catch (error) {
       console.error("Error saving anesthesiologist:", error);
+      // Mostrar notificación de error
+      toast.error("Error al guardar el anestesiólogo");
     }
   };
 
@@ -115,9 +134,13 @@ function Programaranestesiologo() {
         throw new Error("Network response was not ok");
       }
       const data = await response.json();
+      // Ordenar por fecha más reciente a más antigua
+      data.sort((a, b) => new Date(b.fecha_asignacion) - new Date(a.fecha_asignacion));
       setAnesthesiologists(data);
     } catch (error) {
       console.error("Error fetching anesthesiologists:", error);
+
+      toast.error("Error al guardar el anestesiólogo");
     }
   };
 
@@ -125,21 +148,30 @@ function Programaranestesiologo() {
     fetchAnesthesiologists();
   }, []);
 
+  // Calcular índices para la paginación
+  const indexOfLastAnesthesiologist = currentPage * anesthesiologistsPerPage;
+  const indexOfFirstAnesthesiologist = indexOfLastAnesthesiologist - anesthesiologistsPerPage;
+  const currentAnesthesiologists = anesthesiologists.slice(indexOfFirstAnesthesiologist, indexOfLastAnesthesiologist);
+
+  // Cambiar página
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
   return (
     <Layout>
       <div className="flex flex-col gap-4 mb-6">
-        <h1 className="text-xl font-semibold">Anestesiologos asignados</h1>
+        <h1 className="text-xl font-semibold">Anestesiólogos asignados</h1>
         <div className="flex my-4 space-x-4">
           <div>
             <Link
               to="/anestesiólogos"
               className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
             >
-              <span>Ver agenda de anestesiologos</span>
+              <span>Ver agenda de anestesiólogos</span>
             </Link>
           </div>
         </div>
 
+        <div className="flex flex-col">
         <div className="flex flex-col">
           <div className="flex mb-2 space-x-4">
             <div className="w-1/4">
@@ -252,59 +284,179 @@ function Programaranestesiologo() {
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden border border-gray-200">
-            <thead className="bg-[#365b77] text-white">
-              <tr>
-                <th className="px-4 py-3 text-center border-b border-gray-300">
-                  Nombre
-                </th>
-                <th className="px-4 py-3 text-center border-b border-gray-300">
-                  Día
-                </th>
-                <th className="px-4 py-3 text-center border-b border-gray-300">
-                  Turno
-                </th>
-                <th className="px-4 py-3 text-center border-b border-gray-300">
-                  Hora Inicio
-                </th>
-                <th className="px-4 py-3 text-center border-b border-gray-300">
-                  Hora Fin
-                </th>
-                <th className="px-4 py-3 text-center border-b border-gray-300">
-                  Sala
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {anesthesiologists.map((anesthesiologist) => (
-                <tr
-                  key={anesthesiologist.id_anestesiologo}
-                  className="bg-blue-50 hover:bg-blue-300"
-                >
-                  <td className="px-2 py-2 text-left border-b border-gray-300 border-r border-gray-300">
-                    {anesthesiologist.nombre}
-                  </td>
-                  <td className="px-2 py-2 text-center border-b border-gray-300 border-r border-gray-300">
-                    {anesthesiologist.dia_anestesio}
-                  </td>
-                  <td className="px-2 py-2 text-center border-b border-gray-300 border-r border-gray-300">
-                    {anesthesiologist.turno_anestesio}
-                  </td>
-                  <td className="px-2 py-2 text-center border-b border-gray-300 border-r border-gray-300">
-                    {anesthesiologist.hora_inicio}
-                  </td>
-                  <td className="px-2 py-2 text-center border-b border-gray-300 border-r border-gray-300">
-                    {anesthesiologist.hora_fin}
-                  </td>
-                  <td className="px-2 py-2 text-center border-b border-gray-300">
-                    {anesthesiologist.sala_anestesio}
-                  </td>
+          <div className="overflow-hidden border-b border-gray-200 shadow sm:rounded-lg">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Nombre
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Día asignado
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Turno asignado
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Sala asignada
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Hora inicio
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Hora fin
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {currentAnesthesiologists.map((anesthesiologist) => (
+                  <tr key={anesthesiologist.id}>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900">
+                        {anesthesiologist.nombre}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">
+                        {anesthesiologist.dia_anestesio}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                        {anesthesiologist.turno_anestesio}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {anesthesiologist.sala_anestesio}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {anesthesiologist.hora_inicio}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {anesthesiologist.hora_fin}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+              <div className="flex-1 flex justify-between sm:hidden">
+                <button
+                  onClick={() =>
+                    setCurrentPage((prevPage) =>
+                      prevPage > 1 ? prevPage - 1 : prevPage
+                    )
+                  }
+                  disabled={currentPage === 1}
+                  className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                >
+                  Anterior
+                </button>
+                <button
+                  onClick={() =>
+                    setCurrentPage((prevPage) =>
+                      prevPage < Math.ceil(anesthesiologists.length / anesthesiologistsPerPage) ? prevPage + 1 : prevPage
+                    )
+                  }
+                  disabled={currentPage === Math.ceil(anesthesiologists.length / anesthesiologistsPerPage)}
+                  className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+                >
+                  Siguiente
+                </button>
+              </div>
+              <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-sm text-gray-700">
+                    Página{" "}
+                    <span className="font-medium">{currentPage}</span> de{" "}
+                    <span className="font-medium">
+                      {Math.ceil(anesthesiologists.length / anesthesiologistsPerPage)}
+                    </span>{" "}
+                    • Resultados{" "}
+                    <span className="font-medium">
+                      {anesthesiologists.length}
+                    </span>
+                  </p>
+                </div>
+                <div>
+                  <nav
+                    className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
+                    aria-label="Pagination"
+                  >
+                    <button
+                      onClick={() =>
+                        setCurrentPage((prevPage) =>
+                          prevPage > 1 ? prevPage - 1 : prevPage
+                        )
+                      }
+                      disabled={currentPage === 1}
+                      className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                    >
+                      <span className="sr-only">Anterior</span>
+                      <svg
+                        className="h-5 w-5"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        aria-hidden="true"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M9.707 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586L9.707 6.707a1 1 0 010-1.414z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </button>
+                    <button
+                      onClick={() =>
+                        setCurrentPage((prevPage) =>
+                          prevPage < Math.ceil(anesthesiologists.length / anesthesiologistsPerPage) ? prevPage + 1 : prevPage
+                        )
+                      }
+                      disabled={currentPage === Math.ceil(anesthesiologists.length / anesthesiologistsPerPage)}
+                      className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
+                    >
+                      <span className="sr-only">Siguiente</span>
+                      <svg
+                        className="h-5 w-5"
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        aria-hidden="true"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10.293 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 111.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    </button>
+                  </nav>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+                {/* Mostrar notificaciones */}
+                <ToastContainer position="bottom-right" />
       </div>
     </Layout>
   );

@@ -85,13 +85,14 @@ const Consultabitacora = () => {
         throw new Error("Network response was not ok");
       }
       setSuspendModalOpen(false);
-      closeModal(); // Cerrar el modal después de eliminar
-      // Recargar la página después de eliminar
-      window.location.reload();
+      closeModal(); // Cerrar el modal después de suspender
+      // Redirigir a la página /bitacora/Bitaenfermeria
+      window.location.href = '/bitacora/Bitaenfermeria';
     } catch (error) {
       console.error("Error suspending appointment:", error);
     }
   };
+  
 
   return (
     <Layout>
