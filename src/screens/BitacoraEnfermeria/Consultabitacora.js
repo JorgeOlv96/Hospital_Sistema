@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import Layout from "../../Layout";
 
 const Consultabitacora = () => {
@@ -30,7 +30,27 @@ const Consultabitacora = () => {
 
   return (
     <Layout>
-        <div class="flex flex-col p-4 bg-[#557996] rounded-lg ">
+    <div className="flex flex-col gap-2 mb-4">
+        <h1 className="text-xl font-semibold">Consulta Paciente</h1>
+       
+        <div className="flex my-4 space-x-4">
+          <div>
+            <Link
+              to="/bitacora/Bitaenfermeria"
+              className="bg-[#365b77] hover:bg-[#7498b6]  text-white py-2 px-4 rounded inline-flex items-center"
+            >
+              <span style={{ display: "inline-flex", alignItems: "center" }}>
+                <span>&lt;</span>
+                <span style={{ marginLeft: "5px" }}>Regresar a bitácora</span>
+              </span>
+            </Link>
+          </div>
+        </div>
+        
+        <div class="flex flex-col p-4 bg-[#80909C] rounded-lg ">
+          
+          
+          
           <div class="flex mb-4">
             <div class="w-full mr-4">
               <label
@@ -438,6 +458,7 @@ const Consultabitacora = () => {
               </textarea>
             </div>
           </div>
+        </div>
         </div>
     </Layout>
   );
