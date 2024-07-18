@@ -154,11 +154,7 @@ function Appointments() {
           id: appointment.id_solicitud,
           start: startDateTime,
           end: endDateTime,
-<<<<<<< HEAD
-          title: appointment.folio,
-=======
           title:appointment.folio,
->>>>>>> 6977e3d9f8542a86191067cdce71830d39c33d2c
           ap_paterno: appointment.ap_paterno,
           ap_materno: appointment.ap_materno,
           nombre_paciente: appointment.nombre_paciente,
