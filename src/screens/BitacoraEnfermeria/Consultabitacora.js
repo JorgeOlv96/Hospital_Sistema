@@ -1,11 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import Layout from "../../Layout";
 import Modal from "../../components/Modals/Modal";
 
 const Consultabitacora = () => {
   const { id } = useParams();
-  const [patientData, setPatientData] = useState({});
+  const [patientData, setPatientData] = useState({
+    hora_entrada:"",
+    hora_incision: "",
+    hora_cierre:"",
+    hora_salida:"",
+    egreso: "",
+    enf_quirurgica:"",
+    enf_circulante:""
+  });
+  const [updatedData, setUpdatedData] = useState(null);
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [suspendModalOpen, setSuspendModalOpen] = useState(false);
   const [suspendReason, setSuspendReason] = useState("");
@@ -92,6 +102,52 @@ const Consultabitacora = () => {
       console.error("Error suspending appointment:", error);
     }
   };
+
+  const handleSave = async () => {
+    try {
+      const{
+        hora_entrada,
+        hora_incision,
+        hora_cierre,
+        hora_salida,
+        egreso,
+        enf_quirurgica,
+        enf_circulante,
+      } = patientData;
+      const response = await fetch(
+        `http://localhost:4000/api/solicitudes/bitacoraenf/${id}`,
+        {
+          method: "PATCH",
+          body: JSON.stringify({
+            hora_entrada,
+            hora_incision,
+            hora_cierre,
+            hora_salida,
+            egreso,
+            enf_quirurgica,
+            enf_circulante
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      // Redirigir después de guardar
+      navigate('/bitacora/Bitaenfermeria');
+    } catch (error) {
+      console.error("Error saving changes:", error);
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setPatientData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));}
   
 
   return (
@@ -401,13 +457,13 @@ const Consultabitacora = () => {
                 htmlFor="fecha_solicitada"
                 className="block font-semibold text-white mb-1"
               >
-                Fecha solicitada:
+                Fecha de cirugía:
               </label>
               <input
                 type="text"
                 id="fecha_solicitada"
                 name="fecha_solicitada"
-                value={patientData.fecha_solicitada || "N/A"}
+                value={patientData.fecha_programada || "N/A"}
                 readOnly
                 className={`border border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
               />
@@ -439,12 +495,12 @@ const Consultabitacora = () => {
               </label>
               <input
                 placeholder="Minutos"
-                type="int"
-                id="tiempo_estimado"
-                name="tiempo_estimado"
-                value={patientData.tiempo_estimado || "N/A"}
-                readOnly
-                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+                type="time"
+                id="hora_entrada"
+                name="hora_entrada"
+                value={patientData.hora_entrada || ""}
+                onChange={handleChange}
+                className={`bg-white p-3 rounded-lg w-full`}
               />
             </div>
 
@@ -511,12 +567,12 @@ const Consultabitacora = () => {
               </label>
               <input
                 placeholder="Minutos"
-                type="int"
-                id="tiempo_estimado"
-                name="tiempo_estimado"
-                value={patientData.tiempo_estimado || "N/A"}
-                readOnly
-                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+                type="time"
+                id="hora_incision"
+                name="hora_incision"
+                value={patientData.hora_incision || ""}
+                onChange={handleChange}
+                className={`bg-white p-3 rounded-lg w-full`}
               />
             </div>
           </div>
@@ -530,11 +586,12 @@ const Consultabitacora = () => {
                 Enf. Quirirjica:
               </label>
               <input
-                id="procedimientos_paciente"
-                name="procedimientos_paciente"
-                value={patientData.procedimientos_paciente || "N/A"}
-                readOnly
-                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+                type="text"
+                id="enf_quirurgica"
+                name="enf_quirurgica"
+                value={patientData.enf_quirurgica || ""}
+                onChange={handleChange}
+                className={`bg-white p-3 rounded-lg w-full`}
               ></input>
             </div>
 
@@ -546,11 +603,12 @@ const Consultabitacora = () => {
                 Enf. Circulante:
               </label>
               <input
-                id="procedimientos_paciente"
-                name="procedimientos_paciente"
-                value={patientData.procedimientos_paciente || "N/A"}
-                readOnly
-                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+                type="text"
+                id="enf_circulante"
+                name="enf_circulante"
+                value={patientData.enf_circulante || ""}
+                onChange={handleChange}
+                className={`bg-white p-3 rounded-lg w-full`}
               ></input>
             </div>
 
@@ -564,7 +622,7 @@ const Consultabitacora = () => {
               <input
                 id="procedimientos_paciente"
                 name="procedimientos_paciente"
-                value={patientData.procedimientos_paciente || "N/A"}
+                value={patientData.nombre_anestesiologo || "N/A"}
                 readOnly
                 className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
               ></input>
@@ -578,11 +636,12 @@ const Consultabitacora = () => {
                 Egresa a:
               </label>
               <input
-                id="procedimientos_paciente"
-                name="procedimientos_paciente"
-                value={patientData.procedimientos_paciente || "N/A"}
-                readOnly
-                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+                type="text"
+                id="egreso"
+                name="egreso"
+                value={patientData.egreso || ""}
+                onChange={handleChange}
+                className={`bg-white p-3 rounded-lg w-full`}
               ></input>
             </div>
 
@@ -614,12 +673,12 @@ const Consultabitacora = () => {
               </label>
               <input
                 placeholder="Minutos"
-                type="int"
-                id="tiempo_estimado"
-                name="tiempo_estimado"
-                value={patientData.tiempo_estimado || "N/A"}
-                readOnly
-                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+                type="time"
+                id="hora_salida"
+                name="hora_salida"
+                value={patientData.hora_salida || ""}
+                onChange={handleChange}
+                className={`bg-white p-3 rounded-lg w-full`}
               />
             </div>
 
@@ -634,12 +693,12 @@ const Consultabitacora = () => {
               </label>
               <input
                 placeholder="Minutos"
-                type="int"
-                id="tiempo_estimado"
-                name="tiempo_estimado"
-                value={patientData.tiempo_estimado || "N/A"}
-                readOnly
-                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+                type="time"
+                id="hora_cierre"
+                name="hora_cierre"
+                value={patientData.hora_cierre || ""}
+                onChange={handleChange}
+                className={`bg-white p-3 rounded-lg w-full`}
               />
             </div>
 
@@ -704,6 +763,14 @@ const Consultabitacora = () => {
             </div>
           </div>
         </div>
+        <div className="flex justify-center mt-4">
+        <button
+            onClick={handleSave}
+            className="bg-[#365b77] text-white px-4 py-2 rounded"
+          >
+            Guardar
+          </button>
+          </div>
         </div>
 
         {suspendModalOpen && (
