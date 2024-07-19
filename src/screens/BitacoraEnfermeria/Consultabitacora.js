@@ -96,8 +96,25 @@ const Consultabitacora = () => {
 
   return (
     <Layout>
-    <div className="flex flex-col gap-2 mb-4">
+      <div className="flex flex-col gap-2 mb-4">
         <h1 className="text-xl font-semibold">Consulta Paciente</h1>
+<<<<<<< HEAD
+
+        <div className="flex my-4 space-x-4">
+          <div>
+            <Link
+              to="/bitacora/Bitaenfermeria"
+              className="bg-[#365b77] hover:bg-[#7498b6]  text-white py-2 px-4 rounded inline-flex items-center"
+            >
+              <span style={{ display: "inline-flex", alignItems: "center" }}>
+                <span>&lt;</span>
+                <span style={{ marginLeft: "5px" }}>Regresar a bitácora</span>
+              </span>
+            </Link>
+          </div>
+        </div>
+
+=======
        
         <div className="flex my-4 justify-between">
   <Link
@@ -118,10 +135,8 @@ const Consultabitacora = () => {
 </div>
 
         
+>>>>>>> 07b1ce5e33e9c83f34cac462822066cea3fb140e
         <div class="flex flex-col p-4 bg-[#80909C] rounded-lg ">
-          
-          
-          
           <div class="flex mb-4">
             <div class="w-full mr-4">
               <label
@@ -136,23 +151,22 @@ const Consultabitacora = () => {
                 name="folio"
                 value={patientData.folio || "N/A"}
                 readOnly
-                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-gray-300`}
-                />
-                
-              </div>
-                <div class="w-full">
-                  <label for="curp" class="block font-semibold text-white mb-1">
-                CURP del paciente:
-              </label>
+                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+              />
+            </div>
 
+            <div className="w-full" style={{ width: "105%" }}>
+              <label
+                htmlFor="id_cirujano"
+                className="block font-semibold text-white mb-1"
+              >
+                Cirujano encargado:
+              </label>
               <input
-                type="text"
-                id="curp"
-                name="curp"
-                placeholder="Curp del paciente"
-                value={patientData.curp || "N/A"}
+                placeholder="Nombre del cirujano"
+                value={patientData.nombre_cirujano || "N/A"}
                 readOnly
-                className={`border "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
               />
             </div>
           </div>
@@ -171,10 +185,11 @@ const Consultabitacora = () => {
                 id="ap_paterno"
                 name="ap_paterno"
                 value={patientData.ap_paterno || "N/A"}
-                 
-                className={`rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-                />
-              </div>
+                readOnly
+                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+              />
+            </div>
+
             <div class="w-full mr-4">
               <label
                 for="ap_materno"
@@ -188,10 +203,10 @@ const Consultabitacora = () => {
                 id="ap_materno"
                 name="ap_materno"
                 value={patientData.ap_materno || "N/A"}
-                 
-                className={`rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-                />
-              </div>
+                readOnly
+                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+              />
+            </div>
 
             <div class="w-full mr-4">
               <label
@@ -206,11 +221,10 @@ const Consultabitacora = () => {
                 id="nombre_paciente"
                 name="nombre_paciente"
                 value={patientData.nombre_paciente || "N/A"}
-                 
-                className={`rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-                />
-
-              </div>
+                readOnly
+                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+              />
+            </div>
 
             <div className="mr-4 w-full">
               <label
@@ -220,51 +234,13 @@ const Consultabitacora = () => {
                 Número de expediente
               </label>
               <input
-               placeholder="Expediente de paciente"
+                placeholder="Expediente de paciente"
                 type="text"
                 id="no_expediente"
                 name="no_expediente"
                 value={patientData.no_expediente || "N/A"}
-                 
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]"
-              />
-            </div>
-
-            <div className="mr-4" style={{ width: "50%" }}>
-              <label
-                htmlFor="sala_quirofano"
-                className="block font-semibold text-white mb-1"
-              >
-                Sala solicitada:
-              </label>
-              <input
-                type="text"
-                id="sala_quirofano"
-                name="sala_quirofano"
-                value={patientData.sala_quirofano || "N/A"}
-                 
-                className={`rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-                
-              >
-              </input>
-            </div>
-          </div>
-
-          <div className="flex mb-4">
-            <div className="mr-4 w-full">
-              <label
-                htmlFor="fecha_nacimiento"
-                className="block font-semibold text-white mb-1"
-              >
-                Fecha de nacimiento:
-              </label>
-              <input
-                type="text"
-                id="fecha_nacimiento"
-                name="fecha_nacimiento"
-                value={patientData.fecha_nacimiento || "N/A"}
-                 
-                className={`border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mt-2}`}
+                readOnly
+                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
               />
             </div>
 
@@ -276,13 +252,13 @@ const Consultabitacora = () => {
                 Edad
               </label>
               <input
-              placeholder="Edad de paciente"
+                placeholder="Edad de paciente"
                 type="int"
                 id="edad"
                 name="edad"
                 value={patientData.edad || "N/A"}
-                 
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mt-2"
+                readOnly
+                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
               />
             </div>
 
@@ -297,60 +273,77 @@ const Consultabitacora = () => {
                 id="sexo"
                 name="sexo"
                 value={patientData.sexo || "N/A"}
-                 
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mt-2"
-              >
-              </input>
+                readOnly
+                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+              ></input>
             </div>
 
-            <div className="w-full" style={{ width: "105%" }}>
+            <div className="mr-4" style={{ width: "50%" }}>
               <label
-                htmlFor="id_cirujano"
+                htmlFor="sala_quirofano"
                 className="block font-semibold text-white mb-1"
               >
-                Cirujano encargado:
+                Sala:
               </label>
               <input
-                placeholder="Nombre del cirujano"
-                value={patientData.nombre_cirujano || "N/A"}
-                className={`rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-                />
-              </div>
+                type="text"
+                id="sala_quirofano"
+                name="sala_quirofano"
+                value={patientData.sala_quirofano || "N/A"}
+                readOnly
+                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+              ></input>
+            </div>
           </div>
 
-          <div className="flex mb-4">
-            <div className="mr-4 w-full">
+          <div class="flex mb-4">
+            <div class="w-full mr-4">
+              <label
+                htmlFor="fecha_nacimiento"
+                className="block font-semibold text-white mb-1"
+              >
+                Fecha de nacimiento:
+              </label>
+              <input
+                type="text"
+                id="fecha_nacimiento"
+                name="fecha_nacimiento"
+                value={patientData.fecha_nacimiento || "N/A"}
+                readOnly
+                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+              />
+            </div>
+
+            <div class="w-full mr-4">
               <label
                 htmlFor="tipo_admision"
                 className="block font-semibold text-white mb-1"
               >
-                Procedencia del paciente:
+                Procedencia paciente:
               </label>
               <input
                 id="tipo_admision"
                 name="tipo_admision"
                 value={patientData.tipo_admision || "N/A"}
-                 
-                className={`border rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-                >
-              </input>
-              </div>
+                readOnly
+                className={`border border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+              ></input>
+            </div>
 
             <div className="mr-4 w-full">
               <label
                 htmlFor="tipo_intervencion"
                 className="block font-semibold text-white mb-1"
               >
-                Tipo de intervención quirúrgica planeada:
+                Intervención planeada:
               </label>
               <input
                 id="tipo_intervencion"
                 name="tipo_intervencion"
                 value={patientData.tipo_intervencion || "N/A"}
-                 
-                className={`rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-                >
-              </input>
+                readOnly
+                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+              ></input>
             </div>
 
             <div className="mr-4 w-full">
@@ -364,47 +357,64 @@ const Consultabitacora = () => {
                 id="nombre_especialidad"
                 name="nombre_especialidad"
                 value={patientData.nombre_especialidad || "N/A"}
-                className={`rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-                >
-              </input>
-              </div>
+                readOnly
+                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+              ></input>
+            </div>
 
-            <div className="w-full">
+            <div className="mr-4 w-full">
               <label
-                htmlFor="clave_esp"
+                htmlFor="turno_solicitado"
                 className="block font-semibold text-white mb-1"
               >
-                Clave de especialidad:
+                Turno solicitado:
               </label>
               <input
-                id="clave_esp"
-                name="clave_esp"
-                value={patientData.clave_esp || "N/A"}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                id="turno_solicitado"
+                name="turno_solicitado"
+                value={patientData.turno_solicitado || "N/A"}
+                readOnly
+                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+              ></input>
+            </div>
+
+            <div className="mr-4 w-full">
+              <label
+                htmlFor="tiempo_estimado"
+                className="block font-semibold text-white mb-1"
               >
-              </input>
+                Tiempo est. de cirugía:
+              </label>
+              <input
+                placeholder="Minutos"
+                type="int"
+                id="tiempo_estimado"
+                name="tiempo_estimado"
+                value={patientData.tiempo_estimado || "N/A"}
+                readOnly
+                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+              />
+            </div>
+
+            <div className="mr-4" style={{ width: "50%" }}>
+              <label
+                htmlFor="req_insumo"
+                className="block font-semibold text-white mb-1"
+              >
+                Insumos:
+              </label>
+              <input
+                id="req_insumo"
+                name="req_insumo"
+                value={patientData.req_insumo || "N/A"}
+                readOnly
+                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+              ></input>
             </div>
           </div>
 
-          <div className="flex mb-4">
-            <div className="mr-4 w-full">
-              <label
-                htmlFor="hora_solicitada"
-                className="block font-semibold text-white mb-1"
-              >
-                Hora solicitada:
-              </label>
-              <input
-                type="time"
-                id="hora_solicitada"
-                name="hora_solicitada"
-                value={patientData.hora_solicitada || "N/A"}
-                 
-                className={`border rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-                />
-              </div>
-
-            <div className="mr-4 w-full">
+          <div class="flex mb-4">
+            <div class="w-full mr-4">
               <label
                 htmlFor="fecha_solicitada"
                 className="block font-semibold text-white mb-1"
@@ -416,45 +426,246 @@ const Consultabitacora = () => {
                 id="fecha_solicitada"
                 name="fecha_solicitada"
                 value={patientData.fecha_solicitada || "N/A"}
-                 
-                className={`border rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-                />
-              </div>
+                readOnly
+                className={`border border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+              />
+            </div>
+
+            <div class="w-full mr-4">
+              <label
+                htmlFor="hora_solicitada"
+                className="block font-semibold text-white mb-1"
+              >
+                Hora solicitada:
+              </label>
+              <input
+                type="time"
+                id="hora_solicitada"
+                name="hora_solicitada"
+                value={patientData.hora_solicitada || "N/A"}
+                readOnly
+                className={`border border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+              />
+            </div>
 
             <div className="mr-4 w-full">
               <label
                 htmlFor="tiempo_estimado"
                 className="block font-semibold text-white mb-1"
               >
-                Tiempo estimado de cirugía:
+                Hora entr. cirugía:
               </label>
               <input
-              placeholder="Minutos"
+                placeholder="Minutos"
                 type="int"
                 id="tiempo_estimado"
                 name="tiempo_estimado"
                 value={patientData.tiempo_estimado || "N/A"}
-                 
-                className={`rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-                />
-              </div>
+                readOnly
+                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+              />
+            </div>
 
-            <div className="w-full">
+            <div className="mr-4 w-full">
               <label
-                htmlFor="turno_solicitado"
+                htmlFor="tiempo_estimado"
                 className="block font-semibold text-white mb-1"
               >
-                Turno solicitado:
+                Hora inicio Anes:
               </label>
               <input
-                id="turno_solicitado"
-                name="turno_solicitado"
-                value={patientData.turno_solicitado || "N/A"}
-                 
-                className={`rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-                >
-              </input>
+                placeholder="Minutos"
+                type="int"
+                id="tiempo_estimado"
+                name="tiempo_estimado"
+                value={patientData.tiempo_estimado || "N/A"}
+                readOnly
+                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+              />
             </div>
+
+            <div className="mr-4 w-full">
+              <label
+                htmlFor="tiempo_estimado"
+                className="block font-semibold text-white mb-1"
+              >
+                Tipo Anes:
+              </label>
+              <input
+                placeholder="Minutos"
+                type="int"
+                id="tiempo_estimado"
+                name="tiempo_estimado"
+                value={patientData.tiempo_estimado || "N/A"}
+                readOnly
+                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+              />
+            </div>
+
+            <div className="mr-4 w-full">
+              <label
+                htmlFor="tiempo_estimado"
+                className="block font-semibold text-white mb-1"
+              >
+                Hora termino Anes:
+              </label>
+              <input
+                placeholder="Minutos"
+                type="int"
+                id="tiempo_estimado"
+                name="tiempo_estimado"
+                value={patientData.tiempo_estimado || "N/A"}
+                readOnly
+                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+              />
+            </div>
+
+            <div className="mr-4" style={{ width: "50%" }}>
+              <label
+                htmlFor="tiempo_estimado"
+                className="block font-semibold text-white mb-1"
+              >
+                Hr Incisión:
+              </label>
+              <input
+                placeholder="Minutos"
+                type="int"
+                id="tiempo_estimado"
+                name="tiempo_estimado"
+                value={patientData.tiempo_estimado || "N/A"}
+                readOnly
+                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+              />
+            </div>
+          </div>
+
+          <div class="flex mb-4">
+            <div class="w-full mr-4">
+              <label
+                htmlFor="procedimientos_paciente"
+                className="block font-semibold text-white mb-1"
+              >
+                Enf. Quirirjica:
+              </label>
+              <input
+                id="procedimientos_paciente"
+                name="procedimientos_paciente"
+                value={patientData.procedimientos_paciente || "N/A"}
+                readOnly
+                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+              ></input>
+            </div>
+
+            <div class="w-full mr-4">
+              <label
+                htmlFor="procedimientos_paciente"
+                className="block font-semibold text-white mb-1"
+              >
+                Enf. Circulante:
+              </label>
+              <input
+                id="procedimientos_paciente"
+                name="procedimientos_paciente"
+                value={patientData.procedimientos_paciente || "N/A"}
+                readOnly
+                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+              ></input>
+            </div>
+
+            <div class="w-full mr-4">
+              <label
+                htmlFor="procedimientos_paciente"
+                className="block font-semibold text-white mb-1"
+              >
+                Anestesiólogo:
+              </label>
+              <input
+                id="procedimientos_paciente"
+                name="procedimientos_paciente"
+                value={patientData.procedimientos_paciente || "N/A"}
+                readOnly
+                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+              ></input>
+            </div>
+
+            <div class="w-full mr-4">
+              <label
+                htmlFor="procedimientos_paciente"
+                className="block font-semibold text-white mb-1"
+              >
+                Egresa a:
+              </label>
+              <input
+                id="procedimientos_paciente"
+                name="procedimientos_paciente"
+                value={patientData.procedimientos_paciente || "N/A"}
+                readOnly
+                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+              ></input>
+            </div>
+
+
+            <div class="w-full mr-4">
+              <label
+                htmlFor="tiempo_estimado"
+                className="block font-semibold text-white mb-1"
+              >
+                Hora term. anestesia:
+              </label>
+              <input
+                placeholder="Minutos"
+                type="int"
+                id="tiempo_estimado"
+                name="tiempo_estimado"
+                value={patientData.tiempo_estimado || "N/A"}
+                readOnly
+                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+              />
+            </div>
+
+            <div className="mr-4 w-full">
+              <label
+                htmlFor="tiempo_estimado"
+                className="block font-semibold text-white mb-1"
+              >
+                Hora salida paciente:
+              </label>
+              <input
+                placeholder="Minutos"
+                type="int"
+                id="tiempo_estimado"
+                name="tiempo_estimado"
+                value={patientData.tiempo_estimado || "N/A"}
+                readOnly
+                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+              />
+            </div>
+
+        
+
+            <div className="mr-4" style={{ width: "50%" }}>
+              <label
+                htmlFor="tiempo_estimado"
+                className="block font-semibold text-white mb-1"
+              >
+                Hr Cierre:
+              </label>
+              <input
+                placeholder="Minutos"
+                type="int"
+                id="tiempo_estimado"
+                name="tiempo_estimado"
+                value={patientData.tiempo_estimado || "N/A"}
+                readOnly
+                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+              />
+            </div>
+
+
+
+
+
+
           </div>
 
           <div className="flex mb-4">
@@ -469,9 +680,9 @@ const Consultabitacora = () => {
                 id="procedimientos_paciente"
                 name="procedimientos_paciente"
                 value={patientData.procedimientos_paciente || "N/A"}
-                className={`rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-                >
-              </input>
+                readOnly
+                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+              ></input>
             </div>
 
             <div className="mr-4" style={{ width: "15%" }}>
@@ -485,28 +696,10 @@ const Consultabitacora = () => {
                 id="procedimientos_extra"
                 name="procedimientos_extra"
                 value={patientData.procedimientos_extra || "N/A"}
-                 
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-              </input>
+                readOnly
+                className={`border border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+              ></input>
             </div>
-
-            <div className="mr-4" style={{ width: "14%" }}>
-              <label
-                htmlFor="req_insumo"
-                className="block font-semibold text-white mb-1"
-              >
-                Insumos:
-              </label>
-              <input
-                id="req_insumo"
-                name="req_insumo"
-                value={patientData.req_insumo || "N/A"}
-                 
-                className={`rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-                >
-              </input>
-              </div>
           </div>
 
           <div className="flex mb-4">
@@ -523,13 +716,15 @@ const Consultabitacora = () => {
                 name="diagnostico"
                 rows="4"
                 value={patientData.diagnostico || "N/A"}
-                 
-                className={`border rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-                >
-              </textarea>
+                readOnly
+                className={`border border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+              ></textarea>
             </div>
           </div>
         </div>
+<<<<<<< HEAD
+      </div>
+=======
         </div>
 
         {suspendModalOpen && (
@@ -597,6 +792,7 @@ const Consultabitacora = () => {
         </Modal>
       )}
 
+>>>>>>> 07b1ce5e33e9c83f34cac462822066cea3fb140e
     </Layout>
   );
 };
