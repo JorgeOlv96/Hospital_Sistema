@@ -85,18 +85,20 @@ const Consultabitacora = () => {
         throw new Error("Network response was not ok");
       }
       setSuspendModalOpen(false);
-      closeModal(); // Cerrar el modal después de eliminar
-      // Recargar la página después de eliminar
-      window.location.reload();
+      closeModal(); // Cerrar el modal después de suspender
+      // Redirigir a la página /bitacora/Bitaenfermeria
+      window.location.href = '/bitacora/Bitaenfermeria';
     } catch (error) {
       console.error("Error suspending appointment:", error);
     }
   };
+  
 
   return (
     <Layout>
       <div className="flex flex-col gap-2 mb-4">
         <h1 className="text-xl font-semibold">Consulta Paciente</h1>
+<<<<<<< HEAD
 
         <div className="flex my-4 space-x-4">
           <div>
@@ -112,6 +114,28 @@ const Consultabitacora = () => {
           </div>
         </div>
 
+=======
+       
+        <div className="flex my-4 justify-between">
+  <Link
+    to="/bitacora/Bitaenfermeria"
+    className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
+  >
+    <span style={{ display: "inline-flex", alignItems: "center" }}>
+      <span>&lt;</span>
+      <span style={{ marginLeft: "5px" }}>Regresar a bitácora</span>
+    </span>
+  </Link>
+  <button
+    onClick={handleSuspend}
+    className="bg-red-500 hover:bg-red-700 text-white py-2 px-4 rounded inline-flex items-center"
+  >
+    Suspender cirugía
+  </button>
+</div>
+
+        
+>>>>>>> a48c9707e45e115f154103fb2a8f0b8bc081aee2
         <div class="flex flex-col p-4 bg-[#80909C] rounded-lg ">
           <div class="flex mb-4">
             <div class="w-full mr-4">
@@ -698,7 +722,77 @@ const Consultabitacora = () => {
             </div>
           </div>
         </div>
+<<<<<<< HEAD
       </div>
+=======
+        </div>
+
+        {suspendModalOpen && (
+        <Modal
+          closeModal={() => setSuspendModalOpen(false)}
+          isOpen={suspendModalOpen}
+          title={"Suspender Cita"}
+          width={"max-w-lg"}
+        >
+          <div className="p-4">
+          <div className="flex flex-col">
+              <label className="block font-semibold text-gray-700 mb-2">
+                Motivo de suspensión:
+              </label>
+              <select
+                className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                value={suspendReason}
+                onChange={handleSuspendReasonChange}
+              >
+                <option value="">Selecciona una categoría</option>
+                <option value="Paciente">Paciente</option>
+                <option value="Administrativas">Administrativas</option>
+                <option value="Apoyo_clinico">Apoyo Clínico</option>
+                <option value="Team_quirurgico">Team Quirúrgico</option>
+                <option value="Infraestructura">Infraestructura</option>
+                <option value="Tiempo_quirurgico">Tiempo Quirúrgico</option>
+                <option value="Emergencias">Emergencias</option>
+                <option value="Gremiales">Gremiales</option>
+              </select>
+            </div>
+            <div className="flex flex-col mt-4">
+              <label className="block font-semibold text-gray-700 mb-2">
+                Detalle:
+              </label>
+              <select
+                className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                value={suspendDetail}
+                onChange={(e) => setSuspendDetail(e.target.value)}
+              >
+                <option value="">Selecciona un detalle</option>
+                {suspendDetailOptions.map((option, index) => (
+                  <option key={index} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="flex justify-end mt-4">
+              <button
+                onClick={() => setSuspendModalOpen(false)}
+                className="bg-[#001B58] bg-opacity-20 text-[#001B58] text-sm p-4 rounded-lg font-light mr-2"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleSuspendSubmit}
+                className="bg-red-600 bg-opacity-5 text-red-600 text-sm p-4 rounded-lg font-light ml-2"
+              >
+                Suspender
+              </button>
+            </div>
+
+          </div>
+        </Modal>
+      )}
+
+>>>>>>> a48c9707e45e115f154103fb2a8f0b8bc081aee2
     </Layout>
   );
 };

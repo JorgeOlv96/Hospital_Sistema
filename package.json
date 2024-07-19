@@ -35,6 +35,7 @@
     "react-spinners": "^0.13.8",
     "react-time-picker": "^7.0.0",
     "react-to-print": "^2.15.1",
+    "react-toastify": "^10.0.5",
     "react-tooltip": "^5.11.1",
     "react-window": "^1.8.10",
     "redux": "^4.2.1",
