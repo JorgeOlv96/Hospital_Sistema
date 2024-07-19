@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../../Layout";
 import Consultabitacora from "../../screens/BitacoraEnfermeria/Consultabitacora";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 function Bitacoraenfermeria() {
   const navigate = useNavigate();
@@ -93,12 +93,14 @@ function Bitacoraenfermeria() {
 
   return (
     <Layout>
-      <div className="flex flex-col gap-8 mb-8">
+      <div className="flex flex-col gap-4 mb-4">
         <h1 className="text-xl font-semibold">Bitacora Enfermería</h1>
 
-        <div className="flex mb-4 space-x-4">
-          {/* Código del filtro y otras entradas */}
-        </div>
+        <div className="my-4">
+        <Link to="/urgencias/Solicitudurgencia" className="btn btn-sm btn-secondary p-2 bg-red-500 text-white rounded-lg">
+          Agregar URGENCIA
+        </Link>
+      </div>
 
         {filteredAppointments.length === 0 ? (
           <div className="text-center text-gray-500 mt-4">

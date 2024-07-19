@@ -41,7 +41,7 @@ import Programaranestesiologo from './screens/Anestesio/Programaranestesiologo';
 import Bitacora from './screens/Bitacora';
 import Bitacoraenfermeria from './screens/BitacoraEnfermeria/Bitaenfermeria'
 import Consultabitacora from './screens/BitacoraEnfermeria/Consultabitacora';
-
+import Solicitudurgencia from './screens/Urgencias/Solicitudurgencia';
 
 
 function App() {
@@ -95,6 +95,7 @@ function App() {
           <Route path="/bitacora" element={<Bitacora /> } />
           <Route path="/bitacora/Bitaenfermeria" element={<Bitacoraenfermeria /> } />
           <Route path="/bitacora/Consultabitacora/:id" element={<Consultabitacora />} />
+          <Route path="/urgencias/Solicitudurgencia" element={<Solicitudurgencia />} />
           <Route path="/services" element={<Services />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/ayuda" element={<Ayuda />} /> 

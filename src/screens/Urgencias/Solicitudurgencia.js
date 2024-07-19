@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../../Layout";
-import { useNavigate } from "react-router-dom";
-import ProcedureSelect from "./ProcedureSelect";
+import { useNavigate, Link } from "react-router-dom";
+import ProcedureSelect from "../Solicitudes/ProcedureSelect";
 import AsyncSelect from "react-select/async";
 
-function CrearSolicitud() {
+function Solicitudurgencia() {
   const [selectedSolicitud] = useState(null);
   const [isFechaNacimientoValid, setIsFechaNacimientoValid] = useState(true);
 
@@ -300,11 +300,25 @@ function CrearSolicitud() {
 
   return (
     <Layout>
-      <div className="flex flex-col gap-4 mb-6">
-        <h1 className="text-xl font-semibold">Crear solicitud</h1>
+      <div className="flex flex-col gap-2 mb-4">
+        <h1 className="text-xl font-semibold">Crear solicitud de Urgencia</h1>
+
+        <div className="flex my-4 justify-between">
+          <Link
+            to="/bitacora/Bitaenfermeria"
+            className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
+          >
+            <span style={{ display: "inline-flex", alignItems: "center" }}>
+              <span>&lt;</span>
+              <span style={{ marginLeft: "5px" }}>Regresar a bitácora</span>
+            </span>
+          </Link>
+        </div>
+
+
 
       <form onSubmit={handleSubmit}>
-        <div class="flex flex-col p-4 bg-[#557996] rounded-lg ">
+        <div class="flex flex-col p-4 bg-[#CB7E7E] rounded-lg ">
           <div class="flex mb-4">
             <div class="w-full mr-4">
               <label
@@ -320,7 +334,7 @@ function CrearSolicitud() {
                 value={formData.fecha_solicitud}
                 onChange={handleInputChange}
                 readOnly
-                className={`"border-[#A8CBD5]"} rounded-lg px-3 py-2 w-full bg-[#A8CBD5]`}
+                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7]`}
                 />
                 
               </div>
@@ -803,4 +817,4 @@ function CrearSolicitud() {
   );
 }
 
-export default CrearSolicitud;
+export default Solicitudurgencia;

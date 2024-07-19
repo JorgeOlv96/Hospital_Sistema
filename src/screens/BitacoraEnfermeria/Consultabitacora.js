@@ -43,7 +43,7 @@ const Consultabitacora = () => {
       }
       const data = await response.json();
       // Assuming data is an array of objects with a 'motivo' property
-      const options = data.map(option => option.motivo); // Extracting 'motivo' from each object
+      const options = data.map((option) => option.motivo); // Extracting 'motivo' from each object
       setSuspendDetailOptions(options);
     } catch (error) {
       console.error("Error fetching suspend detail options:", error);
@@ -87,56 +87,37 @@ const Consultabitacora = () => {
       setSuspendModalOpen(false);
       closeModal(); // Cerrar el modal después de suspender
       // Redirigir a la página /bitacora/Bitaenfermeria
-      window.location.href = '/bitacora/Bitaenfermeria';
+      window.location.href = "/bitacora/Bitaenfermeria";
     } catch (error) {
       console.error("Error suspending appointment:", error);
     }
   };
-  
 
   return (
     <Layout>
       <div className="flex flex-col gap-2 mb-4">
         <h1 className="text-xl font-semibold">Consulta Paciente</h1>
-<<<<<<< HEAD
 
-        <div className="flex my-4 space-x-4">
-          <div>
-            <Link
-              to="/bitacora/Bitaenfermeria"
-              className="bg-[#365b77] hover:bg-[#7498b6]  text-white py-2 px-4 rounded inline-flex items-center"
-            >
-              <span style={{ display: "inline-flex", alignItems: "center" }}>
-                <span>&lt;</span>
-                <span style={{ marginLeft: "5px" }}>Regresar a bitácora</span>
-              </span>
-            </Link>
-          </div>
+        <div className="flex my-4 justify-between">
+          <Link
+            to="/bitacora/Bitaenfermeria"
+            className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
+          >
+            <span style={{ display: "inline-flex", alignItems: "center" }}>
+              <span>&lt;</span>
+              <span style={{ marginLeft: "5px" }}>Regresar a bitácora</span>
+            </span>
+          </Link>
+          
+          <button
+            onClick={handleSuspend}
+            className="bg-red-500 hover:bg-red-700 text-white py-2 px-4 rounded inline-flex items-center"
+          >
+            Suspender cirugía
+          </button>
         </div>
 
-=======
-       
-        <div className="flex my-4 justify-between">
-  <Link
-    to="/bitacora/Bitaenfermeria"
-    className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
-  >
-    <span style={{ display: "inline-flex", alignItems: "center" }}>
-      <span>&lt;</span>
-      <span style={{ marginLeft: "5px" }}>Regresar a bitácora</span>
-    </span>
-  </Link>
-  <button
-    onClick={handleSuspend}
-    className="bg-red-500 hover:bg-red-700 text-white py-2 px-4 rounded inline-flex items-center"
-  >
-    Suspender cirugía
-  </button>
-</div>
-
-        
->>>>>>> a48c9707e45e115f154103fb2a8f0b8bc081aee2
-        <div class="flex flex-col p-4 bg-[#80909C] rounded-lg ">
+        <div class="flex flex-col p-4 bg-[#85AD8D] rounded-lg ">
           <div class="flex mb-4">
             <div class="w-full mr-4">
               <label
@@ -151,7 +132,7 @@ const Consultabitacora = () => {
                 name="folio"
                 value={patientData.folio || "N/A"}
                 readOnly
-                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
               />
             </div>
 
@@ -166,7 +147,7 @@ const Consultabitacora = () => {
                 placeholder="Nombre del cirujano"
                 value={patientData.nombre_cirujano || "N/A"}
                 readOnly
-                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
               />
             </div>
           </div>
@@ -186,7 +167,7 @@ const Consultabitacora = () => {
                 name="ap_paterno"
                 value={patientData.ap_paterno || "N/A"}
                 readOnly
-                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
               />
             </div>
 
@@ -204,7 +185,7 @@ const Consultabitacora = () => {
                 name="ap_materno"
                 value={patientData.ap_materno || "N/A"}
                 readOnly
-                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
               />
             </div>
 
@@ -222,7 +203,7 @@ const Consultabitacora = () => {
                 name="nombre_paciente"
                 value={patientData.nombre_paciente || "N/A"}
                 readOnly
-                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
               />
             </div>
 
@@ -240,7 +221,7 @@ const Consultabitacora = () => {
                 name="no_expediente"
                 value={patientData.no_expediente || "N/A"}
                 readOnly
-                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
               />
             </div>
 
@@ -258,7 +239,7 @@ const Consultabitacora = () => {
                 name="edad"
                 value={patientData.edad || "N/A"}
                 readOnly
-                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
               />
             </div>
 
@@ -274,7 +255,7 @@ const Consultabitacora = () => {
                 name="sexo"
                 value={patientData.sexo || "N/A"}
                 readOnly
-                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
               ></input>
             </div>
 
@@ -291,7 +272,7 @@ const Consultabitacora = () => {
                 name="sala_quirofano"
                 value={patientData.sala_quirofano || "N/A"}
                 readOnly
-                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
               ></input>
             </div>
           </div>
@@ -310,7 +291,7 @@ const Consultabitacora = () => {
                 name="fecha_nacimiento"
                 value={patientData.fecha_nacimiento || "N/A"}
                 readOnly
-                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
               />
             </div>
 
@@ -326,7 +307,7 @@ const Consultabitacora = () => {
                 name="tipo_admision"
                 value={patientData.tipo_admision || "N/A"}
                 readOnly
-                className={`border border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
               ></input>
             </div>
 
@@ -342,7 +323,7 @@ const Consultabitacora = () => {
                 name="tipo_intervencion"
                 value={patientData.tipo_intervencion || "N/A"}
                 readOnly
-                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
               ></input>
             </div>
 
@@ -358,7 +339,7 @@ const Consultabitacora = () => {
                 name="nombre_especialidad"
                 value={patientData.nombre_especialidad || "N/A"}
                 readOnly
-                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
               ></input>
             </div>
 
@@ -374,7 +355,7 @@ const Consultabitacora = () => {
                 name="turno_solicitado"
                 value={patientData.turno_solicitado || "N/A"}
                 readOnly
-                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
               ></input>
             </div>
 
@@ -392,7 +373,7 @@ const Consultabitacora = () => {
                 name="tiempo_estimado"
                 value={patientData.tiempo_estimado || "N/A"}
                 readOnly
-                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
               />
             </div>
 
@@ -408,7 +389,7 @@ const Consultabitacora = () => {
                 name="req_insumo"
                 value={patientData.req_insumo || "N/A"}
                 readOnly
-                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
               ></input>
             </div>
           </div>
@@ -427,7 +408,7 @@ const Consultabitacora = () => {
                 name="fecha_solicitada"
                 value={patientData.fecha_solicitada || "N/A"}
                 readOnly
-                className={`border border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
               />
             </div>
 
@@ -444,7 +425,7 @@ const Consultabitacora = () => {
                 name="hora_solicitada"
                 value={patientData.hora_solicitada || "N/A"}
                 readOnly
-                className={`border border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
               />
             </div>
 
@@ -462,7 +443,7 @@ const Consultabitacora = () => {
                 name="tiempo_estimado"
                 value={patientData.tiempo_estimado || "N/A"}
                 readOnly
-                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
               />
             </div>
 
@@ -480,7 +461,7 @@ const Consultabitacora = () => {
                 name="tiempo_estimado"
                 value={patientData.tiempo_estimado || "N/A"}
                 readOnly
-                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
               />
             </div>
 
@@ -498,7 +479,7 @@ const Consultabitacora = () => {
                 name="tiempo_estimado"
                 value={patientData.tiempo_estimado || "N/A"}
                 readOnly
-                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
               />
             </div>
 
@@ -516,7 +497,7 @@ const Consultabitacora = () => {
                 name="tiempo_estimado"
                 value={patientData.tiempo_estimado || "N/A"}
                 readOnly
-                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
               />
             </div>
 
@@ -534,7 +515,7 @@ const Consultabitacora = () => {
                 name="tiempo_estimado"
                 value={patientData.tiempo_estimado || "N/A"}
                 readOnly
-                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
               />
             </div>
           </div>
@@ -552,7 +533,7 @@ const Consultabitacora = () => {
                 name="procedimientos_paciente"
                 value={patientData.procedimientos_paciente || "N/A"}
                 readOnly
-                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
               ></input>
             </div>
 
@@ -568,7 +549,7 @@ const Consultabitacora = () => {
                 name="procedimientos_paciente"
                 value={patientData.procedimientos_paciente || "N/A"}
                 readOnly
-                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
               ></input>
             </div>
 
@@ -584,7 +565,7 @@ const Consultabitacora = () => {
                 name="procedimientos_paciente"
                 value={patientData.procedimientos_paciente || "N/A"}
                 readOnly
-                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
               ></input>
             </div>
 
@@ -600,10 +581,9 @@ const Consultabitacora = () => {
                 name="procedimientos_paciente"
                 value={patientData.procedimientos_paciente || "N/A"}
                 readOnly
-                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
               ></input>
             </div>
-
 
             <div class="w-full mr-4">
               <label
@@ -619,7 +599,7 @@ const Consultabitacora = () => {
                 name="tiempo_estimado"
                 value={patientData.tiempo_estimado || "N/A"}
                 readOnly
-                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
               />
             </div>
 
@@ -637,11 +617,9 @@ const Consultabitacora = () => {
                 name="tiempo_estimado"
                 value={patientData.tiempo_estimado || "N/A"}
                 readOnly
-                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
               />
             </div>
-
-        
 
             <div className="mr-4" style={{ width: "50%" }}>
               <label
@@ -657,15 +635,9 @@ const Consultabitacora = () => {
                 name="tiempo_estimado"
                 value={patientData.tiempo_estimado || "N/A"}
                 readOnly
-                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
               />
             </div>
-
-
-
-
-
-
           </div>
 
           <div className="flex mb-4">
@@ -681,7 +653,7 @@ const Consultabitacora = () => {
                 name="procedimientos_paciente"
                 value={patientData.procedimientos_paciente || "N/A"}
                 readOnly
-                className={`border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
               ></input>
             </div>
 
@@ -697,7 +669,7 @@ const Consultabitacora = () => {
                 name="procedimientos_extra"
                 value={patientData.procedimientos_extra || "N/A"}
                 readOnly
-                className={`border border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
               ></input>
             </div>
           </div>
@@ -717,17 +689,14 @@ const Consultabitacora = () => {
                 rows="4"
                 value={patientData.diagnostico || "N/A"}
                 readOnly
-                className={`border border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
+                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
               ></textarea>
             </div>
           </div>
         </div>
-<<<<<<< HEAD
       </div>
-=======
-        </div>
 
-        {suspendModalOpen && (
+      {suspendModalOpen && (
         <Modal
           closeModal={() => setSuspendModalOpen(false)}
           isOpen={suspendModalOpen}
@@ -735,7 +704,7 @@ const Consultabitacora = () => {
           width={"max-w-lg"}
         >
           <div className="p-4">
-          <div className="flex flex-col">
+            <div className="flex flex-col">
               <label className="block font-semibold text-gray-700 mb-2">
                 Motivo de suspensión:
               </label>
@@ -787,12 +756,9 @@ const Consultabitacora = () => {
                 Suspender
               </button>
             </div>
-
           </div>
         </Modal>
       )}
-
->>>>>>> a48c9707e45e115f154103fb2a8f0b8bc081aee2
     </Layout>
   );
 };

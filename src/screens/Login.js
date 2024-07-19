@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import '../../src/IndexPage.css'; // Importa el CSS del índice
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "../../src/IndexPage.css"; // Importa el CSS del índice
 
 function Login() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
-  const [error, setError] = useState(''); // Para manejar el error general del login
+  const [error, setError] = useState(""); // Para manejar el error general del login
 
   const validateForm = () => {
     const newErrors = {};
@@ -27,10 +27,10 @@ function Login() {
     // Validar el formulario
     if (validateForm()) {
       try {
-        const response = await fetch('http://localhost:4000/api/auth/login', {
-          method: 'POST',
+        const response = await fetch("http://localhost:4000/api/auth/login", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({ email, password }),
         });
@@ -39,14 +39,14 @@ function Login() {
         console.log("Datos validados y enviados:", { email, password });
 
         if (response.ok) {
-          localStorage.setItem('token', data.token);
-          navigate('/dashboard');
+          localStorage.setItem("token", data.token);
+          navigate("/dashboard");
         } else {
-          setError(data.message || 'Error en el inicio de sesión');
+          setError(data.message || "Correo electrónico o contraseña inválidos");
         }
       } catch (err) {
-        console.error('Error en el inicio de sesión:', err);
-        setError('Error en el inicio de sesión. Inténtalo de nuevo más tarde.');
+        console.error("Error en el inicio de sesión:", err);
+        setError("Error en el inicio de sesión. Inténtalo de nuevo más tarde.");
       }
     } else {
       console.log("Datos inválidos");
@@ -54,46 +54,63 @@ function Login() {
   };
 
   return (
-    <div className="w-full h-screen flex-colo bg-dry"> {/* Asegúrate de tener la clase 'bg-dry' para el fondo */}
-      <form
-        className="w-2/5 p-8 rounded-2xl mx-auto bg-white flex-colo"
-        onSubmit={handleLogin}
-      >
+    <div className="w-full h-screen flex-colo bg-dry">
+      <div class="flex justify-center mb-6">
         <img
           src="/images/logologin.png"
           alt="logo"
           className="w-90 h-20 object-contain"
         />
-  
+      </div>
+
+      <form
+        className="w-3/4 sm:w-1/2 md:w-1/4 p-6 rounded-2xl mx-auto bg-white flex-colo"
+        onSubmit={handleLogin}
+      >
         <div className="flex flex-col gap-4 w-full mb-6">
           <input
             label="Email"
             type="email"
             color={true}
-            placeholder={'usuario@dominio.com'}
+            placeholder={"usuario@dominio.com"}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className={`w-full p-3 border ${errors.email ? 'border-red-500' : 'border-gray-300'} rounded-lg`}
+            className={`w-full p-3 border ${
+              errors.email ? "border-red-500" : "border-gray-300"
+            } rounded-lg`}
           />
           {errors.email && <span className="text-red-500">{errors.email}</span>}
           <input
             label="Password"
             type="password"
             color={true}
-            placeholder={'*********'}
+            placeholder={"*********"}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className={`w-full p-3 border ${errors.password ? 'border-red-500' : 'border-gray-300'} rounded-lg`}
+            className={`w-full p-3 border ${
+              errors.password ? "border-red-500" : "border-gray-300"
+            } rounded-lg`}
           />
-          {errors.password && <span className="text-red-500">{errors.password}</span>}
+          {errors.password && (
+            <span className="text-red-500">{errors.password}</span>
+          )}
         </div>
-        <button type="submit" className="w-full p-3 bg-[#001B58] text-white rounded-lg">
-          Login
+        <button
+          type="submit"
+          className="w-full p-3 bg-[#001B58] text-white rounded-lg"
+        >
+          Iniciar sesión
         </button>
         {error && <div className="mt-4 text-red-500">{error}</div>}
         <div className="mt-4">
           <p>
-            No tienes cuenta? <span onClick={() => navigate('/register')} className="text-blue-500 cursor-pointer">Registrar usuario</span>
+            No tienes cuenta?{" "}
+            <span
+              onClick={() => navigate("/register")}
+              className="text-blue-500 cursor-pointer"
+            >
+              Registrar usuario
+            </span>
           </p>
         </div>
       </form>
