@@ -14,13 +14,14 @@ const Consultabitacora = () => {
     enf_quirurgica:"",
     enf_circulante:""
   });
-  const [updatedData, setUpdatedData] = useState(null);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [suspendModalOpen, setSuspendModalOpen] = useState(false);
   const [suspendReason, setSuspendReason] = useState("");
   const [suspendDetail, setSuspendDetail] = useState("");
   const [suspendDetailOptions, setSuspendDetailOptions] = useState([]);
+  const [error, setError] = useState(""); // Estado para mostrar errores
+
 
   useEffect(() => {
     const fetchAppointmentData = async () => {
@@ -77,6 +78,10 @@ const Consultabitacora = () => {
     setSuspendModalOpen(false);
   };
   const handleSuspendSubmit = async () => {
+    if (!suspendReason || !suspendDetail) {
+      setError("Por favor, selecciona un motivo y un detalle de suspensión.");
+      return;
+    }
     try {
       const response = await fetch(
         `http://localhost:4000/api/solicitudes/suspender/${id}`,
@@ -474,13 +479,13 @@ const Consultabitacora = () => {
                 htmlFor="hora_solicitada"
                 className="block font-semibold text-white mb-1"
               >
-                Hora solicitada:
+                Hora de cirugía:
               </label>
               <input
                 type="time"
-                id="hora_solicitada"
-                name="hora_solicitada"
-                value={patientData.hora_solicitada || "N/A"}
+                id="hora_asignada"
+                name="hora_asignada"
+                value={patientData.hora_asignada || "N/A"}
                 readOnly
                 className={`border border  "border-red-500" : "border-gray-200"} rounded-lg px-3 py-2 w-full bg-[#DADADA] cursor-default`}
               />
@@ -781,7 +786,7 @@ const Consultabitacora = () => {
           width={"max-w-lg"}
         >
           <div className="p-4">
-          <div className="flex flex-col">
+            <div className="flex flex-col">
               <label className="block font-semibold text-gray-700 mb-2">
                 Motivo de suspensión:
               </label>
@@ -819,6 +824,13 @@ const Consultabitacora = () => {
               </select>
             </div>
 
+            {/* Mensaje de error */}
+            {error && (
+              <div className="mt-4 text-red-600">
+                {error}
+              </div>
+            )}
+
             <div className="flex justify-end mt-4">
               <button
                 onClick={() => setSuspendModalOpen(false)}
@@ -833,7 +845,6 @@ const Consultabitacora = () => {
                 Suspender
               </button>
             </div>
-
           </div>
         </Modal>
       )}
