@@ -146,7 +146,7 @@ function Solicitudes() {
       case 'pendiente':
         return { backgroundColor: '#FC8181' }; // Rojo claro
       case 'pre-programada':
-        return { backgroundColor: '#F7BAEC' }; // Rosa claro
+        return { backgroundColor: '#06ABC9' }; // Rosa claro
       default:
         // Aquí puedes manejar el caso por defecto
       

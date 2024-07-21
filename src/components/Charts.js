@@ -1,3 +1,4 @@
+// src/components/Charts.js
 import React from 'react';
 import Chart from 'react-apexcharts';
 
@@ -27,18 +28,7 @@ export function DashboardSmallChart({ data, colors }) {
     },
     xaxis: {
       categories: [
-        'Jan',
-        'Feb',
-        'Mar',
-        'Apr',
-        'May',
-        'Jun',
-        'Jul',
-        'Aug',
-        'Sep',
-        'Oct',
-        'Nov',
-        'Dec',
+        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
       ],
       labels: {
         show: false,
@@ -47,7 +37,6 @@ export function DashboardSmallChart({ data, colors }) {
         show: false,
       },
     },
-
     yaxis: {
       show: false,
     },
@@ -55,15 +44,11 @@ export function DashboardSmallChart({ data, colors }) {
       enabled: false,
     },
     tooltip: {
-      custom: function ({ series, seriesIndex, dataPointIndex, w }) {
+      custom: function ({ series, seriesIndex, dataPointIndex }) {
         return (
-          '<div className="bg-white py-2 px-2 text-xs border-[.5px] border-border">' +
-          'Total:' +
-          ' ' +
-          '<span className="font-semibold">' +
-          series[seriesIndex][dataPointIndex] +
-          '</span>' +
-          '</div>'
+          `<div className="bg-white py-2 px-2 text-xs border-[.5px] border-border">
+            Total: <span className="font-semibold">${series[seriesIndex][dataPointIndex]}</span>
+          </div>`
         );
       },
     },
@@ -79,6 +64,7 @@ export function DashboardSmallChart({ data, colors }) {
     },
     colors: [colors],
   };
+  
   const series = [
     {
       name: 'series-1',
@@ -120,18 +106,7 @@ export function DashboardBigChart() {
     },
     xaxis: {
       categories: [
-        'Jan',
-        'Feb',
-        'Mar',
-        'Apr',
-        'May',
-        'Jun',
-        'Jul',
-        'Aug',
-        'Sep',
-        'Oct',
-        'Nov',
-        'Dec',
+        'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
       ],
       labels: {
         show: true,
@@ -145,7 +120,6 @@ export function DashboardBigChart() {
         show: false,
       },
     },
-
     yaxis: {
       show: true,
       labels: {
@@ -164,15 +138,11 @@ export function DashboardBigChart() {
       enabled: false,
     },
     tooltip: {
-      custom: function ({ series, seriesIndex, dataPointIndex, w }) {
+      custom: function ({ series, seriesIndex, dataPointIndex }) {
         return (
-          '<div className="bg-white py-2 px-2 text-xs border-[.5px] border-border">' +
-          'Total:' +
-          ' ' +
-          '<span className="font-semibold">' +
-          series[seriesIndex][dataPointIndex] +
-          '</span>' +
-          '</div>'
+          `<div className="bg-white py-2 px-2 text-xs border-[.5px] border-border">
+            Total: <span className="font-semibold">${series[seriesIndex][dataPointIndex]}</span>
+          </div>`
         );
       },
     },
@@ -186,7 +156,6 @@ export function DashboardBigChart() {
       curve: 'smooth',
       width: 1,
     },
-
     fill: {
       type: 'gradient',
       gradient: {
@@ -201,6 +170,7 @@ export function DashboardBigChart() {
     },
     colors: ['#66B5A3'],
   };
+
   const series = [
     {
       name: 'Total',

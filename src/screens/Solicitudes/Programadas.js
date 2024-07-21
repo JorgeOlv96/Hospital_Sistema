@@ -104,7 +104,7 @@ function Solicitudesprogramadas() {
 
   return (
     <Layout>
-      <div className="flex flex-col gap-8 mb-8">
+      <div className="flex flex-col gap-2 mb-4">
         <h1 className="text-xl font-semibold">Solicitudes programadas</h1>
         <div className="flex my-4 space-x-4">
           <div>
@@ -119,7 +119,7 @@ function Solicitudesprogramadas() {
           <div>
             <Link
               to="/solicitudes/Programarsolicitud"
-              className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
+              className="bg-[#06ABC9] hover:bg-[#00C5E8] text-white py-2 px-4 rounded inline-flex items-center"
             >
               <span>Ver todas las pre-programadas</span>
             </Link>
@@ -128,7 +128,7 @@ function Solicitudesprogramadas() {
           <div>
             <Link
               to="/solicitudes/Solicitudsuspendida"
-              className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
+              className="bg-[#D87D09] hover:bg-[#BF6E07] text-white py-2 px-4 rounded inline-flex items-center"
             >
               <span>Ver todas las suspendidas</span>
             </Link>
