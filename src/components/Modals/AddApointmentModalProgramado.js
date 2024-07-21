@@ -18,6 +18,7 @@ function AddAppointmentModalProgramado({
   const [suspendReason, setSuspendReason] = useState("");
   const [suspendDetail, setSuspendDetail] = useState("");
   const [suspendDetailOptions, setSuspendDetailOptions] = useState([]);
+  const [error, setError] = useState("");
   const modalRef = useRef(null);
 
   const handleChange = (e) => {
@@ -136,6 +137,10 @@ function AddAppointmentModalProgramado({
   };
 
   const handleSuspendSubmit = async () => {
+    if (!suspendReason || !suspendDetail) {
+      setError("Por favor, selecciona un motivo y un detalle de suspensión.");
+      return;
+    }
     try {
       const response = await fetch(
         `http://localhost:4000/api/solicitudes/suspender/${appointmentId}`,
@@ -342,6 +347,28 @@ function AddAppointmentModalProgramado({
             </div>
           </div>
           
+          <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
+            <div className="flex mb-4">
+              <div className="mr-4 w-full">
+                <label className="block font-semibold text-gray-700 mb-2">
+                  Procedimiento principal contemplado:
+                </label>
+                <p className="bg-gray-200 p-3 rounded-lg">
+                  {patientData?.procedimientos_paciente || "N/A"}
+                </p>
+              </div>
+
+              <div className="w-full">
+                <label className="block font-semibold text-gray-700 mb-2">
+                  Procedimientos adicionales: 
+                </label>
+                <p className="bg-gray-200 p-3 rounded-lg">
+                  {patientData?.procedimientos_extra}
+                </p>
+              </div>
+            </div>
+          </div>
+
           <div className="flex justify-between mt-8">
             <button
               onClick={handleSuspend}
@@ -413,6 +440,11 @@ function AddAppointmentModalProgramado({
                 ))}
               </select>
             </div>
+            {error && (
+              <div className="mt-4 text-red-600">
+                {error}
+              </div>
+            )}
 
             <div className="flex justify-end mt-4">
               <button

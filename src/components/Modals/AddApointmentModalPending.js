@@ -365,10 +365,10 @@ function AddAppointmentModalPending({
             <div className="flex mb-4">
               <div className="mr-4 w-full">
                 <label className="block font-semibold text-gray-700 mb-2">
-                  Diagnóstico
+                  Procedimiento principal contemplado:
                 </label>
                 <p className="bg-gray-200 p-3 rounded-lg">
-                  {patientData?.diagnostico || "N/A"}
+                  {patientData?.procedimientos_paciente || "N/A"}
                 </p>
               </div>
 
