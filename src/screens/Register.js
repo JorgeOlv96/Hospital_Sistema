@@ -76,32 +76,50 @@ function Register() {
   };
 
   return (
-    <div className="w-full h-screen flex-colo bg-dry">
-      <div class="flex justify-center mb-6">
-        <img
-          src="/images/logologin.png"
-          alt="logo"
-          className="w-90 h-20 object-contain"
-        />
-      </div>
+    <div
+  className="w-full h-screen flex-colo relative"
+  style={{
+    backgroundImage: "url(/images/hospital.jpeg)",
+    backgroundSize: "cover",
+    backgroundPosition: "center"
+  }}
+>
+  {/* Overlay */}
+  <div
+    className="absolute top-0 left-0 w-full h-full"
+    style={{
+      background: "rgba(146, 146, 146, 0.7)",
+      zIndex: 1, // Asegúrate de que el overlay esté detrás del contenido
+    }}
+  />
 
-      <form
-        className="w-3/4 sm:w-1/2 md:w-1/4 p-6 rounded-2xl mx-auto bg-white flex-colo"
-        onSubmit={handleRegister}
-      >
-        {error && <p className="text-red-500">{error}</p>}
-        <div className="flex flex-col gap-4 w-full mb-6">
-          <input
-            type="text"
-            placeholder="Nombre(s)"
-            value={nombre}
-            onChange={(e) => setNombre(e.target.value)}
-            className={`w-full p-3 border ${
-              errors.nombre ? "border-red-500" : "border-gray-300"
-            } rounded-lg`}
-          />
-          {errors.nombre && (
-            <span className="text-red-500">{errors.nombre}</span>
+  {/* Contenido */}
+  <div className="relative z-10 flex flex-col items-center justify-center w-full h-full">
+    <div className="flex justify-center mb-6">
+      <img
+        src="/images/logologin.png"
+        alt="logo"
+        className="w-90 h-20 object-contain"
+      />
+    </div>
+
+    <form
+      className="w-3/4 sm:w-1/2 md:w-1/4 p-6 rounded-2xl mx-auto bg-white flex-colo"
+      onSubmit={handleRegister}
+    >
+      {error && <p className="text-red-500">{error}</p>}
+      <div className="flex flex-col gap-4 w-full mb-6">
+        <input
+          type="text"
+          placeholder="Nombre(s)"
+          value={nombre}
+          onChange={(e) => setNombre(e.target.value)}
+          className={`w-full p-3 border ${
+            errors.nombre ? "border-red-500" : "border-gray-300"
+          } rounded-lg`}
+        />
+        {errors.nombre && (
+          <span className="text-red-500">{errors.nombre}</span>
           )}
           <input
             type="text"
@@ -188,12 +206,12 @@ function Register() {
               onClick={() => navigate("/login")}
             >
               Inicia sesión
-            </span>
-          </p>
-        </div>
-      </form>
-    </div>
+              </span>
+        </p>
+      </div>
+    </form>
+  </div>
+</div>
   );
 }
-
 export default Register;

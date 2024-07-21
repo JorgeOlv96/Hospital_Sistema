@@ -54,67 +54,87 @@ function Login() {
   };
 
   return (
-    <div className="w-full h-screen flex-colo bg-dry">
-      <div class="flex justify-center mb-6">
-        <img
-          src="/images/logologin.png"
-          alt="logo"
-          className="w-90 h-20 object-contain"
-        />
-      </div>
+    <div
+  className="w-full h-screen flex-colo relative"
+  style={{ 
+    backgroundImage: "url(/images/hospital.jpeg)",
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+  }}
+>
+  {/* Overlay con pseudo-elemento */}
+  <div
+    className="absolute top-0 left-0 w-full h-full"
+    style={{
+      background: "rgba(146, 146, 146, 0.7)",
+      zIndex: 1, // Asegúrate de que el overlay esté detrás del contenido
+    }}
+  />
 
-      <form
-        className="w-3/4 sm:w-1/2 md:w-1/4 p-6 rounded-2xl mx-auto bg-white flex-colo"
-        onSubmit={handleLogin}
-      >
-        <div className="flex flex-col gap-4 w-full mb-6">
-          <input
-            label="Email"
-            type="email"
-            color={true}
-            placeholder={"usuario@dominio.com"}
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className={`w-full p-3 border ${
-              errors.email ? "border-red-500" : "border-gray-300"
-            } rounded-lg`}
-          />
-          {errors.email && <span className="text-red-500">{errors.email}</span>}
-          <input
-            label="Password"
-            type="password"
-            color={true}
-            placeholder={"*********"}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className={`w-full p-3 border ${
-              errors.password ? "border-red-500" : "border-gray-300"
-            } rounded-lg`}
-          />
-          {errors.password && (
-            <span className="text-red-500">{errors.password}</span>
-          )}
-        </div>
-        <button
-          type="submit"
-          className="w-full p-3 bg-[#001B58] text-white rounded-lg"
-        >
-          Iniciar sesión
-        </button>
-        {error && <div className="mt-4 text-red-500">{error}</div>}
-        <div className="mt-4">
-          <p>
-            No tienes cuenta?{" "}
-            <span
-              onClick={() => navigate("/register")}
-              className="text-blue-500 cursor-pointer"
-            >
-              Registrar usuario
-            </span>
-          </p>
-        </div>
-      </form>
+  {/* Contenido */}
+  <div className="relative z-10 flex flex-col items-center justify-center w-full h-full">
+    <div className="flex justify-center mb-6">
+      <img
+        src="/images/logologin.png"
+        alt="logo"
+        className="w-90 h-20 object-contain"
+      />
     </div>
+
+    <form
+      className="w-3/4 sm:w-1/2 md:w-1/4 p-6 rounded-2xl mx-auto bg-white flex-colo"
+      onSubmit={handleLogin}
+    >
+      <div className="flex flex-col gap-4 w-full mb-6">
+        <input
+          label="Email"
+          type="email"
+          color={true}
+          placeholder={"usuario@dominio.com"}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className={`w-full p-3 border ${
+            errors.email ? "border-red-500" : "border-gray-300"
+          } rounded-lg`}
+        />
+        {errors.email && <span className="text-red-500">{errors.email}</span>}
+        <input
+          label="Password"
+          type="password"
+          color={true}
+          placeholder={"*********"}
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className={`w-full p-3 border ${
+            errors.password ? "border-red-500" : "border-gray-300"
+          } rounded-lg`}
+        />
+        {errors.password && (
+          <span className="text-red-500">{errors.password}</span>
+        )}
+      </div>
+      <button
+        type="submit"
+        className="w-full p-3 bg-[#001B58] text-white rounded-lg"
+      >
+        Iniciar sesión
+      </button>
+      {error && <div className="mt-4 text-red-500">{error}</div>}
+      <div className="mt-4">
+        <p>
+          No tienes cuenta?{" "}
+          <span
+            onClick={() => navigate("/register")}
+            className="text-blue-500 cursor-pointer"
+          >
+            Registrar usuario
+          </span>
+        </p>
+      </div>
+    </form>
+  </div>
+</div>
+
   );
 }
 

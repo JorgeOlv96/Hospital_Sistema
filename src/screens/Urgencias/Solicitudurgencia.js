@@ -373,7 +373,7 @@ function Solicitudurgencia() {
                 onChange={handleInputChange}
                 className={`border ${errors.ap_paterno ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
                 />
-                {errors.ap_paterno && <p className="text-red-500">{errors.ap_paterno}</p>}
+                {errors.ap_paterno && <p className="text-[#423535]">{errors.ap_paterno}</p>}
               </div>
             <div class="w-full mr-4">
               <label
@@ -391,7 +391,7 @@ function Solicitudurgencia() {
                 onChange={handleInputChange}
                 className={`border ${errors.ap_materno ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
                 />
-                {errors.ap_materno && <p className="text-red-500">{errors.ap_materno}</p>}
+                {errors.ap_materno && <p className="text-[#423535]">{errors.ap_materno}</p>}
               </div>
 
             <div class="w-full mr-4">
@@ -410,7 +410,7 @@ function Solicitudurgencia() {
                 onChange={handleInputChange}
                 className={`border ${errors.nombre_paciente ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
                 />
-                {errors.nombre_paciente && <p className="text-red-500">{errors.nombre_paciente}</p>}
+                {errors.nombre_paciente && <p className="text-[#423535]">{errors.nombre_paciente}</p>}
               </div>
 
             <div className="mr-4 w-full">
@@ -462,7 +462,7 @@ function Solicitudurgencia() {
                 <option value="H">SALA H</option>
                 <option value="RX">SALA RX</option>
               </select>
-                {errors.nombre_paciente && <p className="text-red-500">{errors.nombre_paciente}</p>}
+                {errors.nombre_paciente && <p className="text-[#423535]">{errors.nombre_paciente}</p>}
             </div>
           </div>
 
@@ -487,7 +487,7 @@ function Solicitudurgencia() {
                 }`}
               />
               {!isFechaNacimientoValid && (
-                <p className="text-red-500 mt-1">
+                <p className="text-[#423535] mt-1">
                   La fecha de nacimiento no puede ser en el futuro.
                 </p>
               )}
@@ -530,7 +530,7 @@ function Solicitudurgencia() {
                 <option value="Femenino">Femenino</option>
                 <option value="Otro">Otro</option>
               </select>
-              {errors.sexo && <p className="text-red-500">{errors.sexo}</p>}
+              {errors.sexo && <p className="text-[#423535]">{errors.sexo}</p>}
             </div>
 
             <div className="w-full" style={{ width: "105%" }}>
@@ -546,7 +546,7 @@ function Solicitudurgencia() {
                 placeholder="Nombre del cirujano"
                 className={` ${errors.nombre_cirujano ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
                 />
-                {errors.nombre_cirujano && <p className="text-red-500">{errors.nombre_cirujano}</p>}
+                {errors.nombre_cirujano && <p className="text-[#423535]">{errors.nombre_cirujano}</p>}
               </div>
           </div>
 
@@ -570,7 +570,7 @@ function Solicitudurgencia() {
                 <option value="Consulta externa">Consulta externa</option>
                 <option value="UrgenciaS">Urgencias</option>
               </select>
-                {errors.ap_materno && <p className="text-red-500">{errors.ap_materno}</p>}
+                {errors.ap_materno && <p className="text-[#423535]">{errors.ap_materno}</p>}
               </div>
 
             <div className="mr-4 w-full">
@@ -592,7 +592,7 @@ function Solicitudurgencia() {
                 <option value="Procedimiento">Procedimiento</option>
                 <option value="Cirugía ambulatoria">Cirugía ambulatoria</option>
               </select>
-              {errors.tipo_intervencion && <p className="text-red-500">{errors.tipo_intervencion}</p>}
+              {errors.tipo_intervencion && <p className="text-[#423535]">{errors.tipo_intervencion}</p>}
             </div>
 
             <div className="mr-4 w-full">
@@ -616,7 +616,7 @@ function Solicitudurgencia() {
                   </option>
                 ))}
               </select>
-              {errors.nombre_especialidad && <p className="text-red-500">{errors.nombre_especialidad}</p>}
+              {errors.nombre_especialidad && <p className="text-[#423535]">{errors.nombre_especialidad}</p>}
               </div>
 
             <div className="w-full">
@@ -659,7 +659,7 @@ function Solicitudurgencia() {
                 onChange={handleInputChange}
                 className={`border ${errors.hora_solicitada ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
                 />
-                {errors.hora_solicitada && <p className="text-red-500">{errors.hora_solicitada}</p>}
+                {errors.hora_solicitada && <p className="text-[#423535]">{errors.hora_solicitada}</p>}
               </div>
 
             <div className="mr-4 w-full">
@@ -677,7 +677,7 @@ function Solicitudurgencia() {
                 onChange={handleInputChange}
                 className={`border ${errors.fecha_solicitada ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
                 />
-                {errors.fecha_solicitada && <p className="text-red-500">{errors.fecha_solicitada}</p>}
+                {errors.fecha_solicitada && <p className="text-[#423535]">{errors.fecha_solicitada}</p>}
               </div>
 
             <div className="mr-4 w-full">
@@ -696,7 +696,7 @@ function Solicitudurgencia() {
                 onChange={handleInputChange}
                 className={`border ${errors.tiempo_estimado ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
                 />
-                {errors.tiempo_estimado && <p className="text-red-500">{errors.tiempo_estimado}</p>}
+                {errors.tiempo_estimado && <p className="text-[#423535]">{errors.tiempo_estimado}</p>}
               </div>
 
             <div className="w-full">
@@ -719,7 +719,7 @@ function Solicitudurgencia() {
                 <option value="Nocturno">Nocturno</option>
                 <option value="Especial">Especial</option>
               </select>
-              {errors.turno_solicitado && <p className="text-red-500">{errors.turno_solicitado}</p>}
+              {errors.turno_solicitado && <p className="text-[#423535]">{errors.turno_solicitado}</p>}
             </div>
           </div>
 
@@ -732,7 +732,7 @@ function Solicitudurgencia() {
                 Procedimientos del paciente:
               </label>
               <ProcedureSelect onChange={handleProcedureChange} />
-              {errors.procedimientos_paciente && <p className="text-red-500">{errors.procedimientos_paciente}</p>}
+              {errors.procedimientos_paciente && <p className="text-[#423535]">{errors.procedimientos_paciente}</p>}
             </div>
 
             <div className="mr-4" style={{ width: "15%" }}>
@@ -776,7 +776,7 @@ function Solicitudurgencia() {
                 <option value="Si">Si</option>
                 <option value="No">No</option>
               </select>
-              {errors.req_insumo && <p className="text-red-500">{errors.req_insumo}</p>}
+              {errors.req_insumo && <p className="text-[#423535]">{errors.req_insumo}</p>}
               </div>
           </div>
 
@@ -798,7 +798,7 @@ function Solicitudurgencia() {
                 className={`border ${errors.diagnostico? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
                 >
               </textarea>
-              {errors.diagnostico && <p className="text-red-500">{errors.diagnostico}</p>}
+              {errors.diagnostico && <p className="text-[#423535]">{errors.diagnostico}</p>}
             </div>
           </div>
         </div>

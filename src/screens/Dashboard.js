@@ -22,7 +22,7 @@ const initialDashboardCards = [
     title: "Pre-programadas",
     icon: BsClockFill,
     value: 0,
-    color: ["bg-yellow-500", "text-yellow-500", "#F9C851"],
+    color: ["bg-[#06ABC9]", "text-[#06ABC9]", "#06ABC9"],
   },
   {
     id: 3,
@@ -36,7 +36,7 @@ const initialDashboardCards = [
     title: "Suspendidas",
     icon: BsXCircleFill,
     value: 0,
-    color: ["bg-red-500", "text-red-500", "#FF3B30"],
+    color: ["bg-[#F6E05E]", "text-[#F6E05E]", "#F6E05E"],
   },
 ];
 
