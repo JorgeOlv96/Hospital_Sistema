@@ -119,7 +119,6 @@ export const memberData = [
   {
     id: 1,
     title: 'Hugo Lloris',
-    image: '/images/user1.jpg',
     admin: false,
     email: 'hugolloris@gmail.com',
     phone: '+1 234 567 890',
@@ -1075,11 +1074,6 @@ export const patientTab = [
 ];
 
 export const doctorTab = [
-  {
-    id: 1,
-    title: 'Personal Information',
-    icon: RiUserLine,
-  },
   {
     id: 2,
     title: 'Patients',

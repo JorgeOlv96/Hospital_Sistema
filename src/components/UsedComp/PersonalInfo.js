@@ -14,10 +14,7 @@ function PersonalInfo({ titles }) {
   return (
     <div className="flex-colo gap-4">
       {/* uploader */}
-      <div className="flex gap-3 flex-col w-full col-span-6">
-        <p className="text-sm">Imagen de perfil</p>
-        <Uploder />
-      </div>
+
       {/* select  */}
       {titles && (
         <div className="flex w-full flex-col gap-3">

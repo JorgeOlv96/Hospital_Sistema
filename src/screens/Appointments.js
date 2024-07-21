@@ -57,13 +57,13 @@ const CustomToolbar = ({ date, view, onView, onNavigate, onPrint }) => {
       <div className="my-4">
         <Link
           to="/solicitudes/Programarsolicitud"
-          className="btn btn-sm btn-secondary p-2 bg-[#365b77] text-white rounded-lg"
+          className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
         >
           Programar solicitud
         </Link>
         <button
           onClick={onPrint}
-          className="btn btn-sm btn-secondary p-2 bg-[#365b77] text-white rounded-lg ml-4"
+          className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center ml-4"
         >
           Imprimir solicitudes
         </button>

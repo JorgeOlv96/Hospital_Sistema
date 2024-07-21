@@ -149,7 +149,7 @@ function Evaluacion() {
               value={filter.estado}
               onChange={handleFilterChange}
               readOnly
-              className="border border-gray-300 rounded-lg px-2 py-1 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]"
+              className="rounded-lg px-2 py-1 shadow-sm w-full bg-[#FC8181] cursor-default "
             />
           </div>
         </div>

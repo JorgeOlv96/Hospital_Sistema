@@ -50,7 +50,7 @@ const CustomToolbar = ({ date, view, onView, onNavigate }) => {
   };
 
   return (
-    <div className="flex flex-col gap-4 mb-6">
+    <div className="flex flex-col gap-2 mb-4">
       <h1 className="text-xl font-semibold">Agenda de Anestesiólogos</h1>
       <div className="my-4">
         <Link

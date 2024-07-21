@@ -58,14 +58,14 @@ function Programaranestesiologo() {
           setFormData((prevFormData) => ({
             ...prevFormData,
             hora_inicio: "14:00",
-            hora_fin: "20:00"
+            hora_fin: "20:00",
           }));
           break;
         case "Nocturno":
           setFormData((prevFormData) => ({
             ...prevFormData,
             hora_inicio: "20:00",
-            hora_fin: "06:00"
+            hora_fin: "06:00",
           }));
           break;
         default:
@@ -135,7 +135,9 @@ function Programaranestesiologo() {
       }
       const data = await response.json();
       // Ordenar por fecha más reciente a más antigua
-      data.sort((a, b) => new Date(b.fecha_asignacion) - new Date(a.fecha_asignacion));
+      data.sort(
+        (a, b) => new Date(b.fecha_asignacion) - new Date(a.fecha_asignacion)
+      );
       setAnesthesiologists(data);
     } catch (error) {
       console.error("Error fetching anesthesiologists:", error);
@@ -150,17 +152,21 @@ function Programaranestesiologo() {
 
   // Calcular índices para la paginación
   const indexOfLastAnesthesiologist = currentPage * anesthesiologistsPerPage;
-  const indexOfFirstAnesthesiologist = indexOfLastAnesthesiologist - anesthesiologistsPerPage;
-  const currentAnesthesiologists = anesthesiologists.slice(indexOfFirstAnesthesiologist, indexOfLastAnesthesiologist);
+  const indexOfFirstAnesthesiologist =
+    indexOfLastAnesthesiologist - anesthesiologistsPerPage;
+  const currentAnesthesiologists = anesthesiologists.slice(
+    indexOfFirstAnesthesiologist,
+    indexOfLastAnesthesiologist
+  );
 
   // Cambiar página
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   return (
     <Layout>
-      <div className="flex flex-col gap-4 mb-6">
+      <div className="flex flex-col gap-2 mb-4">
         <h1 className="text-xl font-semibold">Anestesiólogos asignados</h1>
-        <div className="flex my-4 space-x-4">
+        <div className="my-4">
           <div>
             <Link
               to="/anestesiólogos"
@@ -172,117 +178,129 @@ function Programaranestesiologo() {
         </div>
 
         <div className="flex flex-col">
-        <div className="flex flex-col">
-          <div className="flex mb-2 space-x-4">
-            <div className="w-1/4">
-              <label className="block text-sm font-medium text-gray-700">
-                Nombre de anestesiólogo
-              </label>
-              <AsyncSelect
-                loadOptions={fetchActiveAnesthesiologists}
-                onChange={handleSelectChange}
-                placeholder="Nombre"
-                className="mt-1 block w-full px-4 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
+          <div className="flex flex-col">
+            <div className="flex mb-2 space-x-4">
+              <div className="w-1/4">
+              <label style={{ marginBottom: "30px" }} className="text-sm font-medium text-gray-700">
+                  Nombre de anestesiólogo
+                </label>
+                <AsyncSelect
+                  loadOptions={fetchActiveAnesthesiologists}
+                  onChange={handleSelectChange}
+                  placeholder="Nombre"
+                  className="rounded-lg w-full cursor-pointer text-sm"
+                  style={{ minHeight: "auto" }}
+                />
+              </div>
+
+              <div className="w-1/4">
+                <label className="block text-sm font-medium text-gray-700">
+                  Asignar día
+                </label>
+                <input
+                  type="date"
+                  name="dia_anestesio"
+                  value={formData.dia_anestesio}
+                  onChange={handleInputChange}
+                  placeholder="dd/mm/aaaa"
+                  className="mt-1 block w-full px-4 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="w-1/4">
+                <label className="block text-sm font-medium text-gray-700">
+                  Asignar turno
+                </label>
+                <select
+                  name="turno_anestesio"
+                  value={formData.turno_anestesio}
+                  onChange={handleInputChange}
+                  className="mt-1 block w-full px-4 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">-- Seleccione el turno --</option>
+                  <option value="Matutino">Matutino</option>
+                  <option value="Vespertino">Vespertino</option>
+                  <option value="Nocturno">Nocturno</option>
+                </select>
+              </div>
+
+              <div className="w-1/8">
+                <label className="block text-sm font-medium text-gray-700">
+                  Hora Inicio
+                </label>
+                <input
+                  type="text"
+                  name="hora_inicio"
+                  value={formData.hora_inicio}
+                  readOnly
+                  className="mt-1 block w-full px-2 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-200 cursor-default"
+                />
+              </div>
+              <div className="w-1/8">
+                <label className="block text-sm font-medium text-gray-700">
+                  Hora Fin
+                </label>
+                <input
+                  type="text"
+                  name="hora_fin"
+                  value={formData.hora_fin}
+                  readOnly
+                  className="mt-1 block w-full px-2 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-200 cursor-default"
+                />
+              </div>
+
+              <div className="w-1/4">
+                <label className="block text-sm font-medium text-gray-700">
+                  Asignar sala
+                </label>
+                <select
+                  name="sala_anestesio"
+                  value={formData.sala_anestesio}
+                  onChange={handleInputChange}
+                  className="mt-1 block w-full px-4 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">-- Seleccione la sala --</option>
+                  <option value="A1">Sala A1</option>
+                  <option value="A2">Sala A2</option>
+                  <option value="T1">Sala T1</option>
+                  <option value="T2">Sala T2</option>
+                  <option value="1">Sala 1</option>
+                  <option value="2">Sala 2</option>
+                  <option value="3">Sala 3</option>
+                  <option value="4">Sala 4</option>
+                  <option value="5">Sala 5</option>
+                  <option value="6">Sala 6</option>
+                  <option value="E">Sala E</option>
+                  <option value="H">Sala H</option>
+                  <option value="RX">Sala RX</option>
+
+                  <option value="Rec_Matutino">Recuperación Matutino</option>
+                  <option value="Con_Ext_P1_mat">
+                    Consulta Externa Piso 1
+                  </option>
+                  <option value="Con_Ext_P2_mat">
+                    Consulta Externa Piso 2
+                  </option>
+                  <option value="Rec_Vespertino">
+                    Recuperación Vespertino
+                  </option>
+                  <option value="Con_Ext_P1_vesp">
+                    Consulta Externa Piso 1
+                  </option>
+                  <option value="Con_Ext_P2_vesp">
+                    Consulta Externa Piso 2
+                  </option>
+                </select>
+              </div>
             </div>
-            <div className="w-1/4">
-              <label className="block text-sm font-medium text-gray-700">
-                Asignar día
-              </label>
-              <input
-                type="date"
-                name="dia_anestesio"
-                value={formData.dia_anestesio}
-                onChange={handleInputChange}
-                placeholder="dd/mm/aaaa"
-                className="mt-1 block w-full px-4 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div className="w-1/4">
-              <label className="block text-sm font-medium text-gray-700">
-                Asignar turno
-              </label>
-              <select
-                name="turno_anestesio"
-                value={formData.turno_anestesio}
-                onChange={handleInputChange}
-                className="mt-1 block w-full px-4 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            <div className="px-2 py-2 text-right">
+              <button
+                onClick={handleSaveAnesthesiologist}
+                className="bg-[#365b77] text-white px-5 py-2 rounded-md hover:bg-[#7498b6]"
               >
-                <option value="">-- Seleccione el turno --</option>
-                <option value="Matutino">Matutino</option>
-                <option value="Vespertino">Vespertino</option>
-                <option value="Nocturno">Nocturno</option>
-              </select>
-            </div>
-
-            <div className="w-1/8">
-              <label className="block text-sm font-medium text-gray-700">
-                Hora Inicio
-              </label>
-              <input
-                type="text"
-                name="hora_inicio"
-                value={formData.hora_inicio}
-                readOnly
-                className="mt-1 block w-full px-2 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-200 cursor-default"
-              />
-            </div>
-            <div className="w-1/8">
-              <label className="block text-sm font-medium text-gray-700">
-                Hora Fin
-              </label>
-              <input
-                type="text"
-                name="hora_fin"
-                value={formData.hora_fin}
-                readOnly
-                className="mt-1 block w-full px-2 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-200 cursor-default"
-              />
-            </div>
-
-            <div className="w-1/4">
-              <label className="block text-sm font-medium text-gray-700">
-                Asignar sala
-              </label>
-              <select
-                name="sala_anestesio"
-                value={formData.sala_anestesio}
-                onChange={handleInputChange}
-                className="mt-1 block w-full px-4 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">-- Seleccione la sala --</option>
-                <option value="A1">Sala A1</option>
-                <option value="A2">Sala A2</option>
-                <option value="T1">Sala T1</option>
-                <option value="T2">Sala T2</option>
-                <option value="1">Sala 1</option>
-                <option value="2">Sala 2</option>
-                <option value="3">Sala 3</option>
-                <option value="4">Sala 4</option>
-                <option value="5">Sala 5</option>
-                <option value="6">Sala 6</option>
-                <option value="E">Sala E</option>
-                <option value="H">Sala H</option>
-                <option value="RX">Sala RX</option>
-
-                <option value="Rec_Matutino">Recuperación Matutino</option>
-                <option value="Con_Ext_P1_mat">Consulta Externa Piso 1</option>
-                <option value="Con_Ext_P2_mat">Consulta Externa Piso 2</option>
-                <option value="Rec_Vespertino">Recuperación Vespertino</option>
-                <option value="Con_Ext_P1_vesp">Consulta Externa Piso 1</option>
-                <option value="Con_Ext_P2_vesp">Consulta Externa Piso 2</option>
-              </select>
+                Guardar
+              </button>
             </div>
           </div>
-          <div className="px-2 py-2 text-right">
-            <button
-              onClick={handleSaveAnesthesiologist}
-              className="bg-[#365b77] text-white px-5 py-2 rounded-md hover:bg-[#7498b6]"
-            >
-              Guardar
-            </button>
-          </div>
-        </div>
 
           <div className="overflow-hidden border-b border-gray-200 shadow sm:rounded-lg">
             <table className="min-w-full divide-y divide-gray-200">
@@ -373,10 +391,20 @@ function Programaranestesiologo() {
                 <button
                   onClick={() =>
                     setCurrentPage((prevPage) =>
-                      prevPage < Math.ceil(anesthesiologists.length / anesthesiologistsPerPage) ? prevPage + 1 : prevPage
+                      prevPage <
+                      Math.ceil(
+                        anesthesiologists.length / anesthesiologistsPerPage
+                      )
+                        ? prevPage + 1
+                        : prevPage
                     )
                   }
-                  disabled={currentPage === Math.ceil(anesthesiologists.length / anesthesiologistsPerPage)}
+                  disabled={
+                    currentPage ===
+                    Math.ceil(
+                      anesthesiologists.length / anesthesiologistsPerPage
+                    )
+                  }
                   className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
                 >
                   Siguiente
@@ -385,10 +413,11 @@ function Programaranestesiologo() {
               <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                 <div>
                   <p className="text-sm text-gray-700">
-                    Página{" "}
-                    <span className="font-medium">{currentPage}</span> de{" "}
+                    Página <span className="font-medium">{currentPage}</span> de{" "}
                     <span className="font-medium">
-                      {Math.ceil(anesthesiologists.length / anesthesiologistsPerPage)}
+                      {Math.ceil(
+                        anesthesiologists.length / anesthesiologistsPerPage
+                      )}
                     </span>{" "}
                     • Resultados{" "}
                     <span className="font-medium">
@@ -428,10 +457,20 @@ function Programaranestesiologo() {
                     <button
                       onClick={() =>
                         setCurrentPage((prevPage) =>
-                          prevPage < Math.ceil(anesthesiologists.length / anesthesiologistsPerPage) ? prevPage + 1 : prevPage
+                          prevPage <
+                          Math.ceil(
+                            anesthesiologists.length / anesthesiologistsPerPage
+                          )
+                            ? prevPage + 1
+                            : prevPage
                         )
                       }
-                      disabled={currentPage === Math.ceil(anesthesiologists.length / anesthesiologistsPerPage)}
+                      disabled={
+                        currentPage ===
+                        Math.ceil(
+                          anesthesiologists.length / anesthesiologistsPerPage
+                        )
+                      }
                       className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
                     >
                       <span className="sr-only">Siguiente</span>
@@ -455,8 +494,8 @@ function Programaranestesiologo() {
             </div>
           </div>
         </div>
-                {/* Mostrar notificaciones */}
-                <ToastContainer position="bottom-right" />
+        {/* Mostrar notificaciones */}
+        <ToastContainer position="bottom-right" />
       </div>
     </Layout>
   );

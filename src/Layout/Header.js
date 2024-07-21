@@ -1,32 +1,38 @@
-import React, { useEffect, useState } from 'react';
-import { MenuSelect } from '../components/Form';
-import { TbUser } from 'react-icons/tb';
-import { AiOutlinePoweroff } from 'react-icons/ai';
-import { MdOutlineNotificationsNone } from 'react-icons/md';
-import NotificationComp from '../components/NotificationComp';
-import { useNavigate } from 'react-router-dom';
-import { BiMenu } from 'react-icons/bi';
-import MenuDrawer from '../components/Drawer/MenuDrawer';
-import axios from 'axios';
+import React, { useEffect, useState } from "react";
+import { MenuSelect } from "../components/Form";
+import { TbUser } from "react-icons/tb";
+import { AiOutlinePoweroff } from "react-icons/ai";
+import { MdOutlineNotificationsNone } from "react-icons/md";
+import NotificationComp from "../components/NotificationComp";
+import { useNavigate } from "react-router-dom";
+import { BiMenu } from "react-icons/bi";
+import MenuDrawer from "../components/Drawer/MenuDrawer";
+import axios from "axios";
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUser } from "@fortawesome/free-solid-svg-icons";
 
 function Header() {
   const [isOpen, setIsOpen] = useState(false);
-  const [userName, setUserName] = useState('Nombre no disponible');
+  const [userName, setUserName] = useState("Nombre no disponible");
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:4000/api/auth/user', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const token = localStorage.getItem("token");
+        const response = await axios.get(
+          "http://localhost:4000/api/auth/user",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
         const { nombre, ap_paterno, ap_materno } = response.data;
         setUserName(`${nombre} ${ap_paterno} ${ap_materno}`);
       } catch (error) {
-        console.error('Error fetching user info:', error);
+        console.error("Error fetching user info:", error);
       } finally {
         setIsLoading(false);
       }
@@ -42,17 +48,17 @@ function Header() {
   const navigate = useNavigate();
   const DropDown1 = [
     {
-      title: 'Perfil',
+      title: "Perfil",
       icon: TbUser,
       onClick: () => {
-        navigate('/settings');
+        navigate("/settings");
       },
     },
     {
-      title: 'Cerrar Sesión',
+      title: "Cerrar Sesión",
       icon: AiOutlinePoweroff,
       onClick: () => {
-        navigate('/login');
+        navigate("/login");
       },
     },
   ];
@@ -84,12 +90,12 @@ function Header() {
             <div className="items-center md:flex hidden">
               <MenuSelect datas={DropDown1}>
                 <div className="flex gap-4 items-center p-4 rounded-lg">
-                  <img
-                    src="/images/user1.jpg"
-                    alt="user"
-                    className="w-12 border border-border object-cover h-12 rounded-full"
-                  />
-                  <p className="text-sm text-textGray font-medium">{isLoading ? 'Cargando...' : userName}</p>
+                  <div className="w-10 h-10 rounded-full border border-dashed border-subMain flex items-center justify-center">
+                    <FontAwesomeIcon icon={faUser} size="2x" />
+                  </div>
+                  <p className="text-sm text-textGray font-medium">
+                    {isLoading ? "Cargando..." : userName}
+                  </p>
                 </div>
               </MenuSelect>
             </div>
