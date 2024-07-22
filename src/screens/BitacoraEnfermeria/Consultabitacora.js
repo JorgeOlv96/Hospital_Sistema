@@ -752,6 +752,21 @@ const Consultabitacora = () => {
               />
             </div>
           </div>
+          <div className="mr-4 w-full">
+        <label
+          htmlFor="procedimiento_paciente"
+          className="block font-semibold text-white mb-1"
+        >
+          Procedimiento inicial del paciente:
+        </label>
+        <input
+          id="procedimientos_paciente"
+          name="procedimientos_paciente"
+          value={patientData.procedimientos_paciente || "N/A"}
+          readOnly
+          className="border-[#A8D5B1] rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default"
+        ></input>
+      </div>
           <div>
   {Array.isArray(patientData.nuevos_procedimientos_extra) && patientData.nuevos_procedimientos_extra.map((procedimiento, index) => (
     <div key={index} className="flex mb-4">
