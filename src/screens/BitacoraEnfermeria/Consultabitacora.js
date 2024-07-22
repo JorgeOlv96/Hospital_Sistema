@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from "react-router-dom";
 import Layout from "../../Layout";
 import Modal from "../../components/Modals/Modal";
 import { MultiSelect } from "react-multi-select-component";
+import AsyncSelect from "react-select/async";
 
 const Consultabitacora = () => {
   const options = [
@@ -73,6 +74,25 @@ const Consultabitacora = () => {
       setSuspendDetailOptions(options);
     } catch (error) {
       console.error("Error fetching suspend detail options:", error);
+    }
+  };
+
+  const fetchActiveNurses = async (inputValue) => {
+    try {
+      const response = await fetch(
+        `http://localhost:4000/api/enfermeras/activos?search=${inputValue}`
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      return data.map((enfermeras) => ({
+        label: enfermeras.nombre_completo,
+        value: enfermeras.nombre_completo,
+      }));
+    } catch (error) {
+      console.error("Error fetching active nurses:", error);
+      return [];
     }
   };
 
@@ -168,6 +188,13 @@ const Consultabitacora = () => {
     } catch (error) {
       console.error("Error saving changes:", error);
     }
+  };
+
+  const handleSelectChange = (selectedOption) => {
+    setPatientData((prevFormData) => ({
+      ...prevFormData,
+      enf_quirurgica: selectedOption ? selectedOption.value : "",
+    }));
   };
 
   const handleChange = (e) => {
@@ -629,22 +656,21 @@ const Consultabitacora = () => {
           </div>
 
           <div class="flex mb-4">
-            <div class="w-full mr-4">
+
+          <div className="w-full" style={{ width: "105%" }}>
               <label
-                htmlFor="procedimientos_paciente"
+                htmlFor="id_cirujano"
                 className="block font-semibold text-white mb-1"
               >
-                Enf. Quirirjica:
+                Enf. Quirurgica:
               </label>
-              <input
-                type="text"
-                id="enf_quirurgica"
-                name="enf_quirurgica"
-                value={patientData.enf_quirurgica || ""}
-                onChange={handleChange}
-                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white cursor-default`}
-              ></input>
-            </div>
+              <AsyncSelect
+                loadOptions={fetchActiveNurses}
+                onChange={handleSelectChange}
+                placeholder="Enf. Quirurgica"
+                className={`rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+                />
+              </div>
 
             <div class="w-full mr-4">
               <label
