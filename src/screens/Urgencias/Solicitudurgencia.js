@@ -14,7 +14,7 @@ const Solicitudurgencia = () => {
     { label: "Local", value: "local" },
     { label: "Sedación", value: "sedacion" },
   ];
-  
+
   const especialidadToClave = {
     Algología: "ALG",
     Angiología: "ANG",
@@ -77,7 +77,7 @@ const Solicitudurgencia = () => {
     estado_solicitud: "Pendiente",
     procedimientos_paciente: "",
     procedimientos_extra: "",
-    diagnostico: ""
+    diagnostico: "",
   });
 
   // Función para obtener la fecha actual en el formato adecuado (YYYY-MM-DD)
@@ -89,15 +89,13 @@ const Solicitudurgencia = () => {
     return `${year}-${month}-${day}`;
   }
 
-
-
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [suspendModalOpen, setSuspendModalOpen] = useState(false);
   const [suspendReason, setSuspendReason] = useState("");
   const [suspendDetail, setSuspendDetail] = useState("");
   const [suspendDetailOptions, setSuspendDetailOptions] = useState([]);
-  const [error, setError] = useState(""); 
+  const [error, setError] = useState("");
   const [procedimientoExtra, setProcedimientoExtra] = useState("");
   const [clave_esp, setClaveEspecialidad] = useState("");
   const [selected, setSelected] = useState([]);
@@ -114,7 +112,9 @@ const Solicitudurgencia = () => {
         const data = await response.json();
         setFormData(data);
         setSelected(
-          data.tipo_anestesia.map((type) => options.find((opt) => opt.value === type))
+          data.tipo_anestesia.map((type) =>
+            options.find((opt) => opt.value === type)
+          )
         );
         setLoading(false);
       } catch (error) {
@@ -142,7 +142,6 @@ const Solicitudurgencia = () => {
     }
   };
 
-
   const handleSave = async () => {
     try {
       const {
@@ -156,14 +155,16 @@ const Solicitudurgencia = () => {
         enf_circulante,
         hi_anestesia,
         tipo_anestesia,
-        ht_anestesia
+        ht_anestesia,
       } = formData;
       const response = await fetch(
         `http://localhost:4000/api/solicitudes/bitacoraenf/${id}`,
         {
           method: "PATCH",
           body: JSON.stringify({
-            nuevos_procedimientos_extra: JSON.stringify(nuevos_procedimientos_extra),
+            nuevos_procedimientos_extra: JSON.stringify(
+              nuevos_procedimientos_extra
+            ),
             hora_entrada,
             hora_incision,
             hora_cierre,
@@ -173,7 +174,7 @@ const Solicitudurgencia = () => {
             enf_circulante,
             hi_anestesia,
             tipo_anestesia,
-            ht_anestesia
+            ht_anestesia,
           }),
           headers: {
             "Content-Type": "application/json",
@@ -191,14 +192,14 @@ const Solicitudurgencia = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-  
+
     // Actualizar el estado del formulario
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value,
     }));
   };
-  
+
   const fetchActiveSurgeons = async (inputValue) => {
     try {
       const response = await fetch(
@@ -221,20 +222,20 @@ const Solicitudurgencia = () => {
   const handleInputChange = (selectedOptions) => {
     if (!Array.isArray(selectedOptions)) return;
     setSelected(selectedOptions);
-  
+
     const values = selectedOptions.map((option) => option.value);
     setFormData((prevFormData) => ({
       ...prevFormData,
       tipo_anestesia: values,
     }));
-  
+
     // Actualizar el estado del formulario
     setFormData((prevFormData) => ({
       ...prevFormData,
-      tipo_anestesia: values,  // Usando el mismo campo para actualizar el formulario
+      tipo_anestesia: values, // Usando el mismo campo para actualizar el formulario
     }));
   };
-  
+
   const handleSelectChange = (selectedOption) => {
     setFormData((prevFormData) => ({
       ...prevFormData,
@@ -245,9 +246,11 @@ const Solicitudurgencia = () => {
   const agregarProcedimiento = () => {
     setFormData((prevFormData) => ({
       ...prevFormData,
-      nuevos_procedimientos_extra: Array.isArray(prevFormData.nuevos_procedimientos_extra)
+      nuevos_procedimientos_extra: Array.isArray(
+        prevFormData.nuevos_procedimientos_extra
+      )
         ? [...prevFormData.nuevos_procedimientos_extra, procedimientoExtra]
-        : [procedimientoExtra]
+        : [procedimientoExtra],
     }));
     setProcedimientoExtra(""); // Limpiar el campo después de agregar
   };
@@ -289,7 +292,7 @@ const Solicitudurgencia = () => {
                 for="fecha_solicitud"
                 class="block font-semibold text-white mb-1"
               >
-                  Fecha de solicitud:
+                Fecha de solicitud:
               </label>
               <input
                 type="date"
@@ -297,13 +300,12 @@ const Solicitudurgencia = () => {
                 name="fecha_solicitud"
                 value={formData.fecha_solicitud}
                 onChange={handleInputChange}
-                
                 className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7]`}
-                />
-              </div>
+              />
+            </div>
 
-              <div class="w-full">
-                  <label for="curp" class="block font-semibold text-white mb-1">
+            <div class="w-full">
+              <label for="curp" class="block font-semibold text-white mb-1">
                 CURP del paciente:
               </label>
 
@@ -334,7 +336,6 @@ const Solicitudurgencia = () => {
                 id="ap_paterno"
                 name="ap_paterno"
                 value={formData.ap_paterno || "N/A"}
-                
                 className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
               />
             </div>
@@ -352,7 +353,6 @@ const Solicitudurgencia = () => {
                 id="ap_materno"
                 name="ap_materno"
                 value={formData.ap_materno || "N/A"}
-                
                 className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
               />
             </div>
@@ -370,7 +370,6 @@ const Solicitudurgencia = () => {
                 id="nombre_paciente"
                 name="nombre_paciente"
                 value={formData.nombre_paciente || "N/A"}
-                
                 className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
               />
             </div>
@@ -388,7 +387,6 @@ const Solicitudurgencia = () => {
                 id="no_expediente"
                 name="no_expediente"
                 value={formData.no_expediente || "N/A"}
-                
                 className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
               />
             </div>
@@ -406,7 +404,6 @@ const Solicitudurgencia = () => {
                 id="edad"
                 name="edad"
                 value={formData.edad || "N/A"}
-                
                 className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
               />
             </div>
@@ -422,7 +419,6 @@ const Solicitudurgencia = () => {
                 id="sexo"
                 name="sexo"
                 value={formData.sexo || "N/A"}
-                
                 className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
               ></input>
             </div>
@@ -439,7 +435,6 @@ const Solicitudurgencia = () => {
                 id="sala_quirofano"
                 name="sala_quirofano"
                 value={formData.sala_quirofano || "N/A"}
-                
                 className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
               ></input>
             </div>
@@ -458,7 +453,6 @@ const Solicitudurgencia = () => {
                 id="fecha_nacimiento"
                 name="fecha_nacimiento"
                 value={formData.fecha_nacimiento || "N/A"}
-                
                 className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
               />
             </div>
@@ -474,7 +468,6 @@ const Solicitudurgencia = () => {
                 id="tipo_intervencion"
                 name="tipo_intervencion"
                 value={formData.tipo_intervencion || "N/A"}
-                
                 className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
               ></input>
             </div>
@@ -490,7 +483,6 @@ const Solicitudurgencia = () => {
                 id="nombre_especialidad"
                 name="nombre_especialidad"
                 value={formData.nombre_especialidad || "N/A"}
-                
                 className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
               ></input>
             </div>
@@ -529,7 +521,6 @@ const Solicitudurgencia = () => {
                 id="turno_solicitado"
                 name="turno_solicitado"
                 value={formData.turno_solicitado || "N/A"}
-                
                 className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
               ></input>
             </div>
@@ -547,7 +538,6 @@ const Solicitudurgencia = () => {
                 id="tiempo_estimado"
                 name="tiempo_estimado"
                 value={formData.tiempo_estimado || "N/A"}
-                
                 className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
               />
             </div>
@@ -563,7 +553,6 @@ const Solicitudurgencia = () => {
                 id="req_insumo"
                 name="req_insumo"
                 value={formData.req_insumo || "N/A"}
-                
                 className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
               ></input>
             </div>
@@ -582,7 +571,6 @@ const Solicitudurgencia = () => {
                 id="fecha_solicitada"
                 name="fecha_solicitada"
                 value={formData.fecha_programada || "N/A"}
-                
                 className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
               />
             </div>
@@ -599,7 +587,6 @@ const Solicitudurgencia = () => {
                 id="hora_asignada"
                 name="hora_asignada"
                 value={formData.hora_asignada || "N/A"}
-                
                 className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
               />
             </div>
@@ -615,7 +602,6 @@ const Solicitudurgencia = () => {
                 id="procedimientos_paciente"
                 name="procedimientos_paciente"
                 value={formData.nombre_anestesiologo || "N/A"}
-                
                 className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
               ></input>
             </div>
@@ -639,29 +625,29 @@ const Solicitudurgencia = () => {
             </div>
 
             <div className="mr-4 w-full">
-            <label
-              htmlFor="tipo_anestesia"
-              className="block font-semibold text-white mb-1"
-            >
-              Tipo Anes:
-            </label>
-            <MultiSelect
-              options={options}
-              value={selected}
-              onChange={handleInputChange}
-              labelledBy="Seleccionar tipo de anestesia"
-              overrideStrings={{
-                allItemsAreSelected: "Todo seleccionado",
-                clearSearch: "Limpiar búsqueda",
-                noOptions: "Sin opciones",
-                search: "Buscar",
-                selectAll: "Seleccionar todo",
-                selectSomeItems: "Seleccionar",
-              }}
-              className="border border-[#C59494] rounded-lg w-full bg-[#DBB7B7] text-[#333333] cursor-pointer text-sm"
-              style={{ minHeight: "auto" }}
-            />
-          </div>
+              <label
+                htmlFor="tipo_anestesia"
+                className="block font-semibold text-white mb-1"
+              >
+                Tipo Anes:
+              </label>
+              <MultiSelect
+                options={options}
+                value={selected}
+                onChange={handleInputChange}
+                labelledBy="Seleccionar tipo de anestesia"
+                overrideStrings={{
+                  allItemsAreSelected: "Todo seleccionado",
+                  clearSearch: "Limpiar búsqueda",
+                  noOptions: "Sin opciones",
+                  search: "Buscar",
+                  selectAll: "Seleccionar todo",
+                  selectSomeItems: "Seleccionar",
+                }}
+                className="border border-[#C59494] rounded-lg w-full bg-[#DBB7B7] text-[#333333] cursor-pointer text-sm"
+                style={{ minHeight: "auto" }}
+              />
+            </div>
 
             <div className="mr-4 w-full">
               <label
@@ -692,15 +678,14 @@ const Solicitudurgencia = () => {
                 id="req_insumo"
                 name="req_insumo"
                 value={formData.estado_solicitud || "N/A"}
-                
                 className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
               ></input>
             </div>
           </div>
 
           <div class="flex mb-4">
-           
-          <div className="w-full" style={{ width: "105%" }}>
+            <div className="w-full" style={{ marginLeft: "-10px", width: "110%" }}
+            >
               <label
                 htmlFor="id_cirujano"
                 className="block font-semibold text-white mb-1"
@@ -710,27 +695,35 @@ const Solicitudurgencia = () => {
               <AsyncSelect
                 loadOptions={fetchActiveSurgeons}
                 onChange={handleSelectChange}
-                placeholder="Nombre del cirujano"
-                className={` ${errors.nombre_cirujano ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-                />
-                {errors.nombre_cirujano && <p className="text-red-500">{errors.nombre_cirujano}</p>}
-              </div>
+                placeholder="Nombre"
+                className={` ${
+                  errors.nombre_cirujano ? "border-red-500" : "border-gray-300"
+                } rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+              />
+              {errors.nombre_cirujano && (
+                <p className="text-red-500">{errors.nombre_cirujano}</p>
+              )}
+            </div>
 
-            <div class="w-full mr-4">
+            <div className="w-full" style={{ marginLeft: "-10px", width: "110%" }}
+            >
               <label
-                htmlFor="procedimientos_paciente"
+                htmlFor="id_cirujano"
                 className="block font-semibold text-white mb-1"
               >
-                Enf. Circulante:
+                Cirujano encargado:
               </label>
-              <input
-                type="text"
-                id="enf_circulante"
-                name="enf_circulante"
-                value={formData.enf_circulante || ""}
-                onChange={handleChange}
-                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white cursor-default`}
-              ></input>
+              <AsyncSelect
+                loadOptions={fetchActiveSurgeons}
+                onChange={handleSelectChange}
+                placeholder="Nombre"
+                className={` ${
+                  errors.nombre_cirujano ? "border-red-500" : "border-gray-300"
+                } rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+              />
+              {errors.nombre_cirujano && (
+                <p className="text-red-500">{errors.nombre_cirujano}</p>
+              )}
             </div>
 
             <div class="w-full mr-4">
@@ -823,61 +816,61 @@ const Solicitudurgencia = () => {
             </div>
           </div>
           <div>
-  {Array.isArray(formData.nuevos_procedimientos_extra) && formData.nuevos_procedimientos_extra.map((procedimiento, index) => (
-    <div key={index} className="flex mb-4">
-      <div className="mr-4 w-full">
-        <label
-          htmlFor={`procedimiento_${index}`}
-          className="block font-semibold text-white mb-1"
-        >
-          Procedimiento del paciente:
-        </label>
-        <input
-          id={`procedimiento_${index}`}
-          name={`procedimiento_${index}`}
-          value={procedimiento || ""}
-          className="rounded-lg px-3 py-2 w-full bg-white"
-        ></input>
-      </div>
-    </div>
-  ))}
-  <div className="flex mb-4">
-    <div className="mr-4 w-full">
-      <label
-        htmlFor="procedimiento_extra"
-        className="block font-semibold text-white mb-1"
-      >
-        Agregar procedimiento:
-      </label>
-      <input
-        id="procedimiento_extra"
-        name="procedimiento_extra"
-        value={procedimientoExtra}
-        onChange={(e) => setProcedimientoExtra(e.target.value)}
-        className="rounded-lg px-3 py-2 w-full bg-white"
-      ></input>
-    </div>
-    <div className="mr-4" style={{ width: "12%" }}>
-      <label
-        htmlFor="agregar_procedimiento"
-        className="block font-semibold text-white mb-1"
-      >
-        Agregar más
-      </label>
-      <button
-        id="agregar_procedimiento"
-        name="agregar_procedimiento"
-        className="border-[#C59494] rounded-lg px-3 py-2 w-full bg-[#DBB7B7] text-white cursor-pointer"
-        onClick={agregarProcedimiento}
-      >
-        +
-      </button>
-    </div>
-  </div>
-</div>
-
-
-
+            {Array.isArray(formData.nuevos_procedimientos_extra) &&
+              formData.nuevos_procedimientos_extra.map(
+                (procedimiento, index) => (
+                  <div key={index} className="flex mb-4">
+                    <div className="mr-4 w-full">
+                      <label
+                        htmlFor={`procedimiento_${index}`}
+                        className="block font-semibold text-white mb-1"
+                      >
+                        Procedimiento del paciente:
+                      </label>
+                      <input
+                        id={`procedimiento_${index}`}
+                        name={`procedimiento_${index}`}
+                        value={procedimiento || ""}
+                        className="rounded-lg px-3 py-2 w-full bg-white"
+                      ></input>
+                    </div>
+                  </div>
+                )
+              )}
+            <div className="flex mb-4">
+              <div className="mr-4 w-full">
+                <label
+                  htmlFor="procedimiento_extra"
+                  className="block font-semibold text-white mb-1"
+                >
+                  Agregar procedimiento:
+                </label>
+                <input
+                  id="procedimiento_extra"
+                  name="procedimiento_extra"
+                  value={procedimientoExtra}
+                  onChange={(e) => setProcedimientoExtra(e.target.value)}
+                  className="rounded-lg px-3 py-2 w-full bg-white"
+                ></input>
+              </div>
+              <div className="mr-4" style={{ width: "12%" }}>
+                <label
+                  htmlFor="agregar_procedimiento"
+                  className="block font-semibold text-white mb-1"
+                >
+                  Agregar más
+                </label>
+                <button
+                  id="agregar_procedimiento"
+                  name="agregar_procedimiento"
+                  className="border-[#C59494] rounded-lg px-3 py-2 w-full bg-[#DBB7B7] text-white cursor-pointer"
+                  onClick={agregarProcedimiento}
+                >
+                  +
+                </button>
+              </div>
+            </div>
+          </div>
 
           <div className="flex mb-4">
             <div className="mr-4" style={{ width: "50%" }}>
@@ -893,7 +886,6 @@ const Solicitudurgencia = () => {
                 name="diagnostico"
                 rows="4"
                 value={formData.diagnostico || "N/A"}
-                
                 className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
               ></textarea>
             </div>
@@ -909,7 +901,6 @@ const Solicitudurgencia = () => {
           </button>
         </div>
       </div>
-  
     </Layout>
   );
 };
