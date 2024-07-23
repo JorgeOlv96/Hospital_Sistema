@@ -684,13 +684,16 @@ const Solicitudurgencia = () => {
           </div>
 
           <div class="flex mb-4">
-            <div className="w-full" style={{ marginLeft: "-10px", width: "110%" }}
+            <div
+              className="w-full"
+              style={{ marginLeft: "-10px", width: "110%" }}
             >
               <label
                 htmlFor="id_cirujano"
                 className="block font-semibold text-white mb-1"
+                style={{ marginLeft: "10px" }} // Ajusta el margen izquierdo aquí
               >
-                Cirujano encargado:
+                Enf. Quirúrgica:
               </label>
               <AsyncSelect
                 loadOptions={fetchActiveSurgeons}
@@ -705,13 +708,16 @@ const Solicitudurgencia = () => {
               )}
             </div>
 
-            <div className="w-full" style={{ marginLeft: "-10px", width: "110%" }}
+            <div
+              className="w-full"
+              style={{ marginLeft: "-10px", width: "115%" }}
             >
               <label
                 htmlFor="id_cirujano"
                 className="block font-semibold text-white mb-1"
+                style={{ marginLeft: "10px" }} // Ajusta el margen izquierdo aquí
               >
-                Cirujano encargado:
+                Enf. Circulante:
               </label>
               <AsyncSelect
                 loadOptions={fetchActiveSurgeons}

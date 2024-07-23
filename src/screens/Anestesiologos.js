@@ -114,6 +114,7 @@ const CustomToolbar = ({ date, view, onView, onNavigate }) => {
   );
 };
 
+// Dentro del componente `Anesthesiologos`
 function Anesthesiologos() {
   const localizer = momentLocalizer(moment);
   const [selectedEvent, setSelectedEvent] = useState({});
@@ -123,24 +124,15 @@ function Anesthesiologos() {
 
   const fetchAnesthesiologists = async () => {
     try {
-      const response = await fetch(
-        "http://localhost:4000/api/anestesio/anestesiologos"
-      );
+      const response = await fetch("http://localhost:4000/api/anestesio/anestesiologos");
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
       const data = await response.json();
 
       const transformedData = data.map((anesthesiologist) => {
-        const startDateTime = moment(
-          `${anesthesiologist.dia_anestesio}T${anesthesiologist.hora_inicio}`,
-          "YYYY-MM-DDTHH:mm"
-        ).toDate();
-
-        const endDateTime = moment(
-          `${anesthesiologist.dia_anestesio}T${anesthesiologist.hora_fin}`,
-          "YYYY-MM-DDTHH:mm"
-        ).toDate();
+        const startDateTime = moment(`${anesthesiologist.dia_anestesio}T${anesthesiologist.hora_inicio}`, "YYYY-MM-DDTHH:mm").toDate();
+        const endDateTime = moment(`${anesthesiologist.dia_anestesio}T${anesthesiologist.hora_fin}`, "YYYY-MM-DDTHH:mm").toDate();
 
         return {
           id: anesthesiologist.id,
@@ -167,7 +159,6 @@ function Anesthesiologos() {
     setSelectedEvent(event);
   };
 
-
   const handleSelectDate = (date) => {
     setSelectedDate(date);
     console.log("Selected date:", date);
@@ -176,6 +167,7 @@ function Anesthesiologos() {
   const handleViewChange = (newView) => {
     setView(newView);
   };
+
 
   return (
     <Layout>
