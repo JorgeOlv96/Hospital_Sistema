@@ -487,7 +487,7 @@ const Solicitudurgencia = () => {
               ></input>
             </div>
 
-            <div className="w-full">
+            <div className="mr-4 w-full">
               <label
                 htmlFor="clave_esp"
                 className="block font-semibold text-white mb-1"
