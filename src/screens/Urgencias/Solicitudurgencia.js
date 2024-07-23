@@ -4,6 +4,7 @@ import Layout from "../../Layout";
 import Modal from "../../components/Modals/Modal";
 import { MultiSelect } from "react-multi-select-component";
 import AsyncSelect from "react-select/async";
+import ProcedureSelect from "../Solicitudes/ProcedureSelect";
 
 const SolicitudUrgencia = () => {
   const options = [
@@ -68,18 +69,14 @@ const SolicitudUrgencia = () => {
     fecha_nacimiento: "",
     edad: "",
     sexo: "",
-    no_expediente: "",
     tipo_intervencion: "",
     fecha_solicitada: "",
-    hora_solicitada: "",
-    tiempo_estimado: "",
     turno_solicitado: "",
     sala_quirofano: "",
     nombre_cirujano: "",
     req_insumo: "",
     estado_solicitud: "Urgencia",
     procedimientos_paciente: "",
-    procedimientos_extra: "",
     diagnostico: "",
     hora_entrada: "",
     hora_incision: "",
@@ -116,6 +113,25 @@ const SolicitudUrgencia = () => {
       }));
     } catch (error) {
       console.error("Error fetching active surgeons:", error);
+      return [];
+    }
+  };
+
+  const fetchActiveNurses = async (inputValue) => {
+    try {
+      const response = await fetch(
+        `http://localhost:4000/api/enfermeras/activos?search=${inputValue}`
+      );
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const data = await response.json();
+      return data.map((enfermeras) => ({
+        label: enfermeras.nombre_completo,
+        value: enfermeras.nombre_completo,
+      }));
+    } catch (error) {
+      console.error("Error fetching active nurses:", error);
       return [];
     }
   };
@@ -184,6 +200,20 @@ const SolicitudUrgencia = () => {
     }));
   };
 
+  const handleNurseChange = (selectedOption, fieldName) => {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [fieldName]: selectedOption ? selectedOption.value : "",
+    }));
+  };
+
+  const handleAnestesioChange = (selectedOption) => {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      nombre_anestesiologo: selectedOption ? selectedOption.value : "",
+    }));
+  };
+
   const handleAnesthesiaChange = (selectedOptions) => {
     if (!Array.isArray(selectedOptions)) return;
     setSelected(selectedOptions);
@@ -210,19 +240,21 @@ const SolicitudUrgencia = () => {
   const validateForm = () => {
     const newErrors = {};
     Object.keys(formData).forEach((key) => {
-      if (!formData[key] && key !== 'nuevos_procedimientos_extra') {
+      if (!formData[key] && key !== "nuevos_procedimientos_extra") {
         newErrors[key] = "Campo requerido";
       }
     });
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
+    console.log("Submitting formData:", formData);
     if (validateForm()) {
       try {
+        console.log("Datos enviados:", formData); // <-- Aquí se agregaron los datos enviados
         const response = await fetch(
           "http://localhost:4000/api/solicitudes/urgencias",
           {
@@ -233,11 +265,11 @@ const SolicitudUrgencia = () => {
             body: JSON.stringify(formData),
           }
         );
-
+  
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
-
+  
         const data = await response.json();
         console.log("Formulario válido y enviado:", formData);
         navigate("/solicitudes");
@@ -245,9 +277,10 @@ const SolicitudUrgencia = () => {
         console.error("Error en la solicitud:", error);
       }
     } else {
-      console.log("Formulario inválido");
+      console.log("Formulario inválido", errors); // <-- Aquí se muestra el error en la consola
     }
   };
+  
 
   return (
     <Layout>
@@ -358,23 +391,6 @@ const SolicitudUrgencia = () => {
               />
             </div>
 
-            <div className="mr-4 w-full">
-              <label
-                htmlFor="no_expediente"
-                className="block font-semibold text-white mb-1"
-              >
-                Número de expediente
-              </label>
-              <input
-                placeholder="Expediente de paciente"
-                type="text"
-                id="no_expediente"
-                name="no_expediente"
-                value={formData.no_expediente}
-                onChange={handleInputChange}
-                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-white`}
-              />
-            </div>
 
             <div className="mr-4 w-full">
               <label
@@ -639,20 +655,25 @@ const SolicitudUrgencia = () => {
               />
             </div>
 
-            <div className="mr-4 w-full">
+            <div className="w-full" style={{ marginLeft: "-10px", width: "110%" }}
+            >
               <label
-                htmlFor="tiempo_estimado"
+                htmlFor="id_cirujano"
                 className="block font-semibold text-white mb-1"
               >
                 Anestesiólogo:
               </label>
-              <input
-                id="procedimientos_paciente"
-                name="procedimientos_paciente"
-                value={formData.nombre_anestesiologo}
-                onChange={handleInputChange}
-                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-white`}
-              ></input>
+              <AsyncSelect
+                loadOptions={fetchActiveSurgeons}
+                onChange={handleAnestesioChange}
+                placeholder="Nombre"
+                className={` ${
+                  errors.nombre_cirujano ? "border-red-500" : "border-gray-300"
+                } rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+              />
+              {errors.nombre_cirujano && (
+                <p className="text-red-500">{errors.nombre_cirujano}</p>
+              )}
             </div>
 
             <div className="mr-4 w-full">
@@ -733,48 +754,40 @@ const SolicitudUrgencia = () => {
           </div>
 
           <div class="flex mb-4">
-            <div className="w-full" style={{ marginLeft: "-10px", width: "110%" }}
-            >
-              <label
-                htmlFor="id_cirujano"
-                className="block font-semibold text-white mb-1"
-              >
-                Enf. Quirúrgica:
-              </label>
-              <AsyncSelect
-                loadOptions={fetchActiveSurgeons}
-                onChange={handleSelectChange}
-                placeholder="Nombre"
-                className={` ${
-                  errors.nombre_cirujano ? "border-red-500" : "border-gray-300"
-                } rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-              />
-              {errors.nombre_cirujano && (
-                <p className="text-red-500">{errors.nombre_cirujano}</p>
-              )}
-            </div>
+            
+          <div className="w-full" style={{ width: "105%" }}>
+          <label
+            htmlFor="id_cirujano"
+            className="block font-semibold text-white mb-1"
+          >
+            Enf. Quirurgica:
+          </label>
+          <AsyncSelect
+            loadOptions={fetchActiveNurses}
+            onChange={(selectedOption) =>
+              handleNurseChange(selectedOption, "enf_quirurgica")
+            }
+            placeholder="Enf. Quirurgica"
+            className={`rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+          />
+        </div>
 
-            <div className="w-full" style={{ marginLeft: "-10px", width: "110%" }}
-            >
-              <label
-                htmlFor="id_cirujano"
-                className="block font-semibold text-white mb-1"
-              >
-                Enf. Circulante:
-              </label>
-              <AsyncSelect
-                loadOptions={fetchActiveSurgeons}
-                onChange={handleSelectChange}
-                placeholder="Nombre"
-                className={` ${
-                  errors.nombre_cirujano ? "border-red-500" : "border-gray-300"
-                } rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-              />
-              {errors.nombre_cirujano && (
-                <p className="text-red-500">{errors.nombre_cirujano}</p>
-              )}
-            </div>
-
+        <div className="w-full" style={{ width: "105%" }}>
+          <label
+            htmlFor="id_cirujano"
+            className="block font-semibold text-white mb-1"
+          >
+            Enf. Circulante:
+          </label>
+          <AsyncSelect
+            loadOptions={fetchActiveNurses}
+            onChange={(selectedOption) =>
+              handleNurseChange(selectedOption, "enf_circulante")
+            }
+            placeholder="Enf. Circulante"
+            className={`rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+          />
+        </div>
             <div class="w-full mr-4">
               <label
                 htmlFor="procedimientos_paciente"
@@ -912,7 +925,7 @@ const SolicitudUrgencia = () => {
                 <button
                   id="agregar_procedimiento"
                   name="agregar_procedimiento"
-                  className="border-[#C59494] rounded-lg px-3 py-2 w-full bg-white text-white cursor-pointer"
+                  className="border-[#C59494] rounded-lg px-3 py-2 w-full bg-red text-white cursor-pointer"
                   onClick={agregarProcedimiento}
                 >
                   +
@@ -922,6 +935,16 @@ const SolicitudUrgencia = () => {
           </div>
 
           <div className="flex mb-4">
+          <div className="mr-4 w-full">
+              <label
+                htmlFor="procedimientos_paciente"
+                className="block font-semibold text-white mb-1"
+              >
+                Procedimientos del paciente:
+              </label>
+              <ProcedureSelect onChange={handleProcedureChange} />
+              {errors.procedimientos_paciente && <p className="text-red-500">{errors.procedimientos_paciente}</p>}
+            </div>
             <div className="mr-4" style={{ width: "50%" }}>
               <label
                 htmlFor="diagnostico_paciente"
