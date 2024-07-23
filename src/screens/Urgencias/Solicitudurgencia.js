@@ -5,7 +5,7 @@ import Modal from "../../components/Modals/Modal";
 import { MultiSelect } from "react-multi-select-component";
 import AsyncSelect from "react-select/async";
 
-const Solicitudurgencia = () => {
+const SolicitudUrgencia = () => {
   const options = [
     { label: "General", value: "general" },
     { label: "TIVA", value: "tiva" },
@@ -51,9 +51,12 @@ const Solicitudurgencia = () => {
     Object.entries(especialidadToClave).map(([key, value]) => [value, key])
   );
 
-  const { id } = useParams();
+  const navigate = useNavigate();
   const [errors, setErrors] = useState({});
   const [nombre_especialidad, setNombreEspecialidad] = useState("");
+  const [clave_esp, setClaveEspecialidad] = useState("");
+  const [procedimientoExtra, setProcedimientoExtra] = useState("");
+  const [selected, setSelected] = useState([]);
   const [formData, setFormData] = useState({
     fecha_solicitud: obtenerFechaActual(),
     clave_esp: "",
@@ -74,10 +77,19 @@ const Solicitudurgencia = () => {
     sala_quirofano: "",
     nombre_cirujano: "",
     req_insumo: "",
-    estado_solicitud: "Pendiente",
+    estado_solicitud: "Urgencia",
     procedimientos_paciente: "",
     procedimientos_extra: "",
     diagnostico: "",
+    hora_entrada: "",
+    hora_incision: "",
+    hora_cierre: "",
+    hora_salida: "",
+    egreso: "",
+    enf_quirurgica: "",
+    enf_circulante: "",
+    tipo_anestesia: [],
+    nuevos_procedimientos_extra: [],
   });
 
   // Función para obtener la fecha actual en el formato adecuado (YYYY-MM-DD)
@@ -88,117 +100,6 @@ const Solicitudurgencia = () => {
     const day = String(hoy.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   }
-
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
-  const [suspendModalOpen, setSuspendModalOpen] = useState(false);
-  const [suspendReason, setSuspendReason] = useState("");
-  const [suspendDetail, setSuspendDetail] = useState("");
-  const [suspendDetailOptions, setSuspendDetailOptions] = useState([]);
-  const [error, setError] = useState("");
-  const [procedimientoExtra, setProcedimientoExtra] = useState("");
-  const [clave_esp, setClaveEspecialidad] = useState("");
-  const [selected, setSelected] = useState([]);
-
-  useEffect(() => {
-    const fetchAppointmentData = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:4000/api/solicitudes/${id}`
-        );
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        const data = await response.json();
-        setFormData(data);
-        setSelected(
-          data.tipo_anestesia.map((type) =>
-            options.find((opt) => opt.value === type)
-          )
-        );
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching appointment data:", error);
-        setLoading(false);
-      }
-    };
-
-    fetchAppointmentData();
-  }, [id]);
-
-  const fetchSuspendDetailOptions = async (category) => {
-    try {
-      const response = await fetch(
-        `http://localhost:4000/api/solicitudes/motivos-suspension?category=${category}`
-      );
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const data = await response.json();
-      const options = data.map((option) => option.motivo);
-      setSuspendDetailOptions(options);
-    } catch (error) {
-      console.error("Error fetching suspend detail options:", error);
-    }
-  };
-
-  const handleSave = async () => {
-    try {
-      const {
-        nuevos_procedimientos_extra,
-        hora_entrada,
-        hora_incision,
-        hora_cierre,
-        hora_salida,
-        egreso,
-        enf_quirurgica,
-        enf_circulante,
-        hi_anestesia,
-        tipo_anestesia,
-        ht_anestesia,
-      } = formData;
-      const response = await fetch(
-        `http://localhost:4000/api/solicitudes/bitacoraenf/${id}`,
-        {
-          method: "PATCH",
-          body: JSON.stringify({
-            nuevos_procedimientos_extra: JSON.stringify(
-              nuevos_procedimientos_extra
-            ),
-            hora_entrada,
-            hora_incision,
-            hora_cierre,
-            hora_salida,
-            egreso,
-            enf_quirurgica,
-            enf_circulante,
-            hi_anestesia,
-            tipo_anestesia,
-            ht_anestesia,
-          }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      navigate("/bitacora/Bitaenfermeria");
-    } catch (error) {
-      console.error("Error saving changes:", error);
-    }
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-
-    // Actualizar el estado del formulario
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      [name]: value,
-    }));
-  };
 
   const fetchActiveSurgeons = async (inputValue) => {
     try {
@@ -219,40 +120,41 @@ const Solicitudurgencia = () => {
     }
   };
 
-  const handleInputChange = (selectedOptions) => {
-    if (!Array.isArray(selectedOptions)) return;
-    setSelected(selectedOptions);
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
 
-    const values = selectedOptions.map((option) => option.value);
     setFormData((prevFormData) => ({
       ...prevFormData,
-      tipo_anestesia: values,
+      [name]: value,
     }));
 
-    // Actualizar el estado del formulario
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      tipo_anestesia: values, // Usando el mismo campo para actualizar el formulario
-    }));
+    if (name === "fecha_nacimiento") {
+      const today = new Date().toISOString().split("T")[0];
+      if (value > today) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          fecha_nacimiento: "Fecha de nacimiento no puede ser en el futuro",
+        }));
+      } else {
+        setErrors((prevErrors) => {
+          const { fecha_nacimiento, ...rest } = prevErrors;
+          return rest;
+        });
+      }
+    }
   };
 
-  const handleSelectChange = (selectedOption) => {
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      nombre_cirujano: selectedOption ? selectedOption.value : "",
-    }));
-  };
-
-  const agregarProcedimiento = () => {
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      nuevos_procedimientos_extra: Array.isArray(
-        prevFormData.nuevos_procedimientos_extra
-      )
-        ? [...prevFormData.nuevos_procedimientos_extra, procedimientoExtra]
-        : [procedimientoExtra],
-    }));
-    setProcedimientoExtra(""); // Limpiar el campo después de agregar
+  const handleNombreEspecialidadChange = (e) => {
+    const selectedNombreEspecialidad = e.target.value;
+    setNombreEspecialidad(selectedNombreEspecialidad);
+    const correspondingClave =
+      especialidadToClave[selectedNombreEspecialidad] || "";
+    setClaveEspecialidad(correspondingClave);
+    setFormData({
+      ...formData,
+      nombre_especialidad: selectedNombreEspecialidad,
+      clave_esp: correspondingClave,
+    });
   };
 
   const handleClaveEspecialidadChange = (e) => {
@@ -266,6 +168,85 @@ const Solicitudurgencia = () => {
       nombre_especialidad: correspondingNombre,
       clave_esp: selectedClaveEspecialidad,
     });
+  };
+
+  const handleProcedureChange = (selectedOption) => {
+    setFormData({
+      ...formData,
+      procedimientos_paciente: selectedOption ? selectedOption.value : "",
+    });
+  };
+
+  const handleSelectChange = (selectedOption) => {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      nombre_cirujano: selectedOption ? selectedOption.value : "",
+    }));
+  };
+
+  const handleAnesthesiaChange = (selectedOptions) => {
+    if (!Array.isArray(selectedOptions)) return;
+    setSelected(selectedOptions);
+
+    const values = selectedOptions.map((option) => option.value);
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      tipo_anestesia: values,
+    }));
+  };
+
+  const agregarProcedimiento = () => {
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      nuevos_procedimientos_extra: Array.isArray(
+        prevFormData.nuevos_procedimientos_extra
+      )
+        ? [...prevFormData.nuevos_procedimientos_extra, procedimientoExtra]
+        : [procedimientoExtra],
+    }));
+    setProcedimientoExtra("");
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    Object.keys(formData).forEach((key) => {
+      if (!formData[key] && key !== 'nuevos_procedimientos_extra') {
+        newErrors[key] = "Campo requerido";
+      }
+    });
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (validateForm()) {
+      try {
+        const response = await fetch(
+          "http://localhost:4000/api/solicitudes/urgencias",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+
+        const data = await response.json();
+        console.log("Formulario válido y enviado:", formData);
+        navigate("/solicitudes");
+      } catch (error) {
+        console.error("Error en la solicitud:", error);
+      }
+    } else {
+      console.log("Formulario inválido");
+    }
   };
 
   return (
@@ -295,12 +276,11 @@ const Solicitudurgencia = () => {
                 Fecha de solicitud:
               </label>
               <input
-                type="date"
+                type="text"
                 id="fecha_solicitud"
                 name="fecha_solicitud"
                 value={formData.fecha_solicitud}
-                onChange={handleInputChange}
-                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7]`}
+                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
               />
             </div>
 
@@ -335,8 +315,9 @@ const Solicitudurgencia = () => {
                 type="text"
                 id="ap_paterno"
                 name="ap_paterno"
-                value={formData.ap_paterno || "N/A"}
-                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
+                value={formData.ap_paterno}
+                onChange={handleInputChange}
+                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-white`}
               />
             </div>
 
@@ -352,8 +333,9 @@ const Solicitudurgencia = () => {
                 type="text"
                 id="ap_materno"
                 name="ap_materno"
-                value={formData.ap_materno || "N/A"}
-                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
+                value={formData.ap_materno}
+                onChange={handleInputChange}
+                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-white`}
               />
             </div>
 
@@ -369,8 +351,9 @@ const Solicitudurgencia = () => {
                 type="text"
                 id="nombre_paciente"
                 name="nombre_paciente"
-                value={formData.nombre_paciente || "N/A"}
-                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
+                value={formData.nombre_paciente}
+                onChange={handleInputChange}
+                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-white`}
               />
             </div>
 
@@ -386,8 +369,9 @@ const Solicitudurgencia = () => {
                 type="text"
                 id="no_expediente"
                 name="no_expediente"
-                value={formData.no_expediente || "N/A"}
-                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
+                value={formData.no_expediente}
+                onChange={handleInputChange}
+                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-white`}
               />
             </div>
 
@@ -403,8 +387,9 @@ const Solicitudurgencia = () => {
                 type="int"
                 id="edad"
                 name="edad"
-                value={formData.edad || "N/A"}
-                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
+                value={formData.edad}
+                onChange={handleInputChange}
+                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-white`}
               />
             </div>
 
@@ -415,28 +400,53 @@ const Solicitudurgencia = () => {
               >
                 Sexo:
               </label>
-              <input
+              <select
                 id="sexo"
                 name="sexo"
-                value={formData.sexo || "N/A"}
-                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
-              ></input>
+                value={formData.sexo}
+                onChange={handleInputChange}
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mt-2"
+              >
+                <option value=""> Seleccionar </option>
+                <option value="Masculino">Masculino</option>
+                <option value="Femenino">Femenino</option>
+                <option value="Otro">Otro</option>
+              </select>
+              {errors.sexo && <p className="text-red-500">{errors.sexo}</p>}
             </div>
 
-            <div className="mr-4" style={{ width: "75%" }}>
+            <div className="mr-4" style={{ width: "50%" }}>
               <label
                 htmlFor="sala_quirofano"
                 className="block font-semibold text-white mb-1"
               >
-                Sala:
+                Sala solicitada:
               </label>
-              <input
+              <select
                 type="text"
                 id="sala_quirofano"
                 name="sala_quirofano"
-                value={formData.sala_quirofano || "N/A"}
-                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
-              ></input>
+                value={formData.sala_quirofano}
+                onChange={handleInputChange}
+                className={`border ${errors.nombre_paciente ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+                
+              >
+                <option value=""> Seleccionar </option>
+                <option value="A1">SALA A1</option>
+                <option value="A2">SALA A2</option>
+                <option value="T1">SALA T1</option>
+                <option value="T2">SALA T2</option>
+                <option value="1">SALA 1</option>
+                <option value="2">SALA 2</option>
+                <option value="3">SALA 3</option>
+                <option value="4">SALA 4</option>
+                <option value="5">SALA 5</option>
+                <option value="6">SALA 6</option>
+                <option value="E">SALA E</option>
+                <option value="H">SALA H</option>
+                <option value="RX">SALA RX</option>
+              </select>
+                {errors.nombre_paciente && <p className="text-red-500">{errors.nombre_paciente}</p>}
             </div>
           </div>
 
@@ -449,11 +459,12 @@ const Solicitudurgencia = () => {
                 Fecha de nacimiento:
               </label>
               <input
-                type="text"
+                type="date"
                 id="fecha_nacimiento"
                 name="fecha_nacimiento"
-                value={formData.fecha_nacimiento || "N/A"}
-                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
+                value={formData.fecha_nacimiento}
+                onChange={handleInputChange}
+                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-white`}
               />
             </div>
 
@@ -467,8 +478,9 @@ const Solicitudurgencia = () => {
               <input
                 id="tipo_intervencion"
                 name="tipo_intervencion"
-                value={formData.tipo_intervencion || "N/A"}
-                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
+                value={formData.tipo_intervencion}
+                onChange={handleInputChange}
+                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-white`}
               ></input>
             </div>
 
@@ -479,15 +491,24 @@ const Solicitudurgencia = () => {
               >
                 Especialidad:
               </label>
-              <input
+              <select
                 id="nombre_especialidad"
                 name="nombre_especialidad"
-                value={formData.nombre_especialidad || "N/A"}
-                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
-              ></input>
-            </div>
+                value={nombre_especialidad}
+                onChange={handleNombreEspecialidadChange}
+                className={`border ${errors.nombre_especialidad ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+                >
+                <option value=""> Seleccionar </option>
+                {Object.keys(especialidadToClave).map((especialidad) => (
+                  <option key={especialidad} value={especialidad}>
+                    {especialidad}
+                  </option>
+                ))}
+              </select>
+              {errors.nombre_especialidad && <p className="text-red-500">{errors.nombre_especialidad}</p>}
+              </div>
 
-            <div className="w-full">
+              <div className="w-full">
               <label
                 htmlFor="clave_esp"
                 className="block font-semibold text-white mb-1"
@@ -510,19 +531,27 @@ const Solicitudurgencia = () => {
               </select>
             </div>
 
-            <div className="mr-4 w-full">
+            <div className="w-full">
               <label
                 htmlFor="turno_solicitado"
                 className="block font-semibold text-white mb-1"
               >
-                Turno solicitado:
+                Turno de atención de urgencia:
               </label>
-              <input
+              <select
                 id="turno_solicitado"
                 name="turno_solicitado"
-                value={formData.turno_solicitado || "N/A"}
-                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
-              ></input>
+                value={formData.turno_solicitado}
+                onChange={handleInputChange}
+                className={`border ${errors.turno_solicitado ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+                >
+                <option value=""> Seleccionar </option>
+                <option value="Matutino">Matutino</option>
+                <option value="Vespertino">Vespertino</option>
+                <option value="Nocturno">Nocturno</option>
+                <option value="Especial">Especial</option>
+              </select>
+              {errors.turno_solicitado && <p className="text-red-500">{errors.turno_solicitado}</p>}
             </div>
 
             <div className="mr-4 w-full">
@@ -530,15 +559,16 @@ const Solicitudurgencia = () => {
                 htmlFor="tiempo_estimado"
                 className="block font-semibold text-white mb-1"
               >
-                Tiempo est. de cirugía:
+                Duración Urgencia (min):
               </label>
               <input
                 placeholder="Minutos"
                 type="int"
                 id="tiempo_estimado"
                 name="tiempo_estimado"
-                value={formData.tiempo_estimado || "N/A"}
-                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
+                value={formData.tiempo_estimado}
+                onChange={handleInputChange}
+                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-white`}
               />
             </div>
 
@@ -552,8 +582,9 @@ const Solicitudurgencia = () => {
               <input
                 id="req_insumo"
                 name="req_insumo"
-                value={formData.req_insumo || "N/A"}
-                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
+                value={formData.req_insumo}
+                onChange={handleInputChange}
+                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-white`}
               ></input>
             </div>
           </div>
@@ -564,14 +595,15 @@ const Solicitudurgencia = () => {
                 htmlFor="fecha_solicitada"
                 className="block font-semibold text-white mb-1"
               >
-                Fecha de cirugía:
+                Fecha de urgencia:
               </label>
               <input
-                type="text"
+                type="date"
                 id="fecha_solicitada"
                 name="fecha_solicitada"
-                value={formData.fecha_programada || "N/A"}
-                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
+                value={formData.fecha_programada}
+                onChange={handleInputChange}
+                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-white`}
               />
             </div>
 
@@ -586,8 +618,9 @@ const Solicitudurgencia = () => {
                 type="time"
                 id="hora_asignada"
                 name="hora_asignada"
-                value={formData.hora_asignada || "N/A"}
-                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
+                value={formData.hora_asignada}
+                onChange={handleInputChange}
+                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-white`}
               />
             </div>
 
@@ -601,8 +634,9 @@ const Solicitudurgencia = () => {
               <input
                 id="procedimientos_paciente"
                 name="procedimientos_paciente"
-                value={formData.nombre_anestesiologo || "N/A"}
-                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
+                value={formData.nombre_anestesiologo}
+                onChange={handleInputChange}
+                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-white`}
               ></input>
             </div>
 
@@ -619,7 +653,7 @@ const Solicitudurgencia = () => {
                 id="hi_anestesia"
                 name="hi_anestesia"
                 value={formData.hi_anestesia || ""}
-                onChange={handleChange}
+                onChange={handleInputChange}
                 className={`rounded-lg px-3 py-2 w-full bg-white`}
               />
             </div>
@@ -634,7 +668,7 @@ const Solicitudurgencia = () => {
               <MultiSelect
                 options={options}
                 value={selected}
-                onChange={handleInputChange}
+                onChange={handleAnesthesiaChange}
                 labelledBy="Seleccionar tipo de anestesia"
                 overrideStrings={{
                   allItemsAreSelected: "Todo seleccionado",
@@ -644,7 +678,7 @@ const Solicitudurgencia = () => {
                   selectAll: "Seleccionar todo",
                   selectSomeItems: "Seleccionar",
                 }}
-                className="border border-[#C59494] rounded-lg w-full bg-[#DBB7B7] text-[#333333] cursor-pointer text-sm"
+                className="border border-[#C59494] rounded-lg w-full bg-white text-[#333333] cursor-pointer text-sm"
                 style={{ minHeight: "auto" }}
               />
             </div>
@@ -662,7 +696,7 @@ const Solicitudurgencia = () => {
                 id="ht_anestesia"
                 name="ht_anestesia"
                 value={formData.ht_anestesia || ""}
-                onChange={handleChange}
+                onChange={handleInputChange}
                 className={`rounded-lg px-3 py-2 w-full bg-white`}
               />
             </div>
@@ -677,8 +711,8 @@ const Solicitudurgencia = () => {
               <input
                 id="req_insumo"
                 name="req_insumo"
-                value={formData.estado_solicitud || "N/A"}
-                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
+                value={formData.estado_solicitud}
+                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-white`}
               ></input>
             </div>
           </div>
@@ -739,8 +773,8 @@ const Solicitudurgencia = () => {
                 id="hora_entrada"
                 name="hora_entrada"
                 value={formData.hora_entrada || ""}
-                onChange={handleChange}
-                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white cursor-default`}
+                onChange={handleInputChange}
+                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white`}
               />
             </div>
 
@@ -756,8 +790,8 @@ const Solicitudurgencia = () => {
                 id="egreso"
                 name="egreso"
                 value={formData.egreso || ""}
-                onChange={handleChange}
-                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white cursor-default`}
+                onChange={handleInputChange}
+                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white`}
               ></input>
             </div>
 
@@ -774,7 +808,7 @@ const Solicitudurgencia = () => {
                 id="hora_incision"
                 name="hora_incision"
                 value={formData.hora_incision || ""}
-                onChange={handleChange}
+                onChange={handleInputChange}
                 className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white`}
               />
             </div>
@@ -792,8 +826,8 @@ const Solicitudurgencia = () => {
                 id="hora_salida"
                 name="hora_salida"
                 value={formData.hora_salida || ""}
-                onChange={handleChange}
-                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white cursor-default`}
+                onChange={handleInputChange}
+                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white`}
               />
             </div>
 
@@ -810,7 +844,7 @@ const Solicitudurgencia = () => {
                 id="hora_cierre"
                 name="hora_cierre"
                 value={formData.hora_cierre || ""}
-                onChange={handleChange}
+                onChange={handleInputChange}
                 className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white`}
               />
             </div>
@@ -863,7 +897,7 @@ const Solicitudurgencia = () => {
                 <button
                   id="agregar_procedimiento"
                   name="agregar_procedimiento"
-                  className="border-[#C59494] rounded-lg px-3 py-2 w-full bg-[#DBB7B7] text-white cursor-pointer"
+                  className="border-[#C59494] rounded-lg px-3 py-2 w-full bg-white text-white cursor-pointer"
                   onClick={agregarProcedimiento}
                 >
                   +
@@ -885,8 +919,9 @@ const Solicitudurgencia = () => {
                 id="diagnostico"
                 name="diagnostico"
                 rows="4"
-                value={formData.diagnostico || "N/A"}
-                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
+                value={formData.diagnostico}
+                onChange={handleInputChange}
+                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-white`}
               ></textarea>
             </div>
           </div>
@@ -894,10 +929,10 @@ const Solicitudurgencia = () => {
 
         <div className="flex justify-center mt-4">
           <button
-            onClick={handleSave}
+            type="submit"
             className="bg-[#365b77] text-white px-4 py-2 rounded"
           >
-            Guardar
+            Enviar
           </button>
         </div>
       </div>
@@ -905,4 +940,4 @@ const Solicitudurgencia = () => {
   );
 };
 
-export default Solicitudurgencia;
+export default SolicitudUrgencia;
