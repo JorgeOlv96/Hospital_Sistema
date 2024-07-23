@@ -79,3 +79,12 @@
 .appointment-info {
   font-size: 12px;
 }
+/* OperatingRoomSchedule.css */
+.appointment-block.reprogrammed {
+  background-color: orange;
+}
+
+.appointment-block.suspended {
+  background-color: red;
+}
+

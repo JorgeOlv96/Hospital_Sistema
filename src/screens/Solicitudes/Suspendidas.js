@@ -118,7 +118,7 @@ function Solicitudessuspendidas() {
           <div>
             <Link
               to="/solicitudes/Programarsolicitud"
-              className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
+              className="bg-[#06ABC9] hover:bg-[#00C5E8] text-white py-2 px-4 rounded inline-flex items-center"
             >
               <span>Ver todas las pre-programadas</span>
             </Link>

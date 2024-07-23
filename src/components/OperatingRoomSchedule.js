@@ -5,12 +5,20 @@ import './OperatingRoomSchedule.css';
 const OperatingRooms = ['A1', 'A2', 'T1', 'T2', '1', '2', '3', '4', '5', '6', 'E', 'H', 'RX'];
 
 const OperatingRoomSchedule = ({ date, appointments, onEventClick }) => {
-  // Filtrar las citas para la fecha seleccionada
   const filteredAppointments = appointments.filter(app =>
     moment(app.start).isSame(date, 'day') || moment(app.end).isSame(date, 'day')
   );
 
-  // Genera las filas y columnas para la tabla de horarios de quirófano
+  const getAppointmentClass = (title) => {
+    if (title && (title.endsWith('R1') || title.endsWith('R2') || title.endsWith('R3') || title.endsWith('R4') || title.endsWith('R5'))) {
+      return 'reprogrammed';
+    }
+    if (title && title.endsWith('S')) {
+      return 'suspended';
+    }
+    return '';
+  };
+
   const generateSchedule = () => {
     const hours = Array.from({ length: 24 }, (_, i) => {
       const hour = (i + 7) % 24;
@@ -34,11 +42,12 @@ const OperatingRoomSchedule = ({ date, appointments, onEventClick }) => {
               {overlappingAppointments.map((appointment, idx) => {
                 const startMinute = moment(appointment.start).diff(startOfHour, 'minutes');
                 const durationInMinutes = moment(appointment.end).diff(appointment.start, 'minutes');
+                const appointmentClass = getAppointmentClass(appointment.title);
 
                 return (
                   <div
                     key={idx}
-                    className="appointment-block"
+                    className={`appointment-block ${appointmentClass}`}
                     style={{
                       top: `${(startMinute / 60) * 100}%`,
                       height: `${(durationInMinutes / 60) * 100}%`,
@@ -64,7 +73,7 @@ const OperatingRoomSchedule = ({ date, appointments, onEventClick }) => {
 
     return hours.map((hour, index) => (
       <div key={hour} className="schedule-row">
-        <div className="schedule-time">{hour}</div>
+        <div className="schedule-time" style={{ backgroundColor: getBackgroundColor(hour) }}>{hour}</div>
         {schedule.map((cells, roomIndex) => (
           <div key={OperatingRooms[roomIndex]} className="schedule-cell">
             {cells[index]}
@@ -72,6 +81,14 @@ const OperatingRoomSchedule = ({ date, appointments, onEventClick }) => {
         ))}
       </div>
     ));
+  };
+
+  const getBackgroundColor = (hour) => {
+    const hourNum = parseInt(hour.split(':')[0]);
+    if (hourNum >= 7 && hourNum < 15) return 'rgba(129, 164, 255, 0.43)';
+    if (hourNum >= 15 && hourNum < 21) return 'rgba(109, 255, 19, 0.43)';
+    if (hourNum >= 21 || hourNum < 7) return 'rgba(255, 169, 89, 0.43)';
+    return 'transparent';
   };
 
   return (
