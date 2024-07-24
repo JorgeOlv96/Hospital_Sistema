@@ -95,11 +95,11 @@ function Bitacoraenfermeria() {
     <Layout>
       <div className="flex flex-col gap-4 mb-4">
         <h1 className="text-xl font-semibold">Bitacora Enfermería</h1>
-        <div className="my-4">
-        <Link to="/urgencias/Solicitudurgencia" className="btn btn-sm btn-secondary p-2 bg-red-500 text-white rounded-lg">
-          Agregar URGENCIA
-        </Link>
-      </div>
+          <div className="my-4">
+            <Link to="/urgencias/Solicitudurgencia" className="btn btn-sm btn-secondary p-2 bg-red-500 text-white rounded-lg">
+              Agregar URGENCIA
+            </Link>
+          </div>
 
         {filteredAppointments.length === 0 ? (
           <div className="text-center text-gray-500 mt-4">

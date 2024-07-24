@@ -234,7 +234,7 @@ function Programaranestesiologo() {
               to="/anestesiólogos"
               className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
             >
-              <span>Ver agenda de anestesiólogos</span>
+              <span>Ver agenda de Anestesiólogos</span>
             </Link>
           </div>
         </div>

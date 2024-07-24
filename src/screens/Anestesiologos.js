@@ -57,7 +57,7 @@ const CustomToolbar = ({ date, view, onView, onNavigate }) => {
           to="/anestesio/Programaranestesiologo"
           className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
         >
-          Asignar Anestesiologo
+          Gestionar Anestesiólogos
         </Link>
       </div>
       
