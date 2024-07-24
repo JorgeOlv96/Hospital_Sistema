@@ -29,10 +29,6 @@ const Consultaurgencia = () => {
   });
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  const [suspendModalOpen, setSuspendModalOpen] = useState(false);
-  const [suspendReason, setSuspendReason] = useState("");
-  const [suspendDetail, setSuspendDetail] = useState("");
-  const [suspendDetailOptions, setSuspendDetailOptions] = useState([]);
   const [error, setError] = useState("");
   const [procedimientoExtra, setProcedimientoExtra] = useState("");
   const [selected, setSelected] = useState([]);
@@ -82,91 +78,6 @@ const Consultaurgencia = () => {
     }
   };
 
-  const handleSuspend = () => {
-    setSuspendModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setSuspendModalOpen(false);
-  };
-
-  const handleSuspendSubmit = async () => {
-    if (!suspendReason || !suspendDetail) {
-      setError("Por favor, selecciona un motivo y un detalle de suspensión.");
-      return;
-    }
-    try {
-      const response = await fetch(
-        `http://localhost:4000/api/solicitudes/suspender/${id}`,
-        {
-          method: "PATCH",
-          body: JSON.stringify({
-            suspendReason,
-            suspendDetail,
-          }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      setSuspendModalOpen(false);
-      closeModal();
-      navigate("/bitacora/Bitaenfermeria");
-    } catch (error) {
-      console.error("Error suspending appointment:", error);
-    }
-  };
-
-  const handleSave = async () => {
-    try {
-      const {
-        nuevos_procedimientos_extra,
-        hora_entrada,
-        hora_incision,
-        hora_cierre,
-        hora_salida,
-        egreso,
-        enf_quirurgica,
-        enf_circulante,
-        hi_anestesia,
-        tipo_anestesia,
-        ht_anestesia,
-      } = patientData;
-      const response = await fetch(
-        `http://localhost:4000/api/solicitudes/bitacoraenf/${id}`,
-        {
-          method: "PATCH",
-          body: JSON.stringify({
-            nuevos_procedimientos_extra: JSON.stringify(
-              nuevos_procedimientos_extra
-            ),
-            hora_entrada,
-            hora_incision,
-            hora_cierre,
-            hora_salida,
-            egreso,
-            enf_quirurgica,
-            enf_circulante,
-            hi_anestesia,
-            tipo_anestesia,
-            ht_anestesia,
-          }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      navigate("/bitacora/Bitaenfermeria");
-    } catch (error) {
-      console.error("Error saving changes:", error);
-    }
-  };
 
   const handleSelectChange = (selectedOption) => {
     setPatientData((prevFormData) => ({
@@ -208,7 +119,7 @@ const Consultaurgencia = () => {
   return (
     <Layout>
       <div className="flex flex-col gap-2 mb-4">
-        <h1 className="text-xl font-semibold">Consulta Paciente</h1>
+        <h1 className="text-xl font-semibold">Consulta Paciente urgente</h1>
 
         <div className="flex my-4 justify-between">
           <Link
@@ -220,13 +131,6 @@ const Consultaurgencia = () => {
               <span style={{ marginLeft: "5px" }}>Regresar a bitácora</span>
             </span>
           </Link>
-
-          <button
-            onClick={handleSuspend}
-            className="bg-red-500 hover:bg-red-700 text-white py-2 px-4 rounded inline-flex items-center"
-          >
-            Suspender cirugía
-          </button>
         </div>
 
         <div class="flex flex-col p-4 bg-[#85AD8D] rounded-lg ">
@@ -846,15 +750,6 @@ const Consultaurgencia = () => {
               ></textarea>
             </div>
           </div>
-        </div>
-
-        <div className="flex justify-center mt-4">
-          <button
-            onClick={handleSave}
-            className="bg-[#365b77] text-white px-4 py-2 rounded"
-          >
-            Guardar
-          </button>
         </div>
       </div>
     </Layout>

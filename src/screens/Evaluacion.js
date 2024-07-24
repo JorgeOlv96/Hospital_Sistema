@@ -58,10 +58,31 @@ function Evaluacion() {
     console.log("Eliminar cita con id:", appointmentId);
   };
 
+
+  const getEstadoColor = (estado) => {
+    switch (estado.toLowerCase()) {
+      case "programada":
+        return "bg-green-400";
+      case "realizada":
+        return "bg-blue-400";
+      case "suspendida":
+        return "bg-yellow-400";
+      case "pendiente":
+        return "bg-orange-400";
+      case "Pre-programada":
+        return "bg-red-400";
+      case "Urgencia":
+        return "bg-red-400";
+      default:
+        return "";
+    }
+  };
+
+
   const getEstadoColorStyle = (estado) => {
     switch (estado.toLowerCase()) {
       case "pendiente":
-        return { backgroundColor: "#FC8181", color: "black" }; // Color de fondo rojo y texto negro
+        return { backgroundColor: "#E9972F", color: "black" }; // Color de fondo rojo y texto negro
       default:
         return {};
     }
@@ -149,7 +170,7 @@ function Evaluacion() {
               value={filter.estado}
               onChange={handleFilterChange}
               readOnly
-              className="rounded-lg px-2 py-1 shadow-sm w-full bg-[#FC8181] cursor-default "
+              className="rounded-lg px-2 py-1 shadow-sm w-full bg-[#E9972F] cursor-default "
             />
           </div>
         </div>
@@ -197,12 +218,26 @@ function Evaluacion() {
                     <td className="px-4 py-2 flex justify-center">
                       {appointment.sala_quirofano}
                     </td>
-                    <td
-                      className="px-4 py-2"
-                      style={getEstadoColorStyle(appointment.estado_solicitud)}
-                    >
-                      {appointment.estado_solicitud}
-                    </td>
+                    <td className="border px-4 py-2">
+                        <div
+                          className={`inline-block px-1 py-1 rounded-lg ${getEstadoColor(
+                            appointment.estado_solicitud
+                          )}`}
+                          style={{
+                            ...getEstadoColorStyle(
+                              appointment.estado_solicitud
+                            ),
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            height: "100%",
+                            width: "100%",
+                            textAlign: "center",
+                          }}
+                        >
+                          {appointment.estado_solicitud}
+                        </div>
+                      </td>
                     <td className="px-4 py-2 flex justify-center">
                       <button
                         onClick={() => handleViewModal(appointment)}
@@ -217,23 +252,25 @@ function Evaluacion() {
             </table>
           </div>
         )}
-            <div className="flex justify-center mt-4">
-              <button
-                onClick={() => setPage(page - 1)}
-                disabled={page === 1}
-                className="bg-[#365b77] hover:bg-[#7498b6] text-white font-bold py-2 px-4 rounded-l"
-              >
-                Anterior
-              </button>
-              <span>Página {page}</span>
-              <button
-                 onClick={() => setPage(page + 1)}
-                 disabled={endIndex >= filteredAppointments.length}
-                 className="bg-[#365b77] hover:bg-[#7498b6] text-white font-bold py-2 px-4 rounded-r"
-              >
-                Siguiente
-              </button>
-            </div>
+            {/* Paginación */}
+          <div className="flex justify-center mt-4">
+            <button
+              onClick={() => setPage(page - 1)}
+              disabled={page === 1}
+              className="bg-[#365b77] hover:bg-[#7498b6] text-white font-bold py-2 px-4 rounded-l"
+            >
+              Anterior
+            </button>
+            <span className="mx-4">Página {page}</span>
+            <button
+              onClick={() => setPage(page + 1)}
+              disabled={endIndex >= filteredAppointments.length}
+              className="bg-[#365b77] hover:bg-[#7498b6] text-white font-bold py-2 px-4 rounded-r"
+            >
+              Siguiente
+            </button>
+          </div>
+
          </div>
     </Layout>
   );

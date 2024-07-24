@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import Layout from "../../Layout";
 import { Link } from "react-router-dom";
 import AddAppointmentModal from "../../components/Modals/AddApointmentModal";
+import { FaTable, FaThLarge } from "react-icons/fa"; // Asegúrate de tener esta biblioteca instalada
 
 function Solicitudes() {
   const [solicitudes, setSolicitudes] = useState([]);
@@ -16,6 +17,7 @@ function Solicitudes() {
   const [filterState, setFilterState] = useState("all");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [view, setView] = useState("table"); // State to toggle view
 
   useEffect(() => {
     const fetchSolicitudes = async () => {
@@ -349,131 +351,209 @@ function Solicitudes() {
             </div>
 
             <div className="overflow-x-auto">
-              <table className="min-w-full shadow-md rounded-lg overflow-hidden">
-                <thead className="bg-[#365b77] text-white">
-                  <tr>
-                    <th
-                      className="px-4 py-3 cursor-pointer"
-                      onClick={() => handleSort("id_solicitud")}
+              <div className="flex flex-col space-y-4 mt-4">
+                <div className="flex justify-between mb-4">
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => setView("table")}
+                      className={`p-2 rounded-md ${
+                        view === "table"
+                          ? "bg-[#365b77] text-white"
+                          : "text-[#365b77]"
+                      }`}
+                      aria-label="Vista en tabla"
                     >
-                      ID{" "}
-                      <span>
-                        {sortBy === "id_solicitud" &&
-                          (sortOrder === "asc" ? "▲" : "▼")}
-                      </span>
-                    </th>
-                    <th
-                      className="px-4 py-3 cursor-pointer"
-                      onClick={() => handleSort("folio")}
+                      <FaTable size={24} />
+                    </button>
+                    <button
+                      onClick={() => setView("cards")}
+                      className={`p-2 rounded-md ${
+                        view === "cards"
+                          ? "bg-[#365b77] text-white"
+                          : "text-[#365b77]"
+                      }`}
+                      aria-label="Vista en tarjetas"
                     >
-                      Folio{" "}
-                      <span>
-                        {sortBy === "folio" &&
-                          (sortOrder === "asc" ? "▲" : "▼")}
-                      </span>
-                    </th>
-                    <th
-                      className="px-4 py-3 cursor-pointer"
-                      onClick={() => handleSort("nombre_paciente")}
-                    >
-                      Nombre{" "}
-                      <span>
-                        {sortBy === "nombre_paciente" &&
-                          (sortOrder === "asc" ? "▲" : "▼")}
-                      </span>
-                    </th>
-                    <th
-                      className="px-4 py-3 cursor-pointer"
-                      onClick={() => handleSort("nombre_especialidad")}
-                    >
-                      Especialidad{" "}
-                      <span>
-                        {sortBy === "nombre_especialidad" &&
-                          (sortOrder === "asc" ? "▲" : "▼")}
-                      </span>
-                    </th>
-                    <th
-                      className="px-4 py-3 cursor-pointer"
-                      onClick={() => handleSort("fecha_solicitud")}
-                    >
-                      Fecha{" "}
-                      <span>
-                        {sortBy === "fecha_solicitud" &&
-                          (sortOrder === "asc" ? "▲" : "▼")}
-                      </span>
-                    </th>
-                    <th
-                      className="px-4 py-3 cursor-pointer"
-                      onClick={() => handleSort("estado_solicitud")}
-                    >
-                      Estado{" "}
-                      <span>
-                        {sortBy === "estado_solicitud" &&
-                          (sortOrder === "asc" ? "▲" : "▼")}
-                      </span>
-                    </th>
-                    <th className="px-4 py-3">Acciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {sortedSolicitudes
-                    .slice(startIndex, endIndex)
-                    .map((solicitud) => {
-                      const formattedDate = new Date(
-                        solicitud.fecha_solicitud
-                      ).toLocaleDateString();
-                      return (
-                        <tr
-                          key={solicitud.id_solicitud}
-                          className="bg-blue-50 hover:bg-[#7498b6]"
-                        >
-                          <td className="border px-4 py-2">
-                            {solicitud.id_solicitud}
-                          </td>
-                          <td className="border px-4 py-2">
-                            {solicitud.folio}
-                          </td>
-                          <td className="border px-4 py-2">
-                            {solicitud.nombre_paciente} {solicitud.ap_paterno}{" "}
-                            {solicitud.ap_materno}
-                          </td>
-                          <td className="border px-4 py-2">
-                            {solicitud.nombre_especialidad}
-                          </td>
-                          <td className="border px-4 py-2">{formattedDate}</td>
-                          <td className="border px-4 py-2">
-                            <div
-                              className={`inline-block px-1 py-1 rounded-lg ${getEstadoColor(
-                                solicitud.estado_solicitud
-                              )}`}
-                              style={{
-                                ...getEstadoColorStyle(
-                                  solicitud.estado_solicitud
-                                ),
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                height: "100%",
-                                width: "100%",
-                                textAlign: "center",
-                              }}
-                            >
-                              {solicitud.estado_solicitud}
-                            </div>
-                          </td>
-                          <td className="border px-4 py-2">
-                            <button
-                              onClick={() => handleViewModal(solicitud)}
-                              className="bg-[#365b77] text-white px-4 py-2 rounded-md hover:bg-[#7498b6]"
-                            >
-                              Ver
-                            </button>
-                          </td>
+                      <FaThLarge size={24} />
+                    </button>
+                  </div>
+                </div>
+
+                {view === "table" ? (
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full shadow-md rounded-lg overflow-hidden">
+                      <thead className="bg-[#365b77] text-white">
+                        <tr>
+                          <th
+                            className="px-4 py-3 cursor-pointer"
+                            onClick={() => handleSort("id_solicitud")}
+                          >
+                            ID{" "}
+                            <span>
+                              {sortBy === "id_solicitud" &&
+                                (sortOrder === "asc" ? "▲" : "▼")}
+                            </span>
+                          </th>
+                          <th
+                            className="px-4 py-3 cursor-pointer"
+                            onClick={() => handleSort("folio")}
+                          >
+                            Folio{" "}
+                            <span>
+                              {sortBy === "folio" &&
+                                (sortOrder === "asc" ? "▲" : "▼")}
+                            </span>
+                          </th>
+                          <th
+                            className="px-4 py-3 cursor-pointer"
+                            onClick={() => handleSort("nombre_paciente")}
+                          >
+                            Nombre{" "}
+                            <span>
+                              {sortBy === "nombre_paciente" &&
+                                (sortOrder === "asc" ? "▲" : "▼")}
+                            </span>
+                          </th>
+                          <th
+                            className="px-4 py-3 cursor-pointer"
+                            onClick={() => handleSort("nombre_especialidad")}
+                          >
+                            Especialidad{" "}
+                            <span>
+                              {sortBy === "nombre_especialidad" &&
+                                (sortOrder === "asc" ? "▲" : "▼")}
+                            </span>
+                          </th>
+                          <th
+                            className="px-4 py-3 cursor-pointer"
+                            onClick={() => handleSort("fecha_solicitud")}
+                          >
+                            Fecha{" "}
+                            <span>
+                              {sortBy === "fecha_solicitud" &&
+                                (sortOrder === "asc" ? "▲" : "▼")}
+                            </span>
+                          </th>
+                          <th
+                            className="px-4 py-3 cursor-pointer"
+                            onClick={() => handleSort("estado_solicitud")}
+                          >
+                            Estado{" "}
+                            <span>
+                              {sortBy === "estado_solicitud" &&
+                                (sortOrder === "asc" ? "▲" : "▼")}
+                            </span>
+                          </th>
+                          <th className="px-4 py-3">Acciones</th>
                         </tr>
-                      );
-                    })}
-                </tbody>
-              </table>
+                      </thead>
+                      <tbody>
+                        {sortedSolicitudes
+                          .slice(startIndex, endIndex)
+                          .map((solicitud) => {
+                            const formattedDate = new Date(
+                              solicitud.fecha_solicitud
+                            ).toLocaleDateString();
+                            return (
+                              <tr
+                                key={solicitud.id_solicitud}
+                                className="bg-blue-50 hover:bg-[#7498b6]"
+                              >
+                                <td className="border px-4 py-2">
+                                  {solicitud.id_solicitud}
+                                </td>
+                                <td className="border px-4 py-2">
+                                  {solicitud.folio}
+                                </td>
+                                <td className="border px-4 py-2">
+                                  {solicitud.nombre_paciente}{" "}
+                                  {solicitud.ap_paterno} {solicitud.ap_materno}
+                                </td>
+                                <td className="border px-4 py-2">
+                                  {solicitud.nombre_especialidad}
+                                </td>
+                                <td className="border px-4 py-2">
+                                  {formattedDate}
+                                </td>
+                                <td className="border px-4 py-2">
+                                  <div
+                                    className={`inline-block px-1 py-1 rounded-lg ${getEstadoColor(
+                                      solicitud.estado_solicitud
+                                    )}`}
+                                    style={{
+                                      ...getEstadoColorStyle(
+                                        solicitud.estado_solicitud
+                                      ),
+                                      display: "flex",
+                                      justifyContent: "center",
+                                      alignItems: "center",
+                                      height: "100%",
+                                      width: "100%",
+                                      textAlign: "center",
+                                    }}
+                                  >
+                                    {solicitud.estado_solicitud}
+                                  </div>
+                                </td>
+                                <td className="border px-4 py-2">
+                                  <button
+                                    onClick={() => handleViewModal(solicitud)}
+                                    className="bg-[#365b77] text-white px-4 py-2 rounded-md hover:bg-[#7498b6]"
+                                  >
+                                    Ver
+                                  </button>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  //Cards
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                    {sortedSolicitudes
+                      .slice(startIndex, endIndex)
+                      .map((solicitud) => (
+                        <div
+                          key={solicitud.id_solicitud}
+                          className="p-4 border border-gray-200 rounded-lg shadow-md transition-transform transform hover:scale-105 hover:shadow-xl"
+                          style={getEstadoColorStyle(
+                            solicitud.estado_solicitud
+                          )}
+                        >
+                          <div className="flex flex-col justify-between h-full">
+                            <div className="mb-2">
+                              <p className="text-lg font-semibold">
+                                {solicitud.nombre_paciente}
+                              </p>
+                              <p className="text-sm text-gray-600">
+                                {solicitud.nombre_especialidad}
+                              </p>
+                              <p className="text-sm text-gray-600">
+                                Fecha:{" "}
+                                {new Date(
+                                  solicitud.fecha_solicitud
+                                ).toLocaleDateString()}
+                              </p>
+                              <p className="text-sm text-gray-600">
+                                Estado: {solicitud.estado_solicitud}
+                              </p>
+                            </div>
+                            <div className="flex justify-end">
+                              <button
+                                className="btn btn-sm btn-primary"
+                                onClick={() => handleViewModal(solicitud)}
+                              >
+                                Ver detalles
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
 
