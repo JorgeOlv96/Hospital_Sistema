@@ -140,24 +140,26 @@ function Programaranestesiologo() {
   };
   const handleDeleteAnesthesiologist = async (id) => {
     if (window.confirm("¿Estás seguro de que quieres eliminar este anestesiólogo?")) {
-      try {
-        const response = await fetch(`http://localhost:4000/api/anestesio/anestesiologos/${id}`, {
-          method: "DELETE",
-        });
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
+        try {
+            const response = await fetch(`http://localhost:4000/api/anestesio/anestesiologos/${id}`, {
+                method: "DELETE",
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || "Network response was not ok");
+            }
+
+            // Actualizar la lista de anestesiólogos después de eliminar uno
+            fetchAnesthesiologists();
+            toast.success(data.message || "Anestesiólogo eliminado con éxito");
+        } catch (error) {
+            console.error("Error deleting anesthesiologist:", error);
+            toast.error(error.message || "Error al eliminar el anestesiólogo");
         }
-        // Mostrar notificación de éxito
-        toast.success("¡Anestesiólogo eliminado con éxito!");
-        // Actualizar la lista de anestesiólogos después de eliminar uno
-        fetchAnesthesiologists();
-      } catch (error) {
-        console.error("Error deleting anesthesiologist:", error);
-        // Mostrar notificación de error
-        toast.error("Error al eliminar el anestesiólogo");
-      }
     }
-  };
+};
   
 
   const fetchAnesthesiologists = async () => {
@@ -433,7 +435,7 @@ function Programaranestesiologo() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       <button
-                        onClick={() => handleDeleteAnesthesiologist(anesthesiologist.id)}
+                        onClick={() => handleDeleteAnesthesiologist(anesthesiologist.id_anestesiologo)}
                         className="text-red-600 hover:text-red-800"
                       >
                         Eliminar
