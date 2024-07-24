@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from 'react';
 import Layout from "../../Layout";
 import AsyncSelect from "react-select/async";
 import { Link } from "react-router-dom";
@@ -18,6 +18,8 @@ function Programaranestesiologo() {
   const [anesthesiologists, setAnesthesiologists] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [anesthesiologistsPerPage] = useState(10);
+  const [sortBy, setSortBy] = useState(null);
+  const [sortOrder, setSortOrder] = useState('asc');
 
   const fetchActiveAnesthesiologists = async (inputValue) => {
     try {
@@ -87,6 +89,18 @@ function Programaranestesiologo() {
 
   const handleSaveAnesthesiologist = async () => {
     try {
+      // Verificar si hay un anestesiólogo asignado a la misma sala en el mismo día
+      const existingAssignment = anesthesiologists.find(
+        (anesthesiologist) =>
+          anesthesiologist.dia_anestesio === formData.dia_anestesio &&
+          anesthesiologist.sala_anestesio === formData.sala_anestesio
+      );
+
+      if (existingAssignment) {
+        toast.error("Ya hay un anestesiólogo asignado a esta sala en el mismo día.");
+        return;
+      }
+
       const response = await fetch(
         "http://localhost:4000/api/anestesio/anestesiologos",
         {
@@ -161,6 +175,31 @@ function Programaranestesiologo() {
 
   // Cambiar página
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+
+  const handleSort = (field) => {
+    if (sortBy === field) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortBy(field);
+      setSortOrder('asc');
+    }
+  };
+
+ // Función para obtener el color de fondo basado en el turno
+ const getTurnColor = (turno_anestesio) => {
+  switch (turno_anestesio) {
+    case "Matutino":
+      return "rgba(129, 164, 255, 0.43)";
+    case "Vespertino":
+      return "rgba(109, 255, 19, 0.43)";
+    case "Nocturno":
+      return "rgba(255, 169, 89, 0.43)";
+    default:
+      return "#FFFFFF"; // color predeterminado
+  }
+};
+
 
   return (
     <Layout>
@@ -298,9 +337,13 @@ function Programaranestesiologo() {
                 <tr>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    Nombre
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" 
+                    onClick={() => handleSort('nombre')}
+                    >
+                    Nombre 
+                    <span>
+                      {sortBy === 'nombre' && (sortOrder === 'asc' ? '▲' : '▼')}
+                    </span>
                   </th>
                   <th
                     scope="col"
@@ -336,7 +379,7 @@ function Programaranestesiologo() {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {currentAnesthesiologists.map((anesthesiologist) => (
-                  <tr key={anesthesiologist.id}>
+                   <tr key={anesthesiologist.folio}>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">
                         {anesthesiologist.nombre}
@@ -347,8 +390,8 @@ function Programaranestesiologo() {
                         {anesthesiologist.dia_anestesio}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" style={{ backgroundColor: getTurnColor(anesthesiologist.turno_anestesio) }}>
                         {anesthesiologist.turno_anestesio}
                       </span>
                     </td>
