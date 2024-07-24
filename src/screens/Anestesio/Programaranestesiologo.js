@@ -124,6 +124,27 @@ function Programaranestesiologo() {
       toast.error("Error al guardar el anestesiólogo");
     }
   };
+  const handleDeleteAnesthesiologist = async (id) => {
+    if (window.confirm("¿Estás seguro de que quieres eliminar este anestesiólogo?")) {
+      try {
+        const response = await fetch(`http://localhost:4000/api/anestesio/anestesiologos/${id}`, {
+          method: "DELETE",
+        });
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        // Mostrar notificación de éxito
+        toast.success("¡Anestesiólogo eliminado con éxito!");
+        // Actualizar la lista de anestesiólogos después de eliminar uno
+        fetchAnesthesiologists();
+      } catch (error) {
+        console.error("Error deleting anesthesiologist:", error);
+        // Mostrar notificación de error
+        toast.error("Error al eliminar el anestesiólogo");
+      }
+    }
+  };
+  
 
   const fetchAnesthesiologists = async () => {
     try {
@@ -332,6 +353,12 @@ function Programaranestesiologo() {
                   >
                     Hora fin
                   </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Acciones
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -360,6 +387,14 @@ function Programaranestesiologo() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {anesthesiologist.hora_fin}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <button
+                        onClick={() => handleDeleteAnesthesiologist(anesthesiologist.id)}
+                        className="text-red-600 hover:text-red-800"
+                      >
+                        Eliminar
+                      </button>
                     </td>
                   </tr>
                 ))}
