@@ -337,7 +337,7 @@ const SolicitudUrgencia = () => {
           </div>
 
           <div class="flex mb-4">
-            <div class="w-full mr-4">
+            <div class="w-1/4 mr-4">
               <label
                 for="ap_paterno"
                 class="block font-semibold text-white mb-1"
@@ -355,7 +355,7 @@ const SolicitudUrgencia = () => {
               />
             </div>
 
-            <div class="w-full mr-4">
+            <div class="w-1/4 mr-4">
               <label
                 for="ap_materno"
                 class="block font-semibold text-white mb-1"
@@ -373,7 +373,7 @@ const SolicitudUrgencia = () => {
               />
             </div>
 
-            <div class="w-full mr-4">
+            <div class="w-1/3 mr-4">
               <label
                 for="nombre_paciente"
                 class="block font-semibold text-white mb-1"
@@ -392,7 +392,7 @@ const SolicitudUrgencia = () => {
             </div>
 
 
-            <div className="mr-4 w-full">
+            <div className="mr-4 w-1/5">
               <label
                 htmlFor="edad"
                 className="block font-semibold text-white mb-1"
@@ -410,7 +410,7 @@ const SolicitudUrgencia = () => {
               />
             </div>
 
-            <div className="mr-4 w-full sm:w-1/2 lg:w-1/4">
+            <div className="mr-4" style={{ width: "25%" }}>
         <label
             htmlFor="sexo"
             className="block font-semibold text-white mb-1"
@@ -422,7 +422,7 @@ const SolicitudUrgencia = () => {
             name="sexo"
             value={formData.sexo}
             onChange={handleInputChange}
-            className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mt-2"
+            className={`border ${errors.nombre_paciente ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
         >
             <option value=""> Seleccionar </option>
             <option value="Masculino">Masculino</option>
@@ -433,7 +433,7 @@ const SolicitudUrgencia = () => {
     </div>
 
 
-            <div className="mr-4" style={{ width: "50%" }}>
+            <div className="mr-4" style={{ width: "25%" }}>
               <label
                 htmlFor="sala_quirofano"
                 className="block font-semibold text-white mb-1"
@@ -577,7 +577,7 @@ const SolicitudUrgencia = () => {
         {errors.turno_solicitado && <p className="text-red-500">{errors.turno_solicitado}</p>}
     </div>
 
-    <div className="mr-4 w-">
+    <div className="mr-4 w-1/2">
         <label
             htmlFor="id_cirujano"
             className="block font-semibold text-white mb-1"
@@ -620,7 +620,7 @@ const SolicitudUrgencia = () => {
           </div>
 
           <div class="flex mb-4">
-            <div class="w-full mr-4">
+            <div class="w-1/5 mr-4">
               <label
                 htmlFor="fecha_solicitada"
                 className="block font-semibold text-white mb-1"
@@ -637,7 +637,7 @@ const SolicitudUrgencia = () => {
               />
             </div>
 
-            <div class="w-full mr-4">
+            <div class="w-1/5 mr-4">
               <label
                 htmlFor="hora_solicitada"
                 className="block font-semibold text-white mb-1"
@@ -675,7 +675,7 @@ const SolicitudUrgencia = () => {
               )}
             </div>
 
-            <div class="w-full mr-4">
+            <div class="w-1/5 mr-4">
               <label
                 htmlFor="procedimientos_paciente"
                 className="block font-semibold text-white mb-1"
@@ -877,6 +877,16 @@ const SolicitudUrgencia = () => {
               />
             </div>
           </div>
+          <div className="mr-4 w-full">
+              <label
+                htmlFor="procedimientos_paciente"
+                className="block font-semibold text-white mb-1"
+              >
+                Procedimientos del paciente:
+              </label>
+              <ProcedureSelect onChange={handleProcedureChange} />
+              {errors.procedimientos_paciente && <p className="text-red-500">{errors.procedimientos_paciente}</p>}
+            </div>
           <div>
             {Array.isArray(formData.nuevos_procedimientos_extra) &&
               formData.nuevos_procedimientos_extra.map(
@@ -935,16 +945,6 @@ const SolicitudUrgencia = () => {
           </div>
 
           <div className="flex mb-4">
-          <div className="mr-4 w-full">
-              <label
-                htmlFor="procedimientos_paciente"
-                className="block font-semibold text-white mb-1"
-              >
-                Procedimientos del paciente:
-              </label>
-              <ProcedureSelect onChange={handleProcedureChange} />
-              {errors.procedimientos_paciente && <p className="text-red-500">{errors.procedimientos_paciente}</p>}
-            </div>
             <div className="mr-4" style={{ width: "50%" }}>
               <label
                 htmlFor="diagnostico_paciente"

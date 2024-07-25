@@ -742,7 +742,7 @@ const Consultabitacora = () => {
 
             <div class="w-full mr-4">
               <label
-                htmlFor="procedimientos_paciente"
+                htmlFor="egreso"
                 className="block font-semibold text-white mb-1"
               >
                 Egresa a:
