@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo } from "react";
 import Layout from "../../Layout";
 import AsyncSelect from "react-select/async";
 import { Link } from "react-router-dom";
@@ -19,7 +19,11 @@ function Programaranestesiologo() {
   const [currentPage, setCurrentPage] = useState(1);
   const [anesthesiologistsPerPage] = useState(10);
   const [sortBy, setSortBy] = useState(null);
-  const [sortOrder, setSortOrder] = useState('asc');
+  const [sortOrder, setSortOrder] = useState("asc");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchField, setSearchField] = useState("nombre_paciente");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
 
   const fetchActiveAnesthesiologists = async (inputValue) => {
     try {
@@ -97,7 +101,9 @@ function Programaranestesiologo() {
       );
 
       if (existingAssignment) {
-        toast.error("Ya hay un anestesiólogo asignado a esta sala en el mismo día.");
+        toast.error(
+          "Ya hay un anestesiólogo asignado a esta sala en el mismo día."
+        );
         return;
       }
 
@@ -139,28 +145,34 @@ function Programaranestesiologo() {
     }
   };
   const handleDeleteAnesthesiologist = async (id) => {
-    if (window.confirm("¿Estás seguro de que quieres eliminar este anestesiólogo?")) {
-        try {
-            const response = await fetch(`http://localhost:4000/api/anestesio/anestesiologos/${id}`, {
-                method: "DELETE",
-            });
+    if (
+      window.confirm(
+        "¿Estás seguro de que quieres eliminar este anestesiólogo?"
+      )
+    ) {
+      try {
+        const response = await fetch(
+          `http://localhost:4000/api/anestesio/anestesiologos/${id}`,
+          {
+            method: "DELETE",
+          }
+        );
 
-            const data = await response.json();
+        const data = await response.json();
 
-            if (!response.ok) {
-                throw new Error(data.message || "Network response was not ok");
-            }
-
-            // Actualizar la lista de anestesiólogos después de eliminar uno
-            fetchAnesthesiologists();
-            toast.success(data.message || "Anestesiólogo eliminado con éxito");
-        } catch (error) {
-            console.error("Error deleting anesthesiologist:", error);
-            toast.error(error.message || "Error al eliminar el anestesiólogo");
+        if (!response.ok) {
+          throw new Error(data.message || "Network response was not ok");
         }
+
+        // Actualizar la lista de anestesiólogos después de eliminar uno
+        fetchAnesthesiologists();
+        toast.success(data.message || "Anestesiólogo eliminado con éxito");
+      } catch (error) {
+        console.error("Error deleting anesthesiologist:", error);
+        toast.error(error.message || "Error al eliminar el anestesiólogo");
+      }
     }
-};
-  
+  };
 
   const fetchAnesthesiologists = async () => {
     try {
@@ -191,38 +203,44 @@ function Programaranestesiologo() {
   const indexOfLastAnesthesiologist = currentPage * anesthesiologistsPerPage;
   const indexOfFirstAnesthesiologist =
     indexOfLastAnesthesiologist - anesthesiologistsPerPage;
-  const currentAnesthesiologists = anesthesiologists.slice(
-    indexOfFirstAnesthesiologist,
-    indexOfLastAnesthesiologist
-  );
+
+  // Filtrar anestesiólogos según el término de búsqueda y el campo seleccionado
+  const currentAnesthesiologists = anesthesiologists
+    .filter((anesthesiologist) => {
+      const fieldValue = anesthesiologist[searchField]?.toLowerCase() || "";
+      return fieldValue.includes(searchTerm.toLowerCase());
+    })
+    .slice(indexOfFirstAnesthesiologist, indexOfLastAnesthesiologist);
 
   // Cambiar página
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
-
   const handleSort = (field) => {
     if (sortBy === field) {
-      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
     } else {
       setSortBy(field);
-      setSortOrder('asc');
+      setSortOrder("asc");
     }
   };
 
- // Función para obtener el color de fondo basado en el turno
- const getTurnColor = (turno_anestesio) => {
-  switch (turno_anestesio) {
-    case "Matutino":
-      return "rgba(129, 164, 255, 0.43)";
-    case "Vespertino":
-      return "rgba(109, 255, 19, 0.43)";
-    case "Nocturno":
-      return "rgba(255, 169, 89, 0.43)";
-    default:
-      return "#FFFFFF"; // color predeterminado
-  }
-};
+  // Función para obtener el color de fondo basado en el turno
+  const getTurnColor = (turno_anestesio) => {
+    switch (turno_anestesio) {
+      case "Matutino":
+        return "rgba(129, 164, 255, 0.43)";
+      case "Vespertino":
+        return "rgba(109, 255, 19, 0.43)";
+      case "Nocturno":
+        return "rgba(255, 169, 89, 0.43)";
+      default:
+        return "#FFFFFF"; // color predeterminado
+    }
+  };
 
+  const handleSearch = () => {
+    setCurrentPage(1);
+  };
 
   return (
     <Layout>
@@ -234,7 +252,7 @@ function Programaranestesiologo() {
               to="/anestesiólogos"
               className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
             >
-              <span>Ver agenda de anestesiólogos</span>
+              <span>Ver agenda de Anestesiólogos</span>
             </Link>
           </div>
         </div>
@@ -243,7 +261,10 @@ function Programaranestesiologo() {
           <div className="flex flex-col">
             <div className="flex mb-2 space-x-4">
               <div className="w-1/4">
-              <label style={{ marginBottom: "30px" }} className="text-sm font-medium text-gray-700">
+                <label
+                  style={{ marginBottom: "30px" }}
+                  className="text-sm font-medium text-gray-700"
+                >
                   Nombre de anestesiólogo
                 </label>
                 <AsyncSelect
@@ -278,7 +299,7 @@ function Programaranestesiologo() {
                   onChange={handleInputChange}
                   className="mt-1 block w-full px-4 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="">-- Seleccione el turno --</option>
+                  <option value="">Seleccionar</option>
                   <option value="Matutino">Matutino</option>
                   <option value="Vespertino">Vespertino</option>
                   <option value="Nocturno">Nocturno</option>
@@ -320,7 +341,7 @@ function Programaranestesiologo() {
                   onChange={handleInputChange}
                   className="mt-1 block w-full px-4 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  <option value="">-- Seleccione la sala --</option>
+                  <option value="">Seleccionar</option>
                   <option value="A1">Sala A1</option>
                   <option value="A2">Sala A2</option>
                   <option value="T1">Sala T1</option>
@@ -335,12 +356,24 @@ function Programaranestesiologo() {
                   <option value="H">Sala H</option>
                   <option value="RX">Sala RX</option>
 
-                  <option value="Rec_Matutino">Recuperación Matutino</option>
-                  <option value="Con_Ext_P1_mat">Consulta Externa Piso 1</option>
-                  <option value="Con_Ext_P2_mat">Consulta Externa Piso 2</option>
-                  <option value="Rec_Vespertino">Recuperación Vespertino</option>
-                  <option value="Con_Ext_P1_vesp">Consulta Externa Piso 1</option>
-                  <option value="Con_Ext_P2_vesp">Consulta Externa Piso 2</option>
+                  <option value="Recup_Matutino" className="font-bold">
+                    Recuperación Matutino
+                  </option>
+                  <option value="Con_Ext_P1_mat" className="font-bold">
+                    Consulta Externa Piso 1
+                  </option>
+                  <option value="Con_Ext_P2_mat" className="font-bold">
+                    Consulta Externa Piso 2
+                  </option>
+                  <option value="Rec_Vespertino" className="font-bold">
+                    Recuperación Vespertino
+                  </option>
+                  <option value="Con_Ext_P1_vesp" className="font-bold">
+                    Consulta Externa Piso 1
+                  </option>
+                  <option value="Con_Ext_P2_vesp" className="font-bold">
+                    Consulta Externa Piso 2
+                  </option>
                 </select>
               </div>
             </div>
@@ -354,18 +387,46 @@ function Programaranestesiologo() {
             </div>
           </div>
 
+          {/* Filtros de búsqueda */}
+          <div className="mt-1/2">
+            <div className="text-left">
+              <div className="flex items-center justify-center mb-4">
+                <div className="flex items-center space-x-4">
+                  <input
+                    type="text"
+                    placeholder="Buscar..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="px-3 py-2 border border-gray-300 rounded-md w-64"
+                  />
+                  <select
+                    value={searchField}
+                    onChange={(e) => setSearchField(e.target.value)}
+                    className="px-3 py-2 border border-gray-300 rounded-md"
+                  >
+                    <option value="nombre">Nombre</option>
+                    <option value="dia_anestesio">Día asignado</option>
+                    <option value="turno_anestesio">Turno asignado</option>
+                    <option value="hora_inicio">Hora inicio</option>
+                    <option value="hora_fin">Hora fin</option>
+                    <option value="sala_anestesio">Sala asignada</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div className="overflow-hidden border-b border-gray-200 shadow sm:rounded-lg">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" 
-                    onClick={() => handleSort('nombre')}
-                    >
-                    Nombre 
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Nombre
                     <span>
-                      {sortBy === 'nombre' && (sortOrder === 'asc' ? '▲' : '▼')}
+                      {sortBy === "nombre" && (sortOrder === "asc" ? "▲" : "▼")}
                     </span>
                   </th>
                   <th
@@ -408,7 +469,7 @@ function Programaranestesiologo() {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {currentAnesthesiologists.map((anesthesiologist) => (
-                   <tr key={anesthesiologist.folio}>
+                  <tr key={anesthesiologist.folio}>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">
                         {anesthesiologist.nombre}
@@ -420,7 +481,14 @@ function Programaranestesiologo() {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" style={{ backgroundColor: getTurnColor(anesthesiologist.turno_anestesio) }}>
+                      <span
+                        className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                        style={{
+                          backgroundColor: getTurnColor(
+                            anesthesiologist.turno_anestesio
+                          ),
+                        }}
+                      >
                         {anesthesiologist.turno_anestesio}
                       </span>
                     </td>
@@ -435,7 +503,11 @@ function Programaranestesiologo() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       <button
-                        onClick={() => handleDeleteAnesthesiologist(anesthesiologist.id_anestesiologo)}
+                        onClick={() =>
+                          handleDeleteAnesthesiologist(
+                            anesthesiologist.id_anestesiologo
+                          )
+                        }
                         className="text-red-600 hover:text-red-800"
                       >
                         Eliminar

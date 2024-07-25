@@ -44,6 +44,8 @@ import Bitacora from './screens/Bitacora';
 import Bitacoraenfermeria from './screens/BitacoraEnfermeria/Bitaenfermeria'
 import Consultabitacora from './screens/BitacoraEnfermeria/Consultabitacora';
 import Solicitudurgencia from './screens/Urgencias/Solicitudurgencia';
+import Consultaurgencia from './screens/Urgencias/Consultaurgencia';
+import Solicitudesurgentes from './screens/Urgencias/Urgentes';
 
 
 function App() {
@@ -98,6 +100,8 @@ function App() {
           <Route path="/bitacora/Bitaenfermeria" element={<Bitacoraenfermeria /> } />
           <Route path="/bitacora/Consultabitacora/:id" element={<Consultabitacora />} />
           <Route path="/urgencias/Solicitudurgencia" element={<Solicitudurgencia />} />
+          <Route path="/urgencias/Consultaurgencia" element={<Consultaurgencia /> } />
+          <Route path="/urgencias/Urgentes" element={<Solicitudesurgentes /> } />
           <Route path="/services" element={<Services />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/ayuda" element={<Ayuda />} /> 

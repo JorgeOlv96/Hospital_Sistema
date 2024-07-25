@@ -59,6 +59,26 @@ function Solicitudesprogramadas() {
     console.log("Eliminar cita con id:", appointmentId);
   };
 
+  const getEstadoColor = (estado) => {
+    switch (estado.toLowerCase()) {
+      case "programada":
+        return "bg-green-400";
+      case "realizada":
+        return "bg-blue-400";
+      case "suspendida":
+        return "bg-yellow-400";
+      case "pendiente":
+        return "bg-orange-400";
+      case "Pre-programada":
+        return "bg-red-400";
+      case "Urgencia":
+        return "bg-red-400";
+      default:
+        return "";
+    }
+  };
+
+
   const getEstadoColorStyle = (estado) => {
     switch (estado.toLowerCase()) {
       case "programada":
@@ -226,12 +246,26 @@ function Solicitudesprogramadas() {
                     <td className="px-4 py-2 flex justify-center">
                       {appointment.sala_quirofano}
                     </td>
-                    <td
-                      className="px-4 py-2"
-                      style={getEstadoColorStyle(appointment.estado_solicitud)}
-                    >
-                      {appointment.estado_solicitud}
-                    </td>
+                    <td className="border px-4 py-2">
+                        <div
+                          className={`inline-block px-1 py-1 rounded-lg ${getEstadoColor(
+                            appointment.estado_solicitud
+                          )}`}
+                          style={{
+                            ...getEstadoColorStyle(
+                              appointment.estado_solicitud
+                            ),
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            height: "100%",
+                            width: "100%",
+                            textAlign: "center",
+                          }}
+                        >
+                          {appointment.estado_solicitud}
+                        </div>
+                      </td>
                     <td className="px-4 py-2 flex justify-center">
                       <button
                         onClick={() => handleViewModal(appointment)}
