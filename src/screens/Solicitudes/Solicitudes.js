@@ -9,7 +9,7 @@ function Solicitudes() {
   const [open, setOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [page, setPage] = useState(1);
-  const [perPage, setPerPage] = useState(10);
+  const [perPage, setPerPage] = useState(9);
   const [sortBy, setSortBy] = useState(null);
   const [sortOrder, setSortOrder] = useState("asc");
   const [searchTerm, setSearchTerm] = useState("");
@@ -177,7 +177,7 @@ function Solicitudes() {
         <div className="my-4">
           <Link
             to="./Crearsolicitud"
-            className="btn btn-sm btn-secondary p-2 bg-[#365b77] text-white rounded-lg"
+            className="btn btn-sm btn-secondary p-2 bg-[#365b77] text-white rounded-lg "
           >
             Nueva Solicitud
           </Link>
@@ -193,9 +193,9 @@ function Solicitudes() {
           />
         )}
 
-        <div className="flex flex-col space-y-4 mt-4">
+        <div className="flex flex-col space-y-2 mt-2">
           {/* Filtros de búsqueda */}
-          <div className="mt-8">
+          <div>
             <div className="text-left">
               <div className="flex items-center justify-center mb-4">
                 <div className="flex items-center space-x-4">
@@ -512,46 +512,45 @@ function Solicitudes() {
                 ) : (
                   //Cards
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                    {sortedSolicitudes
-                      .slice(startIndex, endIndex)
-                      .map((solicitud) => (
+                    {sortedSolicitudes.slice(startIndex, endIndex).map((solicitud) => (
                         <div
-                          key={solicitud.id_solicitud}
-                          className="p-4 border border-gray-200 rounded-lg shadow-md transition-transform transform hover:scale-105 hover:shadow-xl"
-                          style={getEstadoColorStyle(
-                            solicitud.estado_solicitud
-                          )}
+                        key={solicitud.id_solicitud}
+                        className="relative p-4 border border-gray-200 rounded-lg shadow-md transition-transform transform hover:scale-105 hover:shadow-xl"
+                        style={{ borderRadius: '10px' }} // Puedes ajustar el valor de borderRadius según tus preferencias
+                        onClick={() => handleViewModal(solicitud)}
                         >
-                          <div className="flex flex-col justify-between h-full">
-                            <div className="mb-2">
-                              <p className="text-lg font-semibold">
-                                {solicitud.nombre_paciente}
-                              </p>
-                              <p className="text-sm text-gray-600">
-                                {solicitud.nombre_especialidad}
-                              </p>
-                              <p className="text-sm text-gray-600">
-                                Fecha:{" "}
-                                {new Date(
-                                  solicitud.fecha_solicitud
-                                ).toLocaleDateString()}
-                              </p>
-                              <p className="text-sm text-gray-600">
-                                Estado: {solicitud.estado_solicitud}
-                              </p>
+                        <div className="flex flex-col h-full">
+                          <div
+                            className="absolute top-0 left-0 h-full"
+                            style={{ 
+                              width: '10px', 
+                              borderTopLeftRadius: '10px', 
+                              borderBottomLeftRadius: '10px', 
+                              ...getEstadoColorStyle(solicitud.estado_solicitud) 
+                            }}
+                            
+                          ></div>
+                          <div className="mb-2 pl-3"> {/* Ajustado el padding left para acomodar la línea más ancha */}
+                            <div className="flex justify-between">
+                              <p className="text-lg font-semibold">{solicitud.nombre_paciente}</p>
+                              <p className="text-sm">{solicitud.sala}</p>
                             </div>
-                            <div className="flex justify-end">
-                              <button
-                                className="btn btn-sm btn-primary"
-                                onClick={() => handleViewModal(solicitud)}
-                              >
-                                Ver detalles
-                              </button>
+                            <p className="text-sm text-gray-600">{solicitud.id_solicitud}</p>
+                            <p className="text-sm text-gray-600">{solicitud.nombre_especialidad}</p>
+                            <div className="flex justify-between">
+                              <p className="text-sm text-gray-600">{solicitud.hora_inicio} - {solicitud.hora_fin}</p>
+                              <p className="text-sm text-gray-600">{solicitud.turno}</p>
                             </div>
+                            <p className="text-sm text-gray-600">{solicitud.nombre_medico}</p>
+                            <p className="text-sm text-gray-600">{solicitud.insumos}</p>
+                            <p className="text-sm text-gray-600">Estatus: {solicitud.estado_solicitud}</p>
                           </div>
                         </div>
-                      ))}
+                      </div>
+                    ))}
                   </div>
+
+
                 )}
               </div>
             </div>

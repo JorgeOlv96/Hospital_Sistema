@@ -416,13 +416,13 @@ function Programaranestesiologo() {
             </div>
           </div>
 
-          <div className="overflow-hidden border-b border-gray-200 shadow sm:rounded-lg">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+          <div className="overflow-hidden border-b border-white-200 shadow sm:rounded-lg">
+            <table className="min-w-full divide-y divide-white-200">
+              <thead className="bg-[#365b77] text-white">
                 <tr>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className="px-6 py-3 text-left text-xs font-medium text-white-500 uppercase tracking-wider"
                   >
                     Nombre
                     <span>
@@ -431,37 +431,37 @@ function Programaranestesiologo() {
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className="px-6 py-3 text-left text-xs font-medium text-white-500 uppercase tracking-wider"
                   >
                     Día asignado
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className="px-6 py-3 text-left text-xs font-medium text-white-500 uppercase tracking-wider"
                   >
                     Turno asignado
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className="px-6 py-3 text-left text-xs font-medium text-white-500 uppercase tracking-wider"
                   >
                     Sala asignada
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className="px-6 py-3 text-left text-xs font-medium text-white-500 uppercase tracking-wider"
                   >
                     Hora inicio
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className="px-6 py-3 text-left text-xs font-medium text-white-500 uppercase tracking-wider"
                   >
                     Hora fin
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className="px-6 py-3 text-left text-xs font-medium text-white-500 uppercase tracking-wider"
                   >
                     Acciones
                   </th>
@@ -502,16 +502,18 @@ function Programaranestesiologo() {
                       {anesthesiologist.hora_fin}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                     
                       <button
                         onClick={() =>
                           handleDeleteAnesthesiologist(
                             anesthesiologist.id_anestesiologo
                           )
                         }
-                        className="text-red-600 hover:text-red-800"
+                        className="bg-[#CB2525] text-white px-5 py-2 rounded-md hover:bg-[#E54F4F]"
                       >
                         Eliminar
                       </button>
+
                     </td>
                   </tr>
                 ))}

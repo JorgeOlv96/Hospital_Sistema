@@ -262,12 +262,14 @@ function ProgramarSolicitud() {
                         </div>
                       </td>
                     <td className="px-4 py-2">
+                   
                     <button
                       onClick={() => handleViewModal(appointment)}
                       className="bg-[#365b77] text-white px-5 py-2 rounded-md hover:bg-[#7498b6]"
                     >
                       Gestionar
                     </button>
+
                     </td>
                   </tr>
                 ))}
