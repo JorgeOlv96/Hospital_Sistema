@@ -3,6 +3,8 @@ import './App.css';
 import React, { useState } from 'react';
 import { BrowserRouter,Route, Router, Routes, Navigate } from 'react-router-dom';
 import Aos from 'aos';
+import { toast, ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 import Dashboard from './screens/Dashboard';
 import Solicitudes from './screens/Solicitudes/Solicitudes';
 import Toast from './components/Notifications/Toast';
@@ -101,6 +103,7 @@ function App() {
           <Route path="/ayuda" element={<Ayuda />} /> 
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <ToastContainer />
       </BrowserRouter>
     </>
   );

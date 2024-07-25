@@ -577,7 +577,74 @@ const Consultabitacora = () => {
               ></input>
             </div>
 
-            <div className="mr-4 w-full">
+            <div class="w-full mr-4">
+              <label
+                htmlFor="procedimientos_paciente"
+                className="block font-semibold text-white mb-1"
+              >
+                Hora entr. cirugía:
+              </label>
+              <input
+                placeholder="Minutos"
+                type="time"
+                id="hora_entrada"
+                name="hora_entrada"
+                value={patientData.hora_entrada || ""}
+                onChange={handleChange}
+                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white cursor-default`}
+              />
+            </div>
+
+            <div className="w-full" style={{ width: "105%" }}>
+              <label
+                htmlFor="id_cirujano"
+                className="block font-semibold text-white mb-1"
+              >
+                Enf. Quirurgica:
+              </label>
+              <AsyncSelect
+                loadOptions={fetchActiveNurses}
+                onChange={handleSelectChange}
+                placeholder="Enf. Quirurgica"
+                className={`rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+                />
+              </div>
+
+            <div className="w-full" style={{ width: "105%" }}>
+              <label
+                htmlFor="id_cirujano"
+                className="block font-semibold text-white mb-1"
+              >
+                Enf. Circulante:
+              </label>
+              <AsyncSelect
+                loadOptions={fetchActiveNurses}
+                onChange={handleSelectChange}
+                placeholder="Enf. Circulante"
+                className={`rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+                />
+              </div>
+
+            <div className="mr-4" style={{ width: "75%" }}>
+              <label
+                htmlFor="req_insumo"
+                className="block font-semibold text-white mb-1"
+              >
+                Estado
+              </label>
+              <input
+                id="req_insumo"
+                name="req_insumo"
+                value={patientData.estado_solicitud || "N/A"}
+                readOnly
+                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+              ></input>
+            </div>
+          </div>
+
+          <div class="flex mb-4">
+
+          <div className="mr-4 w-full">
               <label
                 htmlFor="tiempo_estimado"
                 className="block font-semibold text-white mb-1"
@@ -619,110 +686,7 @@ const Consultabitacora = () => {
               style={{ minHeight: "auto" }}
             />
           </div>
-
-            <div className="mr-4 w-full">
-              <label
-                htmlFor="tiempo_estimado"
-                className="block font-semibold text-white mb-1"
-              >
-                Hora termino Anes:
-              </label>
-              <input
-                placeholder="Minutos"
-                type="time"
-                id="ht_anestesia"
-                name="ht_anestesia"
-                value={patientData.ht_anestesia || ""}
-                onChange={handleChange}
-                className={`rounded-lg px-3 py-2 w-full bg-white`}
-              />
-            </div>
-
-            <div className="mr-4" style={{ width: "75%" }}>
-              <label
-                htmlFor="req_insumo"
-                className="block font-semibold text-white mb-1"
-              >
-                Estado
-              </label>
-              <input
-                id="req_insumo"
-                name="req_insumo"
-                value={patientData.estado_solicitud || "N/A"}
-                readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
-              ></input>
-            </div>
-          </div>
-
-          <div class="flex mb-4">
-
-          <div className="w-full" style={{ width: "105%" }}>
-              <label
-                htmlFor="id_cirujano"
-                className="block font-semibold text-white mb-1"
-              >
-                Enf. Quirurgica:
-              </label>
-              <AsyncSelect
-                loadOptions={fetchActiveNurses}
-                onChange={handleSelectChange}
-                placeholder="Enf. Quirurgica"
-                className={`rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-                />
-              </div>
-
-              <div className="w-full" style={{ width: "105%" }}>
-              <label
-                htmlFor="id_cirujano"
-                className="block font-semibold text-white mb-1"
-              >
-                Enf. Circulante:
-              </label>
-              <AsyncSelect
-                loadOptions={fetchActiveNurses}
-                onChange={handleSelectChange}
-                placeholder="Enf. Circulante"
-                className={`rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-                />
-              </div>
-
-            <div class="w-full mr-4">
-              <label
-                htmlFor="procedimientos_paciente"
-                className="block font-semibold text-white mb-1"
-              >
-                Hora entr. cirugía:
-              </label>
-              <input
-                placeholder="Minutos"
-                type="time"
-                id="hora_entrada"
-                name="hora_entrada"
-                value={patientData.hora_entrada || ""}
-                onChange={handleChange}
-                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white cursor-default`}
-              />
-            </div>
-
-            <div class="w-full mr-4">
-              <label
-                htmlFor="procedimientos_paciente"
-                className="block font-semibold text-white mb-1"
-              >
-                Egresa a:
-              </label>
-              <input
-                type="text"
-                id="egreso"
-                name="egreso"
-                value={patientData.egreso || ""}
-                onChange={handleChange}
-                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white cursor-default`}
-              ></input>
-            </div>
-
-            <div class="w-full mr-4">
+          <div class="w-full mr-4">
               <label
                 htmlFor="tiempo_estimado"
                 className="block font-semibold text-white mb-1"
@@ -745,16 +709,16 @@ const Consultabitacora = () => {
                 htmlFor="tiempo_estimado"
                 className="block font-semibold text-white mb-1"
               >
-                Hora salida paciente:
+                Hora termino Anes:
               </label>
               <input
                 placeholder="Minutos"
                 type="time"
-                id="hora_salida"
-                name="hora_salida"
-                value={patientData.hora_salida || ""}
+                id="ht_anestesia"
+                name="ht_anestesia"
+                value={patientData.ht_anestesia || ""}
                 onChange={handleChange}
-                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white cursor-default`}
+                className={`rounded-lg px-3 py-2 w-full bg-white`}
               />
             </div>
 
@@ -773,6 +737,41 @@ const Consultabitacora = () => {
                 value={patientData.hora_cierre || ""}
                 onChange={handleChange}
                 className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white`}
+              />
+            </div>
+
+            <div class="w-full mr-4">
+              <label
+                htmlFor="procedimientos_paciente"
+                className="block font-semibold text-white mb-1"
+              >
+                Egresa a:
+              </label>
+              <input
+                type="text"
+                id="egreso"
+                name="egreso"
+                value={patientData.egreso || ""}
+                onChange={handleChange}
+                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white cursor-default`}
+              ></input>
+            </div>
+
+            <div className="mr-4 w-full">
+              <label
+                htmlFor="tiempo_estimado"
+                className="block font-semibold text-white mb-1"
+              >
+                Hora salida paciente:
+              </label>
+              <input
+                placeholder="Minutos"
+                type="time"
+                id="hora_salida"
+                name="hora_salida"
+                value={patientData.hora_salida || ""}
+                onChange={handleChange}
+                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white cursor-default`}
               />
             </div>
           </div>
