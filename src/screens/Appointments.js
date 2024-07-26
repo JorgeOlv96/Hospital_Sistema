@@ -347,7 +347,14 @@ function Appointments() {
                     <td>${appointment.sala_quirofano || ""}</td>
                     <td>${appointment.nombre_paciente} ${appointment.ap_paterno} ${appointment.ap_materno}</td>
                     <td>${sexoFormatted}</td>
-                    <td>${appointment.procedimientos_paciente || ""}</td>
+                    <td>
+                      ${(() => {
+                        const procedimientos = appointment.procedimientos_paciente || "";
+                        const [beforeDash, afterDash] = procedimientos.split("-", 2);
+                        const truncatedBeforeDash = beforeDash.slice(0, 30);
+                        return `${truncatedBeforeDash}${afterDash ? "-" + afterDash : ""}`;
+                      })()}
+                    </td>
                     <td>${appointment.clave_esp || ""}</td>
                     <td>${moment(appointment.fecha_programada).format("DD-MM-YYYY")}</td>
                     <td>${appointment.tiempo_estimado} min</td>
