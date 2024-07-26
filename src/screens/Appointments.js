@@ -308,83 +308,89 @@ function Appointments() {
         </div>
         
         <h4>Solicitudes Programadas</h4>
-        <table>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Folio</th>
-              <th>Hra. asign.</th>
-              <th>Sala</th>
-              <th>Nom. completo</th>
-              <th>Sexo</th>
-              <th>Procedimientos</th>
-              <th>Esp.</th>
-              <th>Fecha asign.</th>
-              <th>Tiempo est.</th>
-              <th>Turno</th>
-              <th>Anestesiólogo</th>
-              <th>Cirujano</th>
-              <th>Insumos</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${todaysRegistrations
-              .map((appointment, index) => {
-                console.log("Appointment data:", appointment);
-                const sexoFormatted = appointment.sexo
-                  ? appointment.sexo === "Femenino"
-                    ? "F"
-                    : appointment.sexo === "Masculino"
-                    ? "M"
-                    : "No especificado"
-                  : "No especificado";
-  
-                return `
-                  <tr>
-                    <td>${index + 1}</td>
-                    <td>${appointment.folio || ""}</td>
-                    <td>${moment(appointment.hora_asignada, "HH:mm").format("LT")}</td>
-                    <td>${appointment.sala_quirofano || ""}</td>
-                    <td>${appointment.nombre_paciente} ${appointment.ap_paterno} ${appointment.ap_materno}</td>
-                    <td>${sexoFormatted}</td>
-                    <td>
-                      ${(() => {
-                        const procedimientos = appointment.procedimientos_paciente || "";
-                        const [beforeDash, afterDash] = procedimientos.split("-", 2);
-                        const truncatedBeforeDash = beforeDash.slice(0, 25);
-                        return `${truncatedBeforeDash}${afterDash ? "-" + afterDash : ""}`;
-                      })()}
-                    </td>
-                    <td>${appointment.clave_esp || ""}</td>
-                    <td>${moment(appointment.fecha_programada).format("DD-MM-YYYY")}</td>
-                    <td>${appointment.tiempo_estimado} min</td>
-                       <td>
-                      ${(() => {
-                        const turno = appointment.turno || "";
-                        const turnMap = {
-                          "Vespertino": "V",
-                          "Matutino": "M",
-                          "Nocturno": "N",
-                          "Especial": "E"
-                        };
-                        return turnMap[turno] || "";
-                      })()}
-                    </td>
-                    <td>${appointment.nombre_anestesiologo || ""}</td>
-                    <td>
-                      ${(() => {
-                        const nombre = appointment.nombre_cirujano || "";
-                        const words = nombre.split(" ");
-                        const truncatedName = words.slice(0, 2).join(" ");
-                        return truncatedName;
-                      })()}
-                    </td>
-                    <td>${appointment.req_insumo || ""}</td>
-                  </tr>`;
-              })
-              .join("")}
-          </tbody>
-        </table>
+<table>
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Folio</th>
+      <th>Hra. asign.</th>
+      <th>Sala</th>
+      <th>Nom. completo</th>
+      <th>Sexo</th>
+      <th>Procedimientos</th>
+      <th>Esp.</th>
+      <th>Fecha asign.</th>
+      <th>Tiempo est.</th>
+      <th>Turno</th>
+      <th>Anestesiólogo</th>
+      <th>Cirujano</th>
+      <th>Insumos</th>
+    </tr>
+  </thead>
+  <tbody>
+    ${todaysRegistrations
+      .sort((a, b) => {
+        // Convertir las horas en objetos moment para la comparación
+        const timeA = moment(a.hora_asignada, "HH:mm");
+        const timeB = moment(b.hora_asignada, "HH:mm");
+        return timeA - timeB;
+      })
+      .map((appointment, index) => {
+        console.log("Appointment data:", appointment);
+        const sexoFormatted = appointment.sexo
+          ? appointment.sexo === "Femenino"
+            ? "F"
+            : appointment.sexo === "Masculino"
+            ? "M"
+            : "No especificado"
+          : "No especificado";
+
+        return `
+          <tr>
+            <td>${index + 1}</td>
+            <td>${appointment.folio || ""}</td>
+            <td>${moment(appointment.hora_asignada, "HH:mm").format("LT")}</td>
+            <td>${appointment.sala_quirofano || ""}</td>
+            <td>${appointment.nombre_paciente} ${appointment.ap_paterno} ${appointment.ap_materno}</td>
+            <td>${sexoFormatted}</td>
+            <td>
+              ${(() => {
+                const procedimientos = appointment.procedimientos_paciente || "";
+                const [beforeDash, afterDash] = procedimientos.split("-", 2);
+                const truncatedBeforeDash = beforeDash.slice(0, 30);
+                return `${truncatedBeforeDash}${afterDash ? "-" + afterDash : ""}`;
+              })()}
+            </td>
+            <td>${appointment.clave_esp || ""}</td>
+            <td>${moment(appointment.fecha_programada).format("DD-MM-YYYY")}</td>
+            <td>${appointment.tiempo_estimado} min</td>
+            <td>
+              ${(() => {
+                const turno = appointment.turno || "";
+                const turnMap = {
+                  "Vespertino": "V",
+                  "Matutino": "M",
+                  "Nocturno": "N",
+                  "Especial": "E"
+                };
+                return turnMap[turno] || "";
+              })()}
+            </td>
+            <td>${appointment.nombre_anestesiologo || ""}</td>
+            <td>
+              ${(() => {
+                const nombre = appointment.nombre_cirujano || "";
+                const words = nombre.split(" ");
+                const truncatedName = words.slice(0, 2).join(" ");
+                return truncatedName;
+              })()}
+            </td>
+            <td>${appointment.req_insumo || ""}</td>
+          </tr>`;
+      })
+      .join("")}
+  </tbody>
+</table>
         
         <h4>Anestesiólogos Programados</h4>
         <table>
