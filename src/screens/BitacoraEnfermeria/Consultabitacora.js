@@ -828,7 +828,7 @@ const Consultabitacora = () => {
               htmlFor="procedimiento_paciente"
               className="block font-semibold text-white mb-1"
             >
-              Procedimiento inicial del paciente:
+              Procedimiento principal del paciente:
             </label>
             <input
               id="procedimientos_paciente"
