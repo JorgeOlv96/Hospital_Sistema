@@ -52,9 +52,9 @@ const CustomToolbar = ({ date, view, onView, onNavigate, onPrint }) => {
   };
 
   return (
-    <div className="flex flex-col gap-2 mb-4">
-      <h1 className="text-xl font-semibold">Agenda</h1>
-      <div className="my-4">
+    <div className="flex flex-col gap-4 mb-6">
+    <h1 className="text-xl font-semibold">Solicitudes</h1>
+    <div className="my-4 flex items-center">
         <Link
           to="/solicitudes/Programarsolicitud"
           className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
@@ -62,12 +62,14 @@ const CustomToolbar = ({ date, view, onView, onNavigate, onPrint }) => {
           Programar solicitud
         </Link>
 
+        <div className="flex ml-auto">
         <button
           onClick={onPrint}
-          className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center ml-4"
+          className="bg-[#5DB259] hover:bg-[#528E4F] text-white py-2 px-4 rounded inline-flex items-center ml-4"
         >
-          Imprimir solicitudes
+          Imprimir Aprobadas
         </button>
+        </div>
       </div>
 
       <div className="grid sm:grid-cols-2 md:grid-cols-12 gap-4">

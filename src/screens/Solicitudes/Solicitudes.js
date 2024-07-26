@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import Layout from "../../Layout";
-import moment from "moment"; 
+import moment from "moment";
 import { Link } from "react-router-dom";
 import AddAppointmentModal from "../../components/Modals/AddApointmentModal";
 import { FaTable, FaThLarge } from "react-icons/fa"; // Asegúrate de tener esta biblioteca instalada
@@ -125,7 +125,7 @@ function Solicitudes() {
 
   const printRequestedAppointments = async () => {
     const today = moment(selectedDate).format("YYYY-MM-DD"); // Usa la fecha seleccionada
-  
+
     try {
       // Fetch de las solicitudes tentativas
       const solicitudesResponse = await fetch(
@@ -136,7 +136,7 @@ function Solicitudes() {
       }
       const solicitudesData = await solicitudesResponse.json();
       console.log("Solicitudes Data:", solicitudesData);
-  
+
       // Fetch de los anestesiólogos
       const anesthesiologistsResponse = await fetch(
         "http://localhost:4000/api/anestesio/anestesiologos"
@@ -146,21 +146,21 @@ function Solicitudes() {
       }
       const anesthesiologistsData = await anesthesiologistsResponse.json();
       console.log("Anesthesiologists Data:", anesthesiologistsData);
-  
+
       // Filtrar las solicitudes del día seleccionado
       const todaysRegistrations = solicitudesData.filter(
         (solicitud) =>
           moment(solicitud.fecha_solicitada).format("YYYY-MM-DD") === today
       );
       console.log("Today's Registrations:", todaysRegistrations);
-  
+
       // Filtrar los anestesiólogos asignados para el día seleccionado
       const todaysAnesthesiologists = anesthesiologistsData.filter(
         (anesthesiologist) =>
           moment(anesthesiologist.dia_anestesio).format("YYYY-MM-DD") === today
       );
       console.log("Today's Anesthesiologists:", todaysAnesthesiologists);
-  
+
       // Generar el contenido imprimible
       const printableContent = `
     <html>
@@ -246,18 +246,24 @@ function Solicitudes() {
                     ? "M"
                     : "No especificado"
                   : "No especificado";
-  
+
                 return `
                   <tr>
                     <td>${index + 1}</td>
                     <td>${appointment.folio || ""}</td>
-                    <td>${moment(appointment.hora_solicitada, "HH:mm").format("LT")}</td>
+                    <td>${moment(appointment.hora_solicitada, "HH:mm").format(
+                      "LT"
+                    )}</td>
                     <td>${appointment.sala_quirofano || ""}</td>
-                    <td>${appointment.nombre_paciente} ${appointment.ap_paterno} ${appointment.ap_materno}</td>
+                    <td>${appointment.nombre_paciente} ${
+                  appointment.ap_paterno
+                } ${appointment.ap_materno}</td>
                     <td>${sexoFormatted}</td>
                     <td>${appointment.procedimientos_paciente || ""}</td>
                     <td>${appointment.clave_esp || ""}</td>
-                    <td>${moment(appointment.fecha_solicitada).format("DD-MM-YYYY")}</td>
+                    <td>${moment(appointment.fecha_solicitada).format(
+                      "DD-MM-YYYY"
+                    )}</td>
                     <td>${appointment.tiempo_estimado} min</td>
                     <td>${appointment.turno_solicitado || ""}</td>
                     <td>${appointment.nombre_anestesiologo || ""}</td>
@@ -310,7 +316,7 @@ function Solicitudes() {
       </body>
     </html>
     `;
-  
+
       // Crear una ventana de impresión y escribir el contenido
       const printWindow = window.open("", "_blank");
       printWindow.document.open();
@@ -321,8 +327,6 @@ function Solicitudes() {
       console.error("Error al imprimir las solicitudes:", error);
     }
   };
-  
-
 
   const startIndex = (page - 1) * perPage;
   const endIndex = startIndex + perPage;
@@ -377,7 +381,7 @@ function Solicitudes() {
     <Layout>
       <div className="flex flex-col gap-4 mb-6">
         <h1 className="text-xl font-semibold">Solicitudes</h1>
-        <div className="my-4">
+        <div className="my-4 flex items-center">
           <Link
             to="./Crearsolicitud"
             className="btn btn-sm btn-secondary p-2 bg-[#365b77] text-white rounded-lg"
@@ -385,14 +389,21 @@ function Solicitudes() {
             Nueva Solicitud
           </Link>
 
-          <input 
-            type="date" 
-            value={moment(selectedDate).format("YYYY-MM-DD")}
-            onChange={(e) => setSelectedDate(e.target.value)} 
-            className="ml-4"
-          />
+          <div className="flex ml-auto">
+            <input
+              type="date"
+              value={moment(selectedDate).format("YYYY-MM-DD")}
+              onChange={(e) => setSelectedDate(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-md"
+            />
 
-          <button onClick={printRequestedAppointments} className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center ml-4">Imprimir Preliminar</button>
+            <button
+              onClick={printRequestedAppointments}
+              className="bg-[#FFA500] hover:bg-[#E9A856] text-white py-2 px-4 rounded inline-flex items-center ml-4"
+            >
+              Imprimir Preliminar
+            </button>
+          </div>
         </div>
 
         {open && selectedAppointment && (
@@ -725,42 +736,58 @@ function Solicitudes() {
                   //Cards
                   //Cards
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                    {sortedSolicitudes.slice(startIndex, endIndex).map((solicitud) => (
+                    {sortedSolicitudes
+                      .slice(startIndex, endIndex)
+                      .map((solicitud) => (
                         <div
-                        key={solicitud.id_solicitud}
-                        className="relative p-4 border border-gray-200 rounded-lg shadow-md transition-transform transform hover:scale-105 hover:shadow-xl"
-                        style={{ borderRadius: '10px' }} // Puedes ajustar el valor de borderRadius según tus preferencias
-                        onClick={() => handleViewModal(solicitud)}
+                          key={solicitud.id_solicitud}
+                          className="relative p-4 border border-gray-200 rounded-lg shadow-md transition-transform transform hover:scale-105 hover:shadow-xl"
+                          style={{ borderRadius: "10px" }} // Puedes ajustar el valor de borderRadius según tus preferencias
+                          onClick={() => handleViewModal(solicitud)}
                         >
-                        <div className="flex flex-col h-full">
-                          <div
-                            className="absolute top-0 left-0 h-full"
-                            style={{ 
-                              width: '10px', 
-                              borderTopLeftRadius: '10px', 
-                              borderBottomLeftRadius: '10px', 
-                              ...getEstadoColorStyle(solicitud.estado_solicitud) 
-                            }}
-                            
-                          ></div>
-                          <div className="mb-2 pl-3"> {/* Ajustado el padding left para acomodar la línea más ancha */}
-                            <div className="flex justify-between">
-                            <p className="text-lg font-semibold">{`${solicitud.nombre_paciente} ${solicitud.ap_paterno}`}</p>
-                              <p className="text-sm">{solicitud.sala}</p>
+                          <div className="flex flex-col h-full">
+                            <div
+                              className="absolute top-0 left-0 h-full"
+                              style={{
+                                width: "10px",
+                                borderTopLeftRadius: "10px",
+                                borderBottomLeftRadius: "10px",
+                                ...getEstadoColorStyle(
+                                  solicitud.estado_solicitud
+                                ),
+                              }}
+                            ></div>
+                            <div className="mb-2 pl-3">
+                              {" "}
+                              {/* Ajustado el padding left para acomodar la línea más ancha */}
+                              <div className="flex justify-between">
+                                <p className="text-lg font-semibold">{`${solicitud.nombre_paciente} ${solicitud.ap_paterno}`}</p>
+                                <p className="text-sm">{solicitud.sala}</p>
+                              </div>
+                              <p className="text-sm text-gray-600">
+                                {solicitud.nombre_especialidad}
+                              </p>
+                              <div className="flex justify-between">
+                                <p className="text-sm text-gray-600">
+                                  {solicitud.hora_inicio} - {solicitud.hora_fin}
+                                </p>
+                                <p className="text-sm text-gray-600">
+                                  {solicitud.turno}
+                                </p>
+                              </div>
+                              <p className="text-sm text-gray-600">
+                                {solicitud.nombre_medico}
+                              </p>
+                              <p className="text-sm text-gray-600">
+                                {solicitud.insumos}
+                              </p>
+                              <p className="text-sm text-gray-600">
+                                Estatus: {solicitud.estado_solicitud}
+                              </p>
                             </div>
-      
-                            <p className="text-sm text-gray-600">{solicitud.nombre_especialidad}</p>
-                            <div className="flex justify-between">
-                              <p className="text-sm text-gray-600">{solicitud.hora_inicio} - {solicitud.hora_fin}</p>
-                              <p className="text-sm text-gray-600">{solicitud.turno}</p>
-                            </div>
-                            <p className="text-sm text-gray-600">{solicitud.nombre_medico}</p>
-                            <p className="text-sm text-gray-600">{solicitud.insumos}</p>
-                            <p className="text-sm text-gray-600">Estatus: {solicitud.estado_solicitud}</p>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      ))}
                   </div>
                 )}
               </div>
