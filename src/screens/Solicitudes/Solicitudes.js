@@ -259,7 +259,14 @@ function Solicitudes() {
                   appointment.ap_paterno
                 } ${appointment.ap_materno}</td>
                     <td>${sexoFormatted}</td>
-                    <td>${appointment.procedimientos_paciente || ""}</td>
+                    <td>
+                      ${(() => {
+                        const procedimientos = appointment.procedimientos_paciente || "";
+                        const [beforeDash, afterDash] = procedimientos.split("-", 2);
+                        const truncatedBeforeDash = beforeDash.slice(0, 30);
+                        return `${truncatedBeforeDash}${afterDash ? "-" + afterDash : ""}`;
+                      })()}
+                    </td>
                     <td>${appointment.clave_esp || ""}</td>
                     <td>${moment(appointment.fecha_solicitada).format(
                       "DD-MM-YYYY"
@@ -745,48 +752,6 @@ function Solicitudes() {
                           style={{ borderRadius: "10px" }} // Puedes ajustar el valor de borderRadius según tus preferencias
                           onClick={() => handleViewModal(solicitud)}
                         >
-<<<<<<< HEAD
-                          <div className="flex flex-col h-full">
-                            <div
-                              className="absolute top-0 left-0 h-full"
-                              style={{
-                                width: "10px",
-                                borderTopLeftRadius: "10px",
-                                borderBottomLeftRadius: "10px",
-                                ...getEstadoColorStyle(
-                                  solicitud.estado_solicitud
-                                ),
-                              }}
-                            ></div>
-                            <div className="mb-2 pl-3">
-                              {" "}
-                              {/* Ajustado el padding left para acomodar la línea más ancha */}
-                              <div className="flex justify-between">
-                                <p className="text-lg font-semibold">{`${solicitud.nombre_paciente} ${solicitud.ap_paterno}`}</p>
-                                <p className="text-sm">{solicitud.sala}</p>
-                              </div>
-                              <p className="text-sm text-gray-600">
-                                {solicitud.nombre_especialidad}
-                              </p>
-                              <div className="flex justify-between">
-                                <p className="text-sm text-gray-600">
-                                  {solicitud.hora_inicio} - {solicitud.hora_fin}
-                                </p>
-                                <p className="text-sm text-gray-600">
-                                  {solicitud.turno}
-                                </p>
-                              </div>
-                              <p className="text-sm text-gray-600">
-                                {solicitud.nombre_medico}
-                              </p>
-                              <p className="text-sm text-gray-600">
-                                {solicitud.insumos}
-                              </p>
-                              <p className="text-sm text-gray-600">
-                                Estatus: {solicitud.estado_solicitud}
-                              </p>
-                            </div>
-=======
                         <div className="flex flex-col h-full">
                           <div
                             className="absolute top-0 left-0 h-full"
@@ -810,8 +775,9 @@ function Solicitudes() {
                             </div>
                             <p className="text-sm text-gray-600">{solicitud.nombre_cirujano}</p>
                             <p className="text-sm text-gray-600">{solicitud.insumos}</p>
-                            <p className="text-sm text-gray-600">Estatus: {solicitud.estado_solicitud}</p>
->>>>>>> 8ce784e0536c4dc2a12c32be80cb5a002d86aa96
+                            <p className="text-sm text-gray-600">Estatus: {solicitud.estado_solicitud}
+                            </p>
+                            </div>
                           </div>
                         </div>
                       ))}
