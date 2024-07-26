@@ -251,7 +251,7 @@ function Solicitudes() {
                   <tr>
                     <td>${index + 1}</td>
                     <td>${appointment.folio || ""}</td>
-                    <td>${moment(appointment.hora_asignada, "HH:mm").format("LT")}</td>
+                    <td>${moment(appointment.hora_solicitada, "HH:mm").format("LT")}</td>
                     <td>${appointment.sala_quirofano || ""}</td>
                     <td>${appointment.nombre_paciente} ${appointment.ap_paterno} ${appointment.ap_materno}</td>
                     <td>${sexoFormatted}</td>
@@ -259,7 +259,7 @@ function Solicitudes() {
                     <td>${appointment.clave_esp || ""}</td>
                     <td>${moment(appointment.fecha_solicitada).format("DD-MM-YYYY")}</td>
                     <td>${appointment.tiempo_estimado} min</td>
-                    <td>${appointment.turno || ""}</td>
+                    <td>${appointment.turno_solicitado || ""}</td>
                     <td>${appointment.nombre_anestesiologo || ""}</td>
                     <td>${appointment.nombre_cirujano || ""}</td>
                     <td>${appointment.req_insumo || ""}</td>
