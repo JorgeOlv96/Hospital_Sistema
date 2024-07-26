@@ -216,102 +216,107 @@ function Solicitudes() {
         </div>
         
        <h4>Solicitudes Programadas</h4>
-<table>
-  <thead>
-    <tr>
-      <th>#</th>
-      <th>Folio</th>
-      <th>Hra. asign.</th>
-      <th>Sala</th>
-      <th>Nom. completo</th>
-      <th>Sexo</th>
-      <th>Procedimientos</th>
-      <th>Esp.</th>
-      <th>Fecha solicitada</th>
-      <th>Tiempo est.</th>
-      <th>Turno</th>
-      <th>Anestesiólogo</th>
-      <th>Cirujano</th>
-      <th>Ins.</th>
-    </tr>
-  </thead>
-  <tbody>
-    ${todaysRegistrations
-      .sort((a, b) => {
-        // Convertir las horas en objetos moment para la comparación
-        const timeA = moment(a.hora_solicitada, "HH:mm");
-        const timeB = moment(b.hora_solicitada, "HH:mm");
-        return timeA - timeB;
-      })
-      .map((appointment, index) => {
-        console.log("Appointment data:", appointment);
-        const sexoFormatted = appointment.sexo
-          ? appointment.sexo === "Femenino"
-            ? "F"
-            : appointment.sexo === "Masculino"
-            ? "M"
-            : "No especificado"
-          : "No especificado";
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Folio</th>
+              <th>Hra. asign.</th>
+              <th>Sala</th>
+              <th>Nom. completo</th>
+              <th>Sexo</th>
+              <th>Procedimientos</th>
+              <th>Esp.</th>
+              <th>Fecha solicitada</th>
+              <th>Tiempo est.</th>
+              <th>Turno</th>
+              <th>Anestesiólogo</th>
+              <th>Cirujano</th>
+              <th>Ins.</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${todaysRegistrations
+              .sort((a, b) => {
+                // Convertir las horas en objetos moment para la comparación
+                const timeA = moment(a.hora_solicitada, "HH:mm");
+                const timeB = moment(b.hora_solicitada, "HH:mm");
+                return timeA - timeB;
+              })
+              .map((appointment, index) => {
+                console.log("Appointment data:", appointment);
+                const sexoFormatted = appointment.sexo
+                  ? appointment.sexo === "Femenino"
+                    ? "F"
+                    : appointment.sexo === "Masculino"
+                    ? "M"
+                    : "No especificado"
+                  : "No especificado";
 
-        return `
-          <tr>
-            <td>${index + 1}</td>
-            <td>${appointment.folio || ""}</td>
-            <td>${moment(appointment.hora_solicitada, "HH:mm").format(
-              "LT"
-            )}</td>
-            <td>${appointment.sala_quirofano || ""}</td>
-            <td>${appointment.nombre_paciente} ${
-            appointment.ap_paterno
-          } ${appointment.ap_materno}</td>
-            <td>${sexoFormatted}</td>
-            <td>
-              ${(() => {
-                const procedimientos = appointment.procedimientos_paciente || "";
-                const [beforeDash, afterDash] = procedimientos.split("-", 2);
-                const truncatedBeforeDash = beforeDash.slice(0, 30);
-                return `${truncatedBeforeDash}${afterDash ? "-" + afterDash : ""}`;
-              })()}
-            </td>
-            <td>${appointment.clave_esp || ""}</td>
-            <td>${moment(appointment.fecha_solicitada).format(
-              "DD-MM-YYYY"
-            )}</td>
-            <td>${appointment.tiempo_estimado} min</td>
-            <td>
-              ${(() => {
-                const turno = appointment.turno_solicitado || "";
-                const turnMap = {
-                  "Vespertino": "V",
-                  "Matutino": "M",
-                  "Nocturno": "N",
-                  "Especial": "E"
-                };
-                return turnMap[turno] || "";
-              })()}
-            </td>
-            <td>
-            ${(() => {
-                const nombreanes = appointment.nombre_anestesiologo || "";
-                const words = nombreanes.split(" ");
-                const truncatedName = words.slice(0, 2).join(" ");
-                return truncatedName;
-             })()}
-            </td>
-            <td>
-              ${(() => {
-                const nombre = appointment.nombre_cirujano || "";
-                const words = nombre.split(" ");
-                const truncatedName = words.slice(0, 2).join(" ");
-                return truncatedName;
-              })()}
-            </td>
-            <td>${appointment.req_insumo || ""}</td>
-          </tr>`;
-      })
-      .join("")}
-  </tbody>
-</table>
+                return `
+                  <tr>
+                    <td>${index + 1}</td>
+                    <td>${appointment.folio || ""}</td>
+                    <td>${moment(appointment.hora_solicitada, "HH:mm").format(
+                      "LT"
+                    )}</td>
+                    <td>${appointment.sala_quirofano || ""}</td>
+                    <td>
+                        ${appointment.nombre_paciente} 
+                        ${appointment.ap_paterno} 
+                        ${appointment.ap_materno}
+                    </td>
+                    <td>${sexoFormatted}</td>
+                    <td>
+                      ${(() => {
+                        const procedimientos =
+                          appointment.procedimientos_paciente || "";
+                        const [beforeDash, afterDash] = procedimientos.split("-", 2);
+                        const truncatedBeforeDash = beforeDash.slice(0, 30);
+                        return `${truncatedBeforeDash}${
+                          afterDash ? "-" + afterDash : ""
+                        }`;
+                      })()}
+                    </td>
+                    <td>${appointment.clave_esp || ""}</td>
+                    <td>${moment(appointment.fecha_solicitada).format(
+                      "DD-MM-YYYY"
+                    )}</td>
+                    <td>${appointment.tiempo_estimado} min</td>
+                    <td>
+                      ${(() => {
+                        const turno = appointment.turno_solicitado || "";
+                        const turnMap = {
+                          Vespertino: "V",
+                          Matutino: "M",
+                          Nocturno: "N",
+                          Especial: "E",
+                        };
+                        return turnMap[turno] || "";
+                      })()}
+                    </td>
+                    <td>
+                    ${(() => {
+                      const nombreanes = appointment.nombre_anestesiologo || "";
+                      const words = nombreanes.split(" ");
+                      const truncatedName = words.slice(0, 2).join(" ");
+                      return truncatedName;
+                    })()}
+                    </td>
+                    <td>
+                      ${(() => {
+                        const nombre = appointment.nombre_cirujano || "";
+                        const words = nombre.split(" ");
+                        const truncatedName = words.slice(0, 2).join(" ");
+                        return truncatedName;
+                      })()}
+                    </td>
+                    <td>${appointment.req_insumo || ""}</td>
+                  </tr>`;
+              })
+              .join("")}
+          </tbody>
+        </table>
 
         
         <h4>Anestesiólogos Programados</h4>
@@ -784,31 +789,48 @@ function Solicitudes() {
                           style={{ borderRadius: "10px" }} // Puedes ajustar el valor de borderRadius según tus preferencias
                           onClick={() => handleViewModal(solicitud)}
                         >
-                        <div className="flex flex-col h-full">
-                          <div
-                            className="absolute top-0 left-0 h-full"
-                            style={{ 
-                              width: '10px', 
-                              borderTopLeftRadius: '10px', 
-                              borderBottomLeftRadius: '10px', 
-                              ...getEstadoColorStyle(solicitud.estado_solicitud) 
-                            }}
-                            
-                          ></div>
-                          <div className="mb-2 pl-3"> {/* Ajustado el padding left para acomodar la línea más ancha */}
-                            <div className="flex justify-between">
-                              <p className="text-lg font-semibold">{solicitud.nombre_paciente} {solicitud.ap_paterno} {solicitud.ap_materno}</p>
-                              <p className="text-sm">{solicitud.sala}</p>
-                            </div>
-                            <p className="text-sm text-gray-600">{solicitud.folio}</p>
-                            <p className="text-sm text-gray-600">{solicitud.nombre_especialidad}</p>
-                            <div className="flex justify-between">
-                              <p className="text-sm text-gray-600">{solicitud.turno}</p>
-                            </div>
-                            <p className="text-sm text-gray-600">{solicitud.nombre_cirujano}</p>
-                            <p className="text-sm text-gray-600">{solicitud.insumos}</p>
-                            <p className="text-sm text-gray-600">Estatus: {solicitud.estado_solicitud}
-                            </p>
+                          <div className="flex flex-col h-full">
+                            <div
+                              className="absolute top-0 left-0 h-full"
+                              style={{
+                                width: "10px",
+                                borderTopLeftRadius: "10px",
+                                borderBottomLeftRadius: "10px",
+                                ...getEstadoColorStyle(
+                                  solicitud.estado_solicitud
+                                ),
+                              }}
+                            ></div>
+                            <div className="mb-2 pl-3">
+                              {" "}
+                              {/* Ajustado el padding left para acomodar la línea más ancha */}
+                              <div className="flex justify-between">
+                                <p className="text-lg font-semibold">
+                                  {solicitud.nombre_paciente}{" "}
+                                  {solicitud.ap_paterno} {solicitud.ap_materno}
+                                </p>
+                                <p className="text-sm">{solicitud.sala}</p>
+                              </div>
+                              <p className="text-sm text-gray-600">
+                                {solicitud.folio}
+                              </p>
+                              <p className="text-sm text-gray-600">
+                                {solicitud.nombre_especialidad}
+                              </p>
+                              <div className="flex justify-between">
+                                <p className="text-sm text-gray-600">
+                                  {solicitud.turno}
+                                </p>
+                              </div>
+                              <p className="text-sm text-gray-600">
+                                {solicitud.nombre_cirujano}
+                              </p>
+                              <p className="text-sm text-gray-600">
+                                {solicitud.insumos}
+                              </p>
+                              <p className="text-sm text-gray-600">
+                                Estatus: {solicitud.estado_solicitud}
+                              </p>
                             </div>
                           </div>
                         </div>
