@@ -210,10 +210,32 @@ function Solicitudes() {
         </style>
       </head>
       <body>
-        <div class="header">
-          <h1>PRELIMINAR: </h1>
-          <div class="date">${moment(selectedDate).format("DD-MM-YYYY")}</div>
-        </div>
+          <div class="header" style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #f4f4f4; /* Opcional, para visualización */
+          ">
+            <h4 style="
+              margin: 0;
+            ">Solicitudes Programadas</h4>
+            <div style="
+              display: flex;
+              align-items: center;
+              text-align: right;
+            ">
+            <h1 style="
+                margin: 0;
+                font-size: 1em; /* Tamaño reducido del texto */
+                line-height: 1; /* Evita espacio adicional */
+              ">APROBADAS:</h1>
+              <div class="date" style="
+                margin-left: 10px; /* Espacio entre el texto y la fecha */
+                font-size: 1em; /* Tamaño del texto de la fecha */
+              ">${moment(selectedDate).format("DD-MM-YYYY")}</div>
+            </div>
+          </div>
         
        <h4>Solicitudes Programadas</h4>
         <table>
