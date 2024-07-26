@@ -358,7 +358,18 @@ function Appointments() {
                     <td>${appointment.clave_esp || ""}</td>
                     <td>${moment(appointment.fecha_programada).format("DD-MM-YYYY")}</td>
                     <td>${appointment.tiempo_estimado} min</td>
-                    <td>${appointment.turno || ""}</td>
+                       <td>
+                      ${(() => {
+                        const turno = appointment.turno || "";
+                        const turnMap = {
+                          "Vespertino": "V",
+                          "Matutino": "M",
+                          "Nocturno": "N",
+                          "Especial": "E"
+                        };
+                        return turnMap[turno] || "";
+                      })()}
+                    </td>
                     <td>${appointment.nombre_anestesiologo || ""}</td>
                     <td>
                       ${(() => {
