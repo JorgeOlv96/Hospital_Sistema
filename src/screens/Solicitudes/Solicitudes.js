@@ -745,10 +745,10 @@ function Solicitudes() {
                           ></div>
                           <div className="mb-2 pl-3"> {/* Ajustado el padding left para acomodar la línea más ancha */}
                             <div className="flex justify-between">
-                              <p className="text-lg font-semibold">{solicitud.nombre_paciente}</p>
+                            <p className="text-lg font-semibold">{`${solicitud.nombre_paciente} ${solicitud.ap_paterno}`}</p>
                               <p className="text-sm">{solicitud.sala}</p>
                             </div>
-                            <p className="text-sm text-gray-600">{solicitud.id_solicitud}</p>
+      
                             <p className="text-sm text-gray-600">{solicitud.nombre_especialidad}</p>
                             <div className="flex justify-between">
                               <p className="text-sm text-gray-600">{solicitud.hora_inicio} - {solicitud.hora_fin}</p>
@@ -762,8 +762,6 @@ function Solicitudes() {
                       </div>
                     ))}
                   </div>
-
-
                 )}
               </div>
             </div>
