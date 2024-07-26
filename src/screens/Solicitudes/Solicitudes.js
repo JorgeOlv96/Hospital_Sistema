@@ -392,7 +392,7 @@ function Solicitudes() {
             className="ml-4"
           />
 
-          <button onClick={printRequestedAppointments} className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center ml-4">Imprimir Solicitudes</button>
+          <button onClick={printRequestedAppointments} className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center ml-4">Imprimir Preliminar</button>
         </div>
 
         {open && selectedAppointment && (
@@ -761,8 +761,6 @@ function Solicitudes() {
                       </div>
                     ))}
                   </div>
-
-
                 )}
               </div>
             </div>
