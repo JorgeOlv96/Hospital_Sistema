@@ -291,7 +291,7 @@ function Appointments() {
             width: 100%;
             border-collapse: collapse;
             margin-top: 10px;
-            font-size: 12px;
+            font-size: 10px;
           }
           th, td {
             border: 1px solid black;
@@ -357,7 +357,7 @@ function Appointments() {
               ${(() => {
                 const procedimientos = appointment.procedimientos_paciente || "";
                 const [beforeDash, afterDash] = procedimientos.split("-", 2);
-                const truncatedBeforeDash = beforeDash.slice(0, 30);
+                const truncatedBeforeDash = beforeDash.slice(0, 25);
                 return `${truncatedBeforeDash}${afterDash ? "-" + afterDash : ""}`;
               })()}
             </td>
