@@ -272,7 +272,7 @@ function Solicitudes() {
                         const procedimientos =
                           appointment.procedimientos_paciente || "";
                         const [beforeDash, afterDash] = procedimientos.split("-", 2);
-                        const truncatedBeforeDash = beforeDash.slice(0, 30);
+                        const truncatedBeforeDash = beforeDash.slice(0, 20);
                         return `${truncatedBeforeDash}${
                           afterDash ? "-" + afterDash : ""
                         }`;
