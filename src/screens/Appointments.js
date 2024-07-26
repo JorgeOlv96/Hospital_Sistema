@@ -53,8 +53,8 @@ const CustomToolbar = ({ date, view, onView, onNavigate, onPrint }) => {
 
   return (
     <div className="flex flex-col gap-4 mb-6">
-    <h1 className="text-xl font-semibold">Solicitudes</h1>
-    <div className="my-4 flex items-center">
+      <h1 className="text-xl font-semibold">Solicitudes</h1>
+      <div className="my-4 flex items-center">
         <Link
           to="/solicitudes/Programarsolicitud"
           className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
@@ -63,12 +63,12 @@ const CustomToolbar = ({ date, view, onView, onNavigate, onPrint }) => {
         </Link>
 
         <div className="flex ml-auto">
-        <button
-          onClick={onPrint}
-          className="bg-[#5DB259] hover:bg-[#528E4F] text-white py-2 px-4 rounded inline-flex items-center ml-4"
-        >
-          Imprimir Aprobadas
-        </button>
+          <button
+            onClick={onPrint}
+            className="bg-[#5DB259] hover:bg-[#528E4F] text-white py-2 px-4 rounded inline-flex items-center ml-4"
+          >
+            Imprimir Aprobadas
+          </button>
         </div>
       </div>
 
@@ -217,7 +217,7 @@ function Appointments() {
 
   const printDailyAppointments = async () => {
     const today = moment(selectedDate).format("YYYY-MM-DD"); // Usa la fecha seleccionada
-  
+
     try {
       // Fetch de las solicitudes programadas
       const solicitudesResponse = await fetch(
@@ -228,7 +228,7 @@ function Appointments() {
       }
       const solicitudesData = await solicitudesResponse.json();
       console.log("Solicitudes Data:", solicitudesData);
-  
+
       // Fetch de los anestesiólogos
       const anesthesiologistsResponse = await fetch(
         "http://localhost:4000/api/anestesio/anestesiologos"
@@ -238,21 +238,21 @@ function Appointments() {
       }
       const anesthesiologistsData = await anesthesiologistsResponse.json();
       console.log("Anesthesiologists Data:", anesthesiologistsData);
-  
+
       // Filtrar las solicitudes del día seleccionado
       const todaysRegistrations = solicitudesData.filter(
         (solicitud) =>
           moment(solicitud.fecha_programada).format("YYYY-MM-DD") === today
       );
       console.log("Today's Registrations:", todaysRegistrations);
-  
+
       // Filtrar los anestesiólogos asignados para el día seleccionado
       const todaysAnesthesiologists = anesthesiologistsData.filter(
         (anesthesiologist) =>
           moment(anesthesiologist.dia_anestesio).format("YYYY-MM-DD") === today
       );
       console.log("Today's Anesthesiologists:", todaysAnesthesiologists);
-  
+
       // Generar el contenido imprimible
       const printableContent = `
     <html>
@@ -302,12 +302,33 @@ function Appointments() {
         </style>
       </head>
       <body>
-        <div class="header">
-          <h1>APROBADAS: </h1>
-          <div class="date">${moment(selectedDate).format("DD-MM-YYYY")}</div>
-        </div>
+        <div class="header" style="
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    background-color: #f4f4f4; /* Opcional, para visualización */
+  ">
+    <h4 style="
+      margin: 0;
+    ">Solicitudes Programadas</h4>
+    <div style="
+      display: flex;
+      align-items: center;
+      text-align: right;
+    ">
+     <h1 style="
+        margin: 0;
+        font-size: 1em; /* Tamaño reducido del texto */
+        line-height: 1; /* Evita espacio adicional */
+      ">APROBADAS:</h1>
+      <div class="date" style="
+        margin-left: 10px; /* Espacio entre el texto y la fecha */
+        font-size: 1em; /* Tamaño del texto de la fecha */
+      ">${moment(selectedDate).format("DD-MM-YYYY")}</div>
+    </div>
+  </div>
         
-        <h4>Solicitudes Programadas</h4>
 <table>
   <thead>
     <tr>
@@ -351,27 +372,34 @@ function Appointments() {
             <td>${appointment.folio || ""}</td>
             <td>${moment(appointment.hora_asignada, "HH:mm").format("LT")}</td>
             <td>${appointment.sala_quirofano || ""}</td>
-            <td>${appointment.nombre_paciente} ${appointment.ap_paterno} ${appointment.ap_materno}</td>
+            <td>${appointment.nombre_paciente} ${appointment.ap_paterno} ${
+          appointment.ap_materno
+        }</td>
             <td>${sexoFormatted}</td>
             <td>
               ${(() => {
-                const procedimientos = appointment.procedimientos_paciente || "";
+                const procedimientos =
+                  appointment.procedimientos_paciente || "";
                 const [beforeDash, afterDash] = procedimientos.split("-", 2);
                 const truncatedBeforeDash = beforeDash.slice(0, 20);
-                return `${truncatedBeforeDash}${afterDash ? "-" + afterDash : ""}`;
+                return `${truncatedBeforeDash}${
+                  afterDash ? "-" + afterDash : ""
+                }`;
               })()}
             </td>
             <td>${appointment.clave_esp || ""}</td>
-            <td>${moment(appointment.fecha_programada).format("DD-MM-YYYY")}</td>
+            <td>${moment(appointment.fecha_programada).format(
+              "DD-MM-YYYY"
+            )}</td>
             <td>${appointment.tiempo_estimado} min</td>
             <td>
               ${(() => {
                 const turno = appointment.turno || "";
                 const turnMap = {
-                  "Vespertino": "V",
-                  "Matutino": "M",
-                  "Nocturno": "N",
-                  "Especial": "E"
+                  Vespertino: "V",
+                  Matutino: "M",
+                  Nocturno: "N",
+                  Especial: "E",
                 };
                 return turnMap[turno] || "";
               })()}
@@ -440,7 +468,7 @@ function Appointments() {
       </body>
     </html>
     `;
-  
+
       // Crear una ventana de impresión y escribir el contenido
       const printWindow = window.open("", "_blank");
       printWindow.document.open();
@@ -451,7 +479,6 @@ function Appointments() {
       console.error("Error al imprimir las solicitudes:", error);
     }
   };
-  
 
   return (
     <Layout>
