@@ -199,7 +199,7 @@ function Solicitudes() {
             width: 100%;
             border-collapse: collapse;
             margin-top: 10px;
-            font-size: 12px;
+            font-size: 10px;
           }
           th, td {
             border: 1px solid black;
