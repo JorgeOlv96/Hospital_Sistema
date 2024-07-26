@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from "react";
 import Layout from "../../Layout";
+import moment from "moment"; 
 import { Link } from "react-router-dom";
 import AddAppointmentModal from "../../components/Modals/AddApointmentModal";
 import { FaTable, FaThLarge } from "react-icons/fa"; // Asegúrate de tener esta biblioteca instalada
@@ -18,6 +19,7 @@ function Solicitudes() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [view, setView] = useState("table"); // State to toggle view
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
   useEffect(() => {
     const fetchSolicitudes = async () => {
@@ -121,6 +123,207 @@ function Solicitudes() {
     return sorted;
   }, [filteredSolicitudes, sortBy, sortOrder]);
 
+  const printRequestedAppointments = async () => {
+    const today = moment(selectedDate).format("YYYY-MM-DD"); // Usa la fecha seleccionada
+  
+    try {
+      // Fetch de las solicitudes tentativas
+      const solicitudesResponse = await fetch(
+        "http://localhost:4000/api/solicitudes"
+      );
+      if (!solicitudesResponse.ok) {
+        throw new Error("Network response for solicitudes was not ok");
+      }
+      const solicitudesData = await solicitudesResponse.json();
+      console.log("Solicitudes Data:", solicitudesData);
+  
+      // Fetch de los anestesiólogos
+      const anesthesiologistsResponse = await fetch(
+        "http://localhost:4000/api/anestesio/anestesiologos"
+      );
+      if (!anesthesiologistsResponse.ok) {
+        throw new Error("Network response for anesthesiologists was not ok");
+      }
+      const anesthesiologistsData = await anesthesiologistsResponse.json();
+      console.log("Anesthesiologists Data:", anesthesiologistsData);
+  
+      // Filtrar las solicitudes del día seleccionado
+      const todaysRegistrations = solicitudesData.filter(
+        (solicitud) =>
+          moment(solicitud.fecha_solicitada).format("YYYY-MM-DD") === today
+      );
+      console.log("Today's Registrations:", todaysRegistrations);
+  
+      // Filtrar los anestesiólogos asignados para el día seleccionado
+      const todaysAnesthesiologists = anesthesiologistsData.filter(
+        (anesthesiologist) =>
+          moment(anesthesiologist.dia_anestesio).format("YYYY-MM-DD") === today
+      );
+      console.log("Today's Anesthesiologists:", todaysAnesthesiologists);
+  
+      // Generar el contenido imprimible
+      const printableContent = `
+    <html>
+      <head>
+        <style>
+          body {
+            background-color: #ffffff;
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            margin: 10px;
+            padding: 5px;
+          }
+          .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+          }
+          .header img {
+            max-width: 150px;
+            height: auto;
+            margin-right: 5px;
+          }
+          .header .date {
+            font-size: 12px;
+            text-align: left;
+            margin-right: 5px;
+          }
+          .header h1 {
+            font-size: 12px;
+            margin: 5px;
+            flex-grow: 2;
+            text-align: right;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 12px;
+          }
+          th, td {
+            border: 1px solid black;
+            padding: 5px;
+            text-align: left;
+            white-space: nowrap;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>PRELIMINAR: </h1>
+          <div class="date">${moment(selectedDate).format("DD-MM-YYYY")}</div>
+        </div>
+        
+        <h4>Solicitudes Programadas</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Folio</th>
+              <th>Hra. asign.</th>
+              <th>Sala</th>
+              <th>Nom. completo</th>
+              <th>Sexo</th>
+              <th>Procedimientos</th>
+              <th>Esp.</th>
+              <th>Fecha solicitada</th>
+              <th>Tiempo est.</th>
+              <th>Turno</th>
+              <th>Anestesiólogo</th>
+              <th>Cirujano</th>
+              <th>Insumos</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${todaysRegistrations
+              .map((appointment, index) => {
+                console.log("Appointment data:", appointment);
+                const sexoFormatted = appointment.sexo
+                  ? appointment.sexo === "Femenino"
+                    ? "F"
+                    : appointment.sexo === "Masculino"
+                    ? "M"
+                    : "No especificado"
+                  : "No especificado";
+  
+                return `
+                  <tr>
+                    <td>${index + 1}</td>
+                    <td>${appointment.folio || ""}</td>
+                    <td>${moment(appointment.hora_asignada, "HH:mm").format("LT")}</td>
+                    <td>${appointment.sala_quirofano || ""}</td>
+                    <td>${appointment.nombre_paciente} ${appointment.ap_paterno} ${appointment.ap_materno}</td>
+                    <td>${sexoFormatted}</td>
+                    <td>${appointment.procedimientos_paciente || ""}</td>
+                    <td>${appointment.clave_esp || ""}</td>
+                    <td>${moment(appointment.fecha_solicitada).format("DD-MM-YYYY")}</td>
+                    <td>${appointment.tiempo_estimado} min</td>
+                    <td>${appointment.turno || ""}</td>
+                    <td>${appointment.nombre_anestesiologo || ""}</td>
+                    <td>${appointment.nombre_cirujano || ""}</td>
+                    <td>${appointment.req_insumo || ""}</td>
+                  </tr>`;
+              })
+              .join("")}
+          </tbody>
+        </table>
+        
+        <h4>Anestesiólogos Programados</h4>
+        <table>
+          <thead>
+            <tr>
+              <th>Recuperación Matutino</th>
+              <th>Consulta Externa Piso 1</th>
+              <th>Consulta Externa Piso 2</th>
+              <th>Recuperación Vespertino</th>
+              <th>Consulta Externa Piso 1</th>
+              <th>Consulta Externa Piso 2</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              ${[
+                "Recup_Matutino",
+                "Con_Ext_P1_mat",
+                "Con_Ext_P2_mat",
+                "Rec_Vespertino",
+                "Con_Ext_P1_vesp",
+                "Con_Ext_P2_vesp",
+              ]
+                .map(
+                  (room) => `
+                <td>
+                  ${todaysAnesthesiologists
+                    .filter(
+                      (anesthesiologist) =>
+                        anesthesiologist.sala_anestesio === room
+                    )
+                    .map((anesthesiologist) => anesthesiologist.nombre)
+                    .join(", ")}
+                </td>`
+                )
+                .join("")}
+            </tr>
+          </tbody>
+        </table>
+      </body>
+    </html>
+    `;
+  
+      // Crear una ventana de impresión y escribir el contenido
+      const printWindow = window.open("", "_blank");
+      printWindow.document.open();
+      printWindow.document.write(printableContent);
+      printWindow.document.close();
+      printWindow.print();
+    } catch (error) {
+      console.error("Error al imprimir las solicitudes:", error);
+    }
+  };
+  
+
+
   const startIndex = (page - 1) * perPage;
   const endIndex = startIndex + perPage;
 
@@ -181,6 +384,15 @@ function Solicitudes() {
           >
             Nueva Solicitud
           </Link>
+
+          <input 
+            type="date" 
+            value={moment(selectedDate).format("YYYY-MM-DD")}
+            onChange={(e) => setSelectedDate(e.target.value)} 
+            className="ml-4"
+          />
+
+          <button onClick={printRequestedAppointments} className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center ml-4">Imprimir Solicitudes</button>
         </div>
 
         {open && selectedAppointment && (

@@ -5,6 +5,8 @@ import { BrowserRouter,Route, Router, Routes, Navigate } from 'react-router-dom'
 import Aos from 'aos';
 import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
+import { AuthProvider } from './AuthContext';
+import ProtectedRoute from './ProtectedRoute';
 import Dashboard from './screens/Dashboard';
 import Solicitudes from './screens/Solicitudes/Solicitudes';
 import Toast from './components/Notifications/Toast';
@@ -59,6 +61,7 @@ function App() {
       <Toast />
       {/* Routes */}
       <BrowserRouter>
+      <AuthProvider>
         <Routes>
           <Route path="/" element={<IndexPage />} />
           <Route path="/dashboard" element={<Dashboard />} />
@@ -107,6 +110,7 @@ function App() {
           <Route path="/ayuda" element={<Ayuda />} /> 
           <Route path="*" element={<NotFound />} />
         </Routes>
+        </AuthProvider>
         <ToastContainer />
       </BrowserRouter>
     </>

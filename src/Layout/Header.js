@@ -21,16 +21,18 @@ function Header() {
     const fetchUserInfo = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get(
-          "http://localhost:4000/api/auth/user",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        const { nombre, ap_paterno, ap_materno } = response.data;
-        setUserName(`${nombre} ${ap_paterno} ${ap_materno}`);
+        if (token) {
+          const response = await axios.get(
+            "http://localhost:4000/api/auth/user",
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          const { nombre, ap_paterno, ap_materno } = response.data;
+          setUserName(`${nombre} ${ap_paterno} ${ap_materno}`);
+        }
       } catch (error) {
         console.error("Error fetching user info:", error);
       } finally {
@@ -46,6 +48,13 @@ function Header() {
   };
 
   const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token"); // Elimina el token del almacenamiento local
+    setUserName("Nombre no disponible"); // Limpia el nombre de usuario
+    navigate("/login"); // Redirige al usuario a la página de inicio de sesión
+  };
+
   const DropDown1 = [
     {
       title: "Perfil",
@@ -57,9 +66,7 @@ function Header() {
     {
       title: "Cerrar Sesión",
       icon: AiOutlinePoweroff,
-      onClick: () => {
-        navigate("/login");
-      },
+      onClick: handleLogout, // Usa la función handleLogout
     },
   ];
 

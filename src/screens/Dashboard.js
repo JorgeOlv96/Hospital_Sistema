@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import Layout from "../Layout";
 import { BsCheckCircleFill, BsClockFill, BsXCircleFill } from "react-icons/bs";
 import axios from "axios";
 import { DashboardSmallChart } from "../components/Charts";
-
 import AnesthesiologistsCount from '../components/AnesthesiologistsCount';
 import AnesthesiologistsDistribution from '../components/AnesthesiologistsDistribution';
 import AnesthesiologistsCalendar from '../components/AnesthesiologistsCalendar';
+import { AuthContext } from "../AuthContext";
 
 
 const initialDashboardCards = [
@@ -44,6 +44,7 @@ function Dashboard() {
   const [userName, setUserName] = useState("Nombre no disponible");
   const [isLoading, setIsLoading] = useState(true);
   const [dashboardCards, setDashboardCards] = useState(initialDashboardCards);
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchUserInfo = async () => {
