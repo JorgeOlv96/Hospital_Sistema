@@ -357,7 +357,7 @@ function Appointments() {
               ${(() => {
                 const procedimientos = appointment.procedimientos_paciente || "";
                 const [beforeDash, afterDash] = procedimientos.split("-", 2);
-                const truncatedBeforeDash = beforeDash.slice(0, 30);
+                const truncatedBeforeDash = beforeDash.slice(0, 20);
                 return `${truncatedBeforeDash}${afterDash ? "-" + afterDash : ""}`;
               })()}
             </td>
@@ -376,7 +376,14 @@ function Appointments() {
                 return turnMap[turno] || "";
               })()}
             </td>
-            <td>${appointment.nombre_anestesiologo || ""}</td>
+            <td>
+                    ${(() => {
+                      const nombreanes = appointment.nombre_anestesiologo || "";
+                      const words = nombreanes.split(" ");
+                      const truncatedName = words.slice(0, 2).join(" ");
+                      return truncatedName;
+                    })()}
+            </td>
             <td>
               ${(() => {
                 const nombre = appointment.nombre_cirujano || "";
