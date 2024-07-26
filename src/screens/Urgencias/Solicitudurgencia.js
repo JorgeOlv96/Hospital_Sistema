@@ -247,10 +247,10 @@ const SolicitudUrgencia = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     console.log("Submitting formData:", formData);
     if (validateForm()) {
       try {
@@ -265,11 +265,11 @@ const SolicitudUrgencia = () => {
             body: JSON.stringify(formData),
           }
         );
-  
+
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
-  
+
         const data = await response.json();
         console.log("Formulario válido y enviado:", formData);
         navigate("/solicitudes");
@@ -280,14 +280,11 @@ const SolicitudUrgencia = () => {
       console.log("Formulario inválido", errors); // <-- Aquí se muestra el error en la consola
     }
   };
-  
 
   return (
     <Layout>
       <div className="flex flex-col gap-2 mb-4">
         <h1 className="text-xl font-semibold">Crear solicitud Urgente</h1>
-
-        <form onSubmit={handleSubmit}>
         <div className="flex my-4 justify-between">
           <Link
             to="/bitacora/Bitaenfermeria"
@@ -318,26 +315,53 @@ const SolicitudUrgencia = () => {
               />
             </div>
 
-            <div class="w-full">
-              <label for="curp" class="block font-semibold text-white mb-1">
-                CURP del paciente:
+            <div className="w-full mr-4">
+              <label
+                htmlFor="id_cirujano"
+                className="block font-semibold text-white mb-1"
+              >
+                Cirujano encargado
               </label>
-
-              <input
-                type="text"
-                id="curp"
-                name="curp"
-                placeholder="Curp del paciente"
-                value={formData.curp}
-                onChange={handleInputChange}
-                maxLength={18}
-                className={`border "border-red-500" : "border-red-500"} rounded-lg px-3 py-2 focus:ring-2 w-full`}
-              />
+              <div className="relative w-full">
+                <AsyncSelect
+                  loadOptions={fetchActiveSurgeons}
+                  onChange={handleSelectChange}
+                  placeholder="Nombre"
+                  className={`rounded-lg focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full ${
+                    errors.nombre_cirujano
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  }`}
+                  styles={{
+                    container: (provided) => ({
+                      ...provided,
+                      width: "100%",
+                      minWidth: "0",
+                    }),
+                    control: (provided) => ({
+                      ...provided,
+                      borderColor: errors.nombre_cirujano
+                        ? "#F56565"
+                        : "#CBD5E0",
+                      boxShadow: "none",
+                      borderRadius: "0.5rem",
+                      width: "100%",
+                    }),
+                    menu: (provided) => ({
+                      ...provided,
+                      width: "100%",
+                    }),
+                  }}
+                />
+                {errors.nombre_cirujano && (
+                  <p className="text-red-500 mt-1">{errors.nombre_cirujano}</p>
+                )}
+              </div>
             </div>
           </div>
 
           <div class="flex mb-4">
-            <div class="w-1/4 mr-4">
+            <div class="w-full mr-4">
               <label
                 for="ap_paterno"
                 class="block font-semibold text-white mb-1"
@@ -345,7 +369,7 @@ const SolicitudUrgencia = () => {
                 Apellido paterno:
               </label>
               <input
-                placeholder="Apellido paterno paciente"
+                placeholder="Ap. paterno Pte."
                 type="text"
                 id="ap_paterno"
                 name="ap_paterno"
@@ -355,7 +379,7 @@ const SolicitudUrgencia = () => {
               />
             </div>
 
-            <div class="w-1/4 mr-4">
+            <div class="w-full mr-4">
               <label
                 for="ap_materno"
                 class="block font-semibold text-white mb-1"
@@ -363,7 +387,7 @@ const SolicitudUrgencia = () => {
                 Apellido materno:
               </label>
               <input
-                placeholder="Apellido materno paciente"
+                placeholder="Apellido materno Pte."
                 type="text"
                 id="ap_materno"
                 name="ap_materno"
@@ -373,7 +397,7 @@ const SolicitudUrgencia = () => {
               />
             </div>
 
-            <div class="w-1/3 mr-4">
+            <div class="w-full mr-4">
               <label
                 for="nombre_paciente"
                 class="block font-semibold text-white mb-1"
@@ -381,7 +405,7 @@ const SolicitudUrgencia = () => {
                 Nombre:
               </label>
               <input
-                placeholder="Nombre del paciente"
+                placeholder="Nombre del Pte."
                 type="text"
                 id="nombre_paciente"
                 name="nombre_paciente"
@@ -391,8 +415,7 @@ const SolicitudUrgencia = () => {
               />
             </div>
 
-
-            <div className="mr-4 w-1/5">
+            <div className="mr-4 w-full">
               <label
                 htmlFor="edad"
                 className="block font-semibold text-white mb-1"
@@ -400,7 +423,7 @@ const SolicitudUrgencia = () => {
                 Edad
               </label>
               <input
-                placeholder="Edad de paciente"
+                placeholder="Edad de Pte."
                 type="int"
                 id="edad"
                 name="edad"
@@ -410,30 +433,31 @@ const SolicitudUrgencia = () => {
               />
             </div>
 
-            <div className="mr-4" style={{ width: "25%" }}>
-        <label
-            htmlFor="sexo"
-            className="block font-semibold text-white mb-1"
-        >
-            Sexo:
-        </label>
-        <select
-            id="sexo"
-            name="sexo"
-            value={formData.sexo}
-            onChange={handleInputChange}
-            className={`border ${errors.nombre_paciente ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-        >
-            <option value=""> Seleccionar </option>
-            <option value="Masculino">Masculino</option>
-            <option value="Femenino">Femenino</option>
-            <option value="Otro">Otro</option>
-        </select>
-        {errors.sexo && <p className="text-red-500">{errors.sexo}</p>}
-    </div>
+            <div className="mr-4 w-full" style={{ width: "100%" }}>
+              <label
+                htmlFor="sexo"
+                className="block font-semibold text-white mb-1"
+              >
+                Sexo:
+              </label>
+              <select
+                id="sexo"
+                name="sexo"
+                value={formData.sexo}
+                onChange={handleInputChange}
+                className={`border ${
+                  errors.nombre_paciente ? "border-red-500" : "border-gray-300"
+                } rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+              >
+                <option value=""> Seleccionar </option>
+                <option value="Masculino">Masculino</option>
+                <option value="Femenino">Femenino</option>
+                <option value="Otro">Otro</option>
+              </select>
+              {errors.sexo && <p className="text-red-500">{errors.sexo}</p>}
+            </div>
 
-
-            <div className="mr-4" style={{ width: "25%" }}>
+            <div className="mr-4" style={{ width: "75%" }}>
               <label
                 htmlFor="sala_quirofano"
                 className="block font-semibold text-white mb-1"
@@ -446,8 +470,9 @@ const SolicitudUrgencia = () => {
                 name="sala_quirofano"
                 value={formData.sala_quirofano}
                 onChange={handleInputChange}
-                className={`border ${errors.nombre_paciente ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-                
+                className={`border ${
+                  errors.nombre_paciente ? "border-red-500" : "border-gray-300"
+                } rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
               >
                 <option value=""> Seleccionar </option>
                 <option value="A1">SALA A1</option>
@@ -464,12 +489,14 @@ const SolicitudUrgencia = () => {
                 <option value="H">SALA H</option>
                 <option value="RX">SALA RX</option>
               </select>
-                {errors.nombre_paciente && <p className="text-red-500">{errors.nombre_paciente}</p>}
+              {errors.nombre_paciente && (
+                <p className="text-red-500">{errors.nombre_paciente}</p>
+              )}
             </div>
           </div>
 
           <div class="flex mb-4">
-            <div class="w-1/5 mr-4">
+            <div class="w-full mr-4">
               <label
                 htmlFor="fecha_nacimiento"
                 className="block font-semibold text-white mb-1"
@@ -486,7 +513,7 @@ const SolicitudUrgencia = () => {
               />
             </div>
 
-            <div className="mr-4 w-1/5">
+            <div class="w-full mr-4">
               <label
                 htmlFor="tipo_intervencion"
                 className="block font-semibold text-white mb-1"
@@ -498,17 +525,23 @@ const SolicitudUrgencia = () => {
                 name="tipo_intervencion"
                 value={formData.tipo_intervencion}
                 onChange={handleInputChange}
-                className={`border ${errors.tipo_intervencion ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-                >
+                className={`border ${
+                  errors.tipo_intervencion
+                    ? "border-red-500"
+                    : "border-gray-300"
+                } rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+              >
                 <option value=""> Seleccionar </option>
                 <option value="Cirugía">Cirugía</option>
                 <option value="Procedimiento">Procedimiento</option>
                 <option value="Cirugía ambulatoria">Cirugía ambulatoria</option>
               </select>
-              {errors.tipo_intervencion && <p className="text-red-500">{errors.tipo_intervencion}</p>}
-            </div>  
+              {errors.tipo_intervencion && (
+                <p className="text-red-500">{errors.tipo_intervencion}</p>
+              )}
+            </div>
 
-            <div className="mr-4 w-1/6">
+            <div className="mr-4 w-full">
               <label
                 htmlFor="nombre_especialidad"
                 className="block font-semibold text-white mb-1"
@@ -520,8 +553,12 @@ const SolicitudUrgencia = () => {
                 name="nombre_especialidad"
                 value={nombre_especialidad}
                 onChange={handleNombreEspecialidadChange}
-                className={`border ${errors.nombre_especialidad ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-                >
+                className={`border ${
+                  errors.nombre_especialidad
+                    ? "border-red-500"
+                    : "border-gray-300"
+                } rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+              >
                 <option value=""> Seleccionar </option>
                 {Object.keys(especialidadToClave).map((especialidad) => (
                   <option key={especialidad} value={especialidad}>
@@ -529,75 +566,62 @@ const SolicitudUrgencia = () => {
                   </option>
                 ))}
               </select>
-              {errors.nombre_especialidad && <p className="text-red-500">{errors.nombre_especialidad}</p>}
-              </div>
-              <div className="mr-4 w-1/9">
-        <label
-            htmlFor="clave_esp"
-            className="block font-semibold text-white mb-1"
-        >
-            Clave
-        </label>
-        <select
-            id="clave_esp"
-            name="clave_esp"
-            value={clave_esp}
-            onChange={handleClaveEspecialidadChange}
-            className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-        >
-            <option value=""> Seleccionar </option>
-            {Object.values(especialidadToClave).map((clave) => (
-                <option key={clave} value={clave}>
+              {errors.nombre_especialidad && (
+                <p className="text-red-500">{errors.nombre_especialidad}</p>
+              )}
+            </div>
+
+            <div className="mr-4 w-full">
+              <label
+                htmlFor="clave_esp"
+                className="block font-semibold text-white mb-1"
+              >
+                Clave
+              </label>
+              <select
+                id="clave_esp"
+                name="clave_esp"
+                value={clave_esp}
+                onChange={handleClaveEspecialidadChange}
+                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value=""> Seleccionar </option>
+                {Object.values(especialidadToClave).map((clave) => (
+                  <option key={clave} value={clave}>
                     {clave}
-                </option>
-            ))}
-        </select>
-    </div>
+                  </option>
+                ))}
+              </select>
+            </div>
 
-    <div className="mr-4 w-1/6">
-        <label
-            htmlFor="turno_solicitado"
-            className="block font-semibold text-white mb-1"
-        >
-            Turno
-        </label>
-        <select
-            id="turno_solicitado"
-            name="turno_solicitado"
-            value={formData.turno_solicitado}
-            onChange={handleInputChange}
-            className={`border ${errors.turno_solicitado ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-        >
-            <option value=""> Seleccionar </option>
-            <option value="Matutino">Matutino</option>
-            <option value="Vespertino">Vespertino</option>
-            <option value="Nocturno">Nocturno</option>
-            <option value="Especial">Especial</option>
-        </select>
-        {errors.turno_solicitado && <p className="text-red-500">{errors.turno_solicitado}</p>}
-    </div>
+            <div className="mr-4 w-full">
+              <label
+                htmlFor="turno_solicitado"
+                className="block font-semibold text-white mb-1"
+              >
+                Turno
+              </label>
+              <select
+                id="turno_solicitado"
+                name="turno_solicitado"
+                value={formData.turno_solicitado}
+                onChange={handleInputChange}
+                className={`border ${
+                  errors.turno_solicitado ? "border-red-500" : "border-gray-300"
+                } rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+              >
+                <option value=""> Seleccionar </option>
+                <option value="Matutino">Matutino</option>
+                <option value="Vespertino">Vespertino</option>
+                <option value="Nocturno">Nocturno</option>
+                <option value="Especial">Especial</option>
+              </select>
+              {errors.turno_solicitado && (
+                <p className="text-red-500">{errors.turno_solicitado}</p>
+              )}
+            </div>
 
-    <div className="mr-4 w-1/2">
-        <label
-            htmlFor="id_cirujano"
-            className="block font-semibold text-white mb-1"
-        >
-            Cirujano
-        </label>
-        <AsyncSelect
-            loadOptions={fetchActiveSurgeons}
-            onChange={handleSelectChange}
-            placeholder="Nombre"
-            className={` ${
-              errors.nombre_cirujano ? "border-red-500" : "border-gray-300"
-            } rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-        />
-        {errors.nombre_cirujano && (
-            <p className="text-red-500">{errors.nombre_cirujano}</p>
-        )}
-    </div>
-
-            <div className="mr-4" style={{ width: "14%" }}>
+            <div className="mr-4" style={{ width: "75%" }}>
               <label
                 htmlFor="req_insumo"
                 className="block font-semibold text-white mb-1"
@@ -609,18 +633,22 @@ const SolicitudUrgencia = () => {
                 name="req_insumo"
                 value={formData.req_insumo}
                 onChange={handleInputChange}
-                className={` ${errors.req_insumo ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-                >
+                className={` ${
+                  errors.req_insumo ? "border-red-500" : "border-gray-300"
+                } rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+              >
                 <option value="">Seleccionar</option>
                 <option value="Si">Si</option>
                 <option value="No">No</option>
               </select>
-              {errors.req_insumo && <p className="text-red-500">{errors.req_insumo}</p>}
-              </div>
+              {errors.req_insumo && (
+                <p className="text-red-500">{errors.req_insumo}</p>
+              )}
+            </div>
           </div>
 
-          <div class="flex mb-4">
-            <div class="w-1/5 mr-4">
+          <div className="flex mb-4">
+            <div className="w-full mr-4">
               <label
                 htmlFor="fecha_solicitada"
                 className="block font-semibold text-white mb-1"
@@ -631,13 +659,127 @@ const SolicitudUrgencia = () => {
                 type="date"
                 id="fecha_solicitada"
                 name="fecha_solicitada"
-                value={formData.fecha_programada}
+                value={formData.fecha_solicitada}
                 onChange={handleInputChange}
-                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-white`}
+                className="border-[#C59494] rounded-lg px-3 py-2 w-full bg-white"
               />
             </div>
 
-            <div class="w-1/5 mr-4">
+            <div className="w-full mr-4">
+              <label
+                htmlFor="id_cirujano"
+                className="block font-semibold text-white mb-1"
+              >
+                Anestesiólogo:
+              </label>
+              <div className="relative w-full">
+                <AsyncSelect
+                  loadOptions={fetchActiveSurgeons}
+                  onChange={handleAnestesioChange}
+                  placeholder="Nombre"
+                  className={`rounded-lg focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58]`}
+                  styles={{
+                    container: (provided) => ({
+                      ...provided,
+                      width: "100%", // Ajusta el ancho del contenedor
+                      minWidth: "0", // Asegura que el ancho se ajuste correctamente
+                    }),
+                    control: (provided) => ({
+                      ...provided,
+                      borderColor: errors.nombre_cirujano
+                        ? "#F56565"
+                        : "#CBD5E0",
+                      boxShadow: "none",
+                      borderRadius: "0.5rem",
+                      width: "100%", // Ajusta el ancho del control
+                    }),
+                    menu: (provided) => ({
+                      ...provided,
+                      width: "100%", // Ajusta el ancho del menú desplegable
+                    }),
+                  }}
+                />
+                {errors.nombre_cirujano && (
+                  <p className="text-red-500 mt-1">{errors.nombre_cirujano}</p>
+                )}
+              </div>
+            </div>
+
+            <div className="w-full mr-4">
+              <label
+                htmlFor="enfermera_quirurgica"
+                className="block font-semibold text-white mb-1"
+              >
+                Enf. Quirúrgica:
+              </label>
+              <div className="relative w-full">
+                <AsyncSelect
+                  loadOptions={fetchActiveNurses}
+                  onChange={(selectedOption) =>
+                    handleNurseChange(selectedOption, "enf_quirurgica")
+                  }
+                  placeholder="Enf. Quirúrgica"
+                  className="rounded-lg focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58]"
+                  styles={{
+                    container: (provided) => ({
+                      ...provided,
+                      width: "100%", // Ajusta el ancho del contenedor
+                      minWidth: "0", // Asegura que el ancho se ajuste correctamente
+                    }),
+                    control: (provided) => ({
+                      ...provided,
+                      borderColor: "#CBD5E0",
+                      boxShadow: "none",
+                      borderRadius: "0.5rem",
+                      width: "100%", // Ajusta el ancho del control
+                    }),
+                    menu: (provided) => ({
+                      ...provided,
+                      width: "100%", // Ajusta el ancho del menú desplegable
+                    }),
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="w-full mr-4">
+              <label
+                htmlFor="enfermera_circulante"
+                className="block font-semibold text-white mb-1"
+              >
+                Enf. Circulante:
+              </label>
+              <div className="relative w-full">
+                <AsyncSelect
+                  loadOptions={fetchActiveNurses}
+                  onChange={(selectedOption) =>
+                    handleNurseChange(selectedOption, "enf_circulante")
+                  }
+                  placeholder="Enf. Circulante"
+                  className="rounded-lg focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58]"
+                  styles={{
+                    container: (provided) => ({
+                      ...provided,
+                      width: "100%", // Ajusta el ancho del contenedor
+                      minWidth: "0", // Asegura que el ancho se ajuste correctamente
+                    }),
+                    control: (provided) => ({
+                      ...provided,
+                      borderColor: "#CBD5E0",
+                      boxShadow: "none",
+                      borderRadius: "0.5rem",
+                      width: "100%", // Ajusta el ancho del control
+                    }),
+                    menu: (provided) => ({
+                      ...provided,
+                      width: "100%", // Ajusta el ancho del menú desplegable
+                    }),
+                  }}
+                />
+              </div>
+            </div>
+
+            <div className="w-full mr-4">
               <label
                 htmlFor="hora_solicitada"
                 className="block font-semibold text-white mb-1"
@@ -650,37 +792,16 @@ const SolicitudUrgencia = () => {
                 name="hora_asignada"
                 value={formData.hora_asignada}
                 onChange={handleInputChange}
-                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-white`}
+                className="border-[#C59494] rounded-lg px-3 py-2 w-full bg-white"
               />
             </div>
 
-            <div className="w-full" style={{ marginLeft: "-10px", width: "110%" }}
-            >
+            <div className="w-full mr-4" style={{ width: "75%" }}>
               <label
-                htmlFor="id_cirujano"
+                htmlFor="hora_entrada"
                 className="block font-semibold text-white mb-1"
               >
-                Anestesiólogo:
-              </label>
-              <AsyncSelect
-                loadOptions={fetchActiveSurgeons}
-                onChange={handleAnestesioChange}
-                placeholder="Nombre"
-                className={` ${
-                  errors.nombre_cirujano ? "border-red-500" : "border-gray-300"
-                } rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-              />
-              {errors.nombre_cirujano && (
-                <p className="text-red-500">{errors.nombre_cirujano}</p>
-              )}
-            </div>
-
-            <div class="w-1/5 mr-4">
-              <label
-                htmlFor="procedimientos_paciente"
-                className="block font-semibold text-white mb-1"
-              >
-                Hora entr. cirugía:
+                Hora entrada cirugía:
               </label>
               <input
                 placeholder="Minutos"
@@ -689,86 +810,18 @@ const SolicitudUrgencia = () => {
                 name="hora_entrada"
                 value={formData.hora_entrada || ""}
                 onChange={handleInputChange}
-                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white`}
+                className="border-[#C59494] rounded-lg px-3 py-2 w-full bg-white"
               />
-            </div>
-
-            <div className="w-full" style={{ width: "105%" }}>
-          <label
-            htmlFor="id_cirujano"
-            className="block font-semibold text-white mb-1"
-          >
-            Enf. Quirurgica:
-          </label>
-          <AsyncSelect
-            loadOptions={fetchActiveNurses}
-            onChange={(selectedOption) =>
-              handleNurseChange(selectedOption, "enf_quirurgica")
-            }
-            placeholder="Enf. Quirurgica"
-            className={`rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-          />
-        </div>
-
-        <div className="w-full" style={{ width: "105%" }}>
-          <label
-            htmlFor="id_cirujano"
-            className="block font-semibold text-white mb-1"
-          >
-            Enf. Circulante:
-          </label>
-          <AsyncSelect
-            loadOptions={fetchActiveNurses}
-            onChange={(selectedOption) =>
-              handleNurseChange(selectedOption, "enf_circulante")
-            }
-            placeholder="Enf. Circulante"
-            className={`rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-          />
-        </div>
-
-            <div className="mr-4" style={{ width: "75%" }}>
-              <label
-                htmlFor="estado_solicitud"
-                className="block font-semibold text-white mb-1"
-              >
-                Estado
-              </label>
-              <input
-                id="estado_solicitud"
-                name="estado_solicitud"
-                value={formData.estado_solicitud}
-                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#C59494] cursor-default`}
-              ></input>
             </div>
           </div>
 
-          <div class="flex mb-4">
-
-                      <div className="mr-4 w-full">
-              <label
-                htmlFor="tiempo_estimado"
-                className="block font-semibold text-white mb-1"
-              >
-                Hora inicio Anes:
-              </label>
-              <input
-                placeholder="Minutos"
-                type="time"
-                id="hi_anestesia"
-                name="hi_anestesia"
-                value={formData.hi_anestesia || ""}
-                onChange={handleInputChange}
-                className={`rounded-lg px-3 py-2 w-full bg-white`}
-              />
-            </div>
-
-            <div className="mr-4 w-full">
+          <div className="flex mb-4">
+            <div className="w-full mr-4">
               <label
                 htmlFor="tipo_anestesia"
                 className="block font-semibold text-white mb-1"
               >
-                Tipo Anes:
+                Tipo Anestesia:
               </label>
               <MultiSelect
                 options={options}
@@ -788,7 +841,25 @@ const SolicitudUrgencia = () => {
               />
             </div>
 
-            <div class="w-full mr-4">
+            <div className="w-full mr-4">
+              <label
+                htmlFor="tiempo_estimado"
+                className="block font-semibold text-white mb-1"
+              >
+                Hora inicio Anes:
+              </label>
+              <input
+                placeholder="Minutos"
+                type="time"
+                id="hi_anestesia"
+                name="hi_anestesia"
+                value={formData.hi_anestesia || ""}
+                onChange={handleInputChange}
+                className={`rounded-lg px-3 py-2 w-full bg-white`}
+              />
+            </div>
+
+            <div className="mr-4 w-full">
               <label
                 htmlFor="tiempo_estimado"
                 className="block font-semibold text-white mb-1"
@@ -806,9 +877,8 @@ const SolicitudUrgencia = () => {
               />
             </div>
 
-
             <div className="mr-4 w-full">
-              <label
+            <label
                 htmlFor="tiempo_estimado"
                 className="block font-semibold text-white mb-1"
               >
@@ -843,7 +913,7 @@ const SolicitudUrgencia = () => {
               />
             </div>
 
-            <div class="w-full mr-4">
+            <div className="mr-4 w-full" style={{ width: "116%" }}>
               <label
                 htmlFor="procedimientos_paciente"
                 className="block font-semibold text-white mb-1"
@@ -858,8 +928,9 @@ const SolicitudUrgencia = () => {
                 onChange={handleInputChange}
                 className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white`}
               ></input>
-            </div>  
-            <div className="mr-4 w-full">
+            </div>
+
+            <div className="w-full mr-4" style={{ width: "90%" }}>
               <label
                 htmlFor="tiempo_estimado"
                 className="block font-semibold text-white mb-1"
@@ -878,15 +949,17 @@ const SolicitudUrgencia = () => {
             </div>
           </div>
           <div className="mr-4 w-full">
-              <label
-                htmlFor="procedimientos_paciente"
-                className="block font-semibold text-white mb-1"
-              >
-                Procedimientos del paciente:
-              </label>
-              <ProcedureSelect onChange={handleProcedureChange} />
-              {errors.procedimientos_paciente && <p className="text-red-500">{errors.procedimientos_paciente}</p>}
-            </div>
+            <label
+              htmlFor="procedimientos_paciente"
+              className="block font-semibold text-white mb-1"
+            >
+              Procedimientos del paciente:
+            </label>
+            <ProcedureSelect onChange={handleProcedureChange} />
+            {errors.procedimientos_paciente && (
+              <p className="text-red-500">{errors.procedimientos_paciente}</p>
+            )}
+          </div>
           <div>
             {Array.isArray(formData.nuevos_procedimientos_extra) &&
               formData.nuevos_procedimientos_extra.map(
@@ -935,7 +1008,7 @@ const SolicitudUrgencia = () => {
                 <button
                   id="agregar_procedimiento"
                   name="agregar_procedimiento"
-                  className="border-[#C59494] rounded-lg px-3 py-2 w-full bg-red text-white cursor-pointer"
+                  className="border-[#D5A8A8] rounded-lg px-3 py-2 w-full bg-[#D5A8A8] text-white cursor-pointer"
                   onClick={agregarProcedimiento}
                 >
                   +
@@ -967,13 +1040,12 @@ const SolicitudUrgencia = () => {
 
         <div className="flex justify-center mt-4">
           <button
-            type="submit"
+            onClick={handleSubmit}
             className="bg-[#365b77] text-white px-4 py-2 rounded"
           >
-            Enviar
+            Guardar
           </button>
         </div>
-        </form>
       </div>
     </Layout>
   );

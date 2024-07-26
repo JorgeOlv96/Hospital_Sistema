@@ -33,7 +33,7 @@ const Consultabitacora = () => {
   const [suspendReason, setSuspendReason] = useState("");
   const [suspendDetail, setSuspendDetail] = useState("");
   const [suspendDetailOptions, setSuspendDetailOptions] = useState([]);
-  const [error, setError] = useState(""); 
+  const [error, setError] = useState("");
   const [procedimientoExtra, setProcedimientoExtra] = useState("");
   const [selected, setSelected] = useState([]);
 
@@ -49,7 +49,9 @@ const Consultabitacora = () => {
         const data = await response.json();
         setPatientData(data);
         setSelected(
-          data.tipo_anestesia.map((type) => options.find((opt) => opt.value === type))
+          data.tipo_anestesia.map((type) =>
+            options.find((opt) => opt.value === type)
+          )
         );
         setLoading(false);
       } catch (error) {
@@ -157,14 +159,16 @@ const Consultabitacora = () => {
         enf_circulante,
         hi_anestesia,
         tipo_anestesia,
-        ht_anestesia
+        ht_anestesia,
       } = patientData;
       const response = await fetch(
         `http://localhost:4000/api/solicitudes/bitacoraenf/${id}`,
         {
           method: "PATCH",
           body: JSON.stringify({
-            nuevos_procedimientos_extra: JSON.stringify(nuevos_procedimientos_extra),
+            nuevos_procedimientos_extra: JSON.stringify(
+              nuevos_procedimientos_extra
+            ),
             hora_entrada,
             hora_incision,
             hora_cierre,
@@ -174,7 +178,7 @@ const Consultabitacora = () => {
             enf_circulante,
             hi_anestesia,
             tipo_anestesia,
-            ht_anestesia
+            ht_anestesia,
           }),
           headers: {
             "Content-Type": "application/json",
@@ -218,9 +222,11 @@ const Consultabitacora = () => {
   const agregarProcedimiento = () => {
     setPatientData((prevData) => ({
       ...prevData,
-      nuevos_procedimientos_extra: Array.isArray(prevData.nuevos_procedimientos_extra)
+      nuevos_procedimientos_extra: Array.isArray(
+        prevData.nuevos_procedimientos_extra
+      )
         ? [...prevData.nuevos_procedimientos_extra, procedimientoExtra]
-        : [procedimientoExtra]
+        : [procedimientoExtra],
     }));
     setProcedimientoExtra(""); // Limpiar el campo después de agregar
   };
@@ -229,7 +235,6 @@ const Consultabitacora = () => {
     <Layout>
       <div className="flex flex-col gap-2 mb-4">
         <h1 className="text-xl font-semibold">Consulta Paciente</h1>
-
         <div className="flex my-4 justify-between">
           <Link
             to="/bitacora/Bitaenfermeria"
@@ -595,35 +600,79 @@ const Consultabitacora = () => {
               />
             </div>
 
-            <div className="w-full" style={{ width: "105%" }}>
+            <div className="w-full mr-4">
               <label
-                htmlFor="id_cirujano"
+                htmlFor="enf_quirurgica"
                 className="block font-semibold text-white mb-1"
               >
-                Enf. Quirurgica:
+                Enf. Quirúrgica:
               </label>
-              <AsyncSelect
-                loadOptions={fetchActiveNurses}
-                onChange={handleSelectChange}
-                placeholder="Enf. Quirurgica"
-                className={`rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+              <div className="relative">
+                <AsyncSelect
+                  loadOptions={fetchActiveNurses}
+                  onChange={(selectedOption) =>
+                    handleSelectChange(selectedOption, "enf_quirurgica")
+                  }
+                  placeholder="Enf. Quirúrgica"
+                  className="rounded-lg focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full border-gray-300"
+                  styles={{
+                    container: (provided) => ({
+                      ...provided,
+                      width: "100%",
+                      minWidth: "0",
+                    }),
+                    control: (provided) => ({
+                      ...provided,
+                      borderColor: "#CBD5E0",
+                      boxShadow: "none",
+                      borderRadius: "0.5rem",
+                      width: "100%",
+                    }),
+                    menu: (provided) => ({
+                      ...provided,
+                      width: "100%",
+                    }),
+                  }}
                 />
               </div>
+            </div>
 
-            <div className="w-full" style={{ width: "105%" }}>
+            <div className="w-full mr-4">
               <label
-                htmlFor="id_cirujano"
+                htmlFor="enf_circulante"
                 className="block font-semibold text-white mb-1"
               >
                 Enf. Circulante:
               </label>
-              <AsyncSelect
-                loadOptions={fetchActiveNurses}
-                onChange={handleSelectChange}
-                placeholder="Enf. Circulante"
-                className={`rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+              <div className="relative">
+                <AsyncSelect
+                  loadOptions={fetchActiveNurses}
+                  onChange={(selectedOption) =>
+                    handleSelectChange(selectedOption, "enf_circulante")
+                  }
+                  placeholder="Enf. Circulante"
+                  className="rounded-lg focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full border-gray-300"
+                  styles={{
+                    container: (provided) => ({
+                      ...provided,
+                      width: "100%",
+                      minWidth: "0",
+                    }),
+                    control: (provided) => ({
+                      ...provided,
+                      borderColor: "#CBD5E0",
+                      boxShadow: "none",
+                      borderRadius: "0.5rem",
+                      width: "100%",
+                    }),
+                    menu: (provided) => ({
+                      ...provided,
+                      width: "100%",
+                    }),
+                  }}
                 />
               </div>
+            </div>
 
             <div className="mr-4" style={{ width: "75%" }}>
               <label
@@ -643,8 +692,7 @@ const Consultabitacora = () => {
           </div>
 
           <div class="flex mb-4">
-
-          <div className="mr-4 w-full">
+            <div className="mr-4 w-full">
               <label
                 htmlFor="tiempo_estimado"
                 className="block font-semibold text-white mb-1"
@@ -663,30 +711,30 @@ const Consultabitacora = () => {
             </div>
 
             <div className="mr-4 w-full">
-            <label
-              htmlFor="tipo_anestesia"
-              className="block font-semibold text-white mb-1"
-            >
-              Tipo Anes:
-            </label>
-            <MultiSelect
-              options={options}
-              value={selected}
-              onChange={handleInputChange}
-              labelledBy="Seleccionar tipo de anestesia"
-              overrideStrings={{
-                allItemsAreSelected: "Todo seleccionado",
-                clearSearch: "Limpiar búsqueda",
-                noOptions: "Sin opciones",
-                search: "Buscar",
-                selectAll: "Seleccionar todo",
-                selectSomeItems: "Seleccionar",
-              }}
-              className="border border-[#A8D5B1] rounded-lg w-full bg-[#A8D5B1] text-[#333333] cursor-pointer text-sm"
-              style={{ minHeight: "auto" }}
-            />
-          </div>
-          <div class="w-full mr-4">
+              <label
+                htmlFor="tipo_anestesia"
+                className="block font-semibold text-white mb-1"
+              >
+                Tipo Anes:
+              </label>
+              <MultiSelect
+                options={options}
+                value={selected}
+                onChange={handleInputChange}
+                labelledBy="Seleccionar tipo de anestesia"
+                overrideStrings={{
+                  allItemsAreSelected: "Todo seleccionado",
+                  clearSearch: "Limpiar búsqueda",
+                  noOptions: "Sin opciones",
+                  search: "Buscar",
+                  selectAll: "Seleccionar todo",
+                  selectSomeItems: "Seleccionar",
+                }}
+                className="border border-[#A8D5B1] rounded-lg w-full bg-[#A8D5B1] text-[#333333] cursor-pointer text-sm"
+                style={{ minHeight: "auto" }}
+              />
+            </div>
+            <div class="w-full mr-4">
               <label
                 htmlFor="tiempo_estimado"
                 className="block font-semibold text-white mb-1"
@@ -776,76 +824,76 @@ const Consultabitacora = () => {
             </div>
           </div>
           <div className="mr-4 w-full">
-        <label
-          htmlFor="procedimiento_paciente"
-          className="block font-semibold text-white mb-1"
-        >
-          Procedimiento inicial del paciente:
-        </label>
-        <input
-          id="procedimientos_paciente"
-          name="procedimientos_paciente"
-          value={patientData.procedimientos_paciente || "N/A"}
-          readOnly
-          className="border-[#A8D5B1] rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default"
-        ></input>
-      </div>
+            <label
+              htmlFor="procedimiento_paciente"
+              className="block font-semibold text-white mb-1"
+            >
+              Procedimiento inicial del paciente:
+            </label>
+            <input
+              id="procedimientos_paciente"
+              name="procedimientos_paciente"
+              value={patientData.procedimientos_paciente || "N/A"}
+              readOnly
+              className="border-[#A8D5B1] rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default"
+            ></input>
+          </div>
           <div>
-  {Array.isArray(patientData.nuevos_procedimientos_extra) && patientData.nuevos_procedimientos_extra.map((procedimiento, index) => (
-    <div key={index} className="flex mb-4">
-      <div className="mr-4 w-full">
-        <label
-          htmlFor={`procedimiento_${index}`}
-          className="block font-semibold text-white mb-1"
-        >
-          Procedimiento del paciente:
-        </label>
-        <input
-          id={`procedimiento_${index}`}
-          name={`procedimiento_${index}`}
-          value={procedimiento || ""}
-          className="rounded-lg px-3 py-2 w-full bg-white"
-        ></input>
-      </div>
-    </div>
-  ))}
-  <div className="flex mb-4">
-    <div className="mr-4 w-full">
-      <label
-        htmlFor="procedimiento_extra"
-        className="block font-semibold text-white mb-1"
-      >
-        Agregar procedimiento:
-      </label>
-      <input
-        id="procedimiento_extra"
-        name="procedimiento_extra"
-        value={procedimientoExtra}
-        onChange={(e) => setProcedimientoExtra(e.target.value)}
-        className="rounded-lg px-3 py-2 w-full bg-white"
-      ></input>
-    </div>
-    <div className="mr-4" style={{ width: "12%" }}>
-      <label
-        htmlFor="agregar_procedimiento"
-        className="block font-semibold text-white mb-1"
-      >
-        Agregar más
-      </label>
-      <button
-        id="agregar_procedimiento"
-        name="agregar_procedimiento"
-        className="border-[#A8D5B1] rounded-lg px-3 py-2 w-full bg-[#A8D5B1] text-white cursor-pointer"
-        onClick={agregarProcedimiento}
-      >
-        +
-      </button>
-    </div>
-  </div>
-</div>
-
-
-
+            {Array.isArray(patientData.nuevos_procedimientos_extra) &&
+              patientData.nuevos_procedimientos_extra.map(
+                (procedimiento, index) => (
+                  <div key={index} className="flex mb-4">
+                    <div className="mr-4 w-full">
+                      <label
+                        htmlFor={`procedimiento_${index}`}
+                        className="block font-semibold text-white mb-1"
+                      >
+                        Procedimiento del paciente:
+                      </label>
+                      <input
+                        id={`procedimiento_${index}`}
+                        name={`procedimiento_${index}`}
+                        value={procedimiento || ""}
+                        className="rounded-lg px-3 py-2 w-full bg-white"
+                      ></input>
+                    </div>
+                  </div>
+                )
+              )}
+            <div className="flex mb-4">
+              <div className="mr-4 w-full">
+                <label
+                  htmlFor="procedimiento_extra"
+                  className="block font-semibold text-white mb-1"
+                >
+                  Agregar procedimiento:
+                </label>
+                <input
+                  id="procedimiento_extra"
+                  name="procedimiento_extra"
+                  value={procedimientoExtra}
+                  onChange={(e) => setProcedimientoExtra(e.target.value)}
+                  className="rounded-lg px-3 py-2 w-full bg-white"
+                ></input>
+              </div>
+              <div className="mr-4" style={{ width: "12%" }}>
+                <label
+                  htmlFor="agregar_procedimiento"
+                  className="block font-semibold text-white mb-1"
+                >
+                  Agregar más
+                </label>
+                <button
+                  id="agregar_procedimiento"
+                  name="agregar_procedimiento"
+                  className="border-[#A8D5B1] rounded-lg px-3 py-2 w-full bg-[#A8D5B1] text-white cursor-pointer"
+                  onClick={agregarProcedimiento}
+                >
+                  +
+                </button>
+              </div>
+            </div>
+          </div>
 
           <div className="flex mb-4">
             <div className="mr-4" style={{ width: "50%" }}>
