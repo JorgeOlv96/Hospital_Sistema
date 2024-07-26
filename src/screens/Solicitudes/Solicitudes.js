@@ -232,7 +232,7 @@ function Solicitudes() {
               <th>Turno</th>
               <th>Anestesiólogo</th>
               <th>Cirujano</th>
-              <th>Insumos</th>
+              <th>Ins.</th>
             </tr>
           </thead>
           <tbody>

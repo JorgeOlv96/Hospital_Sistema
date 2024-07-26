@@ -360,7 +360,14 @@ function Appointments() {
                     <td>${appointment.tiempo_estimado} min</td>
                     <td>${appointment.turno || ""}</td>
                     <td>${appointment.nombre_anestesiologo || ""}</td>
-                    <td>${appointment.nombre_cirujano || ""}</td>
+                    <td>
+                      ${(() => {
+                        const nombre = appointment.nombre_cirujano || "";
+                        const words = nombre.split(" ");
+                        const truncatedName = words.slice(0, 2).join(" ");
+                        return truncatedName;
+                      })()}
+                    </td>
                     <td>${appointment.req_insumo || ""}</td>
                   </tr>`;
               })
