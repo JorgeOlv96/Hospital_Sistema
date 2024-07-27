@@ -35,20 +35,24 @@ import { FaSyringe } from "react-icons/fa";
 import { LuFileSpreadsheet } from "react-icons/lu";
 import { PiSyringe } from "react-icons/pi";
 import { LiaUserNurseSolid } from "react-icons/lia";
+import { AuthContext } from '../AuthContext';
+import { useContext } from 'react';
 
 
-
+const { user } = useContext(AuthContext);
 
 export const MenuDatas = [
   {
     title: 'Dashboard',
     path: '/dashboard',
     icon: HiOutlineHome,
+    viewRole: [1]
   },
   {
     title: 'Solicitudes ',
     path: '/solicitudes',
     icon: FaWpforms,
+    viewRole: [1]
   },
   {
     title: 'Evaluación',

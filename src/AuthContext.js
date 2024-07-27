@@ -1,12 +1,14 @@
+// src/AuthContext.js
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const navigate = useNavigate();
+    const location = useLocation();
 
     useEffect(() => {
         const checkAuth = async () => {
@@ -22,11 +24,18 @@ const AuthProvider = ({ children }) => {
                     // Optional: Redirect to login on token error
                     localStorage.removeItem('token');
                     setUser(null);
+                    if (location.pathname !== '/login' && location.pathname !== '/register') {
+                        navigate('/login');
+                    }
                 }
+            } else {
+                 
+                    navigate('/login')
+                
             }
         };
         checkAuth();
-    }, []);
+    }, [navigate, location]);
 
     const login = async (email, password) => {
         try {
@@ -43,7 +52,7 @@ const AuthProvider = ({ children }) => {
     const logout = () => {
         localStorage.removeItem('token');
         setUser(null);
-        navigate('/login'); // This should be a function or moved to where `useNavigate` is accessible
+        navigate('/login');
     };
 
     return (

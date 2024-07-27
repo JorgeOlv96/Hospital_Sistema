@@ -97,6 +97,7 @@ function Programaranestesiologo() {
       const existingAssignment = anesthesiologists.find(
         (anesthesiologist) =>
           anesthesiologist.dia_anestesio === formData.dia_anestesio &&
+          anesthesiologist.turno_anestesio === formData.turno_anestesio &&
           anesthesiologist.sala_anestesio === formData.sala_anestesio
       );
 

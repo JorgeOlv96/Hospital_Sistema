@@ -229,7 +229,7 @@ function Solicitudes() {
                 margin: 0;
                 font-size: 1em; /* Tamaño reducido del texto */
                 line-height: 1; /* Evita espacio adicional */
-              ">APROBADAS:</h1>
+              ">PRELIMINAR:</h1>
               <div class="date" style="
                 margin-left: 10px; /* Espacio entre el texto y la fecha */
                 font-size: 1em; /* Tamaño del texto de la fecha */
@@ -237,7 +237,7 @@ function Solicitudes() {
             </div>
           </div>
         
-       <h4>Solicitudes Programadas</h4>
+
         <table>
           <thead>
             <tr>
