@@ -1,11 +1,8 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { MenuDatas } from '../components/Datas';
 import { Link } from 'react-router-dom';
-import { AuthContext } from '../AuthContext';
 
 function Sidebar() {
-
-  const { user } = useContext(AuthContext);
   // active link
   const currentPath = (path) => {
     const currentPath =
@@ -26,8 +23,7 @@ function Sidebar() {
         />
       </Link>
       <div className="flex-colo gap-2 mt-12">
-        {MenuDatas.map.filter(permiso => permiso.viewRole == user.rol_user)((item, index) => (
-
+        {MenuDatas.map((item, index) => (
           <Link
             to={item.path}
             key={index}

@@ -1,19 +1,20 @@
+// src/ProtectedRoute.js
 import React, { useContext } from 'react';
 import { Navigate } from 'react-router-dom';
-import { AuthContext } from './AuthContext'; // Asegúrate de la ruta correcta
+import { AuthContext } from './AuthContext';
 
-const ProtectedRoute = ({ children }) => {
-    const { user } = useContext(AuthContext);
+const ProtectedRoute = ({ children, roles }) => {
+  const { user } = useContext(AuthContext);
+  console.log("ProtectedRoute user:", user);
+  if (!user) {
+    return <Navigate to="/login" />;
+  }
 
-    // Debugging: Verifica el valor de user
-    console.log("ProtectedRoute user:", user);
+  if (roles && !roles.includes(user.role)) {
+    return <Navigate to="/dashboard" />;
+  }
 
-    if (!user) {
-        // Redirige al login si el usuario no está autenticado
-        return <Navigate to="/login" />;
-    }
-
-    return children;
+  return children;
 };
 
 export default ProtectedRoute;

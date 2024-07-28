@@ -51,7 +51,6 @@ import Solicitudesurgentes from './screens/Urgencias/Urgentes';
 
 function App() {
   const [activeSection, setActiveSection] = useState('appointments');
-  const { user } = useContext(AuthContext);
   Aos.init();
 
   return (
