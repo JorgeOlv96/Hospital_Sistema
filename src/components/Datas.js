@@ -1,3 +1,4 @@
+// src/components/Datas.js
 import { HiOutlineHome, HiOutlineMail, HiOutlineUsers } from 'react-icons/hi';
 import { FaWpforms } from "react-icons/fa6";
 import {
@@ -36,85 +37,60 @@ import { LuFileSpreadsheet } from "react-icons/lu";
 import { PiSyringe } from "react-icons/pi";
 import { LiaUserNurseSolid } from "react-icons/lia";
 
-
-
-
 export const MenuDatas = [
   {
     title: 'Dashboard',
     path: '/dashboard',
     icon: HiOutlineHome,
+    viewRole: [1, 2, 3, 4, 5]
   },
   {
     title: 'Solicitudes ',
     path: '/solicitudes',
     icon: FaWpforms,
+    viewRole: [1, 5]
   },
   {
     title: 'Evaluación',
     path: '/evaluacion',
     icon: LuFileSpreadsheet,
+    viewRole: [2, 5]
   },
-  
- /* 
-  {
-    title: 'Pacientes',
-    path: '/patients',
-    icon: TbUsers,
-  },
- */ 
-
-   /*
-  {
-    title: 'Doctores',
-    path: '/doctors',
-    icon: RiUserHeartLine,
-  },
-*/
-
   {
     title: 'Agenda',
     path: '/appointments',
     icon: FaRegCalendarAlt,
+    viewRole: [1, 5]
   },
   {
     title: 'Anestesiólogos',
     path: '/anestesiólogos',
     icon: PiSyringe,
+    viewRole: [4, 5]
   },
-  
-  
-   /*
   {
-    title: 'Urgencias',
-    path: '/urgencias',
-    icon: FaAmbulance,
+    title: 'Bitácora',
+    path: '/Bitacora',
+    icon: LiaUserNurseSolid,
+    viewRole: [3, 5]
   },
-  */
-
- /*
   {
-    title: 'Medicina',
-    path: '/medicine',
-    icon: RiMedicineBottleLine,
+    title: 'Registro',
+    path: '/register',
+    icon: FaWpforms, // Puedes cambiar este icono por uno más representativo si lo deseas
+    viewRole: [5] // Solo accesible para el nivel 5
   },
-*/
-
- /*
-  {
-    title: 'Configuración',
-    path: '/settings',
-    icon: AiOutlineSetting,
-  },
-*/
-
-{
-  title: 'Bitácora',
-  path: '/Bitacora',
-  icon: LiaUserNurseSolid,
-},
 
 ];
+
+// Función para obtener elementos del menú según el rol de usuario
+export const getMenuItemsForUser = (user) => {
+  if (!user || !user.rol_user) {
+    return [];
+  }
+
+  return MenuDatas.filter(item => !item.viewRole || item.viewRole.includes(user.rol_user));
+};
 
 export const memberData = [
   {

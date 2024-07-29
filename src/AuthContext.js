@@ -21,6 +21,7 @@ const AuthProvider = ({ children }) => {
                     setUser(response.data);
                 } catch (error) {
                     console.error('Error checking auth:', error);
+                    // Optional: Redirect to login on token error
                     localStorage.removeItem('token');
                     setUser(null);
                     if (location.pathname !== '/login' && location.pathname !== '/register') {
@@ -28,7 +29,9 @@ const AuthProvider = ({ children }) => {
                     }
                 }
             } else {
-                navigate('/login');
+                 
+                    navigate('/login')
+                
             }
         };
         checkAuth();
@@ -52,12 +55,8 @@ const AuthProvider = ({ children }) => {
         navigate('/login');
     };
 
-    const hasRole = (roles) => {
-        return user && roles.includes(user.nivel_usuario);
-    };
-
     return (
-        <AuthContext.Provider value={{ user, login, logout, hasRole }}>
+        <AuthContext.Provider value={{ user, login, logout }}>
             {children}
         </AuthContext.Provider>
     );

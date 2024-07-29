@@ -1,8 +1,15 @@
-import React from 'react';
-import { MenuDatas } from '../components/Datas';
+// src/components/Sidebar.js
+import React, { useContext } from 'react';
+import { getMenuItemsForUser } from '../components/Datas';
 import { Link } from 'react-router-dom';
+import { AuthContext } from '../AuthContext';
 
 function Sidebar() {
+  const { user } = useContext(AuthContext);
+
+  // Obtener los elementos del menú según el rol del usuario
+  const menuItems = getMenuItemsForUser(user);
+
   // active link
   const currentPath = (path) => {
     const currentPath =
@@ -23,7 +30,7 @@ function Sidebar() {
         />
       </Link>
       <div className="flex-colo gap-2 mt-12">
-        {MenuDatas.map((item, index) => (
+        {menuItems.map((item, index) => (
           <Link
             to={item.path}
             key={index}

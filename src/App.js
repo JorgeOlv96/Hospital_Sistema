@@ -1,6 +1,6 @@
 // src/App.js
 import './App.css';
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Aos from 'aos';
 import ProtectedRoute from "./ProtectedRoute"
@@ -50,7 +50,6 @@ import Consultaurgencia from './screens/Urgencias/Consultaurgencia';
 import Solicitudesurgentes from './screens/Urgencias/Urgentes';
 
 function App() {
-  const [activeSection, setActiveSection] = useState('appointments');
   Aos.init();
 
   return (
@@ -79,7 +78,7 @@ function App() {
             <Route path="/patients" element={<Patients />} />
             <Route path="/solicitudes" element={<Solicitudes />} />
             <Route path="/solicitudes/crearsolicitud" element={<Crearsolicitud />} />
-            <Route path="/solicitudes/Programarsolicitud" element={<Programarsolicitud setActiveSection={setActiveSection} />} />
+            <Route path="/solicitudes/Programarsolicitud" element={<Programarsolicitud />} />
             <Route path="/solicitudes/Solicitudesprogramadas" element={<Solicitudesprogramadas />} />
             <Route path="/solicitudes/Solicitudsuspendida" element={<Solicitudessuspendidas />} />
             <Route path="/evaluacion" element={<Evaluacionmedica />} />
