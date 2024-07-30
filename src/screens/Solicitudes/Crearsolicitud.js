@@ -87,7 +87,7 @@ function CrearSolicitud() {
   useEffect(() => {
     const fetchSolicitudes = async () => {
       try {
-        const response = await fetch("http://localhost:4000/api/solicitudes");
+        const response = await fetch(`${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes`);
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
@@ -269,7 +269,7 @@ function CrearSolicitud() {
     if (validateForm()) {
       try {
         // Enviar la solicitud a la API
-        const response = await fetch("http://localhost:4000/api/solicitudes", {
+        const response = await fetch(`${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes`, {
           method: selectedSolicitud ? "PUT" : "POST",
           headers: {
             "Content-Type": "application/json",

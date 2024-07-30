@@ -137,7 +137,7 @@ function Appointments() {
   const fetchAppointments = async () => {
     try {
       const response = await fetch(
-        "http://localhost:4000/api/solicitudes/programadas"
+        `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/programadas`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -221,7 +221,7 @@ function Appointments() {
     try {
       // Fetch de las solicitudes programadas
       const solicitudesResponse = await fetch(
-        "http://localhost:4000/api/solicitudes/programadas"
+        `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/programadas`
       );
       if (!solicitudesResponse.ok) {
         throw new Error("Network response for solicitudes was not ok");
@@ -231,7 +231,7 @@ function Appointments() {
 
       // Fetch de los anestesiólogos
       const anesthesiologistsResponse = await fetch(
-        "http://localhost:4000/api/anestesio/anestesiologos"
+        `${process.env.REACT_APP_APP_BACK_SSQ}/anestesio/anestesiologos`
       );
       if (!anesthesiologistsResponse.ok) {
         throw new Error("Network response for anesthesiologists was not ok");

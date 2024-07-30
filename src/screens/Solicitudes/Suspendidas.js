@@ -24,7 +24,7 @@ function Solicitudessuspendidas() {
   const fetchPendingAppointments = async () => {
     try {
       const response = await fetch(
-        "http://localhost:4000/api/solicitudes/suspendidas"
+        `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/suspendidas`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");

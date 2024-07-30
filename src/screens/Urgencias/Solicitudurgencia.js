@@ -256,7 +256,7 @@ const SolicitudUrgencia = () => {
       try {
         console.log("Datos enviados:", formData); // <-- Aquí se agregaron los datos enviados
         const response = await fetch(
-          "http://localhost:4000/api/solicitudes/urgencias",
+          `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/urgencias`,
           {
             method: "POST",
             headers: {

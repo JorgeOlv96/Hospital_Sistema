@@ -46,7 +46,7 @@ function Register() {
     });
 
     try {
-      const response = await fetch("http://localhost:4000/api/auth/register", {
+      const response = await fetch(`${process.env.REACT_APP_APP_BACK_SSQ}/auth/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

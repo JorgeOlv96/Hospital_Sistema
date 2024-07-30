@@ -26,7 +26,7 @@ function Evaluacion() {
   const fetchPendingAppointments = async () => {
     try {
       const response = await fetch(
-        "http://localhost:4000/api/solicitudes/pendientes"
+        `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/pendientes`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");

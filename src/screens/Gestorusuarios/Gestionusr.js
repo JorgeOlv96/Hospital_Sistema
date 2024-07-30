@@ -14,7 +14,7 @@ function Gestionusuarios() {
     useEffect(() => {
         const fetchUsuarios = async () => {
             try {
-                const response = await fetch("http://localhost:4000/api/users");
+                const response = await fetch(`${process.env.REACT_APP_APP_BACK_SSQ}/users`);
                 if (!response.ok) {
                     const data = await response.json();
                     setError(data.message);

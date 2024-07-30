@@ -109,7 +109,7 @@ function Programaranestesiologo() {
       }
 
       const response = await fetch(
-        "http://localhost:4000/api/anestesio/anestesiologos",
+        `${process.env.REACT_APP_APP_BACK_SSQ}/anestesio/anestesiologos`,
         {
           method: "POST",
           headers: {
@@ -178,7 +178,7 @@ function Programaranestesiologo() {
   const fetchAnesthesiologists = async () => {
     try {
       const response = await fetch(
-        "http://localhost:4000/api/anestesio/anestesiologos"
+        `${process.env.REACT_APP_APP_BACK_SSQ}/anestesio/anestesiologos`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");

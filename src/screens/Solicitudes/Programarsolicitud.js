@@ -24,7 +24,7 @@ function ProgramarSolicitud() {
   const fetchPendingAppointments = async () => {
     try {
       const response = await fetch(
-        "http://localhost:4000/api/solicitudes/preprogramadas"
+        `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/preprogramadas`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");

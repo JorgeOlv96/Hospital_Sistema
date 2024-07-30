@@ -24,7 +24,7 @@ function Solicitudes() {
   useEffect(() => {
     const fetchSolicitudes = async () => {
       try {
-        const response = await fetch("http://localhost:4000/api/solicitudes");
+        const response = await fetch(`${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes`);
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
@@ -129,7 +129,7 @@ function Solicitudes() {
     try {
       // Fetch de las solicitudes tentativas
       const solicitudesResponse = await fetch(
-        "http://localhost:4000/api/solicitudes"
+        `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes`
       );
       if (!solicitudesResponse.ok) {
         throw new Error("Network response for solicitudes was not ok");
@@ -139,7 +139,7 @@ function Solicitudes() {
 
       // Fetch de los anestesiólogos
       const anesthesiologistsResponse = await fetch(
-        "http://localhost:4000/api/anestesio/anestesiologos"
+        `${process.env.REACT_APP_APP_BACK_SSQ}/anestesio/anestesiologos`
       );
       if (!anesthesiologistsResponse.ok) {
         throw new Error("Network response for anesthesiologists was not ok");

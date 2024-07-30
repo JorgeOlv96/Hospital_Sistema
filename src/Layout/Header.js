@@ -23,7 +23,7 @@ function Header() {
         const token = localStorage.getItem("token");
         if (token) {
           const response = await axios.get(
-            "http://localhost:4000/api/auth/user",
+            `${process.env.REACT_APP_APP_BACK_SSQ}/auth/user`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,

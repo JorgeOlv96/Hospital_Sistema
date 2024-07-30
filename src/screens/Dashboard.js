@@ -51,7 +51,7 @@ function Dashboard() {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          "http://localhost:4000/api/auth/user",
+          `${process.env.REACT_APP_APP_BACK_SSQ}/auth/user`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -74,11 +74,11 @@ function Dashboard() {
     const fetchSolicitudesCount = async () => {
       try {
         const endpoints = {
-          totales: "http://localhost:4000/api/solicitudes",
+          totales: `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes`,
           preprogramadas:
-            "http://localhost:4000/api/solicitudes/preprogramadas",
-          realizadas: "http://localhost:4000/api/solicitudes/realizadas",
-          suspendidas: "http://localhost:4000/api/solicitudes/suspendidas",
+            `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/preprogramadas`,
+          realizadas: `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/realizadas`,
+          suspendidas: `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/suspendidas`,
         };
 
         const [
