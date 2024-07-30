@@ -801,7 +801,7 @@ const SolicitudUrgencia = () => {
                 htmlFor="hora_entrada"
                 className="block font-semibold text-white mb-1"
               >
-                Hora entrada cirugía:
+                Entrada quirófano:
               </label>
               <input
                 placeholder="Minutos"
@@ -912,7 +912,23 @@ const SolicitudUrgencia = () => {
                 className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white`}
               />
             </div>
-
+            <div className="w-full mr-4" style={{ width: "90%" }}>
+              <label
+                htmlFor="tiempo_estimado"
+                className="block font-semibold text-white mb-1"
+              >
+                Salida paciente:
+              </label>
+              <input
+                placeholder="Minutos"
+                type="time"
+                id="hora_salida"
+                name="hora_salida"
+                value={formData.hora_salida || ""}
+                onChange={handleInputChange}
+                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white`}
+              />
+            </div>
             <div className="mr-4 w-full" style={{ width: "116%" }}>
               <label
                 htmlFor="procedimientos_paciente"
@@ -928,24 +944,6 @@ const SolicitudUrgencia = () => {
                 onChange={handleInputChange}
                 className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white`}
               ></input>
-            </div>
-
-            <div className="w-full mr-4" style={{ width: "90%" }}>
-              <label
-                htmlFor="tiempo_estimado"
-                className="block font-semibold text-white mb-1"
-              >
-                Hora salida paciente:
-              </label>
-              <input
-                placeholder="Minutos"
-                type="time"
-                id="hora_salida"
-                name="hora_salida"
-                value={formData.hora_salida || ""}
-                onChange={handleInputChange}
-                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white`}
-              />
             </div>
           </div>
           <div className="mr-4 w-full">
