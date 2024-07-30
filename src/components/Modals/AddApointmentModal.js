@@ -12,7 +12,7 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentId, onDeleteAppoin
     if (isOpen && appointmentId) {
       const fetchAppointmentData = async () => {
         try {
-          const response = await fetch(process.env.APP_BACK_SSQ + `/solicitudes/${appointmentId}`);
+          const response = await fetch(`${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/${appointmentId}`);
           if (!response.ok) {
             throw new Error('Network response was not ok');
           }
@@ -31,7 +31,7 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentId, onDeleteAppoin
 
   const handleDelete = async () => {
     try {
-      const response = await fetch(process.env.APP_BACK_SSQ + `/solicitudes/${appointmentId}`, {
+      const response = await fetch(`${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/${appointmentId}`, {
         method: 'DELETE',
       });
       if (!response.ok) {

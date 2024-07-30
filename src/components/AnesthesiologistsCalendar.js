@@ -9,7 +9,7 @@ function AnesthesiologistsCalendar() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await axios.get(process.env.APP_BACK_SSQ + '/anesthesiologists/agenda');
+        const response = await axios.get(`${process.env.REACT_APP_APP_BACK_SSQ}/anesthesiologists/agenda`);
         setEvents(response.data); // Assume [{ date: '...', event: '...' }, ...]
       } catch (error) {
         console.error('Error fetching agenda:', error);

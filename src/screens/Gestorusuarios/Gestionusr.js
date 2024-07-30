@@ -40,7 +40,7 @@ function Gestionusuarios() {
     // Delete user
     const handleDelete = async (id) => {
         try {
-            const response = await fetch(process.env.APP_BACK_SSQ + `/users/${id}`, {
+            const response = await fetch(`${process.env.REACT_APP_APP_BACK_SSQ}/users/${id}`, {
                 method: "DELETE",
             });
             if (!response.ok) {
@@ -68,7 +68,7 @@ function Gestionusuarios() {
             setSuccess(""); // Reset success message
             setError("");   // Reset error message
     
-            const response = await fetch(process.env.APP_BACK_SSQ + `/users/${id}`, {
+            const response = await fetch(`${process.env.REACT_APP_APP_BACK_SSQ}/users/${id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

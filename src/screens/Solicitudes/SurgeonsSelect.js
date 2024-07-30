@@ -9,7 +9,7 @@ const SurgeonSelect = ({ onChange }) => {
   const [error, setError] = useState(null);
 
   const loadOptions = (inputValue, callback) => {
-    fetch(process.env.APP_BACK_SSQ + `/cirujanos/activos?q=${inputValue}`)
+    fetch(`${process.env.REACT_APP_APP_BACK_SSQ}/cirujanos/activos?q=${inputValue}`)
       .then(res => res.json())
       .then(data => {
         const options = data.map(surgeon => ({

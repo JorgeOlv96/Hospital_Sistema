@@ -37,7 +37,7 @@ const Consultaurgencia = () => {
     const fetchAppointmentData = async () => {
       try {
         const response = await fetch(
-          process.env.APP_BACK_SSQ + `/solicitudes/geturgencias${id}`
+          `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/geturgencias${id}`
         );
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -62,7 +62,7 @@ const Consultaurgencia = () => {
   const fetchActiveNurses = async (inputValue) => {
     try {
       const response = await fetch(
-        process.env.APP_BACK_SSQ + `/enfermeras/activos?search=${inputValue}`
+        `${process.env.REACT_APP_APP_BACK_SSQ}/enfermeras/activos?search=${inputValue}`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");

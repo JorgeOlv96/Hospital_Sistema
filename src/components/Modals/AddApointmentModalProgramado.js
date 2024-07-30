@@ -47,7 +47,7 @@ function AddAppointmentModalProgramado({
       const fetchAppointmentData = async () => {
         try {
           const response = await fetch(
-            process.env.APP_BACK_SSQ + `/solicitudes/${appointmentId}`
+            `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/${appointmentId}`
           );
           if (!response.ok) {
             throw new Error("Network response was not ok");
@@ -68,7 +68,7 @@ function AddAppointmentModalProgramado({
   const fetchSuspendDetailOptions = async (category) => {
     try {
       const response = await fetch(
-        process.env.APP_BACK_SSQ + `/solicitudes/motivos-suspension?category=${category}`
+        `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/motivos-suspension?category=${category}`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -105,7 +105,7 @@ function AddAppointmentModalProgramado({
       } = patientData;
 
       const response = await fetch(
-        process.env.APP_BACK_SSQ + `/solicitudes/actualizar/${appointmentId}`,
+        `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/actualizar/${appointmentId}`,
         {
           method: "PATCH",
           body: JSON.stringify({
@@ -143,7 +143,7 @@ function AddAppointmentModalProgramado({
     }
     try {
       const response = await fetch(
-        process.env.APP_BACK_SSQ + `/solicitudes/suspender/${appointmentId}`,
+        `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/suspender/${appointmentId}`,
         {
           method: "PATCH",
           body: JSON.stringify({

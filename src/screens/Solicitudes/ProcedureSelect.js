@@ -7,7 +7,7 @@ const ProcedureSelect = ({ onChange }) => {
 
   const loadOptions = (inputValue, callback) => {
     fetch(
-      process.env.APP_BACK_SSQ + `/solicitudes/procedimientos?q=${inputValue}`
+      `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/procedimientos?q=${inputValue}`
     )
       .then((res) => res.json())
       .then((data) => {

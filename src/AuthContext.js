@@ -40,7 +40,7 @@ const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         try {
-            const response = await axios.post(process.env.APP_BACK_SSQ + '/auth/login', { email, password });
+            const response = await axios.post(`${process.env.REACT_APP_APP_BACK_SSQ}/auth/login`, { email, password });
             const { token, user } = response.data;
             localStorage.setItem('token', token);
             setUser(user);

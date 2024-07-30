@@ -41,7 +41,7 @@ const Consultabitacora = () => {
     const fetchAppointmentData = async () => {
       try {
         const response = await fetch(
-          process.env.APP_BACK_SSQ + `/solicitudes/${id}`
+          `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/${id}`
         );
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -66,7 +66,7 @@ const Consultabitacora = () => {
   const fetchSuspendDetailOptions = async (category) => {
     try {
       const response = await fetch(
-        process.env.APP_BACK_SSQ + `/solicitudes/motivos-suspension?category=${category}`
+        `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/motivos-suspension?category=${category}`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -82,7 +82,7 @@ const Consultabitacora = () => {
   const fetchActiveNurses = async (inputValue) => {
     try {
       const response = await fetch(
-        process.env.APP_BACK_SSQ + `/enfermeras/activos?search=${inputValue}`
+        `${process.env.REACT_APP_APP_BACK_SSQ}/enfermeras/activos?search=${inputValue}`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -123,7 +123,7 @@ const Consultabitacora = () => {
     }
     try {
       const response = await fetch(
-        process.env.APP_BACK_SSQ + `/solicitudes/suspender/${id}`,
+        `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/suspender/${id}`,
         {
           method: "PATCH",
           body: JSON.stringify({
@@ -162,7 +162,7 @@ const Consultabitacora = () => {
         ht_anestesia,
       } = patientData;
       const response = await fetch(
-        process.env.APP_BACK_SSQ + `/solicitudes/bitacoraenf/${id}`,
+        `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/bitacoraenf/${id}`,
         {
           method: "PATCH",
           body: JSON.stringify({
