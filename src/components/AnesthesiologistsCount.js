@@ -7,7 +7,7 @@ function AnesthesiologistsCount() {
   useEffect(() => {
     const fetchAnesthesiologistsCount = async () => {
       try {
-        const response = await axios.get('http://localhost:4000/api/anesthesiologists');
+        const response = await axios.get(process.env.APP_BACK_SSQ + '/anesthesiologists');
         setCount(response.data.count);
       } catch (error) {
         console.error('Error fetching anesthesiologists count:', error);

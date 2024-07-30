@@ -60,7 +60,7 @@ function Solicitudes() {
   const handleDeleteAppointment = async (appointmentId) => {
     try {
       const response = await fetch(
-        `http://localhost:4000/api/solicitudes/${appointmentId}`,
+        process.env.APP_BACK_SSQ + `/solicitudes/${appointmentId}`,
         {
           method: "DELETE",
         }

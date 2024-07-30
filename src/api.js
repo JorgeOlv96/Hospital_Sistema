@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 
 const api = axios.create({
-    baseURL: 'http://localhost:4000/api',
+    baseURL: 'APP_BACK_SSQ',
 });
 
 api.interceptors.response.use(

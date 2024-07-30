@@ -15,7 +15,7 @@ const AuthProvider = ({ children }) => {
             const token = localStorage.getItem('token');
             if (token) {
                 try {
-                    const response = await axios.get('http://localhost:4000/api/auth/user', {
+                    const response = await axios.get(process.env.APP_BACK_SSQ + '/auth/user', {
                         headers: { Authorization: `Bearer ${token}` }
                     });
                     setUser(response.data);
@@ -39,7 +39,7 @@ const AuthProvider = ({ children }) => {
 
     const login = async (email, password) => {
         try {
-            const response = await axios.post('http://localhost:4000/api/auth/login', { email, password });
+            const response = await axios.post(process.env.APP_BACK_SSQ + '/auth/login', { email, password });
             const { token, user } = response.data;
             localStorage.setItem('token', token);
             setUser(user);

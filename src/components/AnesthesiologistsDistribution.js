@@ -8,7 +8,7 @@ function AnesthesiologistsDistribution() {
   useEffect(() => {
     const fetchAnesthesiologistsDistribution = async () => {
       try {
-        const response = await axios.get('http://localhost:4000/api/anesthesiologists/distribution');
+        const response = await axios.get(process.env.APP_BACK_SSQ + '/anesthesiologists/distribution');
         const distribution = response.data; // Assume [{ specialty: '...', count: ... }, ...]
 
         setData({

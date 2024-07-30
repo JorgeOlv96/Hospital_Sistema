@@ -102,7 +102,7 @@ function CrearSolicitud() {
   const fetchActiveSurgeons = async (inputValue) => {
     try {
       const response = await fetch(
-        `http://localhost:4000/api/cirujanos/activos?search=${inputValue}`
+        process.env.APP_BACK_SSQ + `/cirujanos/activos?search=${inputValue}`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");

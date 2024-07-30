@@ -90,7 +90,7 @@ function App() {
             <Route path="/urgencias/Solicitudurgencia" element={<Solicitudurgencia />} />
             <Route path="/urgencias/Consultaurgencia" element={<Consultaurgencia />} />
             <Route path="/urgencias/Urgentes" element={<Solicitudesurgentes />} />
-            <Route path="/gestorusuarios/Gestionusr" element={<Gestionusuarios /> } />
+            <Route path="/Gestionusr" element={<Gestionusuarios /> } />
             <Route path="/services" element={<Services />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/ayuda" element={<Ayuda />} />

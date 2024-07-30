@@ -54,7 +54,7 @@ function AddAppointmentModalPending({
 
     try {
       const response = await fetch(
-        `http://localhost:4000/api/anestesio/anestesiologo?fecha_programada=${fecha_programada}&turno=${turno}&sala_quirofano=${sala_quirofano}`
+        process.env.APP_BACK_SSQ + `/anestesio/anestesiologo?fecha_programada=${fecha_programada}&turno=${turno}&sala_quirofano=${sala_quirofano}`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -74,7 +74,7 @@ function AddAppointmentModalPending({
       const fetchAppointmentData = async () => {
         try {
           const response = await fetch(
-            `http://localhost:4000/api/solicitudes/${appointmentId}`
+            process.env.APP_BACK_SSQ + `/solicitudes/${appointmentId}`
           );
           if (!response.ok) {
             throw new Error("Network response was not ok");
@@ -101,7 +101,7 @@ function AddAppointmentModalPending({
         nombre_anestesiologo,
       } = patientData;
       const response = await fetch(
-        `http://localhost:4000/api/solicitudes/programar/${appointmentId}`,
+        process.env.APP_BACK_SSQ + `/api/solicitudes/programar/${appointmentId}`,
         {
           method: "PUT",
           body: JSON.stringify({
@@ -129,7 +129,7 @@ function AddAppointmentModalPending({
   const handleDelete = async () => {
     try {
       const response = await fetch(
-        `http://localhost:4000/api/solicitudes/${appointmentId}`,
+        process.env.APP_BACK_SSQ + `/solicitudes/${appointmentId}`,
         {
           method: "DELETE",
         }

@@ -7,7 +7,7 @@ const ProcedureSelect = ({ onChange }) => {
 
   const loadOptions = (inputValue, callback) => {
     fetch(
-      `http://localhost:4000/api/solicitudes/procedimientos?q=${inputValue}`
+      process.env.APP_BACK_SSQ + `/solicitudes/procedimientos?q=${inputValue}`
     )
       .then((res) => res.json())
       .then((data) => {

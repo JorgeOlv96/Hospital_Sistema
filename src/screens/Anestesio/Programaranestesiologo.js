@@ -28,7 +28,7 @@ function Programaranestesiologo() {
   const fetchActiveAnesthesiologists = async (inputValue) => {
     try {
       const response = await fetch(
-        `http://localhost:4000/api/anestesiologos/activos?search=${inputValue}`
+        process.env.APP_BACK_SSQ + `/anestesiologos/activos?search=${inputValue}`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -153,7 +153,7 @@ function Programaranestesiologo() {
     ) {
       try {
         const response = await fetch(
-          `http://localhost:4000/api/anestesio/anestesiologos/${id}`,
+          process.env.APP_BACK_SSQ + `/anestesio/anestesiologos/${id}`,
           {
             method: "DELETE",
           }

@@ -19,7 +19,7 @@ function AddAppointmentModalEnfermeria({ closeModal, isOpen, appointmentId }) {
       const fetchAppointmentData = async () => {
         try {
           const response = await fetch(
-            `http://localhost:4000/api/solicitudes/${appointmentId}`
+            process.env.APP_BACK_SSQ + `/solicitudes/${appointmentId}`
           );
           if (!response.ok) {
             throw new Error("Network response was not ok");
@@ -75,7 +75,7 @@ function AddAppointmentModalEnfermeria({ closeModal, isOpen, appointmentId }) {
   const handleSave = async () => {
     try {
       const response = await fetch(
-        `http://localhost:4000/api/solicitudes/enfermeria/${appointmentId}`,
+        process.env.APP_BACK_SSQ + `/solicitudes/enfermeria/${appointmentId}`,
         {
           method: "PATCH",
           headers: {

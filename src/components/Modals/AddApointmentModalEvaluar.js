@@ -43,7 +43,7 @@ function AddAppointmentModalEvaluar({
       const fetchAppointmentData = async () => {
         try {
           const response = await fetch(
-            `http://localhost:4000/api/solicitudes/${appointmentId}`
+            process.env.APP_BACK_SSQ + `/solicitudes/${appointmentId}`
           );
           if (!response.ok) {
             throw new Error("Network response was not ok");
@@ -73,7 +73,7 @@ function AddAppointmentModalEvaluar({
       });
 
       const response = await fetch(
-        `http://localhost:4000/api/solicitudes/programar/${appointmentId}`,
+        process.env.APP_BACK_SSQ + `/solicitudes/programar/${appointmentId}`,
         {
           method: "PUT",
           body: JSON.stringify({
@@ -102,7 +102,7 @@ function AddAppointmentModalEvaluar({
   const handlePreprogramar = async () => {
     try {
       const response = await fetch(
-        `http://localhost:4000/api/solicitudes/preprogramar/${appointmentId}`,
+        process.env.APP_BACK_SSQ + `/solicitudes/preprogramar/${appointmentId}`,
         {
           method: "PUT",
         }

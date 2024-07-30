@@ -43,7 +43,7 @@ function AddApointmentModalSuspendida({
       const fetchAppointmentData = async () => {
         try {
           const response = await fetch(
-            `http://localhost:4000/api/solicitudes/${appointmentId}`
+            process.env.APP_BACK_SSQ + `/solicitudes/${appointmentId}`
           );
           if (!response.ok) {
             throw new Error("Network response was not ok");
@@ -77,7 +77,7 @@ function AddApointmentModalSuspendida({
       });
 
       const response = await fetch(
-        `http://localhost:4000/api/solicitudes/programar/${appointmentId}`,
+        process.env.APP_BACK_SSQ + `/solicitudes/programar/${appointmentId}`,
         {
           method: "PUT",
           body: JSON.stringify({
@@ -106,7 +106,7 @@ function AddApointmentModalSuspendida({
   const handleReprogramar = async () => {
     try {
       const response = await fetch(
-        `http://localhost:4000/api/solicitudes/reprogramar/${appointmentId}`,
+        process.env.APP_BACK_SSQ + `/solicitudes/reprogramar/${appointmentId}`,
         {
           method: "PATCH",
         }
