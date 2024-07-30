@@ -59,10 +59,13 @@ function App() {
       <Toast />
       {/* Routes */}
       <BrowserRouter>
+
+      <Routes>
+          <Route path="/" element={<IndexPage />} />
+        </Routes>
         <AuthProvider>
           
           <Routes>
-            <Route path="/" element={<IndexPage />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/dashboard" element={<Dashboard />} />

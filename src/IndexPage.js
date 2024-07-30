@@ -1,12 +1,9 @@
 // src/IndexPage.js
-import React, { useContext } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { AuthContext } from './AuthContext';
 import './IndexPage.css';
 
 const IndexPage = () => {
-  const { user } = useContext(AuthContext);
-
   return (
     <div className="index-page">
       <div className="top-bar">
@@ -17,11 +14,7 @@ const IndexPage = () => {
         <div className="content">
           <h1 className="title">Programa de Gestión Quirúrgica</h1>
           <p className="subtitle">Hospital General de Querétaro</p>
-          {user ? (
-            <p>Bienvenido, {user.name}!</p>
-          ) : (
-            <Link to="/login" className="button">Ir</Link>
-          )}
+          <Link to="/login" className="button">Ir</Link>
         </div>
       </div>
     </div>

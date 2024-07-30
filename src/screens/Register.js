@@ -198,17 +198,6 @@ function Register() {
         >
           Registrar
         </button>
-        <div className="mt-4 text-center">
-          <p>
-            ¿Ya tienes una cuenta?{" "}
-            <span
-              className="text-blue-500 cursor-pointer"
-              onClick={() => navigate("/login")}
-            >
-              Inicia sesión
-              </span>
-        </p>
-      </div>
     </form>
   </div>
 </div>

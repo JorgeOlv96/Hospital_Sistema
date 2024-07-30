@@ -127,17 +127,6 @@ return (
                     Iniciar sesión
                 </button>
                 {error && <div className="mt-4 text-red-500">{error}</div>}
-                <div className="mt-4">
-                    <p>
-                        No tienes cuenta?{" "}
-                        <span
-                            onClick={() => navigate("/register")}
-                            className="text-blue-500 cursor-pointer"
-                        >
-                            Registrar usuario
-                        </span>
-                    </p>
-                </div>
             </form>
         </div>
     </div>
