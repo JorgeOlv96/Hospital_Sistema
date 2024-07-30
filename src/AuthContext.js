@@ -15,9 +15,10 @@ const AuthProvider = ({ children }) => {
             const token = localStorage.getItem('token');
             if (token) {
                 try {
-                    const response = await axios.get(process.env.REACT_APP_APP_BACK_SSQ + '/auth/user', {
+                    const response = await axios.get(`${process.env.REACT_APP_APP_BACK_SSQ}/auth/user`, {
                         headers: { Authorization: `Bearer ${token}` }
                     });
+                    
                     setUser(response.data);
                 } catch (error) {
                     console.error('Error checking auth:', error);
