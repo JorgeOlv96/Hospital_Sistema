@@ -76,7 +76,7 @@ export const MenuDatas = [
   },
   {
     title: 'Registro',
-    path: '/register',
+    path: '/Gestionusuarios',
     icon: FaWpforms, // Puedes cambiar este icono por uno más representativo si lo deseas
     viewRole: [5] // Solo accesible para el nivel 5
   },

@@ -48,6 +48,7 @@ import Consultabitacora from './screens/BitacoraEnfermeria/Consultabitacora';
 import Solicitudurgencia from './screens/Urgencias/Solicitudurgencia';
 import Consultaurgencia from './screens/Urgencias/Consultaurgencia';
 import Solicitudesurgentes from './screens/Urgencias/Urgentes';
+import Gestionusuarios from './screens/Gestorusuarios/Gestionusr';
 
 function App() {
   Aos.init();
@@ -65,15 +66,6 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/dashboard" element={<Dashboard />} />
-            {/* Invoce */}
-            <Route path="/invoices" element={<Invoices />} />
-            <Route path="/invoices/create" element={<CreateInvoice />} />
-            <Route path="/invoices/edit/:id" element={<EditInvoice />} />
-            <Route path="/invoices/preview/:id" element={<PreviewInvoice />} />
-            {/* Payments */}
-            <Route path="/payments" element={<Payments />} />
-            <Route path="/payments/edit/:id" element={<EditPayment />} />
-            <Route path="/payments/preview/:id" element={<PreviewPayment />} />
             {/* Patient */}
             <Route path="/patients" element={<Patients />} />
             <Route path="/solicitudes" element={<Solicitudes />} />
@@ -82,14 +74,6 @@ function App() {
             <Route path="/solicitudes/Solicitudesprogramadas" element={<Solicitudesprogramadas />} />
             <Route path="/solicitudes/Solicitudsuspendida" element={<Solicitudessuspendidas />} />
             <Route path="/evaluacion" element={<Evaluacionmedica />} />
-            <Route path="/patients/preview/:id" element={<PatientProfile />} />
-            <Route path="/patients/create" element={<CreatePatient />} />
-            <Route path="/patients/visiting/:id" element={<NewMedicalRecode />} />
-            {/* Doctors */}
-            <Route path="/doctors" element={<Doctors />} />
-            <Route path="/doctors/preview/:id" element={<DoctorProfile />} />
-            {/* Reception */}
-            <Route path="/receptions" element={<Receptions />} />
             {/* Others */}
             <Route path="/appointments" element={<Appointments />} />
             <Route path="/anestesiólogos" element={<Anestesiólogos />} />
@@ -103,6 +87,7 @@ function App() {
             <Route path="/urgencias/Solicitudurgencia" element={<Solicitudurgencia />} />
             <Route path="/urgencias/Consultaurgencia" element={<Consultaurgencia />} />
             <Route path="/urgencias/Urgentes" element={<Solicitudesurgentes />} />
+            <Route path="/gestorusuarios/Gestionusr" element={<Gestionusuarios /> } />
             <Route path="/services" element={<Services />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/ayuda" element={<Ayuda />} />
