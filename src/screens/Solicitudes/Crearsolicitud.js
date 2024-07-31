@@ -520,7 +520,7 @@ function CrearSolicitud() {
               {errors.sexo && <p className="text-red-500">{errors.sexo}</p>}
             </div>
 
-            <div className="w-full" style={{ width: "105%" }}>
+            <div className="w-full" style={{ width: "100%" }}>
               <label
                 htmlFor="id_cirujano"
                 className="block font-semibold text-white mb-3"
