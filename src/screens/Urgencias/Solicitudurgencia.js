@@ -63,7 +63,6 @@ const SolicitudUrgencia = () => {
     fecha_solicitud: obtenerFechaActual(),
     clave_esp: "",
     nombre_especialidad: "",
-    curp: "",
     ap_paterno: "",
     ap_materno: "",
     nombre_paciente: "",
