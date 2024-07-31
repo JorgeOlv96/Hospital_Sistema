@@ -400,15 +400,15 @@ function CrearSolicitud() {
                 {errors.nombre_paciente && <p className="text-red-500">{errors.nombre_paciente}</p>}
               </div>
 
-            <div className="mr-4 w-full">
+              <div className="mr-4" style={{ width: "49%" }}>
               <label
                 htmlFor="no_expediente"
                 className="block font-semibold text-white mb-1"
               >
-                Número de expediente
+                No. de expediente
               </label>
               <input
-               placeholder="Expediente de paciente"
+               placeholder="No. de expediente"
                 type="text"
                 id="no_expediente"
                 name="no_expediente"
@@ -418,7 +418,7 @@ function CrearSolicitud() {
               />
             </div>
 
-            <div className="mr-4" style={{ width: "50%" }}>
+            <div className="mr-4" style={{ width: "41%" }}>
               <label
                 htmlFor="sala_quirofano"
                 className="block font-semibold text-white mb-1"
