@@ -592,6 +592,7 @@ const Consultabitacora = () => {
                   type="text"
                   id="enf_quirirjica"
                   name="enf_quirirjica"
+                  onChange={handleChange}
                   className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full`}
                 />
               </div>
@@ -610,6 +611,7 @@ const Consultabitacora = () => {
                   type="text"
                   id="enf_circulante"
                   name="enf_circulante"
+                  onChange={handleChange}
                   className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full`}
                 />
               </div>

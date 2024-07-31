@@ -327,6 +327,7 @@ const SolicitudUrgencia = () => {
                   type="texte"
                   id="nombre_cirujano"
                   name="nombre_cirujano"
+                  value={formData.nombre_cirujano}
                   onChange={handleInputChange}
                   className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full`}
                 />
@@ -654,7 +655,7 @@ const SolicitudUrgencia = () => {
                   type="text"
                   id="nombre_anestesiologo"
                   value={formData.nombre_anestesiologo}
-                  onChange={handleAnestesioChange}
+                  onChange={handleInputChange}
                   placeholder="Nombre"
                   className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-white`}
                   styles={{
@@ -686,17 +687,19 @@ const SolicitudUrgencia = () => {
 
             <div className="w-full mr-4">
               <label
-                htmlFor="enfermera_quirurgica"
+                htmlFor="enfermera_circulante"
                 className="block font-semibold text-white mb-1"
               >
                 Enf. Quirúrgica:
               </label>
               <div className="relative w-full">
-                <input
+              <input
                   type="text"
-                  id="enf_quirirjica"
-                  name="enf_quirirjica"
-                  placeholder="Enf. Quirúrgica"
+                  id="enf_quirurgica"
+                  name="enf_quirurgica"
+                  placeholder="Enf. enf_quirurgica"
+                  value={formData.enf_quirurgica}
+                  onChange={handleInputChange}
                   className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-white`}
                 />
               </div>
@@ -715,6 +718,8 @@ const SolicitudUrgencia = () => {
                   id="enf_circulante"
                   name="enf_circulante"
                   placeholder="Enf. Circulante"
+                  value={formData.enf_circulante}
+                  onChange={handleInputChange}
                   className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-white`}
                 />
               </div>
