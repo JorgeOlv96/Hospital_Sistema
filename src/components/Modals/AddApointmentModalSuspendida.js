@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import axios from "axios";
 import Modal from "./Modal";
 
 function AddApointmentModalSuspendida({
@@ -15,7 +16,7 @@ function AddApointmentModalSuspendida({
   });
   const [loading, setLoading] = useState(true);
   const modalRef = useRef(null);
-
+  const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
   const handleChange = (e) => {
     const { name, value } = e.target;
     setPatientData((prevData) => ({
@@ -42,8 +43,7 @@ function AddApointmentModalSuspendida({
     if (isOpen && appointmentId) {
       const fetchAppointmentData = async () => {
         try {
-          const response = await fetch(
-            `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/${appointmentId}`
+          const response = await axios.get(`${baseURL}/solicitudes/${appointmentId}`
           );
           if (!response.ok) {
             throw new Error("Network response was not ok");
@@ -76,8 +76,7 @@ function AddApointmentModalSuspendida({
         nombre_anestesiologo,
       });
 
-      const response = await fetch(
-        `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/programar/${appointmentId}`,
+      const response = await axios.get(`${baseURL}/solicitudes/programar/${appointmentId}`,
         {
           method: "PUT",
           body: JSON.stringify({
@@ -105,8 +104,7 @@ function AddApointmentModalSuspendida({
 
   const handleReprogramar = async () => {
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/reprogramar/${appointmentId}`,
+      const response = await axios.get(`${baseURL}/solicitudes/reprogramar/${appointmentId}`,
         {
           method: "PATCH",
         }

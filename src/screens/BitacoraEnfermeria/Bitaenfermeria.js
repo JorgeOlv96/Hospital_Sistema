@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../../Layout";
+import axios from "axios";
 import Consultabitacora from "../../screens/BitacoraEnfermeria/Consultabitacora";
 import { useNavigate, Link } from "react-router-dom";
 
@@ -17,6 +18,7 @@ function Bitacoraenfermeria() {
   const [sortOrder, setSortOrder] = useState("asc");
   const [page, setPage] = useState(1);
   const itemsPerPage = 10;
+  const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
 
   const handleViewClick = (appointment) => {
     if (appointment.id_solicitud) {
@@ -33,8 +35,7 @@ function Bitacoraenfermeria() {
 
   const fetchPendingAppointments = async () => {
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/programadas`
+      const response = await axios.get(`${baseURL}/solicitudes/programadas`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");

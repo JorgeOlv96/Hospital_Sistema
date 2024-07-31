@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../../Layout";
+import axios from "axios";
 import AddAppointmentModalPending from "../../components/Modals/AddApointmentModalPending";
 import { Link } from "react-router-dom";
 
@@ -16,6 +17,7 @@ function ProgramarSolicitud() {
   const [sortOrder, setSortOrder] = useState('asc');
   const [page, setPage] = useState(1);
   const itemsPerPage = 10;
+  const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
 
   useEffect(() => {
     fetchPendingAppointments();
@@ -23,8 +25,7 @@ function ProgramarSolicitud() {
 
   const fetchPendingAppointments = async () => {
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/preprogramadas`
+      const response = await axios.get(`${baseURL}/solicitudes/preprogramadas`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");

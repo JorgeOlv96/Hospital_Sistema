@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 import Layout from "../../Layout";
 import Modal from "../../components/Modals/Modal";
 import { MultiSelect } from "react-multi-select-component";
@@ -88,6 +89,7 @@ const SolicitudUrgencia = () => {
     tipo_anestesia: [],
     nuevos_procedimientos_extra: [],
   });
+  const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
 
   // Función para obtener la fecha actual en el formato adecuado (YYYY-MM-DD)
   function obtenerFechaActual() {
@@ -100,8 +102,7 @@ const SolicitudUrgencia = () => {
 
   const fetchActiveSurgeons = async (inputValue) => {
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_APP_BACK_SSQ}/cirujanos/activos?search=${inputValue}`
+      const response = await axios.get(`${baseURL}/cirujanos/activos?search=${inputValue}`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -119,8 +120,7 @@ const SolicitudUrgencia = () => {
 
   const fetchActiveNurses = async (inputValue) => {
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_APP_BACK_SSQ}/enfermeras/activos?search=${inputValue}`
+      const response = await axios.get(`${baseURL}/enfermeras/activos?search=${inputValue}`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -255,8 +255,7 @@ const SolicitudUrgencia = () => {
     if (validateForm()) {
       try {
         console.log("Datos enviados:", formData); // <-- Aquí se agregaron los datos enviados
-        const response = await fetch(
-          `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/urgencias`,
+        const response = await axios.get(`${baseURL}/solicitudes/urgencias`,
           {
             method: "POST",
             headers: {

@@ -3,6 +3,7 @@ import Layout from "../Layout";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "moment/locale/es";
+import axios from "axios";
 import { BiChevronLeft, BiChevronRight, BiTime } from "react-icons/bi";
 import { HiOutlineViewGrid } from "react-icons/hi";
 import { HiOutlineCalendarDays } from "react-icons/hi2";
@@ -13,6 +14,7 @@ import { FaHospital } from "react-icons/fa";
 
 moment.locale("es");
 
+const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
 const CustomToolbar = ({ date, view, onView, onNavigate, onPrint }) => {
   const goToBack = () => {
     const newDate = moment(date)
@@ -136,8 +138,7 @@ function Appointments() {
 
   const fetchAppointments = async () => {
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/programadas`
+      const response = await axios.get(`${baseURL}/solicitudes/programadas`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -220,8 +221,7 @@ function Appointments() {
 
     try {
       // Fetch de las solicitudes programadas
-      const solicitudesResponse = await fetch(
-        `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/programadas`
+      const solicitudesResponse = await axios.get(`${baseURL}/solicitudes/programadas`
       );
       if (!solicitudesResponse.ok) {
         throw new Error("Network response for solicitudes was not ok");
@@ -230,8 +230,7 @@ function Appointments() {
       console.log("Solicitudes Data:", solicitudesData);
 
       // Fetch de los anestesiólogos
-      const anesthesiologistsResponse = await fetch(
-        `${process.env.REACT_APP_APP_BACK_SSQ}/anestesio/anestesiologos`
+      const anesthesiologistsResponse = await axios.get(`${baseURL}/anestesio/anestesiologos`
       );
       if (!anesthesiologistsResponse.ok) {
         throw new Error("Network response for anesthesiologists was not ok");

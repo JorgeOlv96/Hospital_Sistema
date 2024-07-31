@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 import Layout from "../../Layout";
 import { useNavigate } from "react-router-dom";
 import ProcedureSelect from "./ProcedureSelect";
@@ -46,6 +47,7 @@ function CrearSolicitud() {
     Object.entries(especialidadToClave).map(([key, value]) => [value, key])
   );
 
+  const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
   const [errors, setErrors] = useState({});
   const [nombre_especialidad, setNombreEspecialidad] = useState("");
   const [clave_esp, setClaveEspecialidad] = useState("");
@@ -87,7 +89,7 @@ function CrearSolicitud() {
   useEffect(() => {
     const fetchSolicitudes = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes`);
+        const response = await axios.get(`${baseURL}/solicitudes`);
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
@@ -101,8 +103,7 @@ function CrearSolicitud() {
 
   const fetchActiveSurgeons = async (inputValue) => {
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_APP_BACK_SSQ}/cirujanos/activos?search=${inputValue}`
+      const response = await axios.get(`${baseURL}/cirujanos/activos?search=${inputValue}`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -269,7 +270,7 @@ function CrearSolicitud() {
     if (validateForm()) {
       try {
         // Enviar la solicitud a la API
-        const response = await fetch(`${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes`, {
+        const response = await axios.get(`${baseURL}/solicitudes`, {
           method: selectedSolicitud ? "PUT" : "POST",
           headers: {
             "Content-Type": "application/json",

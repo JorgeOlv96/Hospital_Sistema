@@ -9,8 +9,11 @@ import { HiOutlineCalendarDays } from "react-icons/hi2";
 import { Link } from "react-router-dom";
 import OperatingRoomSchedule from "../components/OperatingRoomSchedule";
 import { FaHospital } from "react-icons/fa";
+import axios from "axios";
 
 moment.locale("es");
+
+const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
 
 const CustomToolbar = ({ date, view, onView, onNavigate }) => {
   const goToBack = () => {
@@ -124,7 +127,7 @@ function Anesthesiologos() {
 
   const fetchAnesthesiologists = async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_APP_BACK_SSQ}/anestesio/anestesiologos`);
+      const response = await axios.get(`${baseURL}/anestesio/anestesiologos`);
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }

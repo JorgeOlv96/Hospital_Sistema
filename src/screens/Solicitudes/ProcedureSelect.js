@@ -1,13 +1,14 @@
 import React, { useState } from "react";
+import axios from "axios";
 import AsyncSelect from "react-select/async";
 import { FixedSizeList } from "react-window";
 
 const ProcedureSelect = ({ onChange }) => {
   const [selectedOption, setSelectedOption] = useState(null);
+  const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
 
   const loadOptions = (inputValue, callback) => {
-    fetch(
-      `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/procedimientos?q=${inputValue}`
+    axios.get(`${baseURL}/solicitudes/procedimientos?q=${inputValue}`
     )
       .then((res) => res.json())
       .then((data) => {

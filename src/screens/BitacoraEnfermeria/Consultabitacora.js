@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 import Layout from "../../Layout";
 import Modal from "../../components/Modals/Modal";
 import { MultiSelect } from "react-multi-select-component";
@@ -36,12 +37,12 @@ const Consultabitacora = () => {
   const [error, setError] = useState("");
   const [procedimientoExtra, setProcedimientoExtra] = useState("");
   const [selected, setSelected] = useState([]);
+  const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
 
   useEffect(() => {
     const fetchAppointmentData = async () => {
       try {
-        const response = await fetch(
-          `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/${id}`
+        const response = await axios.get(`${baseURL}/solicitudes/${id}`
         );
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -65,8 +66,7 @@ const Consultabitacora = () => {
 
   const fetchSuspendDetailOptions = async (category) => {
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/motivos-suspension?category=${category}`
+      const response = await axios.get(`${baseURL}/solicitudes/motivos-suspension?category=${category}`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -81,8 +81,7 @@ const Consultabitacora = () => {
 
   const fetchActiveNurses = async (inputValue) => {
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_APP_BACK_SSQ}/enfermeras/activos?search=${inputValue}`
+      const response = await axios.get(`${baseURL}/enfermeras/activos?search=${inputValue}`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -122,8 +121,7 @@ const Consultabitacora = () => {
       return;
     }
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/suspender/${id}`,
+      const response = await axios.get(`${baseURL}/solicitudes/suspender/${id}`,
         {
           method: "PATCH",
           body: JSON.stringify({
@@ -161,8 +159,7 @@ const Consultabitacora = () => {
         tipo_anestesia,
         ht_anestesia,
       } = patientData;
-      const response = await fetch(
-        `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/bitacoraenf/${id}`,
+      const response = await axios.get(`${baseURL}/solicitudes/bitacoraenf/${id}`,
         {
           method: "PATCH",
           body: JSON.stringify({

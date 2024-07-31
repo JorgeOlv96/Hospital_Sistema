@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import Layout from "../Layout";
 import AddAppointmentModalEvaluar from "../components/Modals/AddApointmentModalEvaluar";
 import { Link } from "react-router-dom";
+import axios from "axios";
 import { AuthContext } from "../AuthContext";
 
 function Evaluacion() {
@@ -18,6 +19,7 @@ function Evaluacion() {
   const [page, setPage] = useState(1);
   const itemsPerPage = 10;
   const { user } = useContext(AuthContext);
+  const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
 
   useEffect(() => {
     fetchPendingAppointments();
@@ -25,8 +27,7 @@ function Evaluacion() {
 
   const fetchPendingAppointments = async () => {
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/pendientes`
+      const response = await axios.get(`${baseURL}/solicitudes/pendientes`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");

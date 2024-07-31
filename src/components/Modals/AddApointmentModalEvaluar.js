@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import axios from "axios";
 import Modal from "./Modal";
 
 function AddAppointmentModalEvaluar({
@@ -37,13 +38,13 @@ function AddAppointmentModalEvaluar({
       }
     }
   };
+  const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
 
   useEffect(() => {
     if (isOpen && appointmentId) {
       const fetchAppointmentData = async () => {
         try {
-          const response = await fetch(
-            `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/${appointmentId}`
+          const response = await axios.get(`${baseURL}/solicitudes/${appointmentId}`
           );
           if (!response.ok) {
             throw new Error("Network response was not ok");
@@ -72,8 +73,7 @@ function AddAppointmentModalEvaluar({
         nombre_anestesiologo,
       });
 
-      const response = await fetch(
-        `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/programar/${appointmentId}`,
+      const response = await axios.get(`${baseURL}/solicitudes/programar/${appointmentId}`,
         {
           method: "PUT",
           body: JSON.stringify({
@@ -101,8 +101,7 @@ function AddAppointmentModalEvaluar({
 
   const handlePreprogramar = async () => {
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/preprogramar/${appointmentId}`,
+      const response = await axios.get(`${baseURL}/solicitudes/preprogramar/${appointmentId}`,
         {
           method: "PUT",
         }

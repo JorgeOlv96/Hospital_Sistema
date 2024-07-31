@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import Layout from "../../Layout";
 import AsyncSelect from "react-select/async";
+import axios from "axios";
 import { Link } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -24,11 +25,11 @@ function Programaranestesiologo() {
   const [searchField, setSearchField] = useState("nombre_paciente");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
 
   const fetchActiveAnesthesiologists = async (inputValue) => {
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_APP_BACK_SSQ}/anestesiologos/activos?search=${inputValue}`
+      const response = await axios.get(`${baseURL}/anestesiologos/activos?search=${inputValue}`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -108,8 +109,7 @@ function Programaranestesiologo() {
         return;
       }
 
-      const response = await fetch(
-        `${process.env.REACT_APP_APP_BACK_SSQ}/anestesio/anestesiologos`,
+      const response = await axios.get(`${baseURL}/anestesio/anestesiologos`,
         {
           method: "POST",
           headers: {
@@ -152,8 +152,7 @@ function Programaranestesiologo() {
       )
     ) {
       try {
-        const response = await fetch(
-          `${process.env.REACT_APP_APP_BACK_SSQ}/anestesio/anestesiologos/${id}`,
+        const response = await axios.get(`${baseURL}/anestesio/anestesiologos/${id}`,
           {
             method: "DELETE",
           }
@@ -177,8 +176,7 @@ function Programaranestesiologo() {
 
   const fetchAnesthesiologists = async () => {
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_APP_BACK_SSQ}/anestesio/anestesiologos`
+      const response = await axios.get(`${baseURL}/anestesio/anestesiologos`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");

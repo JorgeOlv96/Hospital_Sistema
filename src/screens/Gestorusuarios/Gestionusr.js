@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import axios from "axios";
 import Layout from "../../Layout";
 
 function Gestionusuarios() {
@@ -9,12 +10,13 @@ function Gestionusuarios() {
     const [success, setSuccess] = useState("");
     const [showModal, setShowModal] = useState(false);
     const [userToEdit, setUserToEdit] = useState(null);
+    const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
 
     // Fetch usuarios on component mount
     useEffect(() => {
         const fetchUsuarios = async () => {
             try {
-                const response = await fetch(`${process.env.REACT_APP_APP_BACK_SSQ}/users`);
+                const response = await axios.get(`${baseURL}/users`);
                 if (!response.ok) {
                     const data = await response.json();
                     setError(data.message);
@@ -40,7 +42,7 @@ function Gestionusuarios() {
     // Delete user
     const handleDelete = async (id) => {
         try {
-            const response = await fetch(`${process.env.REACT_APP_APP_BACK_SSQ}/users/${id}`, {
+            const response = await axios.get(`${baseURL}/users/${id}`, {
                 method: "DELETE",
             });
             if (!response.ok) {
@@ -68,7 +70,7 @@ function Gestionusuarios() {
             setSuccess(""); // Reset success message
             setError("");   // Reset error message
     
-            const response = await fetch(`${process.env.REACT_APP_APP_BACK_SSQ}/users/${id}`, {
+            const response = await axios.get(`${baseURL}/users/${id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

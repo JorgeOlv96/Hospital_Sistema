@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from 'axios';
 
 function Register() {
   const navigate = useNavigate();
@@ -12,6 +13,7 @@ function Register() {
   const [cedula, setCedula] = useState("");
   const [error, setError] = useState("");
   const [errors, setErrors] = useState({});
+  const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000'; // Define base URL
 
   const validateForm = () => {
     const newErrors = {};
@@ -46,28 +48,20 @@ function Register() {
     });
 
     try {
-      const response = await fetch(`${process.env.REACT_APP_APP_BACK_SSQ}/auth/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          nombre,
-          ap_paterno: apPaterno,
-          ap_materno: apMaterno,
-          email,
-          password,
-          nivel_usuario: nivelUsuario,
-          cedula,
-        }),
+      const response = await axios.post(`${baseURL}/auth/register`, {
+        nombre,
+        ap_paterno: apPaterno,
+        ap_materno: apMaterno,
+        email,
+        password,
+        nivel_usuario: nivelUsuario,
+        cedula,
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
+      if (response.status === 201) {
         navigate("/login");
       } else {
-        setError(data.message);
+        setError(response.data.message);
       }
     } catch (err) {
       console.error("Error en el registro:", err);
@@ -77,130 +71,130 @@ function Register() {
 
   return (
     <div
-  className="w-full h-screen flex-colo relative"
-  style={{
-    backgroundImage: "url(/images/hospital.jpeg)",
-    backgroundSize: "cover",
-    backgroundPosition: "center"
-  }}
->
-  {/* Overlay */}
-  <div
-    className="absolute top-0 left-0 w-full h-full"
-    style={{
-      background: "rgba(146, 146, 146, 0.7)",
-      zIndex: 1, // Asegúrate de que el overlay esté detrás del contenido
-    }}
-  />
-
-  {/* Contenido */}
-  <div className="relative z-10 flex flex-col items-center justify-center w-full h-full">
-    <div className="flex justify-center mb-6">
-      <img
-        src="/images/logologin.png"
-        alt="logo"
-        className="w-90 h-20 object-contain"
-      />
-    </div>
-
-    <form
-      className="w-3/4 sm:w-1/2 md:w-1/4 p-6 rounded-2xl mx-auto bg-white flex-colo"
-      onSubmit={handleRegister}
+      className="w-full h-screen flex-colo relative"
+      style={{
+        backgroundImage: "url(/images/hospital.jpeg)",
+        backgroundSize: "cover",
+        backgroundPosition: "center"
+      }}
     >
-      {error && <p className="text-red-500">{error}</p>}
-      <div className="flex flex-col gap-4 w-full mb-6">
-        <input
-          type="text"
-          placeholder="Nombre(s)"
-          value={nombre}
-          onChange={(e) => setNombre(e.target.value)}
-          className={`w-full p-3 border ${
-            errors.nombre ? "border-red-500" : "border-gray-300"
-          } rounded-lg`}
-        />
-        {errors.nombre && (
-          <span className="text-red-500">{errors.nombre}</span>
-          )}
-          <input
-            type="text"
-            placeholder="Apellido Paterno"
-            value={apPaterno}
-            onChange={(e) => setApPaterno(e.target.value)}
-            className={`w-full p-3 border ${
-              errors.apPaterno ? "border-red-500" : "border-gray-300"
-            } rounded-lg`}
+      {/* Overlay */}
+      <div
+        className="absolute top-0 left-0 w-full h-full"
+        style={{
+          background: "rgba(146, 146, 146, 0.7)",
+          zIndex: 1, // Asegúrate de que el overlay esté detrás del contenido
+        }}
+      />
+
+      {/* Contenido */}
+      <div className="relative z-10 flex flex-col items-center justify-center w-full h-full">
+        <div className="flex justify-center mb-6">
+          <img
+            src="/images/logologin.png"
+            alt="logo"
+            className="w-90 h-20 object-contain"
           />
-          {errors.apPaterno && (
-            <span className="text-red-500">{errors.apPaterno}</span>
-          )}
-          <input
-            type="text"
-            placeholder="Apellido Materno"
-            value={apMaterno}
-            onChange={(e) => setApMaterno(e.target.value)}
-            className={`w-full p-3 border ${
-              errors.apMaterno ? "border-red-500" : "border-gray-300"
-            } rounded-lg`}
-          />
-          {errors.apMaterno && (
-            <span className="text-red-500">{errors.apMaterno}</span>
-          )}
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className={`w-full p-3 border ${
-              errors.email ? "border-red-500" : "border-gray-300"
-            } rounded-lg`}
-          />
-          {errors.email && <span className="text-red-500">{errors.email}</span>}
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className={`w-full p-3 border ${
-              errors.password ? "border-red-500" : "border-gray-300"
-            } rounded-lg`}
-          />
-          {errors.password && (
-            <span className="text-red-500">{errors.password}</span>
-          )}
-          <input
-            type="text"
-            placeholder="Nivel de Usuario"
-            value={nivelUsuario}
-            onChange={(e) => setNivelUsuario(e.target.value)}
-            className={`w-full p-3 border ${
-              errors.nivelUsuario ? "border-red-500" : "border-gray-300"
-            } rounded-lg`}
-          />
-          {errors.nivelUsuario && (
-            <span className="text-red-500">{errors.nivelUsuario}</span>
-          )}
-          <input
-            type="text"
-            placeholder="Cedula"
-            value={cedula}
-            onChange={(e) => setCedula(e.target.value)}
-            className={`w-full p-3 border ${
-              errors.cedula ? "border-red-500" : "border-gray-300"
-            } rounded-lg`}
-          />
-          {errors.cedula && (
-            <span className="text-red-500">{errors.cedula}</span>
-          )}
         </div>
-        <button
-          type="submit"
-          className="w-full p-3 bg-[#001B58] text-white rounded-lg"
+
+        <form
+          className="w-3/4 sm:w-1/2 md:w-1/4 p-6 rounded-2xl mx-auto bg-white flex-colo"
+          onSubmit={handleRegister}
         >
-          Registrar
-        </button>
-    </form>
-  </div>
-</div>
+          {error && <p className="text-red-500">{error}</p>}
+          <div className="flex flex-col gap-4 w-full mb-6">
+            <input
+              type="text"
+              placeholder="Nombre(s)"
+              value={nombre}
+              onChange={(e) => setNombre(e.target.value)}
+              className={`w-full p-3 border ${
+                errors.nombre ? "border-red-500" : "border-gray-300"
+              } rounded-lg`}
+            />
+            {errors.nombre && (
+              <span className="text-red-500">{errors.nombre}</span>
+            )}
+            <input
+              type="text"
+              placeholder="Apellido Paterno"
+              value={apPaterno}
+              onChange={(e) => setApPaterno(e.target.value)}
+              className={`w-full p-3 border ${
+                errors.apPaterno ? "border-red-500" : "border-gray-300"
+              } rounded-lg`}
+            />
+            {errors.apPaterno && (
+              <span className="text-red-500">{errors.apPaterno}</span>
+            )}
+            <input
+              type="text"
+              placeholder="Apellido Materno"
+              value={apMaterno}
+              onChange={(e) => setApMaterno(e.target.value)}
+              className={`w-full p-3 border ${
+                errors.apMaterno ? "border-red-500" : "border-gray-300"
+              } rounded-lg`}
+            />
+            {errors.apMaterno && (
+              <span className="text-red-500">{errors.apMaterno}</span>
+            )}
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className={`w-full p-3 border ${
+                errors.email ? "border-red-500" : "border-gray-300"
+              } rounded-lg`}
+            />
+            {errors.email && <span className="text-red-500">{errors.email}</span>}
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className={`w-full p-3 border ${
+                errors.password ? "border-red-500" : "border-gray-300"
+              } rounded-lg`}
+            />
+            {errors.password && (
+              <span className="text-red-500">{errors.password}</span>
+            )}
+            <input
+              type="text"
+              placeholder="Nivel de Usuario"
+              value={nivelUsuario}
+              onChange={(e) => setNivelUsuario(e.target.value)}
+              className={`w-full p-3 border ${
+                errors.nivelUsuario ? "border-red-500" : "border-gray-300"
+              } rounded-lg`}
+            />
+            {errors.nivelUsuario && (
+              <span className="text-red-500">{errors.nivelUsuario}</span>
+            )}
+            <input
+              type="text"
+              placeholder="Cédula"
+              value={cedula}
+              onChange={(e) => setCedula(e.target.value)}
+              className={`w-full p-3 border ${
+                errors.cedula ? "border-red-500" : "border-gray-300"
+              } rounded-lg`}
+            />
+            {errors.cedula && (
+              <span className="text-red-500">{errors.cedula}</span>
+            )}
+          </div>
+          <button
+            type="submit"
+            className="w-full p-3 bg-[#001B58] text-white rounded-lg"
+          >
+            Registrar
+          </button>
+        </form>
+      </div>
+    </div>
   );
 }
 
