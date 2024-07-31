@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import axios from "axios";
 import Modal from "./Modal";
 
 function AddAppointmentModalEnfermeria({ closeModal, isOpen, appointmentId }) {
@@ -13,13 +14,13 @@ function AddAppointmentModalEnfermeria({ closeModal, isOpen, appointmentId }) {
   });
   const [loading, setLoading] = useState(true);
   const modalRef = useRef(null);
+  const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
 
   useEffect(() => {
     if (isOpen && appointmentId) {
       const fetchAppointmentData = async () => {
         try {
-          const response = await fetch(
-            `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/${appointmentId}`
+          const response = await axios.get(`${baseURL}/solicitudes/${appointmentId}`
           );
           if (!response.ok) {
             throw new Error("Network response was not ok");
@@ -74,8 +75,7 @@ function AddAppointmentModalEnfermeria({ closeModal, isOpen, appointmentId }) {
 
   const handleSave = async () => {
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/enfermeria/${appointmentId}`,
+      const response = await axios.get(`${baseURL}/solicitudes/enfermeria/${appointmentId}`,
         {
           method: "PATCH",
           headers: {

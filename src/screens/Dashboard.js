@@ -45,13 +45,14 @@ function Dashboard() {
   const [isLoading, setIsLoading] = useState(true);
   const [dashboardCards, setDashboardCards] = useState(initialDashboardCards);
   const { user } = useContext(AuthContext);
+  const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
 
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          `${process.env.REACT_APP_APP_BACK_SSQ}/auth/user`,
+          `${baseURL}/api/auth/user`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -74,11 +75,11 @@ function Dashboard() {
     const fetchSolicitudesCount = async () => {
       try {
         const endpoints = {
-          totales: `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes`,
+          totales: `${baseURL}/api/solicitudes`,
           preprogramadas:
-            `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/preprogramadas`,
-          realizadas: `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/realizadas`,
-          suspendidas: `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/suspendidas`,
+            `${baseURL}/api/solicitudes/preprogramadas`,
+          realizadas: `${baseURL}/api/solicitudes/realizadas`,
+          suspendidas: `${baseURL}/api/solicitudes/suspendidas`,
         };
 
         const [

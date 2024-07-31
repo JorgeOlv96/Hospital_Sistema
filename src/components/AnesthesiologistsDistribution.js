@@ -4,11 +4,12 @@ import axios from 'axios';
 
 function AnesthesiologistsDistribution() {
   const [data, setData] = useState({ labels: [], values: [] });
+  const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
 
   useEffect(() => {
     const fetchAnesthesiologistsDistribution = async () => {
       try {
-        const response = await axios.get(`${process.env.REACT_APP_APP_BACK_SSQ}/anesthesiologists/distribution`);
+        const response = await axios.get(`${baseURL}/anesthesiologists/distribution`);
         const distribution = response.data; // Assume [{ specialty: '...', count: ... }, ...]
 
         setData({

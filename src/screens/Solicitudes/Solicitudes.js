@@ -20,11 +20,12 @@ function Solicitudes() {
   const [endDate, setEndDate] = useState("");
   const [view, setView] = useState("table"); // State to toggle view
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
 
   useEffect(() => {
     const fetchSolicitudes = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes`);
+        const response = await fetch(`${baseURL}/solicitudes`);
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
@@ -60,7 +61,7 @@ function Solicitudes() {
   const handleDeleteAppointment = async (appointmentId) => {
     try {
       const response = await fetch(
-        `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/${appointmentId}`,
+        `${baseURL}/solicitudes/${appointmentId}`,
         {
           method: "DELETE",
         }
@@ -129,7 +130,7 @@ function Solicitudes() {
     try {
       // Fetch de las solicitudes tentativas
       const solicitudesResponse = await fetch(
-        `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes`
+        `${baseURL}/solicitudes`
       );
       if (!solicitudesResponse.ok) {
         throw new Error("Network response for solicitudes was not ok");
@@ -139,7 +140,7 @@ function Solicitudes() {
 
       // Fetch de los anestesiólogos
       const anesthesiologistsResponse = await fetch(
-        `${process.env.REACT_APP_APP_BACK_SSQ}/anestesio/anestesiologos`
+        `${baseURL}/anestesio/anestesiologos`
       );
       if (!anesthesiologistsResponse.ok) {
         throw new Error("Network response for anesthesiologists was not ok");

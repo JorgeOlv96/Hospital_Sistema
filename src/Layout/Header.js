@@ -16,6 +16,7 @@ function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [userName, setUserName] = useState("Nombre no disponible");
   const [isLoading, setIsLoading] = useState(true);
+  const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -23,7 +24,7 @@ function Header() {
         const token = localStorage.getItem("token");
         if (token) {
           const response = await axios.get(
-            `${process.env.REACT_APP_APP_BACK_SSQ}/auth/user`,
+            `${baseURL}/api/auth/user`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,

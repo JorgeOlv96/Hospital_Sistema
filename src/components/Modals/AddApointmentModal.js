@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Modal from './Modal';
+import axios from 'axios';
 import PatientMedicineServiceModal from './PatientMedicineServiceModal';
 
 function AddAppointmentModal({ closeModal, isOpen, appointmentId, onDeleteAppointment }) {
@@ -7,12 +8,13 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentId, onDeleteAppoin
   const [patientData, setPatientData] = useState({});
   const [loading, setLoading] = useState(true);
   const modalRef = useRef(null);
+  const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
 
   useEffect(() => {
     if (isOpen && appointmentId) {
       const fetchAppointmentData = async () => {
         try {
-          const response = await fetch(`${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/${appointmentId}`);
+          const response = await axios.get(`${baseURL}/solicitudes/${appointmentId}`);
           if (!response.ok) {
             throw new Error('Network response was not ok');
           }
@@ -31,7 +33,7 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentId, onDeleteAppoin
 
   const handleDelete = async () => {
     try {
-      const response = await fetch(`${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/${appointmentId}`, {
+      const response = await axios.get(`${baseURL}/solicitudes/${appointmentId}`, {
         method: 'DELETE',
       });
       if (!response.ok) {

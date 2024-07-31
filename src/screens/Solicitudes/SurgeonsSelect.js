@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import axios from 'axios';
 import AsyncSelect from 'react-select/async';
 import debounce from 'lodash/debounce'; // Importa debounce desde lodash
 
@@ -7,9 +8,10 @@ const SurgeonSelect = ({ onChange }) => {
   const [selectedOption, setSelectedOption] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
 
   const loadOptions = (inputValue, callback) => {
-    fetch(`${process.env.REACT_APP_APP_BACK_SSQ}/cirujanos/activos?q=${inputValue}`)
+    axios.get(`${baseURL}/cirujanos/activos?q=${inputValue}`)
       .then(res => res.json())
       .then(data => {
         const options = data.map(surgeon => ({

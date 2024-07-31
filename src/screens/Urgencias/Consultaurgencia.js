@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import Layout from "../../Layout";
+import axios from "axios";
 import Modal from "../../components/Modals/Modal";
 import { MultiSelect } from "react-multi-select-component";
 import AsyncSelect from "react-select/async";
@@ -32,12 +33,12 @@ const Consultaurgencia = () => {
   const [error, setError] = useState("");
   const [procedimientoExtra, setProcedimientoExtra] = useState("");
   const [selected, setSelected] = useState([]);
+  const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
 
   useEffect(() => {
     const fetchAppointmentData = async () => {
       try {
-        const response = await fetch(
-          `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/geturgencias${id}`
+        const response = await axios.get(`${baseURL}/solicitudes/geturgencias${id}`
         );
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -61,8 +62,7 @@ const Consultaurgencia = () => {
 
   const fetchActiveNurses = async (inputValue) => {
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_APP_BACK_SSQ}/enfermeras/activos?search=${inputValue}`
+      const response = await axios.get(`${baseURL}/enfermeras/activos?search=${inputValue}`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");

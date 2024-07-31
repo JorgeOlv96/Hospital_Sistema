@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import axios from "axios";
 import Modal from "./Modal";
 
 function AddAppointmentModalProgramado({
@@ -20,6 +21,7 @@ function AddAppointmentModalProgramado({
   const [suspendDetailOptions, setSuspendDetailOptions] = useState([]);
   const [error, setError] = useState("");
   const modalRef = useRef(null);
+  const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -46,8 +48,7 @@ function AddAppointmentModalProgramado({
     if (isOpen && appointmentId) {
       const fetchAppointmentData = async () => {
         try {
-          const response = await fetch(
-            `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/${appointmentId}`
+          const response = await axios.get(`${baseURL}/solicitudes/${appointmentId}`
           );
           if (!response.ok) {
             throw new Error("Network response was not ok");
@@ -67,8 +68,7 @@ function AddAppointmentModalProgramado({
 
   const fetchSuspendDetailOptions = async (category) => {
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/motivos-suspension?category=${category}`
+      const response = await axios.get(`${baseURL}/solicitudes/motivos-suspension?category=${category}`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -104,8 +104,7 @@ function AddAppointmentModalProgramado({
         sala_quirofano,
       } = patientData;
 
-      const response = await fetch(
-        `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/actualizar/${appointmentId}`,
+      const response = await axios.get(`${baseURL}/solicitudes/actualizar/${appointmentId}`,
         {
           method: "PATCH",
           body: JSON.stringify({
@@ -142,8 +141,7 @@ function AddAppointmentModalProgramado({
       return;
     }
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_APP_BACK_SSQ}/solicitudes/suspender/${appointmentId}`,
+      const response = await axios.get(`${baseURL}/solicitudes/suspender/${appointmentId}`,
         {
           method: "PATCH",
           body: JSON.stringify({
