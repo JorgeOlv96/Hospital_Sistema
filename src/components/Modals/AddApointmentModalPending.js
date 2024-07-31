@@ -55,7 +55,7 @@ function AddAppointmentModalPending({
     if (!fecha_programada || !turno || !sala_quirofano) return;
 
     try {
-      const response = await axios.get(`${baseURL}/anestesio/anestesiologo?fecha_programada=${fecha_programada}&turno=${turno}&sala_quirofano=${sala_quirofano}`
+      const response = await fetch(`${baseURL}/api/anestesio/anestesiologo?fecha_programada=${fecha_programada}&turno=${turno}&sala_quirofano=${sala_quirofano}`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -74,7 +74,7 @@ function AddAppointmentModalPending({
     if (isOpen && appointmentId) {
       const fetchAppointmentData = async () => {
         try {
-          const response = await axios.get(`${baseURL}/solicitudes/${appointmentId}`
+          const response = await fetch(`${baseURL}/api/solicitudes/${appointmentId}`
           );
           if (!response.ok) {
             throw new Error("Network response was not ok");
@@ -100,7 +100,7 @@ function AddAppointmentModalPending({
         turno,
         nombre_anestesiologo,
       } = patientData;
-      const response = await axios.get(`${baseURL}/api/solicitudes/programar/${appointmentId}`,
+      const response = await fetch(`${baseURL}/api/solicitudes/programar/${appointmentId}`,
         {
           method: "PUT",
           body: JSON.stringify({
@@ -127,7 +127,7 @@ function AddAppointmentModalPending({
 
   const handleDelete = async () => {
     try {
-      const response = await axios.get(`${baseURL}/solicitudes/${appointmentId}`,
+      const response = await fetch(`${baseURL}/api/solicitudes/${appointmentId}`,
         {
           method: "DELETE",
         }

@@ -25,12 +25,11 @@ function Solicitudes() {
   useEffect(() => {
     const fetchSolicitudes = async () => {
       try {
-        const response = await fetch(`${baseURL}/solicitudes`);
+        const response = await fetch(`${baseURL}/api/solicitudes`);
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
         const data = await response.json();
-        console.log("Fetched solicitudes:", data); // Agregar este log
         setSolicitudes(data);
       } catch (error) {
         console.error("Error fetching solicitudes:", error);
@@ -61,7 +60,7 @@ function Solicitudes() {
   const handleDeleteAppointment = async (appointmentId) => {
     try {
       const response = await fetch(
-        `${baseURL}/solicitudes/${appointmentId}`,
+        `${baseURL}/api/solicitudes/${appointmentId}`,
         {
           method: "DELETE",
         }
@@ -130,7 +129,7 @@ function Solicitudes() {
     try {
       // Fetch de las solicitudes tentativas
       const solicitudesResponse = await fetch(
-        `${baseURL}/solicitudes`
+        `${baseURL}/api/solicitudes`
       );
       if (!solicitudesResponse.ok) {
         throw new Error("Network response for solicitudes was not ok");
@@ -140,7 +139,7 @@ function Solicitudes() {
 
       // Fetch de los anestesiólogos
       const anesthesiologistsResponse = await fetch(
-        `${baseURL}/anestesio/anestesiologos`
+        `${baseURL}/api/anestesio/anestesiologos`
       );
       if (!anesthesiologistsResponse.ok) {
         throw new Error("Network response for anesthesiologists was not ok");

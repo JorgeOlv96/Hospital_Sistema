@@ -48,7 +48,7 @@ function Register() {
     });
 
     try {
-      const response = await axios.post(`${baseURL}/auth/register`, {
+      const response = await axios.post(`${baseURL}/api/auth/register`, {
         nombre,
         ap_paterno: apPaterno,
         ap_materno: apMaterno,

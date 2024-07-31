@@ -43,7 +43,7 @@ function AddApointmentModalSuspendida({
     if (isOpen && appointmentId) {
       const fetchAppointmentData = async () => {
         try {
-          const response = await axios.get(`${baseURL}/solicitudes/${appointmentId}`
+          const response = await fetch(`${baseURL}/api/solicitudes/${appointmentId}`
           );
           if (!response.ok) {
             throw new Error("Network response was not ok");
@@ -76,7 +76,7 @@ function AddApointmentModalSuspendida({
         nombre_anestesiologo,
       });
 
-      const response = await axios.get(`${baseURL}/solicitudes/programar/${appointmentId}`,
+      const response = await fetch(`${baseURL}/api/solicitudes/programar/${appointmentId}`,
         {
           method: "PUT",
           body: JSON.stringify({
@@ -104,7 +104,7 @@ function AddApointmentModalSuspendida({
 
   const handleReprogramar = async () => {
     try {
-      const response = await axios.get(`${baseURL}/solicitudes/reprogramar/${appointmentId}`,
+      const response = await fetch(`${baseURL}/api/solicitudes/reprogramar/${appointmentId}`,
         {
           method: "PATCH",
         }

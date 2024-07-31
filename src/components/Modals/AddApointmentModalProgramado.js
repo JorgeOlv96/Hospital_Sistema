@@ -48,7 +48,7 @@ function AddAppointmentModalProgramado({
     if (isOpen && appointmentId) {
       const fetchAppointmentData = async () => {
         try {
-          const response = await axios.get(`${baseURL}/solicitudes/${appointmentId}`
+          const response = await fetch(`${baseURL}/api/solicitudes/${appointmentId}`
           );
           if (!response.ok) {
             throw new Error("Network response was not ok");
@@ -68,7 +68,7 @@ function AddAppointmentModalProgramado({
 
   const fetchSuspendDetailOptions = async (category) => {
     try {
-      const response = await axios.get(`${baseURL}/solicitudes/motivos-suspension?category=${category}`
+      const response = await fetch(`${baseURL}/api/solicitudes/motivos-suspension?category=${category}`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -104,7 +104,7 @@ function AddAppointmentModalProgramado({
         sala_quirofano,
       } = patientData;
 
-      const response = await axios.get(`${baseURL}/solicitudes/actualizar/${appointmentId}`,
+      const response = await fetch(`${baseURL}/api/solicitudes/actualizar/${appointmentId}`,
         {
           method: "PATCH",
           body: JSON.stringify({
@@ -141,7 +141,7 @@ function AddAppointmentModalProgramado({
       return;
     }
     try {
-      const response = await axios.get(`${baseURL}/solicitudes/suspender/${appointmentId}`,
+      const response = await fetch(`${baseURL}/api/solicitudes/suspender/${appointmentId}`,
         {
           method: "PATCH",
           body: JSON.stringify({

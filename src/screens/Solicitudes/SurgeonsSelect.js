@@ -11,7 +11,7 @@ const SurgeonSelect = ({ onChange }) => {
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
 
   const loadOptions = (inputValue, callback) => {
-    axios.get(`${baseURL}/cirujanos/activos?q=${inputValue}`)
+    fetch(`${baseURL}/api/cirujanos/activos?q=${inputValue}`)
       .then(res => res.json())
       .then(data => {
         const options = data.map(surgeon => ({

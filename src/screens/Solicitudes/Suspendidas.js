@@ -25,7 +25,7 @@ function Solicitudessuspendidas() {
 
   const fetchPendingAppointments = async () => {
     try {
-      const response = await axios.get(`${baseURL}/solicitudes/suspendidas`
+      const response = await fetch(`${baseURL}/api/solicitudes/suspendidas`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");

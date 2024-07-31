@@ -138,7 +138,7 @@ function Appointments() {
 
   const fetchAppointments = async () => {
     try {
-      const response = await axios.get(`${baseURL}/solicitudes/programadas`
+      const response = await fetch(`${baseURL}/api/solicitudes/programadas`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -221,7 +221,7 @@ function Appointments() {
 
     try {
       // Fetch de las solicitudes programadas
-      const solicitudesResponse = await axios.get(`${baseURL}/solicitudes/programadas`
+      const solicitudesResponse = await fetch(`${baseURL}/api/solicitudes/programadas`
       );
       if (!solicitudesResponse.ok) {
         throw new Error("Network response for solicitudes was not ok");
@@ -230,7 +230,7 @@ function Appointments() {
       console.log("Solicitudes Data:", solicitudesData);
 
       // Fetch de los anestesiólogos
-      const anesthesiologistsResponse = await axios.get(`${baseURL}/anestesio/anestesiologos`
+      const anesthesiologistsResponse = await fetch(`${baseURL}/api/anestesio/anestesiologos`
       );
       if (!anesthesiologistsResponse.ok) {
         throw new Error("Network response for anesthesiologists was not ok");

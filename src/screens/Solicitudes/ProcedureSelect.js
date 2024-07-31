@@ -8,7 +8,7 @@ const ProcedureSelect = ({ onChange }) => {
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
 
   const loadOptions = (inputValue, callback) => {
-    axios.get(`${baseURL}/solicitudes/procedimientos?q=${inputValue}`
+    fetch(`${baseURL}/api/solicitudes/procedimientos?q=${inputValue}`
     )
       .then((res) => res.json())
       .then((data) => {
