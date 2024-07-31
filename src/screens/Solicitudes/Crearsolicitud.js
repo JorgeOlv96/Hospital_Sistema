@@ -523,7 +523,7 @@ function CrearSolicitud() {
             <div className="w-full" style={{ width: "105%" }}>
               <label
                 htmlFor="id_cirujano"
-                className="block font-semibold text-white mb-1"
+                className="block font-semibold text-white mb-3"
               >
                 Cirujano encargado:
               </label>

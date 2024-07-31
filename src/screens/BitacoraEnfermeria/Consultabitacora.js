@@ -587,31 +587,12 @@ const Consultabitacora = () => {
                 Enf. Quirúrgica:
               </label>
               <div className="relative">
-                <AsyncSelect
-                  loadOptions={fetchActiveNurses}
-                  onChange={(selectedOption) =>
-                    handleSelectChange(selectedOption, "enf_quirurgica")
-                  }
+                <input
                   placeholder="Enf. Quirúrgica"
-                  className="rounded-lg focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full border-gray-300"
-                  styles={{
-                    container: (provided) => ({
-                      ...provided,
-                      width: "100%",
-                      minWidth: "0",
-                    }),
-                    control: (provided) => ({
-                      ...provided,
-                      borderColor: "#CBD5E0",
-                      boxShadow: "none",
-                      borderRadius: "0.5rem",
-                      width: "100%",
-                    }),
-                    menu: (provided) => ({
-                      ...provided,
-                      width: "100%",
-                    }),
-                  }}
+                  type="text"
+                  id="enf_quirirjica"
+                  name="enf_quirirjica"
+                  className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full`}
                 />
               </div>
             </div>
@@ -624,31 +605,12 @@ const Consultabitacora = () => {
                 Enf. Circulante:
               </label>
               <div className="relative">
-                <AsyncSelect
-                  loadOptions={fetchActiveNurses}
-                  onChange={(selectedOption) =>
-                    handleSelectChange(selectedOption, "enf_circulante")
-                  }
-                  placeholder="Enf. Circulante"
-                  className="rounded-lg focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full border-gray-300"
-                  styles={{
-                    container: (provided) => ({
-                      ...provided,
-                      width: "100%",
-                      minWidth: "0",
-                    }),
-                    control: (provided) => ({
-                      ...provided,
-                      borderColor: "#CBD5E0",
-                      boxShadow: "none",
-                      borderRadius: "0.5rem",
-                      width: "100%",
-                    }),
-                    menu: (provided) => ({
-                      ...provided,
-                      width: "100%",
-                    }),
-                  }}
+              <input
+                  placeholder="Enf. Quirúrgica"
+                  type="text"
+                  id="enf_circulante"
+                  name="enf_circulante"
+                  className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full`}
                 />
               </div>
             </div>

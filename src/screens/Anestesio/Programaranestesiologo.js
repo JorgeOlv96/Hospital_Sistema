@@ -270,9 +270,9 @@ function Programaranestesiologo() {
                   type="text"
                   id="nombre_cirujano"
                   value={formData.nombre_cirujano}
-                  onChange={handleSelectChange}
+                  onChange={handleInputChange}
                   placeholder="Nombre del cirujano"
-                  className="rounded-lg w-full cursor-pointer text-sm"
+                  className="block w-full px-4 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   style={{ minHeight: "auto" }}
                 />
               </div>

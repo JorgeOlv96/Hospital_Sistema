@@ -322,35 +322,13 @@ const SolicitudUrgencia = () => {
                 Cirujano encargado
               </label>
               <div className="relative w-full">
-                <AsyncSelect
-                  loadOptions={fetchActiveSurgeons}
-                  onChange={handleSelectChange}
-                  placeholder="Nombre"
-                  className={`rounded-lg focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full ${
-                    errors.nombre_cirujano
-                      ? "border-red-500"
-                      : "border-gray-300"
-                  }`}
-                  styles={{
-                    container: (provided) => ({
-                      ...provided,
-                      width: "100%",
-                      minWidth: "0",
-                    }),
-                    control: (provided) => ({
-                      ...provided,
-                      borderColor: errors.nombre_cirujano
-                        ? "#F56565"
-                        : "#CBD5E0",
-                      boxShadow: "none",
-                      borderRadius: "0.5rem",
-                      width: "100%",
-                    }),
-                    menu: (provided) => ({
-                      ...provided,
-                      width: "100%",
-                    }),
-                  }}
+                <input
+                  placeholder="Nombre del cirujano"
+                  type="texte"
+                  id="nombre_cirujano"
+                  name="nombre_cirujano"
+                  onChange={handleInputChange}
+                  className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full`}
                 />
                 {errors.nombre_cirujano && (
                   <p className="text-red-500 mt-1">{errors.nombre_cirujano}</p>
@@ -675,10 +653,10 @@ const SolicitudUrgencia = () => {
                 <input
                   type="text"
                   id="nombre_anestesiologo"
-                  value={formData.nombre_cirujano}
+                  value={formData.nombre_anestesiologo}
                   onChange={handleAnestesioChange}
                   placeholder="Nombre"
-                  className={`rounded-lg focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58]`}
+                  className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-white`}
                   styles={{
                     container: (provided) => ({
                       ...provided,
@@ -714,31 +692,12 @@ const SolicitudUrgencia = () => {
                 Enf. Quirúrgica:
               </label>
               <div className="relative w-full">
-                <AsyncSelect
-                  loadOptions={fetchActiveNurses}
-                  onChange={(selectedOption) =>
-                    handleNurseChange(selectedOption, "enf_quirurgica")
-                  }
+                <input
+                  type="text"
+                  id="enf_quirirjica"
+                  name="enf_quirirjica"
                   placeholder="Enf. Quirúrgica"
-                  className="rounded-lg focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58]"
-                  styles={{
-                    container: (provided) => ({
-                      ...provided,
-                      width: "100%", // Ajusta el ancho del contenedor
-                      minWidth: "0", // Asegura que el ancho se ajuste correctamente
-                    }),
-                    control: (provided) => ({
-                      ...provided,
-                      borderColor: "#CBD5E0",
-                      boxShadow: "none",
-                      borderRadius: "0.5rem",
-                      width: "100%", // Ajusta el ancho del control
-                    }),
-                    menu: (provided) => ({
-                      ...provided,
-                      width: "100%", // Ajusta el ancho del menú desplegable
-                    }),
-                  }}
+                  className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-white`}
                 />
               </div>
             </div>
@@ -751,31 +710,12 @@ const SolicitudUrgencia = () => {
                 Enf. Circulante:
               </label>
               <div className="relative w-full">
-                <AsyncSelect
-                  loadOptions={fetchActiveNurses}
-                  onChange={(selectedOption) =>
-                    handleNurseChange(selectedOption, "enf_circulante")
-                  }
+              <input
+                  type="text"
+                  id="enf_circulante"
+                  name="enf_circulante"
                   placeholder="Enf. Circulante"
-                  className="rounded-lg focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58]"
-                  styles={{
-                    container: (provided) => ({
-                      ...provided,
-                      width: "100%", // Ajusta el ancho del contenedor
-                      minWidth: "0", // Asegura que el ancho se ajuste correctamente
-                    }),
-                    control: (provided) => ({
-                      ...provided,
-                      borderColor: "#CBD5E0",
-                      boxShadow: "none",
-                      borderRadius: "0.5rem",
-                      width: "100%", // Ajusta el ancho del control
-                    }),
-                    menu: (provided) => ({
-                      ...provided,
-                      width: "100%", // Ajusta el ancho del menú desplegable
-                    }),
-                  }}
+                  className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-white`}
                 />
               </div>
             </div>
