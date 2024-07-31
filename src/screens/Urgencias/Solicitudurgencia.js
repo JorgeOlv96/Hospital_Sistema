@@ -645,43 +645,21 @@ const SolicitudUrgencia = () => {
 
             <div className="w-full mr-4">
               <label
-                htmlFor="id_cirujano"
+                htmlFor="enfermera_circulante"
                 className="block font-semibold text-white mb-1"
               >
-                Anestesiólogo:
+                Nombre anestesiologo:
               </label>
               <div className="relative w-full">
-                <input
+              <input
                   type="text"
                   id="nombre_anestesiologo"
+                  name="nombre_anestesiologo"
+                  placeholder="Nombre Anestesiologo"
                   value={formData.nombre_anestesiologo}
                   onChange={handleInputChange}
-                  placeholder="Nombre"
                   className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-white`}
-                  styles={{
-                    container: (provided) => ({
-                      ...provided,
-                      width: "100%", // Ajusta el ancho del contenedor
-                      minWidth: "0", // Asegura que el ancho se ajuste correctamente
-                    }),
-                    control: (provided) => ({
-                      ...provided,
-                      borderColor: errors.nombre_cirujano
-                        ? "#F56565"
-                        : "#CBD5E0",
-                      boxShadow: "none",
-                      borderRadius: "0.5rem",
-                      width: "100%", // Ajusta el ancho del control
-                    }),
-                    menu: (provided) => ({
-                      ...provided,
-                      width: "100%", // Ajusta el ancho del menú desplegable
-                    }),
-                  }}
                 />
-                {errors.nombre_cirujano && (
-                  <p className="text-red-500 mt-1">{errors.nombre_cirujano}</p>
-                )}
               </div>
             </div>
 
@@ -727,7 +705,7 @@ const SolicitudUrgencia = () => {
 
             <div className="w-full mr-4">
               <label
-                htmlFor="hora_solicitada"
+                htmlFor="hora_asignada"
                 className="block font-semibold text-white mb-1"
               >
                 Hora de cirugía:
