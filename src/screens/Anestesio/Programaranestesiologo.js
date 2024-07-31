@@ -29,7 +29,7 @@ function Programaranestesiologo() {
 
   const fetchActiveAnesthesiologists = async (inputValue) => {
     try {
-      const response = await axios.get(`${baseURL}/anestesiologos/activos?search=${inputValue}`
+      const response = await fetch(`${baseURL}/api/anestesiologos/activos?search=${inputValue}`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -109,7 +109,7 @@ function Programaranestesiologo() {
         return;
       }
 
-      const response = await axios.get(`${baseURL}/anestesio/anestesiologos`,
+      const response = await fetch(`${baseURL}/api/anestesio/anestesiologos`,
         {
           method: "POST",
           headers: {
@@ -152,7 +152,7 @@ function Programaranestesiologo() {
       )
     ) {
       try {
-        const response = await axios.get(`${baseURL}/anestesio/anestesiologos/${id}`,
+        const response = await fetch(`${baseURL}/api/anestesio/anestesiologos/${id}`,
           {
             method: "DELETE",
           }
@@ -176,7 +176,7 @@ function Programaranestesiologo() {
 
   const fetchAnesthesiologists = async () => {
     try {
-      const response = await axios.get(`${baseURL}/anestesio/anestesiologos`
+      const response = await fetch(`${baseURL}/api/anestesio/anestesiologos`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
