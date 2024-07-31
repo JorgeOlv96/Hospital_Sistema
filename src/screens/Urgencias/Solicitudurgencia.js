@@ -72,6 +72,7 @@ const SolicitudUrgencia = () => {
     tipo_intervencion: "",
     fecha_solicitada: "",
     turno_solicitado: "",
+    nombre_anestesiologo: "",
     sala_quirofano: "",
     nombre_cirujano: "",
     req_insumo: "",
