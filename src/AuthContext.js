@@ -9,13 +9,14 @@ const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const navigate = useNavigate();
     const location = useLocation();
+    const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
 
     useEffect(() => {
         const checkAuth = async () => {
             const token = localStorage.getItem('token');
             if (token) {
                 try {
-                    const response = await axios.get(`${process.env.REACT_APP_APP_BACK_SSQ}/auth/user`, {
+                    const response = await axios.get(`${baseURL}/api/auth/user`, {
                         headers: { Authorization: `Bearer ${token}` }
                     });
                     
@@ -30,17 +31,15 @@ const AuthProvider = ({ children }) => {
                     }
                 }
             } else {
-                 
-                    navigate('/login')
-                
+                navigate('/login');
             }
         };
         checkAuth();
-    }, [navigate, location]);
+    }, [navigate, location, baseURL]);
 
     const login = async (email, password) => {
         try {
-            const response = await axios.post(`${process.env.REACT_APP_APP_BACK_SSQ}/auth/login`, { email, password });
+            const response = await axios.post(`${baseURL}/api/auth/login`, { email, password });
             const { token, user } = response.data;
             localStorage.setItem('token', token);
             setUser(user);
@@ -62,5 +61,5 @@ const AuthProvider = ({ children }) => {
         </AuthContext.Provider>
     );
 };
-//Export
+
 export { AuthContext, AuthProvider };
