@@ -89,7 +89,7 @@ function CrearSolicitud() {
   useEffect(() => {
     const fetchSolicitudes = async () => {
       try {
-        const response = await axios.get(`${baseURL}/solicitudes`);
+        const response = await fetch(`${baseURL}/api/solicitudes`);
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
@@ -103,7 +103,7 @@ function CrearSolicitud() {
 
   const fetchActiveSurgeons = async (inputValue) => {
     try {
-      const response = await axios.get(`${baseURL}/cirujanos/activos?search=${inputValue}`
+      const response = await fetch(`${baseURL}/cirujanos/activos?search=${inputValue}`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -270,7 +270,7 @@ function CrearSolicitud() {
     if (validateForm()) {
       try {
         // Enviar la solicitud a la API
-        const response = await axios.get(`${baseURL}/solicitudes`, {
+        const response = await fetch(`${baseURL}/api/solicitudes`, {
           method: selectedSolicitud ? "PUT" : "POST",
           headers: {
             "Content-Type": "application/json",
@@ -527,11 +527,14 @@ function CrearSolicitud() {
               >
                 Cirujano encargado:
               </label>
-              <AsyncSelect
-                loadOptions={fetchActiveSurgeons}
-                onChange={handleSelectChange}
+              <input
                 placeholder="Nombre del cirujano"
-                className={` ${errors.nombre_cirujano ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+                type="text"
+                id="nombre_cirujano"
+                name="nombre_cirujano"
+                value={formData.nombre_cirujano}
+                onChange={handleInputChange}
+                className={`border ${errors.nombre_paciente ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
                 />
                 {errors.nombre_cirujano && <p className="text-red-500">{errors.nombre_cirujano}</p>}
               </div>

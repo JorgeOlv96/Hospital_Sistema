@@ -44,7 +44,7 @@ function AddAppointmentModalEvaluar({
     if (isOpen && appointmentId) {
       const fetchAppointmentData = async () => {
         try {
-          const response = await axios.get(`${baseURL}/solicitudes/${appointmentId}`
+          const response = await fetch(`${baseURL}/api/solicitudes/${appointmentId}`
           );
           if (!response.ok) {
             throw new Error("Network response was not ok");
@@ -73,7 +73,7 @@ function AddAppointmentModalEvaluar({
         nombre_anestesiologo,
       });
 
-      const response = await axios.get(`${baseURL}/solicitudes/programar/${appointmentId}`,
+      const response = await fetch(`${baseURL}/api/solicitudes/programar/${appointmentId}`,
         {
           method: "PUT",
           body: JSON.stringify({
@@ -101,7 +101,7 @@ function AddAppointmentModalEvaluar({
 
   const handlePreprogramar = async () => {
     try {
-      const response = await axios.get(`${baseURL}/solicitudes/preprogramar/${appointmentId}`,
+      const response = await fetch(`${baseURL}/api/solicitudes/preprogramar/${appointmentId}`,
         {
           method: "PUT",
         }

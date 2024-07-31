@@ -102,7 +102,7 @@ const SolicitudUrgencia = () => {
 
   const fetchActiveSurgeons = async (inputValue) => {
     try {
-      const response = await axios.get(`${baseURL}/cirujanos/activos?search=${inputValue}`
+      const response = await fetch(`${baseURL}/api/cirujanos/activos?search=${inputValue}`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -120,7 +120,7 @@ const SolicitudUrgencia = () => {
 
   const fetchActiveNurses = async (inputValue) => {
     try {
-      const response = await axios.get(`${baseURL}/enfermeras/activos?search=${inputValue}`
+      const response = await fetch(`${baseURL}/api/enfermeras/activos?search=${inputValue}`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -255,7 +255,7 @@ const SolicitudUrgencia = () => {
     if (validateForm()) {
       try {
         console.log("Datos enviados:", formData); // <-- Aquí se agregaron los datos enviados
-        const response = await axios.get(`${baseURL}/solicitudes/urgencias`,
+        const response = await fetch(`${baseURL}/api/solicitudes/urgencias`,
           {
             method: "POST",
             headers: {

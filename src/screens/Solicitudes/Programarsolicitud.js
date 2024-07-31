@@ -25,7 +25,7 @@ function ProgramarSolicitud() {
 
   const fetchPendingAppointments = async () => {
     try {
-      const response = await axios.get(`${baseURL}/solicitudes/preprogramadas`
+      const response = await fetch(`${baseURL}/api/solicitudes/preprogramadas`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");

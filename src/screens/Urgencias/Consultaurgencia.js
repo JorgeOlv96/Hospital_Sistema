@@ -38,7 +38,7 @@ const Consultaurgencia = () => {
   useEffect(() => {
     const fetchAppointmentData = async () => {
       try {
-        const response = await axios.get(`${baseURL}/solicitudes/geturgencias${id}`
+        const response = await fetch(`${baseURL}/api/solicitudes/geturgencias${id}`
         );
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -62,7 +62,7 @@ const Consultaurgencia = () => {
 
   const fetchActiveNurses = async (inputValue) => {
     try {
-      const response = await axios.get(`${baseURL}/enfermeras/activos?search=${inputValue}`
+      const response = await fetch(`${baseURL}/api/enfermeras/activos?search=${inputValue}`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");

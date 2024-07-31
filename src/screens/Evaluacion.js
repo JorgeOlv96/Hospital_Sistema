@@ -27,7 +27,7 @@ function Evaluacion() {
 
   const fetchPendingAppointments = async () => {
     try {
-      const response = await axios.get(`${baseURL}/solicitudes/pendientes`
+      const response = await fetch(`${baseURL}/api/solicitudes/pendientes`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
