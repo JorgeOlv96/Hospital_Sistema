@@ -42,7 +42,7 @@ const Consultabitacora = () => {
   useEffect(() => {
     const fetchAppointmentData = async () => {
       try {
-        const response = await axios.get(`${baseURL}/solicitudes/${id}`
+        const response = await fetch(`${baseURL}/api/solicitudes/${id}`
         );
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -66,7 +66,7 @@ const Consultabitacora = () => {
 
   const fetchSuspendDetailOptions = async (category) => {
     try {
-      const response = await axios.get(`${baseURL}/solicitudes/motivos-suspension?category=${category}`
+      const response = await fetch(`${baseURL}/api/solicitudes/motivos-suspension?category=${category}`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -81,7 +81,7 @@ const Consultabitacora = () => {
 
   const fetchActiveNurses = async (inputValue) => {
     try {
-      const response = await axios.get(`${baseURL}/enfermeras/activos?search=${inputValue}`
+      const response = await fetch(`${baseURL}/api/enfermeras/activos?search=${inputValue}`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -121,7 +121,7 @@ const Consultabitacora = () => {
       return;
     }
     try {
-      const response = await axios.get(`${baseURL}/solicitudes/suspender/${id}`,
+      const response = await fetch(`${baseURL}/api/solicitudes/suspender/${id}`,
         {
           method: "PATCH",
           body: JSON.stringify({
@@ -159,7 +159,7 @@ const Consultabitacora = () => {
         tipo_anestesia,
         ht_anestesia,
       } = patientData;
-      const response = await axios.get(`${baseURL}/solicitudes/bitacoraenf/${id}`,
+      const response = await fetch(`${baseURL}/api/solicitudes/bitacoraenf/${id}`,
         {
           method: "PATCH",
           body: JSON.stringify({

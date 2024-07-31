@@ -35,7 +35,7 @@ function Bitacoraenfermeria() {
 
   const fetchPendingAppointments = async () => {
     try {
-      const response = await axios.get(`${baseURL}/solicitudes/programadas`
+      const response = await fetch(`${baseURL}/api/solicitudes/programadas`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");

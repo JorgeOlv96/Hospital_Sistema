@@ -16,7 +16,7 @@ function Gestionusuarios() {
     useEffect(() => {
         const fetchUsuarios = async () => {
             try {
-                const response = await axios.get(`${baseURL}/users`);
+                const response = await fetch(`${baseURL}/api/users`);
                 if (!response.ok) {
                     const data = await response.json();
                     setError(data.message);
@@ -42,7 +42,7 @@ function Gestionusuarios() {
     // Delete user
     const handleDelete = async (id) => {
         try {
-            const response = await axios.get(`${baseURL}/users/${id}`, {
+            const response = await fetch(`${baseURL}/api/users/${id}`, {
                 method: "DELETE",
             });
             if (!response.ok) {

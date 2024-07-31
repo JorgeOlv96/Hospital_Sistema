@@ -127,7 +127,7 @@ function Anesthesiologos() {
 
   const fetchAnesthesiologists = async () => {
     try {
-      const response = await axios.get(`${baseURL}/anestesio/anestesiologos`);
+      const response = await fetch(`${baseURL}/api/anestesio/anestesiologos`);
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
