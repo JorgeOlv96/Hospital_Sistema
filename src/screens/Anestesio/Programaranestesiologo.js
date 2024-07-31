@@ -266,10 +266,12 @@ function Programaranestesiologo() {
                 >
                   Nombre de anestesiólogo
                 </label>
-                <AsyncSelect
-                  loadOptions={fetchActiveAnesthesiologists}
+                <input
+                  type="text"
+                  id="nombre_cirujano"
+                  value={formData.nombre_cirujano}
                   onChange={handleSelectChange}
-                  placeholder="Nombre"
+                  placeholder="Nombre del cirujano"
                   className="rounded-lg w-full cursor-pointer text-sm"
                   style={{ minHeight: "auto" }}
                 />

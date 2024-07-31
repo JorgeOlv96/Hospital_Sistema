@@ -672,8 +672,10 @@ const SolicitudUrgencia = () => {
                 Anestesiólogo:
               </label>
               <div className="relative w-full">
-                <AsyncSelect
-                  loadOptions={fetchActiveSurgeons}
+                <input
+                  type="text"
+                  id="nombre_anestesiologo"
+                  value={formData.nombre_cirujano}
                   onChange={handleAnestesioChange}
                   placeholder="Nombre"
                   className={`rounded-lg focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58]`}
