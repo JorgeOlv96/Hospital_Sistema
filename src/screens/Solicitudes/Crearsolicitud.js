@@ -297,6 +297,21 @@ function CrearSolicitud() {
       console.log("Formulario inválido");
     }
   };
+
+  const getTurnColor = (turno_solicitado) => {
+    switch (turno_solicitado) {
+      case "Matutino":
+        return "rgba(129, 164, 255, 0.43)";
+      case "Vespertino":
+        return "rgba(109, 255, 19, 0.43)";
+      case "Nocturno":
+        return "rgba(255, 169, 89, 0.43)";
+      case "Especial":
+        return "#D3D3D3"; // Color para "Especial" o color predeterminado
+      default:
+        return "#FFFFFF"; // Color predeterminado
+    }
+  };
   
 
   return (
@@ -689,28 +704,29 @@ function CrearSolicitud() {
                 {errors.tiempo_estimado && <p className="text-red-500">{errors.tiempo_estimado}</p>}
               </div>
 
-            <div className="w-full">
-              <label
-                htmlFor="turno_solicitado"
-                className="block font-semibold text-white mb-1"
-              >
-                Turno solicitado:
-              </label>
-              <select
-                id="turno_solicitado"
-                name="turno_solicitado"
-                value={formData.turno_solicitado}
-                onChange={handleInputChange}
-                className={`border ${errors.turno_solicitado ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+              <div className="w-full">
+                <label
+                  htmlFor="turno_solicitado"
+                  className="block font-semibold text-white mb-1"
                 >
-                <option value=""> Seleccionar </option>
-                <option value="Matutino">Matutino</option>
-                <option value="Vespertino">Vespertino</option>
-                <option value="Nocturno">Nocturno</option>
-                <option value="Especial">Especial</option>
-              </select>
-              {errors.turno_solicitado && <p className="text-red-500">{errors.turno_solicitado}</p>}
-            </div>
+                  Turno solicitado:
+                </label>
+                <select
+                  id="turno_solicitado"
+                  name="turno_solicitado"
+                  value={formData.turno_solicitado}
+                  onChange={handleInputChange}
+                  className={` ${errors.turno_solicitado ? "border-red-500" : " "} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+                  style={{ backgroundColor: getTurnColor(formData.turno_solicitado) }}
+                >
+                  <option value="">Seleccionar</option>
+                  <option value="Matutino">Matutino</option>
+                  <option value="Vespertino">Vespertino</option>
+                  <option value="Nocturno">Nocturno</option>
+                  <option value="Especial">Especial</option>
+                </select>
+                {errors.turno_solicitado && <p className="text-red-500">{errors.turno_solicitado}</p>}
+              </div>
           </div>
 
           <div className="flex mb-4">
