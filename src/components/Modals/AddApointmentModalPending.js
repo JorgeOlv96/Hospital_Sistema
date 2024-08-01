@@ -119,7 +119,6 @@ function AddAppointmentModalPending({
         throw new Error("Network response was not ok");
       }
       closeModal();
-      window.location.reload();
     } catch (error) {
       console.error("Error saving changes:", error);
     }
@@ -382,13 +381,6 @@ function AddAppointmentModalPending({
           </div>
 
           <div className="flex justify-between mt-8">
-            <button
-              onClick={handleDelete}
-              className="bg-red-600 bg-opacity-5 text-red-600 text-sm p-4 rounded-lg font-light mr-4"
-              style={{ marginBottom: "8px" }}
-            >
-              Eliminar cita
-            </button>
             <button
               onClick={handleProgramAppointment}
               className="bg-[#001B58] bg-opacity-20 text-[#001B58] text-sm p-4 rounded-lg font-light"

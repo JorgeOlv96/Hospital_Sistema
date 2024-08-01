@@ -113,8 +113,6 @@ function AddApointmentModalSuspendida({
         throw new Error("Network response was not ok");
       }
       closeModal(); // Cerrar el modal después de eliminar
-      // Recargar la página después de eliminar
-      window.location.reload();
     } catch (error) {
       console.error("Error reprogramar appointment:", error);
     }

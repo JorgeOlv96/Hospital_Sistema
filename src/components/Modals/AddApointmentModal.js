@@ -33,23 +33,6 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentId, onDeleteAppoin
     }
   }, [isOpen, appointmentId, reload]);
 
-  const handleDelete = async () => {
-    try {
-      const url = `${baseURL}/api/solicitudes/${appointmentId}`;
-      console.log('Deleting URL:', url);
-  
-      const response = await fetch(url, {
-        method: 'DELETE',
-      });
-      console.log(response);
-      closeModal(); // Cerrar el modal después de eliminar
-      // Recargar la página después de eliminar
-    } catch (error) {
-      console.error('Error deleting appointment:', error);
-    }
-    finally 
-      { setReload (reload + 1) }
-  };
   
   return (
     <Modal
@@ -181,12 +164,6 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentId, onDeleteAppoin
       )}
 
       <div className="flex justify-between">
-        <button
-          onClick={handleDelete}
-          className="bg-red-600 bg-opacity-5 text-red-600 text-sm p-4 rounded-lg font-light mr-4"
-        >
-          Eliminar
-        </button>
         <button
           onClick={closeModal}
           className="bg-[#001B58] bg-opacity-20 text-bg-[#001B58] text-sm p-4 rounded-lg font-light"
