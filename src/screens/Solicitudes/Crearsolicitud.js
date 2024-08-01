@@ -704,29 +704,28 @@ function CrearSolicitud() {
                 {errors.tiempo_estimado && <p className="text-red-500">{errors.tiempo_estimado}</p>}
               </div>
 
-              <div className="w-full">
-                <label
-                  htmlFor="turno_solicitado"
-                  className="block font-semibold text-white mb-1"
+            <div className="w-full">
+              <label
+                htmlFor="turno_solicitado"
+                className="block font-semibold text-white mb-1"
+              >
+                Turno solicitado:
+              </label>
+              <select
+                id="turno_solicitado"
+                name="turno_solicitado"
+                value={formData.turno_solicitado}
+                onChange={handleInputChange}
+                className={`border ${errors.turno_solicitado ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
                 >
-                  Turno solicitado:
-                </label>
-                <select
-                  id="turno_solicitado"
-                  name="turno_solicitado"
-                  value={formData.turno_solicitado}
-                  onChange={handleInputChange}
-                  className={` ${errors.turno_solicitado ? "border-red-500" : " "} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-                  style={{ backgroundColor: getTurnColor(formData.turno_solicitado) }}
-                >
-                  <option value="">Seleccionar</option>
-                  <option value="Matutino">Matutino</option>
-                  <option value="Vespertino">Vespertino</option>
-                  <option value="Nocturno">Nocturno</option>
-                  <option value="Especial">Especial</option>
-                </select>
-                {errors.turno_solicitado && <p className="text-red-500">{errors.turno_solicitado}</p>}
-              </div>
+                <option value=""> Seleccionar </option>
+                <option value="Matutino">Matutino</option>
+                <option value="Vespertino">Vespertino</option>
+                <option value="Nocturno">Nocturno</option>
+                <option value="Especial">Especial</option>
+              </select>
+              {errors.turno_solicitado && <p className="text-red-500">{errors.turno_solicitado}</p>}
+            </div>
           </div>
 
           <div className="flex mb-4">

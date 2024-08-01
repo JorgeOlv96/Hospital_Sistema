@@ -252,7 +252,6 @@ function Solicitudes() {
               <th>Fecha solicitada</th>
               <th>Tiempo est.</th>
               <th>Turno</th>
-              <th>Anestesiólogo</th>
               <th>Cirujano</th>
               <th>Ins.</th>
             </tr>
@@ -762,7 +761,7 @@ function Solicitudes() {
                                   {solicitud.nombre_especialidad}
                                 </td>
                                 <td className="border px-4 py-2">
-                                  {solicitud.fecha_solicitud}
+                                  {formattedDate}
                                 </td>
                                 <td className="border px-4 py-2">
                                   <div

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import Modal from "./Modal";
+import AddAppointmentModal from "../../components/Modals/AddApointmentModal";
 
 function AddAppointmentModalEvaluar({
   closeModal,

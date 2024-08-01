@@ -124,20 +124,41 @@ function AddAppointmentModalPending({
     }
   };
 
-  const handleDelete = async () => {
+  const handleSaveChanges = async () => {
     try {
-      const response = await fetch(`${baseURL}/api/solicitudes/${appointmentId}`,
+      const {
+        fecha_programada,
+        hora_asignada,
+        turno,
+        nombre_anestesiologo,
+        tiempo_estimado,
+        sala_quirofano,
+      } = patientData;
+
+      const response = await fetch(`${baseURL}/api/solicitudes/actualizar/${appointmentId}`,
         {
-          method: "DELETE",
+          method: "PATCH",
+          body: JSON.stringify({
+            fecha_programada,
+            hora_asignada,
+            turno,
+            nombre_anestesiologo,
+            tiempo_estimado,
+            sala_quirofano,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
       );
+
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-      closeModal(); // Cerrar el modal después de eliminar
+      closeModal();
       window.location.reload();
     } catch (error) {
-      console.error("Error deleting appointment:", error);
+      console.error("Error saving changes:", error);
     }
   };
 
@@ -380,6 +401,15 @@ function AddAppointmentModalPending({
           </div>
 
           <div className="flex justify-between mt-8">
+
+          <button
+              onClick={handleSaveChanges}
+              className="bg-[#83e9aa] bg-opacity-20 text-green-500 text-sm p-4 rounded-lg font-light"
+              style={{ marginBottom: "8px" }}
+            >
+              Guardar cambios
+            </button>
+
             <button
               onClick={handleProgramAppointment}
               className="bg-[#001B58] bg-opacity-20 text-[#001B58] text-sm p-4 rounded-lg font-light"

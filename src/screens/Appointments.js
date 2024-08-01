@@ -230,7 +230,8 @@ function Appointments() {
       console.log("Solicitudes Data:", solicitudesData);
 
       // Fetch de los anestesiólogos
-      const anesthesiologistsResponse = await fetch(`${baseURL}/api/anestesio/anestesiologos`
+      const anesthesiologistsResponse = await fetch(
+        `${baseURL}/api/anestesio/anestesiologos`
       );
       if (!anesthesiologistsResponse.ok) {
         throw new Error("Network response for anesthesiologists was not ok");
