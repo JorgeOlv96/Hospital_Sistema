@@ -89,10 +89,7 @@ function AddAppointmentModalEnfermeria({ closeModal, isOpen, appointmentId }) {
       }
       const data = await response.json();
       console.log("Appointment updated successfully:", data);
-      closeModal(); // Cerrar el modal después de eliminar
-      onDeleteAppointment(appointmentId); // Actualizar la lista de citas después de eliminar
-      // Recargar la página después de eliminar
-      window.location.reload();
+      closeModal();
     } catch (error) {
       console.error("Error updating appointment:", error);
     }

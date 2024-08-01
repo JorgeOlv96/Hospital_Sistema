@@ -725,6 +725,10 @@ function CrearSolicitud() {
               {errors.procedimientos_paciente && <p className="text-red-500">{errors.procedimientos_paciente}</p>}
             </div>
 
+
+              
+
+
             <div className="mr-4" style={{ width: "15%" }}>
               <label
                 htmlFor="se_preveen"

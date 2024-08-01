@@ -1,15 +1,14 @@
 import React, { useState } from "react";
-import axios from "axios";
-import AsyncSelect from "react-select/async";
+import AsyncCreatableSelect from "react-select/async-creatable";
 import { FixedSizeList } from "react-window";
+import axios from "axios";
 
 const ProcedureSelect = ({ onChange }) => {
   const [selectedOption, setSelectedOption] = useState(null);
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
 
   const loadOptions = (inputValue, callback) => {
-    fetch(`${baseURL}/api/solicitudes/procedimientos?q=${inputValue}`
-    )
+    fetch(`${baseURL}/api/solicitudes/procedimientos?q=${inputValue}`)
       .then((res) => res.json())
       .then((data) => {
         const options = data.map((procedure) => ({
@@ -26,7 +25,7 @@ const ProcedureSelect = ({ onChange }) => {
   };
 
   const VirtualizedSelect = ({ children, ...props }) => {
-    const height = 35; // Altura estimada de cada opción
+    const height = 35;
     const rowCount = children.length;
     return (
       <FixedSizeList
@@ -40,14 +39,15 @@ const ProcedureSelect = ({ onChange }) => {
   };
 
   return (
-    <AsyncSelect
+    <AsyncCreatableSelect
       cacheOptions
       loadOptions={loadOptions}
       defaultOptions
       onChange={handleChange}
       value={selectedOption}
       components={{ MenuList: VirtualizedSelect }}
-      placeholder="Seleccionar..."
+      placeholder="Seleccionar o escribir procedimiento..."
+      isClearable
     />
   );
 };
