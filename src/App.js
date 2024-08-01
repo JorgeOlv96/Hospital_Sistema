@@ -2,6 +2,7 @@ import './App.css';
 import React, { useEffect } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Aos from 'aos';
+import axios from 'axios';
 import ProtectedRoute from "./ProtectedRoute";
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
@@ -69,10 +70,34 @@ function App() {
     };
 
     // Configura un intervalo para hacer el health-check cada 5 minutos (300000 ms)
-    const interval = setInterval(checkHealth, 60000);
+    const interval = setInterval(checkHealth, 300000);
 
     // Realiza un health-check inicial al cargar la aplicación
     checkHealth();
+
+    // Limpia el intervalo al desmontar el componente
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
+
+    // Función para contar las solicitudes
+    const countSolicitudes = async () => {
+      try {
+        const response = await axios.get(`${baseURL}/api/solicitudes`);
+        const totalSolicitudes = response.data.length;
+        console.log(`Total de solicitudes: ${totalSolicitudes}`);
+      } catch (error) {
+        console.error('Error fetching solicitudes count:', error);
+      }
+    };
+
+    // Configura un intervalo para contar las solicitudes cada 40 segundos (40000 ms)
+    const interval = setInterval(countSolicitudes, 40000);
+
+    // Realiza un conteo inicial al cargar la aplicación
+    countSolicitudes();
 
     // Limpia el intervalo al desmontar el componente
     return () => clearInterval(interval);
