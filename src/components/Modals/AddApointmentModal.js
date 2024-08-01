@@ -10,6 +10,8 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentId, onDeleteAppoin
   const modalRef = useRef(null);
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
 
+  const [reload, setReload] = useState (1);
+
   useEffect(() => {
     if (isOpen && appointmentId) {
       const fetchAppointmentData = async () => {
@@ -29,25 +31,26 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentId, onDeleteAppoin
 
       fetchAppointmentData();
     }
-  }, [isOpen, appointmentId]);
+  }, [isOpen, appointmentId, reload]);
 
   const handleDelete = async () => {
     try {
-      const response = await fetch(`${baseURL}/api/solicitudes/${appointmentId}`, {
+      const url = `${baseURL}/api/solicitudes/${appointmentId}`;
+      console.log('Deleting URL:', url);
+  
+      const response = await fetch(url, {
         method: 'DELETE',
       });
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
+      console.log(response);
       closeModal(); // Cerrar el modal después de eliminar
-      onDeleteAppointment(appointmentId); // Actualizar la lista de citas después de eliminar
       // Recargar la página después de eliminar
-      window.location.reload();
     } catch (error) {
       console.error('Error deleting appointment:', error);
     }
+    finally 
+      { setReload (reload + 1) }
   };
-
+  
   return (
     <Modal
       ref={modalRef}
