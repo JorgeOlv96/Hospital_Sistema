@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: frontend-hospital-sistemaseseq
+    env: static
+    staticPublishPath: build 
+    buildCommand: npm run build
+    routes:
+      - src: /*
+        dest: /

@@ -1,9 +1,8 @@
-// src/App.js
 import './App.css';
-import React, { useState, useContext } from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Aos from 'aos';
-import ProtectedRoute from "./ProtectedRoute"
+import ProtectedRoute from "./ProtectedRoute";
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import { AuthContext, AuthProvider } from './AuthContext';
@@ -53,18 +52,42 @@ import Gestionusuarios from './screens/Gestorusuarios/Gestionusr';
 function App() {
   Aos.init();
 
+  useEffect(() => {
+    const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
+
+    // Función para realizar el health-check
+    const checkHealth = async () => {
+      try {
+        const response = await fetch(`${baseURL}/api/health-check`);
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+        console.log('Backend is active');
+      } catch (error) {
+        console.error('Error during health-check:', error);
+      }
+    };
+
+    // Configura un intervalo para hacer el health-check cada 5 minutos (300000 ms)
+    const interval = setInterval(checkHealth, 60000);
+
+    // Realiza un health-check inicial al cargar la aplicación
+    checkHealth();
+
+    // Limpia el intervalo al desmontar el componente
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <>
       {/* Toaster */}
       <Toast />
       {/* Routes */}
       <BrowserRouter>
-
-      <Routes>
+        <Routes>
           <Route path="/" element={<IndexPage />} />
         </Routes>
         <AuthProvider>
-          
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
@@ -90,7 +113,7 @@ function App() {
             <Route path="/urgencias/Solicitudurgencia" element={<Solicitudurgencia />} />
             <Route path="/urgencias/Consultaurgencia" element={<Consultaurgencia />} />
             <Route path="/urgencias/Urgentes" element={<Solicitudesurgentes />} />
-            <Route path="/Gestionusr" element={<Gestionusuarios /> } />
+            <Route path="/Gestionusr" element={<Gestionusuarios />} />
             <Route path="/services" element={<Services />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/ayuda" element={<Ayuda />} />
