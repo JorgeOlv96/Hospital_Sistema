@@ -134,8 +134,9 @@ function AddAppointmentModalPending({
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-      closeModal();
-      onSuspendAppointment(appointmentId);
+      closeModal(); // Cerrar el modal después de eliminar
+      onDeleteAppointment(appointmentId); // Actualizar la lista de citas después de eliminar
+      // Recargar la página después de eliminar
       window.location.reload();
     } catch (error) {
       console.error("Error deleting appointment:", error);
