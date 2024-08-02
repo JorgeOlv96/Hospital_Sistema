@@ -274,15 +274,43 @@ function Solicitudes() {
                       <td>${index + 1}</td>
                       <td>${appointment.folio || ""}</td>
                       <td>${moment(appointment.hora_solicitada, "HH:mm").format("LT")}</td>
-                      <td>${appointment.sala_quirofano || ""}</td>
+                      <td>Sala: ${appointment.sala_quirofano || ""}</td>
                       <td>${appointment.nombre_paciente} ${appointment.ap_paterno} ${appointment.ap_materno}</td>
                       <td>${appointment.sexo ? (appointment.sexo === "Femenino" ? "F" : "M") : "No especificado"}</td>
-                      <td>${appointment.procedimientos_paciente || ""}</td>
+                     <td>
+                        ${(() => {
+                          const procedimientos =
+                            appointment.procedimientos_paciente || "";
+                          const [beforeDash, afterDash] = procedimientos.split("-", 2);
+                          const truncatedBeforeDash = beforeDash.slice(0, 20);
+                          return `${truncatedBeforeDash}${
+                            afterDash ? "-" + afterDash : ""
+                          }`;
+                        })()}
+                      </td>
                       <td>${appointment.clave_esp || ""}</td>
-                      <td>${moment(appointment.fecha_solicitada).format("DD-MM-YYYY")}</td>
+                      <td>${moment(appointment.fecha_programada).format("DD-MM-YYYY")}</td>
                       <td>${appointment.tiempo_estimado} min</td>
-                      <td>${appointment.turno_solicitado || ""}</td>
-                      <td>${appointment.nombre_cirujano || ""}</td>
+                      <td>
+                          ${(() => {
+                            const turno = appointment.turno || "";
+                            const turnMap = {
+                              Vespertino: "V",
+                              Matutino: "M",
+                              Nocturno: "N",
+                              Especial: "E",
+                            };
+                            return turnMap[turno] || "";
+                          })()}
+                        </td>
+                       <td>
+                          ${(() => {
+                            const nombre = appointment.nombre_cirujano || "";
+                            const words = nombre.split(" ");
+                            const truncatedName = words.slice(0, 2).join(" ");
+                            return truncatedName;
+                          })()}
+                        </td>
                       <td>${appointment.req_insumo || ""}</td>
                     </tr>
                   `).join('')}

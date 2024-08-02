@@ -120,24 +120,12 @@ function CrearSolicitud() {
     }
   };
 
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-
-    // Actualizar el estado del formulario
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
     setFormData((prevFormData) => ({
       ...prevFormData,
-      [name]: value,
+      [name]: value || new Date().toISOString().split('T')[0], // Si no hay valor, usar la fecha actual
     }));
-
-    // Validación de fecha de nacimiento
-    if (name === "fecha_nacimiento") {
-      const today = new Date().toISOString().split("T")[0]; // Fecha actual en formato YYYY-MM-DD
-      if (value > today) {
-        setIsFechaNacimientoValid(false);
-      } else {
-        setIsFechaNacimientoValid(true);
-      }
-    }
   };
 
   useEffect(() => {
@@ -244,24 +232,27 @@ function CrearSolicitud() {
     }));
   };
 
+
   const validateForm = () => {
     const newErrors = {};
+  
+    // Validar todos los campos excepto 'fecha_nacimiento'
     Object.keys(formData).forEach((key) => {
-      if (!formData[key]) {
+      if (!formData[key] && key !== 'fecha_nacimiento') {
         newErrors[key] = "Campo requerido";
       }
     });
+  
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validar el formulario
     if (validateForm()) {
       try {
-        // Enviar la solicitud a la API
         const response = await fetch(`${baseURL}/api/solicitudes`, {
           method: selectedSolicitud ? "PUT" : "POST",
           headers: {
@@ -274,14 +265,11 @@ function CrearSolicitud() {
           throw new Error("Network response was not ok");
         }
 
-        // Parsear la respuesta JSON
         const data = await response.json();
         console.log("Formulario válido y enviado:", formData);
 
-        // Redirigir al usuario después de un envío exitoso
         navigate("/solicitudes");
       } catch (error) {
-        // Manejo de errores en la solicitud de red
         console.error("Error en la solicitud:", error);
       }
     } else {
@@ -476,10 +464,7 @@ function CrearSolicitud() {
 
             <div className="flex mb-4">
               <div className="mr-4 w-full">
-                <label
-                  htmlFor="fecha_nacimiento"
-                  className="block font-semibold text-white mb-1"
-                >
+                <label htmlFor="fecha_nacimiento" className="block font-semibold text-white mb-1">
                   Fecha de nacimiento:
                 </label>
                 <input
@@ -488,18 +473,10 @@ function CrearSolicitud() {
                   name="fecha_nacimiento"
                   value={formData.fecha_nacimiento}
                   onChange={handleInputChange}
-                  className={`border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mt-2 ${
-                    isFechaNacimientoValid
-                      ? "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                      : "border-red-500 focus:ring-red-500 focus:border-red-500"
-                  }`}
+                  className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mt-2"
                 />
-                {!isFechaNacimientoValid && (
-                  <p className="text-red-500 mt-1">
-                    La fecha de nacimiento no puede ser en el futuro.
-                  </p>
-                )}
               </div>
+
 
               <div className="mr-4 w-full">
                 <label
