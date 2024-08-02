@@ -777,7 +777,7 @@ function Solicitudes() {
                                   {solicitud.nombre_especialidad}
                                 </td>
                                 <td className="border px-4 py-2">
-                                  {formattedDate}
+                                  {solicitud.fecha_solicitud}
                                 </td>
                                 <td className="border px-4 py-2">
                                   <div

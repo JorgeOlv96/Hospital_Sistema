@@ -56,32 +56,6 @@ function App() {
   useEffect(() => {
     const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
 
-    // Función para realizar el health-check
-    const checkHealth = async () => {
-      try {
-        const response = await fetch(`${baseURL}/api/health-check`);
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        console.log('Backend is active');
-      } catch (error) {
-        console.error('Error during health-check:', error);
-      }
-    };
-
-    // Configura un intervalo para hacer el health-check cada 5 minutos (300000 ms)
-    const interval = setInterval(checkHealth, 300000);
-
-    // Realiza un health-check inicial al cargar la aplicación
-    checkHealth();
-
-    // Limpia el intervalo al desmontar el componente
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
-
     // Función para contar las solicitudes
     const countSolicitudes = async () => {
       try {

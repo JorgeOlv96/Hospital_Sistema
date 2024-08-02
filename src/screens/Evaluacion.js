@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import Layout from "../Layout";
-import AddAppointmentModalPending from "../components/Modals/AddApointmentModalPending";
+import AddAppointmentModalEvaluar from "../components/Modals/AddApointmentModalEvaluar";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { AuthContext } from "../AuthContext";
@@ -132,7 +132,7 @@ function Evaluacion() {
         <h1 className="text-xl font-semibold">Evaluación pendientes</h1>
 
         {open && selectedAppointment && (
-          <AddAppointmentModalPending
+          <AddAppointmentModalEvaluar
             datas={pendingAppointments}
             isOpen={open}
             closeModal={handleModal}
