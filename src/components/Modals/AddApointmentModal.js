@@ -10,7 +10,7 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentId, onDeleteAppoin
   const modalRef = useRef(null);
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
 
-  const [reload, setReload] = useState (1);
+  const [reload, setReload] = useState(1);
 
   useEffect(() => {
     if (isOpen && appointmentId) {
@@ -33,7 +33,19 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentId, onDeleteAppoin
     }
   }, [isOpen, appointmentId, reload]);
 
-  
+  const handleDelete = async () => {
+    const confirmation = window.confirm('¿Estás seguro de que deseas eliminar esta solicitud?');
+    if (confirmation) {
+      try {
+        await axios.delete(`${baseURL}/api/solicitudes/${appointmentId}`);
+        onDeleteAppointment(appointmentId); // Notificar al componente padre que la solicitud ha sido eliminada
+        closeModal(); // Cerrar el modal
+      } catch (error) {
+        console.error('Error deleting appointment:', error);
+      }
+    }
+  };
+
   return (
     <Modal
       ref={modalRef}
@@ -163,12 +175,18 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentId, onDeleteAppoin
         </div>
       )}
 
-      <div className="flex justify-between">
+      <div className="flex justify-between mt-4">
         <button
           onClick={closeModal}
-          className="bg-[#001B58] bg-opacity-20 text-bg-[#001B58] text-sm p-4 rounded-lg font-light"
+          className="bg-[#001B58] bg-opacity-20 text-[#001B58] py-2 px-4 rounded-lg font-semibold"
         >
           Cerrar
+        </button>
+        <button
+          onClick={handleDelete}
+          className="bg-red-500 text-white py-2 px-4 rounded-lg font-semibold"
+        >
+          Eliminar solicitud
         </button>
       </div>
     </Modal>
@@ -176,4 +194,3 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentId, onDeleteAppoin
 }
 
 export default AddAppointmentModal;
-
