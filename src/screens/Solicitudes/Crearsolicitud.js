@@ -47,7 +47,7 @@ function CrearSolicitud() {
     Object.entries(especialidadToClave).map(([key, value]) => [value, key])
   );
 
-  const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
+  const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
   const [errors, setErrors] = useState({});
   const [nombre_especialidad, setNombreEspecialidad] = useState("");
   const [clave_esp, setClaveEspecialidad] = useState("");
@@ -74,7 +74,7 @@ function CrearSolicitud() {
     estado_solicitud: "Pendiente",
     procedimientos_paciente: "",
     procedimientos_extra: "",
-    diagnostico: ""
+    diagnostico: "",
   });
 
   // Función para obtener la fecha actual en el formato adecuado (YYYY-MM-DD)
@@ -103,7 +103,8 @@ function CrearSolicitud() {
 
   const fetchActiveSurgeons = async (inputValue) => {
     try {
-      const response = await fetch(`${baseURL}/cirujanos/activos?search=${inputValue}`
+      const response = await fetch(
+        `${baseURL}/cirujanos/activos?search=${inputValue}`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -126,10 +127,7 @@ function CrearSolicitud() {
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value,
-    })
-  );
-
-
+    }));
 
     // Validación de fecha de nacimiento
     if (name === "fecha_nacimiento") {
@@ -153,9 +151,7 @@ function CrearSolicitud() {
           turno_solicitado: "Especial",
         }));
       } else if (formData.hora_solicitada) {
-        const [hours] = (formData.hora_solicitada || "")
-          .split(":")
-          .map(Number);
+        const [hours] = (formData.hora_solicitada || "").split(":").map(Number);
         if (!isNaN(hours) && hours >= 7 && hours < 14) {
           setFormData((prevFormData) => ({
             ...prevFormData,
@@ -186,9 +182,7 @@ function CrearSolicitud() {
         dayOfWeek !== 6 &&
         formData.turno_solicitado !== "Especial"
       ) {
-        const [hours] = formData.hora_solicitada
-          .split(":")
-          .map(Number);
+        const [hours] = formData.hora_solicitada.split(":").map(Number);
         if (!isNaN(hours) && hours >= 7 && hours < 14) {
           setFormData((prevFormData) => ({
             ...prevFormData,
@@ -250,7 +244,6 @@ function CrearSolicitud() {
     }));
   };
 
-
   const validateForm = () => {
     const newErrors = {};
     Object.keys(formData).forEach((key) => {
@@ -262,10 +255,9 @@ function CrearSolicitud() {
     return Object.keys(newErrors).length === 0;
   };
 
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     // Validar el formulario
     if (validateForm()) {
       try {
@@ -277,16 +269,15 @@ function CrearSolicitud() {
           },
           body: JSON.stringify(formData),
         });
-  
+
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
-  
-  
+
         // Parsear la respuesta JSON
         const data = await response.json();
         console.log("Formulario válido y enviado:", formData);
-  
+
         // Redirigir al usuario después de un envío exitoso
         navigate("/solicitudes");
       } catch (error) {
@@ -298,529 +289,602 @@ function CrearSolicitud() {
     }
   };
 
-  const getTurnColor = (turno_solicitado) => {
-    switch (turno_solicitado) {
+  const getTurnColor = (turno_anestesio) => {
+    switch (turno_anestesio) {
       case "Matutino":
         return "rgba(129, 164, 255, 0.43)";
       case "Vespertino":
         return "rgba(109, 255, 19, 0.43)";
       case "Nocturno":
         return "rgba(255, 169, 89, 0.43)";
-      case "Especial":
-        return "#D3D3D3"; // Color para "Especial" o color predeterminado
       default:
-        return "#FFFFFF"; // Color predeterminado
+        return "#FFFFFF"; // color predeterminado
     }
   };
-  
 
   return (
     <Layout>
       <div className="flex flex-col gap-4 mb-6">
         <h1 className="text-xl font-semibold">Crear solicitud</h1>
 
-      <form onSubmit={handleSubmit}>
-        <div class="flex flex-col p-4 bg-[#557996] rounded-lg ">
-          <div class="flex mb-4">
-            <div class="w-full mr-4">
-              <label
-                for="fecha_solicitud"
-                class="block font-semibold text-white mb-1"
-              >
-                Fecha de solicitud:
-              </label>
-              <input
-                type="date"
-                id="fecha_solicitud"
-                name="fecha_solicitud"
-                value={formData.fecha_solicitud}
-                onChange={handleInputChange}
-                readOnly
-                className={`"border-[#A8CBD5]"} rounded-lg px-3 py-2 w-full bg-[#A8CBD5]`}
+        <form onSubmit={handleSubmit}>
+          <div class="flex flex-col p-4 bg-[#557996] rounded-lg ">
+            <div class="flex mb-4">
+              <div class="w-full mr-4">
+                <label
+                  for="fecha_solicitud"
+                  class="block font-semibold text-white mb-1"
+                >
+                  Fecha de solicitud:
+                </label>
+                <input
+                  type="date"
+                  id="fecha_solicitud"
+                  name="fecha_solicitud"
+                  value={formData.fecha_solicitud}
+                  onChange={handleInputChange}
+                  readOnly
+                  className={`"border-[#A8CBD5]"} rounded-lg px-3 py-2 w-full bg-[#A8CBD5]`}
                 />
-                
               </div>
-                <div class="w-full">
-                  <label for="curp" class="block font-semibold text-white mb-1">
-                CURP del paciente:
-              </label>
+              <div class="w-full">
+                <label for="curp" class="block font-semibold text-white mb-1">
+                  CURP del paciente:
+                </label>
 
-              <input
-                type="text"
-                id="curp"
-                name="curp"
-                placeholder="Curp del paciente"
-                value={formData.curp}
-                onChange={handleInputChange}
-                maxLength={18}
-                className={`border "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-              />
+                <input
+                  type="text"
+                  id="curp"
+                  name="curp"
+                  placeholder="Curp del paciente"
+                  value={formData.curp}
+                  onChange={handleInputChange}
+                  maxLength={18}
+                  className={`border "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+                />
+              </div>
             </div>
-          </div>
 
-          <div class="flex mb-4">
-            <div class="w-full mr-4">
-              <label
-                for="ap_paterno"
-                class="block font-semibold text-white mb-1"
-              >
-                Apellido paterno:
-              </label>
-              <input
-                placeholder="Apellido paterno paciente"
-                type="text"
-                id="ap_paterno"
-                name="ap_paterno"
-                value={formData.ap_paterno}
-                onChange={handleInputChange}
-                className={`border ${errors.ap_paterno ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+            <div class="flex mb-4">
+              <div class="w-full mr-4">
+                <label
+                  for="ap_paterno"
+                  class="block font-semibold text-white mb-1"
+                >
+                  Apellido paterno:
+                </label>
+                <input
+                  placeholder="Apellido paterno paciente"
+                  type="text"
+                  id="ap_paterno"
+                  name="ap_paterno"
+                  value={formData.ap_paterno}
+                  onChange={handleInputChange}
+                  className={`border ${
+                    errors.ap_paterno ? "border-red-500" : "border-gray-300"
+                  } rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
                 />
-                {errors.ap_paterno && <p className="text-red-500">{errors.ap_paterno}</p>}
+                {errors.ap_paterno && (
+                  <p className="text-red-500">{errors.ap_paterno}</p>
+                )}
               </div>
-            <div class="w-full mr-4">
-              <label
-                for="ap_materno"
-                class="block font-semibold text-white mb-1"
-              >
-                Apellido materno:
-              </label>
-              <input
-                placeholder="Apellido materno paciente"
-                type="text"
-                id="ap_materno"
-                name="ap_materno"
-                value={formData.ap_materno}
-                onChange={handleInputChange}
-                className={`border ${errors.ap_materno ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+              <div class="w-full mr-4">
+                <label
+                  for="ap_materno"
+                  class="block font-semibold text-white mb-1"
+                >
+                  Apellido materno:
+                </label>
+                <input
+                  placeholder="Apellido materno paciente"
+                  type="text"
+                  id="ap_materno"
+                  name="ap_materno"
+                  value={formData.ap_materno}
+                  onChange={handleInputChange}
+                  className={`border ${
+                    errors.ap_materno ? "border-red-500" : "border-gray-300"
+                  } rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
                 />
-                {errors.ap_materno && <p className="text-red-500">{errors.ap_materno}</p>}
+                {errors.ap_materno && (
+                  <p className="text-red-500">{errors.ap_materno}</p>
+                )}
               </div>
 
-            <div class="w-full mr-4">
-              <label
-                for="nombre_paciente"
-                class="block font-semibold text-white mb-1"
-              >
-                Nombre:
-              </label>
-              <input
-                placeholder="Nombre del paciente"
-                type="text"
-                id="nombre_paciente"
-                name="nombre_paciente"
-                value={formData.nombre_paciente}
-                onChange={handleInputChange}
-                className={`border ${errors.nombre_paciente ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+              <div class="w-full mr-4">
+                <label
+                  for="nombre_paciente"
+                  class="block font-semibold text-white mb-1"
+                >
+                  Nombre:
+                </label>
+                <input
+                  placeholder="Nombre del paciente"
+                  type="text"
+                  id="nombre_paciente"
+                  name="nombre_paciente"
+                  value={formData.nombre_paciente}
+                  onChange={handleInputChange}
+                  className={`border ${
+                    errors.nombre_paciente
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  } rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
                 />
-                {errors.nombre_paciente && <p className="text-red-500">{errors.nombre_paciente}</p>}
+                {errors.nombre_paciente && (
+                  <p className="text-red-500">{errors.nombre_paciente}</p>
+                )}
               </div>
 
               <div className="mr-4" style={{ width: "49%" }}>
-              <label
-                htmlFor="no_expediente"
-                className="block font-semibold text-white mb-1"
-              >
-                No. de expediente
-              </label>
-              <input
-               placeholder="No. de expediente"
-                type="text"
-                id="no_expediente"
-                name="no_expediente"
-                value={formData.no_expediente}
-                onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]"
-              />
-            </div>
-
-            <div className="mr-4" style={{ width: "41%" }}>
-              <label
-                htmlFor="sala_quirofano"
-                className="block font-semibold text-white mb-1"
-              >
-                Sala solicitada:
-              </label>
-              <select
-                type="text"
-                id="sala_quirofano"
-                name="sala_quirofano"
-                value={formData.sala_quirofano}
-                onChange={handleInputChange}
-                className={`border ${errors.nombre_paciente ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-                
-              >
-                <option value=""> Seleccionar </option>
-                <option value="A1">SALA A1</option>
-                <option value="A2">SALA A2</option>
-                <option value="T1">SALA T1</option>
-                <option value="T2">SALA T2</option>
-                <option value="1">SALA 1</option>
-                <option value="2">SALA 2</option>
-                <option value="3">SALA 3</option>
-                <option value="4">SALA 4</option>
-                <option value="5">SALA 5</option>
-                <option value="6">SALA 6</option>
-                <option value="E">SALA E</option>
-                <option value="H">SALA H</option>
-                <option value="RX">SALA RX</option>
-              </select>
-                {errors.nombre_paciente && <p className="text-red-500">{errors.nombre_paciente}</p>}
-            </div>
-          </div>
-
-          <div className="flex mb-4">
-            <div className="mr-4 w-full">
-              <label
-                htmlFor="fecha_nacimiento"
-                className="block font-semibold text-white mb-1"
-              >
-                Fecha de nacimiento:
-              </label>
-              <input
-                type="date"
-                id="fecha_nacimiento"
-                name="fecha_nacimiento"
-                value={formData.fecha_nacimiento}
-                onChange={handleInputChange}
-                className={`border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mt-2 ${
-                  isFechaNacimientoValid
-                    ? "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                    : "border-red-500 focus:ring-red-500 focus:border-red-500"
-                }`}
-              />
-              {!isFechaNacimientoValid && (
-                <p className="text-red-500 mt-1">
-                  La fecha de nacimiento no puede ser en el futuro.
-                </p>
-              )}
-            </div>
-
-            <div className="mr-4 w-full">
-              <label
-                htmlFor="edad"
-                className="block font-semibold text-white mb-1"
-              >
-                Edad
-              </label>
-              <input
-              placeholder="Edad de paciente"
-                type="int"
-                id="edad"
-                name="edad"
-                value={formData.edad}
-                onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mt-2"
-              />
-            </div>
-
-            <div className="mr-4 w-full" style={{ width: "100%" }}>
-              <label
-                htmlFor="sexo"
-                className="block font-semibold text-white mb-1"
-              >
-                Sexo:
-              </label>
-              <select
-                id="sexo"
-                name="sexo"
-                value={formData.sexo}
-                onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mt-2"
-              >
-                <option value=""> Seleccionar </option>
-                <option value="Masculino">Masculino</option>
-                <option value="Femenino">Femenino</option>
-                <option value="Otro">Otro</option>
-              </select>
-              {errors.sexo && <p className="text-red-500">{errors.sexo}</p>}
-            </div>
-
-            <div className="w-full" style={{ width: "100%" }}>
-              <label
-                htmlFor="id_cirujano"
-                className="block font-semibold text-white mb-3"
-              >
-                Cirujano encargado:
-              </label>
-              <input
-                placeholder="Nombre del cirujano"
-                type="text"
-                id="nombre_cirujano"
-                name="nombre_cirujano"
-                value={formData.nombre_cirujano}
-                onChange={handleInputChange}
-                className={`border ${errors.nombre_paciente ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+                <label
+                  htmlFor="no_expediente"
+                  className="block font-semibold text-white mb-1"
+                >
+                  No. de expediente
+                </label>
+                <input
+                  placeholder="No. de expediente"
+                  type="text"
+                  id="no_expediente"
+                  name="no_expediente"
+                  value={formData.no_expediente}
+                  onChange={handleInputChange}
+                  className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]"
                 />
-                {errors.nombre_cirujano && <p className="text-red-500">{errors.nombre_cirujano}</p>}
-              </div>
-          </div>
-
-          <div className="flex mb-4">
-            <div className="mr-4 w-full">
-              <label
-                htmlFor="tipo_admision"
-                className="block font-semibold text-white mb-1"
-              >
-                Procedencia del paciente:
-              </label>
-              <select
-                id="tipo_admision"
-                name="tipo_admision"
-                value={formData.tipo_admision}
-                onChange={handleInputChange}
-                className={`border ${errors.ap_paterno ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-                >
-                <option value=""> Seleccionar </option>
-                <option value="Cama">Cama</option>
-                <option value="Consulta externa">Consulta externa</option>
-                <option value="UrgenciaS">Urgencias</option>
-              </select>
-                {errors.ap_materno && <p className="text-red-500">{errors.ap_materno}</p>}
               </div>
 
-            <div className="mr-4 w-full">
-              <label
-                htmlFor="tipo_intervencion"
-                className="block font-semibold text-white mb-1"
-              >
-                Tipo de intervención quirúrgica planeada:
-              </label>
-              <select
-                id="tipo_intervencion"
-                name="tipo_intervencion"
-                value={formData.tipo_intervencion}
-                onChange={handleInputChange}
-                className={`border ${errors.tipo_intervencion ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+              <div className="mr-4" style={{ width: "41%" }}>
+                <label
+                  htmlFor="sala_quirofano"
+                  className="block font-semibold text-white mb-1"
                 >
-                <option value=""> Seleccionar </option>
-                <option value="Cirugía">Cirugía</option>
-                <option value="Procedimiento">Procedimiento</option>
-                <option value="Cirugía ambulatoria">Cirugía ambulatoria</option>
-              </select>
-              {errors.tipo_intervencion && <p className="text-red-500">{errors.tipo_intervencion}</p>}
+                  Sala solicitada:
+                </label>
+                <select
+                  type="text"
+                  id="sala_quirofano"
+                  name="sala_quirofano"
+                  value={formData.sala_quirofano}
+                  onChange={handleInputChange}
+                  className={`border ${
+                    errors.nombre_paciente
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  } rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+                >
+                  <option value=""> Seleccionar </option>
+                  <option value="A1">SALA A1</option>
+                  <option value="A2">SALA A2</option>
+                  <option value="T1">SALA T1</option>
+                  <option value="T2">SALA T2</option>
+                  <option value="1">SALA 1</option>
+                  <option value="2">SALA 2</option>
+                  <option value="3">SALA 3</option>
+                  <option value="4">SALA 4</option>
+                  <option value="5">SALA 5</option>
+                  <option value="6">SALA 6</option>
+                  <option value="E">SALA E</option>
+                  <option value="H">SALA H</option>
+                  <option value="RX">SALA RX</option>
+                </select>
+                {errors.nombre_paciente && (
+                  <p className="text-red-500">{errors.nombre_paciente}</p>
+                )}
+              </div>
             </div>
 
-            <div className="mr-4 w-full">
-              <label
-                htmlFor="nombre_especialidad"
-                className="block font-semibold text-white mb-1"
-              >
-                Especialidad:
-              </label>
-              <select
-                id="nombre_especialidad"
-                name="nombre_especialidad"
-                value={nombre_especialidad}
-                onChange={handleNombreEspecialidadChange}
-                className={`border ${errors.nombre_especialidad ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+            <div className="flex mb-4">
+              <div className="mr-4 w-full">
+                <label
+                  htmlFor="fecha_nacimiento"
+                  className="block font-semibold text-white mb-1"
                 >
-                <option value=""> Seleccionar </option>
-                {Object.keys(especialidadToClave).map((especialidad) => (
-                  <option key={especialidad} value={especialidad}>
-                    {especialidad}
+                  Fecha de nacimiento:
+                </label>
+                <input
+                  type="date"
+                  id="fecha_nacimiento"
+                  name="fecha_nacimiento"
+                  value={formData.fecha_nacimiento}
+                  onChange={handleInputChange}
+                  className={`border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mt-2 ${
+                    isFechaNacimientoValid
+                      ? "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                      : "border-red-500 focus:ring-red-500 focus:border-red-500"
+                  }`}
+                />
+                {!isFechaNacimientoValid && (
+                  <p className="text-red-500 mt-1">
+                    La fecha de nacimiento no puede ser en el futuro.
+                  </p>
+                )}
+              </div>
+
+              <div className="mr-4 w-full">
+                <label
+                  htmlFor="edad"
+                  className="block font-semibold text-white mb-1"
+                >
+                  Edad
+                </label>
+                <input
+                  placeholder="Edad de paciente"
+                  type="int"
+                  id="edad"
+                  name="edad"
+                  value={formData.edad}
+                  onChange={handleInputChange}
+                  className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mt-2"
+                />
+              </div>
+
+              <div className="mr-4 w-full" style={{ width: "100%" }}>
+                <label
+                  htmlFor="sexo"
+                  className="block font-semibold text-white mb-1"
+                >
+                  Sexo:
+                </label>
+                <select
+                  id="sexo"
+                  name="sexo"
+                  value={formData.sexo}
+                  onChange={handleInputChange}
+                  className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mt-2"
+                >
+                  <option value=""> Seleccionar </option>
+                  <option value="Masculino">Masculino</option>
+                  <option value="Femenino">Femenino</option>
+                  <option value="Otro">Otro</option>
+                </select>
+                {errors.sexo && <p className="text-red-500">{errors.sexo}</p>}
+              </div>
+
+              <div className="w-full" style={{ width: "100%" }}>
+                <label
+                  htmlFor="id_cirujano"
+                  className="block font-semibold text-white mb-3"
+                >
+                  Cirujano encargado:
+                </label>
+                <input
+                  placeholder="Nombre del cirujano"
+                  type="text"
+                  id="nombre_cirujano"
+                  name="nombre_cirujano"
+                  value={formData.nombre_cirujano}
+                  onChange={handleInputChange}
+                  className={`border ${
+                    errors.nombre_paciente
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  } rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+                />
+                {errors.nombre_cirujano && (
+                  <p className="text-red-500">{errors.nombre_cirujano}</p>
+                )}
+              </div>
+            </div>
+
+            <div className="flex mb-4">
+              <div className="mr-4 w-full">
+                <label
+                  htmlFor="tipo_admision"
+                  className="block font-semibold text-white mb-1"
+                >
+                  Procedencia del paciente:
+                </label>
+                <select
+                  id="tipo_admision"
+                  name="tipo_admision"
+                  value={formData.tipo_admision}
+                  onChange={handleInputChange}
+                  className={`border ${
+                    errors.ap_paterno ? "border-red-500" : "border-gray-300"
+                  } rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+                >
+                  <option value=""> Seleccionar </option>
+                  <option value="Cama">Cama</option>
+                  <option value="Consulta externa">Consulta externa</option>
+                  <option value="UrgenciaS">Urgencias</option>
+                </select>
+                {errors.ap_materno && (
+                  <p className="text-red-500">{errors.ap_materno}</p>
+                )}
+              </div>
+
+              <div className="mr-4 w-full">
+                <label
+                  htmlFor="tipo_intervencion"
+                  className="block font-semibold text-white mb-1"
+                >
+                  Tipo de intervención quirúrgica planeada:
+                </label>
+                <select
+                  id="tipo_intervencion"
+                  name="tipo_intervencion"
+                  value={formData.tipo_intervencion}
+                  onChange={handleInputChange}
+                  className={`border ${
+                    errors.tipo_intervencion
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  } rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+                >
+                  <option value=""> Seleccionar </option>
+                  <option value="Cirugía">Cirugía</option>
+                  <option value="Procedimiento">Procedimiento</option>
+                  <option value="Cirugía ambulatoria">
+                    Cirugía ambulatoria
                   </option>
-                ))}
-              </select>
-              {errors.nombre_especialidad && <p className="text-red-500">{errors.nombre_especialidad}</p>}
+                </select>
+                {errors.tipo_intervencion && (
+                  <p className="text-red-500">{errors.tipo_intervencion}</p>
+                )}
               </div>
 
-            <div className="w-full">
-              <label
-                htmlFor="clave_esp"
-                className="block font-semibold text-white mb-1"
-              >
-                Clave de especialidad:
-              </label>
-              <select
-                id="clave_esp"
-                name="clave_esp"
-                value={clave_esp}
-                onChange={handleClaveEspecialidadChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value=""> Seleccionar </option>
-                {Object.values(especialidadToClave).map((clave) => (
-                  <option key={clave} value={clave}>
-                    {clave}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          <div className="flex mb-4">
-            <div className="mr-4 w-full">
-              <label
-                htmlFor="hora_solicitada"
-                className="block font-semibold text-white mb-1"
-              >
-                Hora solicitada:
-              </label>
-              <input
-                type="time"
-                id="hora_solicitada"
-                name="hora_solicitada"
-                value={formData.hora_solicitada}
-                onChange={handleInputChange}
-                className={`border ${errors.hora_solicitada ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-                />
-                {errors.hora_solicitada && <p className="text-red-500">{errors.hora_solicitada}</p>}
-              </div>
-
-            <div className="mr-4 w-full">
-              <label
-                htmlFor="fecha_solicitada"
-                className="block font-semibold text-white mb-1"
-              >
-                Fecha solicitada:
-              </label>
-              <input
-                type="date"
-                id="fecha_solicitada"
-                name="fecha_solicitada"
-                value={formData.fecha_solicitada}
-                onChange={handleInputChange}
-                className={`border ${errors.fecha_solicitada ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-                />
-                {errors.fecha_solicitada && <p className="text-red-500">{errors.fecha_solicitada}</p>}
-              </div>
-
-            <div className="mr-4 w-full">
-              <label
-                htmlFor="tiempo_estimado"
-                className="block font-semibold text-white mb-1"
-              >
-                Tiempo estimado de cirugía:
-              </label>
-              <input
-              placeholder="Minutos"
-                type="int"
-                id="tiempo_estimado"
-                name="tiempo_estimado"
-                value={formData.tiempo_estimado}
-                onChange={handleInputChange}
-                className={`border ${errors.tiempo_estimado ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-                />
-                {errors.tiempo_estimado && <p className="text-red-500">{errors.tiempo_estimado}</p>}
-              </div>
-
-            <div className="w-full">
-              <label
-                htmlFor="turno_solicitado"
-                className="block font-semibold text-white mb-1"
-              >
-                Turno solicitado:
-              </label>
-              <select
-                id="turno_solicitado"
-                name="turno_solicitado"
-                value={formData.turno_solicitado}
-                onChange={handleInputChange}
-                className={`border ${errors.turno_solicitado ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+              <div className="mr-4 w-full">
+                <label
+                  htmlFor="nombre_especialidad"
+                  className="block font-semibold text-white mb-1"
                 >
-                <option value=""> Seleccionar </option>
-                <option value="Matutino">Matutino</option>
-                <option value="Vespertino">Vespertino</option>
-                <option value="Nocturno">Nocturno</option>
-                <option value="Especial">Especial</option>
-              </select>
-              {errors.turno_solicitado && <p className="text-red-500">{errors.turno_solicitado}</p>}
-            </div>
-          </div>
-
-          <div className="flex mb-4">
-            <div className="mr-4 w-full">
-              <label
-                htmlFor="procedimientos_paciente"
-                className="block font-semibold text-white mb-1"
-              >
-                Procedimientos del paciente:
-              </label>
-              <ProcedureSelect onChange={handleProcedureChange} />
-              {errors.procedimientos_paciente && <p className="text-red-500">{errors.procedimientos_paciente}</p>}
-            </div>
-
-
-              
-
-
-            <div className="mr-4" style={{ width: "15%" }}>
-              <label
-                htmlFor="se_preveen"
-                className="block font-semibold text-white mb-1"
-              >
-                Se preveén: (más)
-              </label>
-              <select
-                id="procedimientos_extra"
-                name="procedimientos_extra"
-                value={formData.procedimientos_extra}
-                onChange={handleInputChange}
-                className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                <option value=""> Seleccionar </option>
-                {[...Array(99)].map((_, i) => (
-                  <option key={i+0} value={i+0}>
-                    {i+0}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="mr-4" style={{ width: "14%" }}>
-              <label
-                htmlFor="req_insumo"
-                className="block font-semibold text-white mb-1"
-              >
-                Insumos:
-              </label>
-              <select
-                id="req_insumo"
-                name="req_insumo"
-                value={formData.req_insumo}
-                onChange={handleInputChange}
-                className={` ${errors.req_insumo ? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+                  Especialidad:
+                </label>
+                <select
+                  id="nombre_especialidad"
+                  name="nombre_especialidad"
+                  value={nombre_especialidad}
+                  onChange={handleNombreEspecialidadChange}
+                  className={`border ${
+                    errors.nombre_especialidad
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  } rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
                 >
-                <option value="">Seleccionar</option>
-                <option value="Si">Si</option>
-                <option value="No">No</option>
-              </select>
-              {errors.req_insumo && <p className="text-red-500">{errors.req_insumo}</p>}
+                  <option value=""> Seleccionar </option>
+                  {Object.keys(especialidadToClave).map((especialidad) => (
+                    <option key={especialidad} value={especialidad}>
+                      {especialidad}
+                    </option>
+                  ))}
+                </select>
+                {errors.nombre_especialidad && (
+                  <p className="text-red-500">{errors.nombre_especialidad}</p>
+                )}
               </div>
-          </div>
 
-          <div className="flex mb-4">
-            <div className="mr-4" style={{ width: "50%" }}>
-              <label
-                htmlFor="diagnostico_paciente"
-                className="block font-semibold text-white mb-1"
-              >
-                Diagnóstico del paciente
-              </label>
-              <textarea
-                placeholder="Diagnóstico del paciente"
-                id="diagnostico"
-                name="diagnostico"
-                rows="4"
-                value={formData.diagnostico}
-                onChange={handleInputChange}
-                className={`border ${errors.diagnostico? "border-red-500" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+              <div className="w-full">
+                <label
+                  htmlFor="clave_esp"
+                  className="block font-semibold text-white mb-1"
                 >
-              </textarea>
-              {errors.diagnostico && <p className="text-red-500">{errors.diagnostico}</p>}
+                  Clave de especialidad:
+                </label>
+                <select
+                  id="clave_esp"
+                  name="clave_esp"
+                  value={clave_esp}
+                  onChange={handleClaveEspecialidadChange}
+                  className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value=""> Seleccionar </option>
+                  {Object.values(especialidadToClave).map((clave) => (
+                    <option key={clave} value={clave}>
+                      {clave}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+            <div className="flex mb-4">
+              <div className="mr-4 w-full">
+                <label
+                  htmlFor="hora_solicitada"
+                  className="block font-semibold text-white mb-1"
+                >
+                  Hora solicitada:
+                </label>
+                <input
+                  type="time"
+                  id="hora_solicitada"
+                  name="hora_solicitada"
+                  value={formData.hora_solicitada}
+                  onChange={handleInputChange}
+                  className={`border ${
+                    errors.hora_solicitada
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  } rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+                />
+                {errors.hora_solicitada && (
+                  <p className="text-red-500">{errors.hora_solicitada}</p>
+                )}
+              </div>
+
+              <div className="mr-4 w-full">
+                <label
+                  htmlFor="fecha_solicitada"
+                  className="block font-semibold text-white mb-1"
+                >
+                  Fecha solicitada:
+                </label>
+                <input
+                  type="date"
+                  id="fecha_solicitada"
+                  name="fecha_solicitada"
+                  value={formData.fecha_solicitada}
+                  onChange={handleInputChange}
+                  className={`border ${
+                    errors.fecha_solicitada
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  } rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+                />
+                {errors.fecha_solicitada && (
+                  <p className="text-red-500">{errors.fecha_solicitada}</p>
+                )}
+              </div>
+
+              <div className="mr-4 w-full">
+                <label
+                  htmlFor="tiempo_estimado"
+                  className="block font-semibold text-white mb-1"
+                >
+                  Tiempo estimado de cirugía:
+                </label>
+                <input
+                  placeholder="Minutos"
+                  type="int"
+                  id="tiempo_estimado"
+                  name="tiempo_estimado"
+                  value={formData.tiempo_estimado}
+                  onChange={handleInputChange}
+                  className={`border ${
+                    errors.tiempo_estimado
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  } rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+                />
+                {errors.tiempo_estimado && (
+                  <p className="text-red-500">{errors.tiempo_estimado}</p>
+                )}
+              </div>
+
+              <div className="w-full">
+                <label
+                  htmlFor="turno_solicitado"
+                  className="block font-semibold text-white mb-1"
+                >
+                  Turno solicitado:
+                </label>
+                <select
+                  id="turno_solicitado"
+                  name="turno_solicitado"
+                  value={formData.turno_solicitado}
+                  onChange={handleInputChange}
+                  className={` ${
+                    errors.turno_solicitado
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  } rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+                  style={{
+                    backgroundColor: getTurnColor(formData.turno_solicitado),
+                  }}
+                >
+                  <option value="">Seleccionar</option>
+                  <option value="Matutino">Matutino</option>
+                  <option value="Vespertino">Vespertino</option>
+                  <option value="Nocturno">Nocturno</option>
+                  <option value="Especial">Especial</option>
+                </select>
+                {errors.turno_solicitado && (
+                  <p className="text-red-500">{errors.turno_solicitado}</p>
+                )}
+              </div>
+            </div>
+
+            <div className="flex mb-4">
+              <div className="mr-4 w-full">
+                <label
+                  htmlFor="procedimientos_paciente"
+                  className="block font-semibold text-white mb-1"
+                >
+                  Procedimientos del paciente:
+                </label>
+                <ProcedureSelect onChange={handleProcedureChange} />
+                {errors.procedimientos_paciente && (
+                  <p className="text-red-500">
+                    {errors.procedimientos_paciente}
+                  </p>
+                )}
+              </div>
+
+              <div className="mr-4" style={{ width: "15%" }}>
+                <label
+                  htmlFor="se_preveen"
+                  className="block font-semibold text-white mb-1"
+                >
+                  Se preveén: (más)
+                </label>
+                <select
+                  id="procedimientos_extra"
+                  name="procedimientos_extra"
+                  value={formData.procedimientos_extra}
+                  onChange={handleInputChange}
+                  className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value=""> Seleccionar </option>
+                  {[...Array(99)].map((_, i) => (
+                    <option key={i + 0} value={i + 0}>
+                      {i + 0}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="mr-4" style={{ width: "14%" }}>
+                <label
+                  htmlFor="req_insumo"
+                  className="block font-semibold text-white mb-1"
+                >
+                  Insumos:
+                </label>
+                <select
+                  id="req_insumo"
+                  name="req_insumo"
+                  value={formData.req_insumo}
+                  onChange={handleInputChange}
+                  className={` ${
+                    errors.req_insumo ? "border-red-500" : "border-gray-300"
+                  } rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+                >
+                  <option value="">Seleccionar</option>
+                  <option value="Si">Si</option>
+                  <option value="No">No</option>
+                </select>
+                {errors.req_insumo && (
+                  <p className="text-red-500">{errors.req_insumo}</p>
+                )}
+              </div>
+            </div>
+
+            <div className="flex mb-4">
+              <div className="mr-4" style={{ width: "50%" }}>
+                <label
+                  htmlFor="diagnostico_paciente"
+                  className="block font-semibold text-white mb-1"
+                >
+                  Diagnóstico del paciente
+                </label>
+                <textarea
+                  placeholder="Diagnóstico del paciente"
+                  id="diagnostico"
+                  name="diagnostico"
+                  rows="4"
+                  value={formData.diagnostico}
+                  onChange={handleInputChange}
+                  className={`border ${
+                    errors.diagnostico ? "border-red-500" : "border-gray-300"
+                  } rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+                ></textarea>
+                {errors.diagnostico && (
+                  <p className="text-red-500">{errors.diagnostico}</p>
+                )}
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="flex justify-center mt-4">
-          <button
-            type="submit"
-            className="bg-[#365b77] text-white px-4 py-2 rounded"
-          >
-            Enviar
-          </button>
-        </div>
-      </form>
+          <div className="flex justify-center mt-4">
+            <button
+              type="submit"
+              className="bg-[#365b77] text-white px-4 py-2 rounded"
+            >
+              Enviar
+            </button>
+          </div>
+        </form>
       </div>
     </Layout>
   );

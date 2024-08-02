@@ -14,7 +14,7 @@ function AddAppointmentModalEvaluar({
   const [isEditing, setIsEditing] = useState(false);
   const [originalData, setOriginalData] = useState({});
   const modalRef = useRef(null);
-  const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
+  const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -28,7 +28,9 @@ function AddAppointmentModalEvaluar({
     if (isOpen && appointmentId) {
       const fetchAppointmentData = async () => {
         try {
-          const response = await fetch(`${baseURL}/api/solicitudes/${appointmentId}`);
+          const response = await fetch(
+            `${baseURL}/api/solicitudes/${appointmentId}`
+          );
           if (!response.ok) {
             throw new Error("Network response was not ok");
           }
@@ -49,16 +51,19 @@ function AddAppointmentModalEvaluar({
   const handleSaveChanges = async () => {
     try {
       console.log("Datos a enviar:", patientData);
-      console.log("ID de la solicitud:", appointmentId);  // Verificar el appointmentId
-    
-      const response = await fetch(`${baseURL}/api/solicitudes/actualizarevaluacion/${appointmentId}`, {
-        method: "PATCH",
-        body: JSON.stringify(patientData),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-    
+      console.log("ID de la solicitud:", appointmentId); // Verificar el appointmentId
+
+      const response = await fetch(
+        `${baseURL}/api/solicitudes/actualizarevaluacion/${appointmentId}`,
+        {
+          method: "PATCH",
+          body: JSON.stringify(patientData),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -68,8 +73,6 @@ function AddAppointmentModalEvaluar({
       console.error("Error saving changes:", error);
     }
   };
-  
-  
 
   const handleCancelChanges = () => {
     setPatientData(originalData); // Deshacer cambios
@@ -78,9 +81,12 @@ function AddAppointmentModalEvaluar({
 
   const handlePreprogramar = async () => {
     try {
-      const response = await fetch(`${baseURL}/api/solicitudes/preprogramar/${appointmentId}`, {
-        method: "PUT",
-      });
+      const response = await fetch(
+        `${baseURL}/api/solicitudes/preprogramar/${appointmentId}`,
+        {
+          method: "PUT",
+        }
+      );
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -130,7 +136,8 @@ function AddAppointmentModalEvaluar({
                     name="ap_paterno"
                     value={patientData.ap_paterno}
                     onChange={handleChange}
-                    className="bg-white p-3 rounded-lg"
+                    className="bg-white p-3 rounded-lg w-full"
+                    style={{ maxWidth: "100%", boxSizing: "border-box" }}
                   />
                 ) : (
                   <p className="bg-gray-200 p-3 rounded-lg">
@@ -149,7 +156,8 @@ function AddAppointmentModalEvaluar({
                     name="ap_materno"
                     value={patientData.ap_materno}
                     onChange={handleChange}
-                    className="bg-white p-3 rounded-lg"
+                    className="bg-white p-3 rounded-lg w-full"
+                    style={{ maxWidth: "100%", boxSizing: "border-box" }}
                   />
                 ) : (
                   <p className="bg-gray-200 p-3 rounded-lg">
@@ -168,7 +176,8 @@ function AddAppointmentModalEvaluar({
                     name="nombre_paciente"
                     value={patientData.nombre_paciente}
                     onChange={handleChange}
-                    className="bg-white p-3 rounded-lg"
+                    className="bg-white p-3 rounded-lg w-full"
+                    style={{ maxWidth: "100%", boxSizing: "border-box" }}
                   />
                 ) : (
                   <p className="bg-gray-200 p-3 rounded-lg">
@@ -187,7 +196,8 @@ function AddAppointmentModalEvaluar({
                     name="sexo"
                     value={patientData.sexo}
                     onChange={handleChange}
-                    className="bg-white p-3 rounded-lg"
+                    className="bg-white p-3 rounded-lg w-full"
+                    style={{ maxWidth: "100%", boxSizing: "border-box" }}
                   />
                 ) : (
                   <p className="bg-gray-200 p-3 rounded-lg">
@@ -200,7 +210,7 @@ function AddAppointmentModalEvaluar({
 
           <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
             <div className="flex mb-4">
-            <div className="mr-4 w-full">
+              <div className="mr-4 w-full">
                 <label className="block font-semibold text-gray-700 mb-2">
                   Tipo de admisión:
                 </label>
@@ -223,7 +233,6 @@ function AddAppointmentModalEvaluar({
                 )}
               </div>
 
-
               <div className="mr-4 w-full">
                 <label className="block font-semibold text-gray-700 mb-2">
                   Tipo de intervención:
@@ -239,7 +248,9 @@ function AddAppointmentModalEvaluar({
                     <option value="">-Seleccionar-</option>
                     <option value="Cirugía">Cirugia</option>
                     <option value="Procedimiento">Procedimiento</option>
-                    <option value="Cirugía ambulatoria">Cirugia ambulatoria</option>
+                    <option value="Cirugía ambulatoria">
+                      Cirugia ambulatoria
+                    </option>
                   </select>
                 ) : (
                   <p className="bg-gray-200 p-3 rounded-lg">
@@ -383,7 +394,7 @@ function AddAppointmentModalEvaluar({
 
           <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
             <div className="flex mb-4">
-            <div className="mr-4 w-full">
+              <div className="mr-4 w-full">
                 <label className="block font-semibold text-gray-700 mb-2">
                   Procedimientos paciente:
                 </label>
@@ -411,46 +422,43 @@ function AddAppointmentModalEvaluar({
             </div>
           </div>
 
-
-
           <div className="flex justify-between mt-4">
-  <button
-    onClick={handlePreprogramar}
-    className="bg-[#001B58] bg-opacity-20 text-[#001B58] text-sm p-4 rounded-lg font-light"
-    style={{ marginBottom: "8px" }}
-  >
-    Pre-programar
-  </button>
+            <button
+              onClick={handlePreprogramar}
+              className="bg-[#06ABC9] bg-opacity-20 text-[#001B58] text-sm p-4 rounded-lg font-light"
+              style={{ marginBottom: "8px" }}
+            >
+              Pre-programar
+            </button>
 
-  <div className="flex space-x-2">
-    {isEditing ? (
-      <>
-        <button
-          className="bg-[#001B58] bg-opacity-20 text-[#001B58] text-sm p-4 rounded-lg font-light"
-          onClick={handleCancelChanges}
-        >
-          Cancelar
-        </button>
-        <button
-          className="bg-[#001B58] bg-opacity-20 text-[#001B58] text-sm p-4 rounded-lg font-light"
-          onClick={handleSaveChanges}
-        >
-          Guardar Cambios
-        </button>
-      </>
-    ) : (
-      <>
-        <button
-          className="bg-[#001B58] bg-opacity-20 text-[#001B58] text-sm p-4 rounded-lg font-light"
-          onClick={() => setIsEditing(true)}
-        >
-          Editar
-        </button>
-      </>
-    )}
-  </div>
-</div>
-
+            <div className="flex space-x-2">
+              {isEditing ? (
+                <>
+                  <button
+                      className="bg-red-500 bg-opacity-20 text-red-500 text-sm p-4 rounded-lg font-light"
+                      onClick={handleCancelChanges}
+                    >
+                      Cancelar
+                    </button>
+                    <button
+                      className="bg-green-500 bg-opacity-20 text-green-500 text-sm p-4 rounded-lg font-light"
+                      onClick={handleSaveChanges}
+                    >
+                      Guardar Cambios
+                    </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    className="bg-blue-500 bg-opacity-20 text-blue-500 text-sm p-4 rounded-lg font-light"
+                    onClick={() => setIsEditing(true)}
+                  >
+                    Editar
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
         </div>
       )}
     </Modal>

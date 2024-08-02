@@ -7,11 +7,6 @@ import { AuthContext } from "../AuthContext";
 
 function Evaluacion() {
   const [pendingAppointments, setPendingAppointments] = useState([]);
-  const [filter, setFilter] = useState({
-    fecha: "",
-    especialidad: "",
-    estado: "Pendiente",
-  });
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [open, setOpen] = useState(false);
   const [sortBy, setSortBy] = useState(null);
@@ -19,8 +14,12 @@ function Evaluacion() {
   const [page, setPage] = useState(1);
   const itemsPerPage = 10;
   const { user } = useContext(AuthContext);
-  const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
+  const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
 
+  // Estados para los filtros
+  const [nameFilter, setNameFilter] = useState("");
+  const [specialtyFilter, setSpecialtyFilter] = useState("");
+  const [dateFilter, setDateFilter] = useState("");
 
   useEffect(() => {
     fetchPendingAppointments();
@@ -28,8 +27,7 @@ function Evaluacion() {
 
   const fetchPendingAppointments = async () => {
     try {
-      const response = await fetch(`${baseURL}/api/solicitudes/pendientes`
-      );
+      const response = await fetch(`${baseURL}/api/solicitudes/pendientes`);
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -38,14 +36,6 @@ function Evaluacion() {
     } catch (error) {
       console.error("Error fetching pending appointments:", error);
     }
-  };
-
-  const handleFilterChange = (e) => {
-    const { name, value } = e.target;
-    setFilter({
-      ...filter,
-      [name]: value,
-    });
   };
 
   const handleViewModal = (appointment) => {
@@ -58,10 +48,8 @@ function Evaluacion() {
   };
 
   const handleDeleteAppointment = (appointmentId) => {
-    // Implementa la lógica para eliminar una cita aquí
     console.log("Eliminar cita con id:", appointmentId);
   };
-
 
   const getEstadoColor = (estado) => {
     switch (estado.toLowerCase()) {
@@ -82,11 +70,10 @@ function Evaluacion() {
     }
   };
 
-
   const getEstadoColorStyle = (estado) => {
     switch (estado.toLowerCase()) {
       case "pendiente":
-        return { backgroundColor: "#E9972F", color: "black" }; // Color de fondo rojo y texto negro
+        return { backgroundColor: "#E9972F", color: "black" };
       default:
         return {};
     }
@@ -112,15 +99,21 @@ function Evaluacion() {
     return 0;
   });
 
+  // Método de filtrado
   const filteredAppointments = sortedAppointments.filter((appointment) => {
-    return (
-      (filter.fecha === "" ||
-        appointment.fecha_solicitud.includes(filter.fecha)) &&
-      (filter.especialidad === "" ||
-        appointment.nombre_especialidad.includes(filter.especialidad)) &&
-      (filter.estado === "" ||
-        appointment.estado_solicitud.includes(filter.estado))
-    );
+    const matchesName =
+      `${appointment.nombre_paciente} ${appointment.ap_paterno} ${appointment.ap_materno}`
+        .toLowerCase()
+        .includes(nameFilter.toLowerCase());
+    const matchesSpecialty = appointment.nombre_especialidad
+      .toLowerCase()
+      .includes(specialtyFilter.toLowerCase());
+    const matchesDate = dateFilter
+      ? new Date(appointment.fecha_solicitada).toISOString().slice(0, 10) ===
+        dateFilter
+      : true;
+
+    return matchesName && matchesSpecialty && matchesDate;
   });
 
   const startIndex = (page - 1) * itemsPerPage;
@@ -141,42 +134,28 @@ function Evaluacion() {
           />
         )}
 
-        <div className="flex mb-4 space-x-4">
-          <div className="flex-1">
-            <label className="block font-semibold">Filtrar por Fecha:</label>
-            <input
-              type="date"
-              name="fecha"
-              value={filter.fecha}
-              onChange={handleFilterChange}
-              className="border border-gray-300 rounded-lg px-2 py-1 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]"
-            />
-          </div>
-
-          <div className="flex-1">
-            <label className="block font-semibold">
-              Filtrar por Especialidad:
-            </label>
-            <input
-              type="text"
-              name="especialidad"
-              value={filter.especialidad}
-              onChange={handleFilterChange}
-              className="border border-gray-300 rounded-lg px-2 py-1 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]"
-            />
-          </div>
-
-          <div className="flex-1">
-            <label className="block font-semibold">Estado de Solicitud:</label>
-            <input
-              type="text"
-              name="estado"
-              value={filter.estado}
-              onChange={handleFilterChange}
-              readOnly
-              className="rounded-lg px-2 py-1 shadow-sm w-full bg-[#E9972F] cursor-default "
-            />
-          </div>
+        {/* Filtros */}
+        <div className="flex gap-4 mb-4">
+          <input
+            type="text"
+            placeholder="Filtrar por nombre"
+            value={nameFilter}
+            onChange={(e) => setNameFilter(e.target.value)}
+            className="border rounded-lg px-4 py-2"
+          />
+          <input
+            type="text"
+            placeholder="Filtrar por especialidad"
+            value={specialtyFilter}
+            onChange={(e) => setSpecialtyFilter(e.target.value)}
+            className="border rounded-lg px-4 py-2"
+          />
+          <input
+            type="date"
+            value={dateFilter}
+            onChange={(e) => setDateFilter(e.target.value)}
+            className="border rounded-lg px-4 py-2"
+          />
         </div>
 
         {filteredAppointments.length === 0 ? (
@@ -188,41 +167,98 @@ function Evaluacion() {
             <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
               <thead className="bg-[#365b77] text-white">
                 <tr>
-                  <th className="px-4 py-2 cursor-pointer" onClick={() => handleSort("folio")}>
-                    Folio <span>{sortBy === "folio" ? (sortOrder === "asc" ? "▲" : "▼") : ""}</span>
+                  <th
+                    className="px-4 py-2 cursor-pointer"
+                    onClick={() => handleSort("folio")}
+                  >
+                    Folio{" "}
+                    <span>
+                      {sortBy === "folio"
+                        ? sortOrder === "asc"
+                          ? "▲"
+                          : "▼"
+                        : ""}
+                    </span>
                   </th>
-                  <th className="px-4 py-2 cursor-pointer" onClick={() => handleSort("nombre_paciente")}>
-                    Nombre del paciente <span>{sortBy === "nombre_paciente" ? (sortOrder === "asc" ? "▲" : "▼") : ""}</span>
+                  <th
+                    className="px-4 py-2 cursor-pointer"
+                    onClick={() => handleSort("nombre_paciente")}
+                  >
+                    Nombre del paciente{" "}
+                    <span>
+                      {sortBy === "nombre_paciente"
+                        ? sortOrder === "asc"
+                          ? "▲"
+                          : "▼"
+                        : ""}
+                    </span>
                   </th>
-                  <th className="px-4 py-2 cursor-pointer" onClick={() => handleSort("nombre_especialidad")}>
-                    Especialidad <span>{sortBy === "nombre_especialidad" ? (sortOrder === "asc" ? "▲" : "▼") : ""}</span>
+                  <th
+                    className="px-4 py-2 cursor-pointer"
+                    onClick={() => handleSort("nombre_especialidad")}
+                  >
+                    Especialidad{" "}
+                    <span>
+                      {sortBy === "nombre_especialidad"
+                        ? sortOrder === "asc"
+                          ? "▲"
+                          : "▼"
+                        : ""}
+                    </span>
                   </th>
-                  <th className="px-4 py-2 cursor-pointer" onClick={() => handleSort("fecha_solicitada")}>
-                    Fecha solicitada <span>{sortBy === "fecha_solicitada" ? (sortOrder === "asc" ? "▲" : "▼") : ""}</span>
+                  <th
+                    className="px-4 py-2 cursor-pointer"
+                    onClick={() => handleSort("fecha_solicitada")}
+                  >
+                    Fecha solicitada{" "}
+                    <span>
+                      {sortBy === "fecha_solicitada"
+                        ? sortOrder === "asc"
+                          ? "▲"
+                          : "▼"
+                        : ""}
+                    </span>
                   </th>
-                  <th className="px-4 py-2 cursor-pointer" onClick={() => handleSort("sala_quirofano")}>
-                    Sala solicitada <span>{sortBy === "sala_quirofano" ? (sortOrder === "asc" ? "▲" : "▼") : ""}</span>
+                  <th
+                    className="px-4 py-2 cursor-pointer"
+                    onClick={() => handleSort("sala_quirofano")}
+                  >
+                    Sala solicitada{" "}
+                    <span>
+                      {sortBy === "sala_quirofano"
+                        ? sortOrder === "asc"
+                          ? "▲"
+                          : "▼"
+                        : ""}
+                    </span>
                   </th>
-                  <th className="px-4 py-2 cursor-pointer">
-                    Estado 
-                  </th>
+                  <th className="px-4 py-2 cursor-pointer">Estado</th>
                   <th className="px-4 py-3">Acciones</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredAppointments.slice(startIndex, endIndex).map((appointment) => (
-                  <tr key={appointment.id} className="bg-blue-50 hover:bg-blue-300">
-                    <td className="px-4 py-2">{appointment.folio}</td>
-                    <td className="px-4 py-2">
-                      {appointment.nombre_paciente} {appointment.ap_paterno}{" "}
-                      {appointment.ap_materno}
-                    </td>
-                    <td className="px-4 py-2">{appointment.nombre_especialidad}</td>
-                    <td className="px-4 py-2">{appointment.fecha_solicitada}</td>
-                    <td className="px-4 py-2 flex justify-center">
-                      {appointment.sala_quirofano}
-                    </td>
-                    <td className="border px-4 py-2">
+                {filteredAppointments
+                  .slice(startIndex, endIndex)
+                  .map((appointment) => (
+                    <tr
+                      key={appointment.id}
+                      className="bg-blue-50 hover:bg-blue-300"
+                    >
+                      <td className="px-4 py-2">{appointment.folio}</td>
+                      <td className="px-4 py-2">
+                        {appointment.nombre_paciente} {appointment.ap_paterno}{" "}
+                        {appointment.ap_materno}
+                      </td>
+                      <td className="px-4 py-2">
+                        {appointment.nombre_especialidad}
+                      </td>
+                      <td className="px-4 py-2">
+                        {appointment.fecha_solicitada}
+                      </td>
+                      <td className="px-4 py-2 flex justify-center">
+                        {appointment.sala_quirofano}
+                      </td>
+                      <td className="border px-4 py-2">
                         <div
                           className={`inline-block px-1 py-1 rounded-lg ${getEstadoColor(
                             appointment.estado_solicitud
@@ -242,40 +278,40 @@ function Evaluacion() {
                           {appointment.estado_solicitud}
                         </div>
                       </td>
-                    <td className="px-4 py-2 flex justify-center">
-                      <button
-                        onClick={() => handleViewModal(appointment)}
-                        className="bg-[#365b77] text-white px-5 py-2 rounded-md hover:bg-blue-800"
-                      >
-                        Ver
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-                 </tbody>
+                      <td className="px-4 py-2 flex justify-center">
+                        <button
+                          onClick={() => handleViewModal(appointment)}
+                          className="bg-[#365b77] text-white px-5 py-2 rounded-md hover:bg-blue-800"
+                        >
+                          Ver
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
             </table>
           </div>
         )}
-            {/* Paginación */}
-          <div className="flex justify-center mt-4">
-            <button
-              onClick={() => setPage(page - 1)}
-              disabled={page === 1}
-              className="bg-[#365b77] hover:bg-[#7498b6] text-white font-bold py-2 px-4 rounded-l"
-            >
-              Anterior
-            </button>
-            <span className="mx-4">Página {page}</span>
-            <button
-              onClick={() => setPage(page + 1)}
-              disabled={endIndex >= filteredAppointments.length}
-              className="bg-[#365b77] hover:bg-[#7498b6] text-white font-bold py-2 px-4 rounded-r"
-            >
-              Siguiente
-            </button>
-          </div>
 
-         </div>
+        {/* Paginación */}
+        <div className="flex justify-center mt-4">
+          <button
+            onClick={() => setPage(page - 1)}
+            disabled={page === 1}
+            className="bg-[#365b77] hover:bg-[#7498b6] text-white font-bold py-2 px-4 rounded-l"
+          >
+            Anterior
+          </button>
+          <span className="mx-4">Página {page}</span>
+          <button
+            onClick={() => setPage(page + 1)}
+            disabled={endIndex >= filteredAppointments.length}
+            className="bg-[#365b77] hover:bg-[#7498b6] text-white font-bold py-2 px-4 rounded-r"
+          >
+            Siguiente
+          </button>
+        </div>
+      </div>
     </Layout>
   );
 }
