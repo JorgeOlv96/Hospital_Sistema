@@ -289,7 +289,7 @@ function Solicitudes() {
                         })()}
                       </td>
                       <td>${appointment.clave_esp || ""}</td>
-                      <td>${moment(appointment.fecha_programada).format("DD-MM-YYYY")}</td>
+                      <td>${moment(appointment.fecha_solicitada).format("DD-MM-YYYY")}</td>
                       <td>${appointment.tiempo_estimado} min</td>
                       <td>
                           ${(() => {
