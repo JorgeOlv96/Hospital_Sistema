@@ -255,220 +255,174 @@ function Appointments() {
 
       // Generar el contenido imprimible
       const printableContent = `
-    <html>
-      <head>
-        <style>
-          body {
-            background-color: #ffffff;
-            font-family: Arial, sans-serif;
-            font-size: 12px;
-            margin: 10px;
-            padding: 5px;
-          }
-          .header {
+      <html>
+        <head>
+          <style>
+            body {
+              background-color: #ffffff;
+              font-family: Arial, sans-serif;
+              font-size: 10px !important;
+              margin: 10px;
+              padding: 5px;
+            }
+            .header {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              margin-bottom: 10px;
+            }
+            .header img {
+              max-width: 150px;
+              height: auto;
+              margin-right: 5px;
+            }
+            .header .date {
+              font-size: 10px !important;
+              text-align: left;
+              margin-right: 5px;
+            }
+            .header h1 {
+              font-size: 10px !important;
+              margin: 5px;
+              flex-grow: 2;
+              text-align: right;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-top: 10px;
+              font-size: 8px !important;
+            }
+            th, td {
+              border: 1px solid black;
+              padding: 3px !important;
+              text-align: left;
+              white-space: nowrap;
+            }
+            .turno-section {
+              background-color: #d3d3d3;
+              text-align: left;
+              font-weight: bold;
+              padding: 5px;
+              border-top: 2px solid black;
+              border-bottom: 2px solid black;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="header" style="
             display: flex;
-            align-items: center;
             justify-content: space-between;
-            margin-bottom: 10px;
-          }
-          .header img {
-            max-width: 150px;
-            height: auto;
-            margin-right: 5px;
-          }
-          .header .date {
-            font-size: 12px;
-            text-align: left;
-            margin-right: 5px;
-          }
-          .header h1 {
-            font-size: 10px;
-            margin: 5px;
-            flex-grow: 2;
-            text-align: right;
-          }
-          table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-            font-size: 10px;
-          }
-          th, td {
-            border: 1px solid black;
-            padding: 5px;
-            text-align: left;
-            white-space: nowrap;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="header" style="
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    background-color: #f4f4f4; /* Opcional, para visualización */
-  ">
-    <h4 style="
-      margin: 0;
-    ">Solicitudes Programadas</h4>
-    <div style="
-      display: flex;
-      align-items: center;
-      text-align: right;
-    ">
-     <h1 style="
-        margin: 0;
-        font-size: 1em; /* Tamaño reducido del texto */
-        line-height: 1; /* Evita espacio adicional */
-      ">APROBADAS:</h1>
-      <div class="date" style="
-        margin-left: 10px; /* Espacio entre el texto y la fecha */
-        font-size: 1em; /* Tamaño del texto de la fecha */
-      ">${moment(selectedDate).format("DD-MM-YYYY")}</div>
-    </div>
-  </div>
-        
-<table>
-  <thead>
-    <tr>
-      <th>#</th>
-      <th>Folio</th>
-      <th>Hra. asign.</th>
-      <th>Sala</th>
-      <th>Nom. completo</th>
-      <th>Sexo</th>
-      <th>Procedimientos</th>
-      <th>Esp.</th>
-      <th>Fecha asign.</th>
-      <th>Tiempo est.</th>
-      <th>Turno</th>
-      <th>Anestesiólogo</th>
-      <th>Cirujano</th>
-      <th>Insumos</th>
-    </tr>
-  </thead>
-  <tbody>
-    ${todaysRegistrations
-      .sort((a, b) => {
-        // Convertir las horas en objetos moment para la comparación
-        const timeA = moment(a.hora_asignada, "HH:mm");
-        const timeB = moment(b.hora_asignada, "HH:mm");
-        return timeA - timeB;
-      })
-      .map((appointment, index) => {
-        console.log("Appointment data:", appointment);
-        const sexoFormatted = appointment.sexo
-          ? appointment.sexo === "Femenino"
-            ? "F"
-            : appointment.sexo === "Masculino"
-            ? "M"
-            : "No especificado"
-          : "No especificado";
-
-        return `
-          <tr>
-            <td>${index + 1}</td>
-            <td>${appointment.folio || ""}</td>
-            <td>${moment(appointment.hora_asignada, "HH:mm").format("LT")}</td>
-            <td>${appointment.sala_quirofano || ""}</td>
-            <td>${appointment.nombre_paciente} ${appointment.ap_paterno} ${
-          appointment.ap_materno
-        }</td>
-            <td>${sexoFormatted}</td>
-            <td>
-              ${(() => {
-                const procedimientos =
-                  appointment.procedimientos_paciente || "";
-                const [beforeDash, afterDash] = procedimientos.split("-", 2);
-                const truncatedBeforeDash = beforeDash.slice(0, 20);
-                return `${truncatedBeforeDash}${
-                  afterDash ? "-" + afterDash : ""
-                }`;
-              })()}
-            </td>
-            <td>${appointment.clave_esp || ""}</td>
-            <td>${moment(appointment.fecha_programada).format(
-              "DD-MM-YYYY"
-            )}</td>
-            <td>${appointment.tiempo_estimado} min</td>
-            <td>
-              ${(() => {
-                const turno = appointment.turno || "";
-                const turnMap = {
-                  Vespertino: "V",
-                  Matutino: "M",
-                  Nocturno: "N",
-                  Especial: "E",
-                };
-                return turnMap[turno] || "";
-              })()}
-            </td>
-            <td>
-                    ${(() => {
-                      const nombreanes = appointment.nombre_anestesiologo || "";
-                      const words = nombreanes.split(" ");
-                      const truncatedName = words.slice(0, 2).join(" ");
-                      return truncatedName;
-                    })()}
-            </td>
-            <td>
-              ${(() => {
-                const nombre = appointment.nombre_cirujano || "";
-                const words = nombre.split(" ");
-                const truncatedName = words.slice(0, 2).join(" ");
-                return truncatedName;
-              })()}
-            </td>
-            <td>${appointment.req_insumo || ""}</td>
-          </tr>`;
-      })
-      .join("")}
-  </tbody>
-</table>
-        
-        <h4>Anestesiólogos Programados</h4>
-        <table>
-          <thead>
-            <tr>
-              <th>Recuperación Matutino</th>
-              <th>Consulta Externa Piso 1</th>
-              <th>Consulta Externa Piso 2</th>
-              <th>Recuperación Vespertino</th>
-              <th>Consulta Externa Piso 1</th>
-              <th>Consulta Externa Piso 2</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              ${[
-                "Recup_Matutino",
-                "Con_Ext_P1_mat",
-                "Con_Ext_P2_mat",
-                "Rec_Vespertino",
-                "Con_Ext_P1_vesp",
-                "Con_Ext_P2_vesp",
-              ]
-                .map(
-                  (room) => `
-                <td>
-                  ${todaysAnesthesiologists
-                    .filter(
-                      (anesthesiologist) =>
-                        anesthesiologist.sala_anestesio === room
-                    )
-                    .map((anesthesiologist) => anesthesiologist.nombre)
-                    .join(", ")}
-                </td>`
-                )
-                .join("")}
-            </tr>
-          </tbody>
-        </table>
-      </body>
-    </html>
-    `;
-
+            align-items: center;
+            padding: 10px;
+            background-color: #f4f4f4;
+          ">
+            <h4 style="margin: 0;">Solicitudes Programadas</h4>
+            <div style="
+              display: flex;
+              align-items: center;
+              text-align: right;
+            ">
+              <h1 style="
+                margin: 0;
+                font-size: 1em;
+                line-height: 1;
+              ">PRELIMINAR:</h1>
+              <div class="date" style="
+                margin-left: 10px;
+                font-size: 1em;
+              ">${moment(selectedDate).format("DD-MM-YYYY")}</div>
+            </div>
+          </div>
+      
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Folio</th>
+                <th>Hra. asign.</th>
+                <th>Sala</th>
+                <th>Nom. completo</th>
+                <th>Sexo</th>
+                <th>Procedimientos</th>
+                <th>Esp.</th>
+                <th>Fecha solicitada</th>
+                <th>Tiempo est.</th>
+                <th>Turno</th>
+                <th>Cirujano</th>
+                <th>Ins.</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${['Matutino', 'Vespertino', 'Nocturno'].map(turno => `
+                <tr class="turno-section">
+                  <td colspan="13">${turno} (de ${turno === 'Matutino' ? '08:00 a 14:00' : turno === 'Vespertino' ? '14:00 a 20:00' : '20:00 a 06:00'})</td>
+                </tr>
+                ${todaysRegistrations
+                  .filter(appointment => {
+                    const hour = moment(appointment.hora_solicitada, "HH:mm").hour();
+                    if (turno === 'Matutino') return hour >= 8 && hour <= 14;
+                    if (turno === 'Vespertino') return hour >= 14 && hour <= 20;
+                    return hour >= 20 || hour < 8;
+                  })
+                  .map((appointment, index) => `
+                    <tr>
+                      <td>${index + 1}</td>
+                      <td>${appointment.folio || ""}</td>
+                      <td>${moment(appointment.hora_solicitada, "HH:mm").format("LT")}</td>
+                      <td>${appointment.sala_quirofano || ""}</td>
+                      <td>${appointment.nombre_paciente} ${appointment.ap_paterno} ${appointment.ap_materno}</td>
+                      <td>${appointment.sexo ? (appointment.sexo === "Femenino" ? "F" : "M") : "No especificado"}</td>
+                      <td>${appointment.procedimientos_paciente || ""}</td>
+                      <td>${appointment.clave_esp || ""}</td>
+                      <td>${moment(appointment.fecha_solicitada).format("DD-MM-YYYY")}</td>
+                      <td>${appointment.tiempo_estimado} min</td>
+                      <td>${appointment.turno_solicitado || ""}</td>
+                      <td>${appointment.nombre_cirujano || ""}</td>
+                      <td>${appointment.req_insumo || ""}</td>
+                    </tr>
+                  `).join('')}
+              `).join('')}
+            </tbody>
+          </table>
+      
+          <table>
+            <thead>
+              <tr>
+                <th>Recuperación Matutino</th>
+                <th>Consulta Externa Piso 1</th>
+                <th>Consulta Externa Piso 2</th>
+                <th>Recuperación Vespertino</th>
+                <th>Consulta Externa Piso 1</th>
+                <th>Consulta Externa Piso 2</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                ${[
+                  "Recup_Matutino",
+                  "Con_Ext_P1_mat",
+                  "Con_Ext_P2_mat",
+                  "Rec_Vespertino",
+                  "Con_Ext_P1_vesp",
+                  "Con_Ext_P2_vesp",
+                ]
+                  .map(room => `
+                    <td>
+                      ${todaysAnesthesiologists
+                        .filter(anesthesiologist => anesthesiologist.sala_anestesio === room)
+                        .map(anesthesiologist => anesthesiologist.nombre)
+                        .join(", ")}
+                    </td>`
+                  )
+                  .join('')}
+              </tr>
+            </tbody>
+          </table>
+        </body>
+      </html>
+      `;
+      
       // Crear una ventana de impresión y escribir el contenido
       const printWindow = window.open("", "_blank");
       printWindow.document.open();
