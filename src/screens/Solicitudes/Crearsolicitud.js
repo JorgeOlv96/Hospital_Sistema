@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Layout from "../../Layout";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import ProcedureSelect from "./ProcedureSelect";
 import AsyncSelect from "react-select/async";
 
@@ -292,8 +292,22 @@ function CrearSolicitud() {
 
   return (
     <Layout>
-      <div className="flex flex-col gap-4 mb-6">
+      <div className="flex flex-col gap-2 mb-4">
         <h1 className="text-xl font-semibold">Crear solicitud</h1>
+        
+        <div className="flex my-4 space-x-4">
+          <div>
+            <Link
+              to="/solicitudes"
+              className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
+            >
+              <span style={{ display: "inline-flex", alignItems: "center" }}>
+                <span>&lt;</span>
+                <span style={{ marginLeft: "5px" }}>Regresar a solicitudes</span>
+              </span>
+            </Link>
+          </div>
+        </div>
 
         <form onSubmit={handleSubmit}>
           <div class="flex flex-col p-4 bg-[#557996] rounded-lg ">
