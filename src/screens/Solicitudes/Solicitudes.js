@@ -274,7 +274,7 @@ function Solicitudes() {
                       <td>${index + 1}</td>
                       <td>${appointment.folio || ""}</td>
                       <td>${moment(appointment.hora_solicitada, "HH:mm").format("LT")}</td>
-                      <td>${appointment.sala_quirofano || ""}</td>
+                      <td>Sala: ${appointment.sala_quirofano || ""}</td>
                       <td>${appointment.nombre_paciente} ${appointment.ap_paterno} ${appointment.ap_materno}</td>
                       <td>${appointment.sexo ? (appointment.sexo === "Femenino" ? "F" : "M") : "No especificado"}</td>
                      <td>
