@@ -49,6 +49,7 @@ import Solicitudurgencia from './screens/Urgencias/Solicitudurgencia';
 import Consultaurgencia from './screens/Urgencias/Consultaurgencia';
 import Solicitudesurgentes from './screens/Urgencias/Urgentes';
 import Gestionusuarios from './screens/Gestorusuarios/Gestionusr';
+import SalaManager from './screens/Salas/SalaManager';
 
 function App() {
   Aos.init();
@@ -113,6 +114,7 @@ function App() {
             <Route path="/urgencias/Consultaurgencia" element={<Consultaurgencia />} />
             <Route path="/urgencias/Urgentes" element={<Solicitudesurgentes />} />
             <Route path="/Gestionusr" element={<Gestionusuarios />} />
+            <Route path="/Gestionsalas" element={<SalaManager />} />
             <Route path="/services" element={<Services />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/ayuda" element={<Ayuda />} />

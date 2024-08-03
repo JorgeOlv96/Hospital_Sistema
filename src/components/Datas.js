@@ -80,6 +80,12 @@ export const MenuDatas = [
     icon: FaWpforms, // Puedes cambiar este icono por uno más representativo si lo deseas
     viewRole: [5] // Solo accesible para el nivel 5
   },
+  {
+    title: 'Gestor de salas',
+    path: '/Gestionsalas',
+    icon: FaWpforms, // Puedes cambiar este icono por uno más representativo si lo deseas
+    viewRole: [5] // Solo accesible para el nivel 5
+  },
 
 ];
 

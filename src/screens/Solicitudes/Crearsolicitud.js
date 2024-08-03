@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Layout from "../../Layout";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import ProcedureSelect from "./ProcedureSelect";
 import AsyncSelect from "react-select/async";
+
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 
 function CrearSolicitud() {
   const [selectedSolicitud] = useState(null);
@@ -120,12 +124,24 @@ function CrearSolicitud() {
     }
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+
+    // Actualizar el estado del formulario
     setFormData((prevFormData) => ({
       ...prevFormData,
-      [name]: value || new Date().toISOString().split('T')[0], // Si no hay valor, usar la fecha actual
+      [name]: value,
     }));
+
+    // Validación de fecha de nacimiento
+    if (name === "fecha_nacimiento") {
+      const today = new Date().toISOString().split("T")[0]; // Fecha actual en formato YYYY-MM-DD
+      if (value > today) {
+        setIsFechaNacimientoValid(false);
+      } else {
+        setIsFechaNacimientoValid(true);
+      }
+    }
   };
 
   useEffect(() => {
@@ -232,51 +248,77 @@ function CrearSolicitud() {
     }));
   };
 
-
   const validateForm = () => {
     const newErrors = {};
-  
-    // Validar todos los campos excepto 'fecha_nacimiento'
     Object.keys(formData).forEach((key) => {
-      if (!formData[key] && key !== 'fecha_nacimiento') {
+      if (!formData[key]) {
         newErrors[key] = "Campo requerido";
       }
     });
-  
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (validateForm()) {
-      try {
-        const response = await fetch(`${baseURL}/api/solicitudes`, {
-          method: selectedSolicitud ? "PUT" : "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        });
+        try {
+            // Verificar si ya existe una solicitud con la misma fecha, hora, sala y tiempo estimado
+            const checkResponse = await fetch(`${baseURL}/api/solicitudes/check`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    fecha_solicitada: formData.fecha_solicitada,
+                    hora_solicitada: formData.hora_solicitada,
+                    sala_quirofano: formData.sala_quirofano,
+                    tiempo_estimado: formData.tiempo_estimado,
+                }),
+            });
 
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
+            if (!checkResponse.ok) {
+                throw new Error("Network response was not ok");
+            }
+
+            const checkData = await checkResponse.json();
+
+            if (checkData.exists) {
+                setErrors((prevErrors) => ({
+                    ...prevErrors,
+                    solicitud_conflicto:
+                        "Ya existe una solicitud para la misma fecha, hora y sala!.",
+                }));
+                return;
+            }
+
+            // Enviar la solicitud a la API si no existe conflicto
+            const response = await fetch(`${baseURL}/api/solicitudes`, {
+                method: selectedSolicitud ? "PUT" : "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(formData),
+            });
+
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+
+            const data = await response.json();
+            console.log("Formulario válido y enviado:", formData);
+            navigate("/solicitudes");
+        } catch (error) {
+            console.error("Error en la solicitud:", error);
         }
-
-        const data = await response.json();
-        console.log("Formulario válido y enviado:", formData);
-
-        navigate("/solicitudes");
-      } catch (error) {
-        console.error("Error en la solicitud:", error);
-      }
     } else {
-      console.log("Formulario inválido");
+        console.log("Formulario inválido");
     }
-  };
+};
 
+
+  
   const getTurnColor = (turno_anestesio) => {
     switch (turno_anestesio) {
       case "Matutino":
@@ -292,22 +334,17 @@ function CrearSolicitud() {
 
   return (
     <Layout>
-      <div className="flex flex-col gap-2 mb-4">
+      <div className="flex flex-col gap-4 mb-6">
         <h1 className="text-xl font-semibold">Crear solicitud</h1>
-        
-        <div className="flex my-4 space-x-4">
-          <div>
-            <Link
-              to="/solicitudes"
-              className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
-            >
-              <span style={{ display: "inline-flex", alignItems: "center" }}>
-                <span>&lt;</span>
-                <span style={{ marginLeft: "5px" }}>Regresar a solicitudes</span>
-              </span>
-            </Link>
-          </div>
-        </div>
+
+         {/* Mostrar el mensaje de error si hay conflicto */}
+          {errors.solicitud_conflicto && (
+              <div className="bg-red-100 border border-red-500 text-red-700 px-4 py-3 rounded relative" role="alert">
+                  <strong className="font-bold">:(</strong>
+                  <span className="block sm:inline"> {errors.solicitud_conflicto}</span>
+              </div>
+          )}
+
 
         <form onSubmit={handleSubmit}>
           <div class="flex flex-col p-4 bg-[#557996] rounded-lg ">
@@ -478,7 +515,10 @@ function CrearSolicitud() {
 
             <div className="flex mb-4">
               <div className="mr-4 w-full">
-                <label htmlFor="fecha_nacimiento" className="block font-semibold text-white mb-1">
+                <label
+                  htmlFor="fecha_nacimiento"
+                  className="block font-semibold text-white mb-1"
+                >
                   Fecha de nacimiento:
                 </label>
                 <input
@@ -487,10 +527,18 @@ function CrearSolicitud() {
                   name="fecha_nacimiento"
                   value={formData.fecha_nacimiento}
                   onChange={handleInputChange}
-                  className="border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mt-2"
+                  className={`border border-gray-300 rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 mt-2 ${
+                    isFechaNacimientoValid
+                      ? "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
+                      : "border-red-500 focus:ring-red-500 focus:border-red-500"
+                  }`}
                 />
+                {!isFechaNacimientoValid && (
+                  <p className="text-red-500 mt-1">
+                    La fecha de nacimiento no puede ser en el futuro.
+                  </p>
+                )}
               </div>
-
 
               <div className="mr-4 w-full">
                 <label
