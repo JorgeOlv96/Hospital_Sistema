@@ -43,23 +43,25 @@ function Gestionusuarios() {
         setShowModal(true);
     };
 
-    // Delete user
     const handleDelete = async (id) => {
         try {
-            const response = await fetch(`${baseURL}/api/users/${id}`, {
+            const response = await fetch(`${baseURL}/api/users/users/${id}`, {
                 method: "DELETE",
             });
             if (!response.ok) {
                 const data = await response.json();
                 setError(data.message);
+                toast.error(data.message); // Mostrar mensaje de error
             } else {
                 // Remove user from state without needing to refetch
                 setUsuarios((prevUsuarios) => prevUsuarios.filter((user) => user.id_usuario !== id));
                 setSuccess("User deleted successfully.");
+                toast.success("User deleted successfully."); // Mostrar mensaje de éxito
             }
         } catch (err) {
             console.error("Error deleting user:", err);
             setError("Error deleting user. Please try again later.");
+            toast.error("Error deleting user. Please try again later."); // Mostrar mensaje de error
         }
     };
 
@@ -75,8 +77,8 @@ function Gestionusuarios() {
             toast.dismiss();
     
             // Realiza la solicitud de actualización
-            const response = await fetch(`${baseURL}/api/users/${id}`, {
-                method: "PUT",
+            const response = await fetch(`${baseURL}/api/users/users/${id}`, {
+                method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
                 },
@@ -127,8 +129,8 @@ function Gestionusuarios() {
                         {success}
                     </div>
                 )}
-                <table className="table-auto w-full mb-4">
-                    <thead>
+                <table className="min-w-full divide-y divide-white-200">
+                    <thead className="bg-[#365b77] text-white">
                         <tr>
                             <th className="px-4 py-2">Nombre</th>
                             <th className="px-4 py-2">Apellido Paterno</th>
@@ -141,7 +143,8 @@ function Gestionusuarios() {
                     <tbody>
                             {usuarios.length > 0 ? (
                                 usuarios.map((user) => (
-                                    <tr key={user.id_usuario}>
+                                    <tr key={user.id}>
+
                                         <td className="border px-4 py-2">{user.nombre}</td>
                                         <td className="border px-4 py-2">{user.ap_paterno}</td>
                                         <td className="border px-4 py-2">{user.ap_materno}</td>
@@ -156,7 +159,7 @@ function Gestionusuarios() {
                                             </button>
                                             <button
                                                 className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                                                onClick={() => handleDelete(user.id_usuario)}
+                                                onClick={() => handleDelete(user.id)}
                                             >
                                                 Eliminar
                                             </button>
@@ -173,7 +176,7 @@ function Gestionusuarios() {
                         </tbody>
 
                 </table>
-                <Link to="/register-user">
+                <Link to="/register">
                     <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
                         Registrar Usuario
                     </button>
