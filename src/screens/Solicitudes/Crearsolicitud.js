@@ -54,6 +54,7 @@ function CrearSolicitud() {
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
   const [errors, setErrors] = useState({});
   const [nombre_especialidad, setNombreEspecialidad] = useState("");
+  const [salasDisponibles, setSalasDisponibles] = useState([]);
   const [clave_esp, setClaveEspecialidad] = useState("");
   const [formData, setFormData] = useState({
     fecha_solicitud: obtenerFechaActual(),
@@ -206,6 +207,20 @@ function CrearSolicitud() {
       }
     }
   }, [formData.hora_solicitada]);
+
+  useEffect(() => {
+    fetchSalasDisponibles();
+  }, []);
+
+  const fetchSalasDisponibles = async () => {
+    try {
+      const response = await axios.get(`${baseURL}/api/salas/salas`);
+      const disponibles = response.data.filter(sala => sala.estado);
+      setSalasDisponibles(disponibles);
+    } catch (error) {
+      console.error('Error fetching salas:', error);
+    }
+  };
 
   const handleNombreEspecialidadChange = (e) => {
     const selectedNombreEspecialidad = e.target.value;
@@ -474,43 +489,32 @@ function CrearSolicitud() {
               </div>
 
               <div className="mr-4" style={{ width: "41%" }}>
-                <label
-                  htmlFor="sala_quirofano"
-                  className="block font-semibold text-white mb-1"
-                >
-                  Sala solicitada:
-                </label>
-                <select
-                  type="text"
-                  id="sala_quirofano"
-                  name="sala_quirofano"
-                  value={formData.sala_quirofano}
-                  onChange={handleInputChange}
-                  className={`border ${
-                    errors.nombre_paciente
-                      ? "border-red-500"
-                      : "border-gray-300"
-                  } rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-                >
-                  <option value=""> Seleccionar </option>
-                  <option value="A1">SALA A1</option>
-                  <option value="A2">SALA A2</option>
-                  <option value="T1">SALA T1</option>
-                  <option value="T2">SALA T2</option>
-                  <option value="1">SALA 1</option>
-                  <option value="2">SALA 2</option>
-                  <option value="3">SALA 3</option>
-                  <option value="4">SALA 4</option>
-                  <option value="5">SALA 5</option>
-                  <option value="6">SALA 6</option>
-                  <option value="E">SALA E</option>
-                  <option value="H">SALA H</option>
-                  <option value="RX">SALA RX</option>
-                </select>
-                {errors.nombre_paciente && (
-                  <p className="text-red-500">{errors.nombre_paciente}</p>
-                )}
-              </div>
+      <label
+        htmlFor="sala_quirofano"
+        className="block font-semibold text-white mb-1"
+      >
+        Sala solicitada:
+      </label>
+      <select
+        id="sala_quirofano"
+        name="sala_quirofano"
+        value={formData.sala_quirofano}
+        onChange={handleInputChange}
+        className={`border ${
+          errors.sala_quirofano ? "border-red-500" : "border-gray-300"
+        } rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+      >
+        <option value="">Seleccionar</option>
+        {salasDisponibles.map((sala) => (
+          <option key={sala.id} value={sala.id}>
+            {sala.nombre_sala}
+          </option>
+        ))}
+      </select>
+      {errors.sala_quirofano && (
+        <p className="text-red-500">{errors.sala_quirofano}</p>
+      )}
+    </div>
             </div>
 
             <div className="flex mb-4">

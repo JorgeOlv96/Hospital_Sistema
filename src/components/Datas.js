@@ -82,7 +82,7 @@ export const MenuDatas = [
   },
   {
     title: 'Gestor de salas',
-    path: '/Gestionsalas',
+    path: '/SalaManager',
     icon: FaWpforms, // Puedes cambiar este icono por uno más representativo si lo deseas
     viewRole: [5] // Solo accesible para el nivel 5
   },
