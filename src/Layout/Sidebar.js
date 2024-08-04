@@ -26,10 +26,11 @@ function Sidebar() {
         <img
           src="/images/logo.png"
           alt="logo"
-          className="w-2/4 h-12 ml-4 object-contain"
+          className="w-2/2 h-12 ml-4 object-contain"
         />
       </Link>
-      <div className="flex-colo gap-2 mt-12">
+      
+      <div className="flex-colo gap-2 mt-8">
         {menuItems.map((item, index) => (
           <Link
             to={item.path}

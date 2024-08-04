@@ -16,7 +16,7 @@ function Gestionusuarios() {
     useEffect(() => {
         const fetchUsuarios = async () => {
             try {
-                const response = await fetch(`${baseURL}/api/users`);
+                const response = await fetch(`${baseURL}/api/users/users`);
                 if (!response.ok) {
                     const data = await response.json();
                     setError(data.message);
