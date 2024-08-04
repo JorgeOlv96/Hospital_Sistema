@@ -158,166 +158,177 @@ function Solicitudes() {
           moment(anesthesiologist.dia_anestesio).format("YYYY-MM-DD") === today
       );
       console.log("Today's Anesthesiologists:", todaysAnesthesiologists);
+     
+      const totalSolicitudes = todaysRegistrations.length;
+
       const printableContent = `
-      <html>
-        <head>
-          <style>
-            body {
-              background-color: #ffffff;
-              font-family: Arial, sans-serif;
-              font-size: 10px !important;
-              margin: 10px;
-              padding: 5px;
-            }
-            .header {
-              display: flex;
-              align-items: center;
-              justify-content: space-between;
-              margin-bottom: 10px;
-            }
-            .header img {
-              max-width: 150px;
-              height: auto;
-              margin-right: 5px;
-            }
-            .header .date {
-              font-size: 10px !important;
-              text-align: left;
-              margin-right: 5px;
-            }
-            .header h1 {
-              font-size: 10px !important;
-              margin: 5px;
-              flex-grow: 2;
-              text-align: right;
-            }
-            table {
-              width: 100%;
-              border-collapse: collapse;
-              margin-top: 10px;
-              font-size: 8px !important;
-            }
-            th, td {
-              border: 1px solid black;
-              padding: 3px !important;
-              text-align: left;
-              white-space: nowrap;
-            }
-            .turno-section {
-              background-color: #d3d3d3;
-              text-align: left;
-              font-weight: bold;
-              padding: 5px;
-              border-top: 2px solid black;
-              border-bottom: 2px solid black;
-            }
-          </style>
-        </head>
-        <body>
-          <div class="header" style="
+    <html>
+      <head>
+        <style>
+          body {
+            background-color: #ffffff;
+            font-family: Arial, sans-serif;
+            font-size: 10px !important;
+            margin: 5px;
+            padding: 5px;
+          }
+          .header {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 10px;
-            background-color: #f4f4f4;
+            justify-content: space-between;
+            margin-bottom: 10px;
+          }
+          .header img {
+            max-width: 150px;
+            height: auto;
+            margin-right: 5px;
+          }
+          .header .date {
+            font-size: 10px !important;
+            text-align: left;
+            margin-right: 5px;
+          }
+          .header h1 {
+            font-size: 10px !important;
+            margin: 5px;
+            flex-grow: 2;
+            text-align: right;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 8px !important;
+          }
+          th, td {
+            border: 1px solid black;
+            padding: 3px !important;
+            text-align: left;
+            white-space: nowrap;
+          }
+          .turno-section {
+            background-color: #d3d3d3;
+            text-align: left;
+            font-weight: bold;
+            padding: 5px;
+            border-top: 2px solid black;
+            border-bottom: 2px solid black;
+          }
+          .total-count {
+            font-weight: bold;
+            text-align: left;
+            font-size: 7px;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header" style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 7px;
+          background-color: #f4f4f4;
+        ">
+          <h4 style="margin: 0;">Solicitudes Programadas</h4>
+          <div style="
+            display: flex;
+            align-items: center;
+            text-align: right;
           ">
-            <h4 style="margin: 0;">Solicitudes Programadas</h4>
-            <div style="
-              display: flex;
-              align-items: center;
-              text-align: right;
-            ">
-              <h1 style="
-                margin: 0;
-                font-size: 1em;
-                line-height: 1;
-              ">PRELIMINAR:</h1>
-              <div class="date" style="
-                margin-left: 10px;
-                font-size: 1em;
-              ">${moment(selectedDate).format("DD-MM-YYYY")}</div>
-            </div>
+            <h1 style="
+              margin: 0;
+              font-size: 1em;
+              line-height: 1;
+            ">PRELIMINAR:</h1>
+            <div class="date" style="
+              margin-left: 7px;
+              font-size: 1em;
+            ">${moment(selectedDate).format("DD-MM-YYYY")}</div>
           </div>
-      
-          <table>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Folio</th>
-                <th>Hra. asign.</th>
-                <th>Sala</th>
-                <th>Nom. completo</th>
-                <th>Sexo</th>
-                <th>Procedimientos</th>
-                <th>Esp.</th>
-                <th>Fecha solicitada</th>
-                <th>Tiempo est.</th>
-                <th>Turno</th>
-                <th>Cirujano</th>
-                <th>Ins.</th>
+        </div>
+    
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Folio</th>
+              <th>Hra. asign.</th>
+              <th>Sala</th>
+              <th>Nom. completo</th>
+              <th>Sexo</th>
+              <th>Procedimientos</th>
+              <th>Esp.</th>
+              <th>Fecha solicitada</th>
+              <th>Tiempo est.</th>
+              <th>Turno</th>
+              <th>Cirujano</th>
+              <th>Ins.</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${['Matutino', 'Vespertino', 'Nocturno'].map(turno => `
+              <tr class="turno-section">
+                <td colspan="13">${turno} (de ${turno === 'Matutino' ? '08:00 a 14:00' : turno === 'Vespertino' ? '14:00 a 20:00' : '20:00 a 06:00'})</td>
               </tr>
-            </thead>
-            <tbody>
-              ${['Matutino', 'Vespertino', 'Nocturno'].map(turno => `
-                <tr class="turno-section">
-                  <td colspan="13">${turno} (de ${turno === 'Matutino' ? '08:00 a 14:00' : turno === 'Vespertino' ? '14:00 a 20:00' : '20:00 a 06:00'})</td>
-                </tr>
-                ${todaysRegistrations
-                  .filter(appointment => {
-                    const hour = moment(appointment.hora_solicitada, "HH:mm").hour();
-                    if (turno === 'Matutino') return hour >= 8 && hour <= 14;
-                    if (turno === 'Vespertino') return hour >= 14 && hour <= 20;
-                    return hour >= 20 || hour < 8;
-                  })
-                  .map((appointment, index) => `
-                    <tr>
-                      <td>${index + 1}</td>
-                      <td>${appointment.folio || ""}</td>
-                      <td>${moment(appointment.hora_solicitada, "HH:mm").format("LT")}</td>
-                      <td>Sala: ${appointment.sala_quirofano || ""}</td>
-                      <td>${appointment.nombre_paciente} ${appointment.ap_paterno} ${appointment.ap_materno}</td>
-                      <td>${appointment.sexo ? (appointment.sexo === "Femenino" ? "F" : "M") : "No especificado"}</td>
-                     <td>
+              ${todaysRegistrations
+                .filter(appointment => {
+                  const hour = moment(appointment.hora_solicitada, "HH:mm").hour();
+                  if (turno === 'Matutino') return hour >= 8 && hour <= 14;
+                  if (turno === 'Vespertino') return hour >= 14 && hour <= 20;
+                  return hour >= 20 || hour < 8;
+                })
+                .map((appointment, index) => `
+                  <tr>
+                    <td>${index + 1}</td>
+                    <td>${appointment.folio || ""}</td>
+                    <td>${moment(appointment.hora_solicitada, "HH:mm").format("LT")}</td>
+                    <td>Sala: ${appointment.sala_quirofano || ""}</td>
+                    <td>${appointment.nombre_paciente} ${appointment.ap_paterno} ${appointment.ap_materno}</td>
+                    <td>${appointment.sexo ? (appointment.sexo === "Femenino" ? "F" : "M") : "No especificado"}</td>
+                    <td>
+                      ${(() => {
+                        const procedimientos =
+                          appointment.procedimientos_paciente || "";
+                        const [beforeDash, afterDash] = procedimientos.split("-", 2);
+                        const truncatedBeforeDash = beforeDash.slice(0, 20);
+                        return `${truncatedBeforeDash}${
+                          afterDash ? "-" + afterDash : ""
+                        }`;
+                      })()}
+                    </td>
+                    <td>${appointment.clave_esp || ""}</td>
+                    <td>${moment(appointment.fecha_solicitada).format("DD-MM-YYYY")}</td>
+                    <td>${appointment.tiempo_estimado} min</td>
+                    <td>
                         ${(() => {
-                          const procedimientos =
-                            appointment.procedimientos_paciente || "";
-                          const [beforeDash, afterDash] = procedimientos.split("-", 2);
-                          const truncatedBeforeDash = beforeDash.slice(0, 20);
-                          return `${truncatedBeforeDash}${
-                            afterDash ? "-" + afterDash : ""
-                          }`;
+                          const turno = appointment.turno || "";
+                          const turnMap = {
+                            Vespertino: "V",
+                            Matutino: "M",
+                            Nocturno: "N",
+                            Especial: "E",
+                          };
+                          return turnMap[turno] || "";
                         })()}
                       </td>
-                      <td>${appointment.clave_esp || ""}</td>
-                      <td>${moment(appointment.fecha_solicitada).format("DD-MM-YYYY")}</td>
-                      <td>${appointment.tiempo_estimado} min</td>
-                      <td>
-                          ${(() => {
-                            const turno = appointment.turno || "";
-                            const turnMap = {
-                              Vespertino: "V",
-                              Matutino: "M",
-                              Nocturno: "N",
-                              Especial: "E",
-                            };
-                            return turnMap[turno] || "";
-                          })()}
-                        </td>
-                       <td>
-                          ${(() => {
-                            const nombre = appointment.nombre_cirujano || "";
-                            const words = nombre.split(" ");
-                            const truncatedName = words.slice(0, 2).join(" ");
-                            return truncatedName;
-                          })()}
-                        </td>
-                      <td>${appointment.req_insumo || ""}</td>
-                    </tr>
-                  `).join('')}
-              `).join('')}
+                     <td>
+                        ${(() => {
+                          const nombre = appointment.nombre_cirujano || "";
+                          const words = nombre.split(" ");
+                          const truncatedName = words.slice(0, 2).join(" ");
+                          return truncatedName;
+                        })()}
+                      </td>
+                    <td>${appointment.req_insumo || ""}</td>
+                  </tr>
+                `).join('')}
+            `).join('')}
+            <tr>
+              <td class="total-count">${totalSolicitudes}</td>
+              <td colspan="12"></td>
             </tbody>
           </table>
-      
+    
           <table>
             <thead>
               <tr>
@@ -351,16 +362,16 @@ function Solicitudes() {
               </tr>
             </tbody>
           </table>
-        </body>
-      </html>
-      `;
-      
-      // Crear una ventana de impresión y escribir el contenido
-      const printWindow = window.open("", "_blank");
-      printWindow.document.open();
-      printWindow.document.write(printableContent);
-      printWindow.document.close();
-      printWindow.print();
+      </body>
+    </html>
+    `;
+    
+    // Crear una ventana de impresión y escribir el contenido
+    const printWindow = window.open("", "");
+    printWindow.document.open();
+    printWindow.document.write(printableContent);
+    printWindow.document.close();
+    printWindow.print();
     } catch (error) {
       console.error("Error al imprimir las solicitudes:", error);
     }
