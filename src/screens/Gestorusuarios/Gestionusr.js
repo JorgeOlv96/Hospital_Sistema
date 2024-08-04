@@ -2,6 +2,10 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import Layout from "../../Layout";
+import { toast } from 'react-toastify';
+
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function Gestionusuarios() {
     const navigate = useNavigate();
@@ -67,10 +71,11 @@ function Gestionusuarios() {
         const { id, nombre, ap_paterno, ap_materno, nivel_usuario, email, cedula } = userToEdit;
     
         try {
-            setSuccess(""); // Reset success message
-            setError("");   // Reset error message
+            // Primero, desactivamos cualquier notificación existente
+            toast.dismiss();
     
-            const response = await axios.get(`${baseURL}/users/${id}`, {
+            // Realiza la solicitud de actualización
+            const response = await fetch(`${baseURL}/api/users/${id}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
@@ -81,20 +86,19 @@ function Gestionusuarios() {
             if (!response.ok) {
                 const data = await response.json();
                 setError(data.message);
+                toast.error(data.message); // Mostrar mensaje de error
             } else {
                 const updatedUser = await response.json();
-                setUsuarios((prevUsuarios) =>
-                    prevUsuarios.map((user) =>
-                        user.id_usuario === id ? updatedUser : user
-                    )
-                );
-                setUpdateFlag(updateFlag + 1); // Force re-render
+                console.log("Updated user:", updatedUser); // Agregado para depuración
+                console.log("Usuarios state:", usuarios); // Agregado para depuración
+                setUsuarios(usuarios.map((user) => (user.id === id ? updatedUser : user)));
                 setShowModal(false);
-                setSuccess("User updated successfully.");
+                toast.success("User updated successfully"); // Mostrar mensaje de éxito
             }
         } catch (err) {
             console.error("Error updating user:", err);
             setError("Error updating user. Please try again later.");
+            toast.error("Error updating user. Please try again later."); // Mostrar mensaje de error
         }
     };
     
