@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from "react";
 import Layout from "../../Layout";
 import moment from "moment";
+import axios from "axios";
 import { Link } from "react-router-dom";
 import AddAppointmentModal from "../../components/Modals/AddApointmentModal";
 import { FaTable, FaThLarge } from "react-icons/fa"; // Asegúrate de tener esta biblioteca instalada
@@ -25,12 +26,13 @@ function Solicitudes() {
   useEffect(() => {
     const fetchSolicitudes = async () => {
       try {
-        const response = await fetch(`${baseURL}/api/solicitudes`);
-        if (!response.ok) {
+        const response = await axios.get(`${baseURL}/api/solicitudes`);
+        if (response.status !== 200) {
           throw new Error("Network response was not ok");
         }
-        const data = await response.json();
-        setSolicitudes(data);
+        const data = response.data;
+        const filteredData = data.filter(solicitud => solicitud.estado_solicitud !== 'Eliminada');
+        setSolicitudes(filteredData);
       } catch (error) {
         console.error("Error fetching solicitudes:", error);
       }

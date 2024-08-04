@@ -37,14 +37,22 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentId, onDeleteAppoin
     const confirmation = window.confirm('¿Estás seguro de que deseas eliminar esta solicitud?');
     if (confirmation) {
       try {
-        await axios.delete(`${baseURL}/api/solicitudes/${appointmentId}`);
-        onDeleteAppointment(appointmentId); // Notificar al componente padre que la solicitud ha sido eliminada
-        closeModal(); // Cerrar el modal
+        const response = await axios.put(`${baseURL}/api/solicitudes/delete/${appointmentId}`);
+        if (response.status === 200) {
+          onDeleteAppointment(appointmentId); // Notificar al componente padre que la solicitud ha sido eliminada
+          closeModal(); // Cerrar el modal
+          window.location.reload()
+        } else {
+          console.error('Unexpected response:', response);
+        }
       } catch (error) {
-        console.error('Error deleting appointment:', error);
+        console.error('Error deleting appointment:', error.message);
+        // Puedes mostrar una notificación al usuario si es necesario
       }
     }
   };
+  
+  
 
   return (
     <Modal
@@ -182,12 +190,14 @@ function AddAppointmentModal({ closeModal, isOpen, appointmentId, onDeleteAppoin
         >
           Cerrar
         </button>
-        <button
-          onClick={handleDelete}
-          className="bg-red-500 text-white py-2 px-4 rounded-lg font-semibold"
-        >
-          Eliminar solicitud
-        </button>
+        {patientData?.estado_solicitud === 'Pendiente' && (
+          <button
+            onClick={handleDelete}
+            className="bg-red-500 text-white py-2 px-4 rounded-lg font-semibold"
+          >
+            Eliminar solicitud
+          </button>
+        )}
       </div>
     </Modal>
   );
