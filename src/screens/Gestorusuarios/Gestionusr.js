@@ -49,7 +49,6 @@ function Gestionusuarios() {
     return Object.keys(newErrors).length === 0;
   };
 
-
   // Fetch usuarios on component mount
   useEffect(() => {
     const fetchUsuarios = async () => {
@@ -202,279 +201,289 @@ function Gestionusuarios() {
       <div className="flex flex-col gap-4 mb-6">
         <h1 className="text-xl font-semibold">Gestión de Usuarios</h1>
 
-        <div className="my-4 flex items-center">     
-        <div className="flex flex-col">
+        <div className="my-4 flex items-center">
           <div className="flex flex-col">
-            <div className="flex mb-2 space-x-4">
-              
-              <div className="w-1/4">
-                <div className="mb-4">
-                  <label htmlFor="nombre" className="block text-gray-700 mb-1">
-                    Nombre
-                  </label>
-                  <input
-                    type="text"
-                    id="nombre"
-                    name="nombre"
-                    value={nombre}
-                    onChange={(e) => setNombre(e.target.value)}
-                    className={`w-full p-3 border ${
+            <div className="flex flex-col">
+              <div className="flex mb-2 space-x-4">
+                <div className="w-1/4">
+                  <div className="mb-4">
+                    <label
+                      htmlFor="nombre"
+                      className="block text-gray-700 mb-1"
+                    >
+                      Nombre
+                    </label>
+                    <input
+                      type="text"
+                      id="nombre"
+                      name="nombre"
+                      value={nombre}
+                      onChange={(e) => setNombre(e.target.value)}
+                      className={`w-full p-3 border ${
                         errors.nombre ? "border-red-500" : "border-gray-300"
                       } rounded-lg`}
                     />
                     {errors.nombre && (
                       <span className="text-red-500">{errors.nombre}</span>
                     )}
+                  </div>
                 </div>
-              </div>
 
-              <div className="w-1/4">
-                <label>Apellido Paterno</label>
-                <input
-                  type="text"
-                  value={apPaterno}
-                  onChange={(e) => setApPaterno(e.target.value)}
-                  className={`w-full p-3 border ${
-                    errors.apPaterno ? "border-red-500" : "border-gray-300"
-                  } rounded-lg`}
-                />
-                {errors.apPaterno && (
-                  <span className="text-red-500">{errors.apPaterno}</span>
-                )}
-              </div>
+                <div className="w-1/4">
+                  <label>Apellido Paterno</label>
+                  <input
+                    type="text"
+                    value={apPaterno}
+                    onChange={(e) => setApPaterno(e.target.value)}
+                    className={`w-full p-3 border ${
+                      errors.apPaterno ? "border-red-500" : "border-gray-300"
+                    } rounded-lg`}
+                  />
+                  {errors.apPaterno && (
+                    <span className="text-red-500">{errors.apPaterno}</span>
+                  )}
+                </div>
 
-              <div className="w-1/4">
-                <label>Apellido Materno</label>
-                <input
+                <div className="w-1/4">
+                  <label>Apellido Materno</label>
+                  <input
                     type="text"
                     value={apMaterno}
                     onChange={(e) => setApMaterno(e.target.value)}
                     className={`w-full p-3 border ${
-                    errors.apMaterno ? "border-red-500" : "border-gray-300"
+                      errors.apMaterno ? "border-red-500" : "border-gray-300"
                     } rounded-lg`}
-                />
-                {errors.apMaterno && (
+                  />
+                  {errors.apMaterno && (
                     <span className="text-red-500">{errors.apMaterno}</span>
-                )}
-              </div>
+                  )}
+                </div>
 
-              <div className="w-1/4">
-                <label>Email</label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className={`w-full p-3 border ${
-                    errors.email ? "border-red-500" : "border-gray-300"
-                  } rounded-lg`}
-                />
-                {errors.email && <span className="text-red-500">{errors.email}</span>}
-              </div>
-              <div className="w-1/4">
-                <label>Password</label>
-                <input
-                  type="text"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className={`w-full p-3 border ${
-                    errors.password ? "border-red-500" : "border-gray-300"
-                  } rounded-lg`}
-                />
-                {errors.password && (
-                  <span className="text-red-500">{errors.password}</span>
-                )}
-              </div>
+                <div className="w-1/4">
+                  <label>Email</label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className={`w-full p-3 border ${
+                      errors.email ? "border-red-500" : "border-gray-300"
+                    } rounded-lg`}
+                  />
+                  {errors.email && (
+                    <span className="text-red-500">{errors.email}</span>
+                  )}
+                </div>
+                <div className="w-1/4">
+                  <label>Contraseña</label>
+                  <input
+                    type="text"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className={`w-full p-3 border ${
+                      errors.password ? "border-red-500" : "border-gray-300"
+                    } rounded-lg`}
+                  />
+                  {errors.password && (
+                    <span className="text-red-500">{errors.password}</span>
+                  )}
+                </div>
 
-              <div className="w-1/4">
-                <label>Cédula</label>
-                <input
+                <div className="w-1/4">
+                  <label>Cédula</label>
+                  <input
                     type="text"
                     value={cedula}
                     onChange={(e) => setCedula(e.target.value)}
                     className={`w-full p-3 border ${
-                    errors.cedula ? "border-red-500" : "border-gray-300"
+                      errors.cedula ? "border-red-500" : "border-gray-300"
                     } rounded-lg`}
-                />
-                {errors.cedula && (
+                  />
+                  {errors.cedula && (
                     <span className="text-red-500">{errors.cedula}</span>
-                )}
-              </div>
+                  )}
+                </div>
 
-              <div className="w-1/4">
-                <label>Nivel de usuario</label>
-                <select
-                  value={nivelUsuario}
-                  onChange={(e) => setNivelUsuario(e.target.value)}
-                  className="mt-1 block w-full px-4 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                <div className="w-1/4">
+                  <label>Nivel de usuario</label>
+                  <select
+                    value={nivelUsuario}
+                    onChange={(e) => setNivelUsuario(e.target.value)}
+                    className="mt-1 block w-full px-4 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Seleccionar</option>
+                    <option value="1">
+                      (1) Dashboard, Solicitudes, Agenda
+                    </option>
+                    <option value="2">(2) Dashboard, Evaluación</option>
+                    <option value="3">(3) Bitacora, y Dasboard</option>
+                    <option value="4">(4) Anestesiólogos, Dashboard</option>
+                    <option value="5">(5) Todos ( Admin ) </option>
+                  </select>
+                </div>
+              </div>
+              <div className="px-2 py-2 text-right mb-4">
+                <button
+                  onSubmit={handleRegister}
+                  className="bg-[#365b77] text-white px-5 py-2 rounded-md hover:bg-[#7498b6]"
                 >
-                  <option value="">Seleccionar</option>
-                  <option value="1">(1) Dashboard, Solicitudes, Agenda</option>
-                  <option value="2">(2) Dashboard, Evaluación</option>
-                  <option value="3">(3) Bitacora, y Dasboard</option>
-                  <option value="4">(4) Anestesiólogos, Dashboard</option>
-                  <option value="5">(5) Todos ( Admin ) </option>
-                </select>
+                  Registrar
+                </button>
               </div>
             </div>
-            <div className="px-2 py-2 text-right mb-4">
-              <button 
-                    onSubmit={handleRegister}
-                    className="bg-[#365b77] text-white px-5 py-2 rounded-md hover:bg-[#7498b6]">
-                Registrar
-              </button>
-            </div>
-          </div>
 
-          {error && (
-            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
-              {error}
-            </div>
-          )}
-          {success && (
-            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
-              {success}
-            </div>
-          )}
-          <div className="overflow-hidden border-b border-white-200 shadow sm:rounded-lg">
-            <table className="min-w-full divide-y divide-white-200">
-              <thead className="bg-[#365b77] text-white">
-                <tr>
-                  <th className="px-4 py-2">Nombre</th>
-                  <th className="px-4 py-2">Apellido Paterno</th>
-                  <th className="px-4 py-2">Apellido Materno</th>
-                  <th className="px-4 py-2">Email</th>
-                  <th className="px-4 py-2">Nivel de Usuario</th>
-                  <th className="px-4 py-2">Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {usuarios.length > 0 ? (
-                  usuarios.map((user) => (
-                    <tr key={user.id_usuario}>
-                      <td className="border px-4 py-2">{user.nombre}</td>
-                      <td className="border px-4 py-2">{user.ap_paterno}</td>
-                      <td className="border px-4 py-2">{user.ap_materno}</td>
-                      <td className="border px-4 py-2">{user.email}</td>
-                      <td className="border px-4 py-2">{user.nivel_usuario}</td>
-                      <td className="border px-4 py-2">
-                        <button
-                          className="bg-blue-500 text-white px-2 py-2 px-4 rounded mr-2 hover:bg-blue-700"
-                          onClick={() => handleEdit(user)}
-                        >
-                          Editar
-                        </button>
-                        <button
-                          className="bg-[#CB2525] text-white px-2 py-2 rounded-md hover:bg-[#E54F4F]"
-                          onClick={() => handleDelete(user.id_usuario)}
-                        >
-                          Eliminar
-                        </button>
+            {error && (
+              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+                {error}
+              </div>
+            )}
+            {success && (
+              <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
+                {success}
+              </div>
+            )}
+            <div className="overflow-hidden border-b border-white-200 shadow sm:rounded-lg">
+              <table className="min-w-full divide-y divide-white-200">
+                <thead className="bg-[#365b77] text-white">
+                  <tr>
+                    <th className="px-4 py-2">Nombre</th>
+                    <th className="px-4 py-2">Apellido Paterno</th>
+                    <th className="px-4 py-2">Apellido Materno</th>
+                    <th className="px-4 py-2">Email</th>
+                    <th className="px-4 py-2">Nivel de Usuario</th>
+                    <th className="px-4 py-2">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {usuarios.length > 0 ? (
+                    usuarios.map((user) => (
+                      <tr key={user.id_usuario}>
+                        <td className="border px-4 py-2">{user.nombre}</td>
+                        <td className="border px-4 py-2">{user.ap_paterno}</td>
+                        <td className="border px-4 py-2">{user.ap_materno}</td>
+                        <td className="border px-4 py-2">{user.email}</td>
+                        <td className="border px-4 py-2 text-center">
+                          {user.nivel_usuario}
+                        </td>
+
+                        <td className="border px-6 py-2 flex justify-center items-center">
+                          <button
+                            className="bg-blue-500 text-white px-4 py-2 rounded mr-2 hover:bg-blue-700"
+                            onClick={() => handleEdit(user)}
+                          >
+                            Editar
+                          </button>
+                          <button
+                            className="bg-[#CB2525] text-white px-4 py-2 rounded-md hover:bg-[#E54F4F]"
+                            onClick={() => handleDelete(user.id_usuario)}
+                          >
+                            Eliminar
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="6" className="border px-4 py-2 text-center">
+                        No hay usuarios disponibles
                       </td>
                     </tr>
-                  ))
-                ) : (
-                  <tr>
-                    <td colSpan="6" className="border px-4 py-2 text-center">
-                      No hay usuarios disponibles
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-        {showModal && (
-          <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-            <div className="bg-white p-6 rounded-lg w-1/2">
-              <h2 className="text-xl font-bold mb-4">Editar usuario</h2>
-              <form onSubmit={handleSave}>
-                <div className="mb-4">
-                  <label className="block text-gray-700">Nombre</label>
-                  <input
-                    type="text"
-                    name="nombre"
-                    value={userToEdit?.nombre || ""}
-                    onChange={handleInputChange}
-                    className="border px-4 py-2 w-full"
-                  />
-                </div>
-                <div className="mb-4">
-                  <label className="block text-gray-700">
-                    Apellido Paterno
-                  </label>
-                  <input
-                    type="text"
-                    name="ap_paterno"
-                    value={userToEdit?.ap_paterno || ""}
-                    onChange={handleInputChange}
-                    className="border px-4 py-2 w-full"
-                  />
-                </div>
-                <div className="mb-4">
-                  <label className="block text-gray-700">
-                    Apellido Materno
-                  </label>
-                  <input
-                    type="text"
-                    name="ap_materno"
-                    value={userToEdit?.ap_materno || ""}
-                    onChange={handleInputChange}
-                    className="border px-4 py-2 w-full"
-                  />
-                </div>
-                <div className="mb-4">
-                  <label className="block text-gray-700">
-                    Nivel de Usuario
-                  </label>
-                  <input
-                    type="text"
-                    name="nivel_usuario"
-                    value={userToEdit?.nivel_usuario || ""}
-                    onChange={handleInputChange}
-                    className="border px-4 py-2 w-full"
-                  />
-                </div>
-                <div className="mb-4">
-                  <label className="block text-gray-700">Email</label>
-                  <input
-                    type="email"
-                    name="email"
-                    value={userToEdit?.email || ""}
-                    onChange={handleInputChange}
-                    className="border px-4 py-2 w-full"
-                  />
-                </div>
-                <div className="mb-4">
-                  <label className="block text-gray-700">Cédula</label>
-                  <input
-                    type="text"
-                    name="cedula"
-                    value={userToEdit?.cedula || ""}
-                    onChange={handleInputChange}
-                    className="border px-4 py-2 w-full"
-                  />
-                </div>
-
-                <div className="flex space-x-2">
-                  <button
-                    type="submit"
-                    className="bg-green-500 bg-opacity-20 text-green-500 text-sm p-4 rounded-lg font-light"
-                  >
-                    Guardar
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setShowModal(false)}
-                    className="bg-red-500 bg-opacity-20 text-red-500 text-sm p-4 rounded-lg font-light"
-                  >
-                    Cancelar
-                  </button>
-                </div>
-              </form>
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
-        )}
-      </div>
+          {showModal && (
+            <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+              <div className="bg-white p-6 rounded-lg w-1/2">
+                <h2 className="text-xl font-bold mb-4">Editar usuario</h2>
+                <form onSubmit={handleSave}>
+                  <div className="mb-4">
+                    <label className="block text-gray-700">Nombre</label>
+                    <input
+                      type="text"
+                      name="nombre"
+                      value={userToEdit?.nombre || ""}
+                      onChange={handleInputChange}
+                      className="border px-4 py-2 w-full"
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <label className="block text-gray-700">
+                      Apellido Paterno
+                    </label>
+                    <input
+                      type="text"
+                      name="ap_paterno"
+                      value={userToEdit?.ap_paterno || ""}
+                      onChange={handleInputChange}
+                      className="border px-4 py-2 w-full"
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <label className="block text-gray-700">
+                      Apellido Materno
+                    </label>
+                    <input
+                      type="text"
+                      name="ap_materno"
+                      value={userToEdit?.ap_materno || ""}
+                      onChange={handleInputChange}
+                      className="border px-4 py-2 w-full"
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <label className="block text-gray-700">
+                      Nivel de Usuario
+                    </label>
+                    <input
+                      type="text"
+                      name="nivel_usuario"
+                      value={userToEdit?.nivel_usuario || ""}
+                      onChange={handleInputChange}
+                      className="border px-4 py-2 w-full"
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <label className="block text-gray-700">Email</label>
+                    <input
+                      type="email"
+                      name="email"
+                      value={userToEdit?.email || ""}
+                      onChange={handleInputChange}
+                      className="border px-4 py-2 w-full"
+                    />
+                  </div>
+                  <div className="mb-4">
+                    <label className="block text-gray-700">Cédula</label>
+                    <input
+                      type="text"
+                      name="cedula"
+                      value={userToEdit?.cedula || ""}
+                      onChange={handleInputChange}
+                      className="border px-4 py-2 w-full"
+                    />
+                  </div>
+
+                  <div className="flex space-x-2">
+                    <button
+                      type="submit"
+                      className="bg-green-500 bg-opacity-20 text-green-500 text-sm p-4 rounded-lg font-light"
+                    >
+                      Guardar
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowModal(false)}
+                      className="bg-red-500 bg-opacity-20 text-red-500 text-sm p-4 rounded-lg font-light"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </Layout>
   );
