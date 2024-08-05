@@ -114,7 +114,7 @@ function App() {
             <Route path="/urgencias/Consultaurgencia" element={<Consultaurgencia />} />
             <Route path="/urgencias/Urgentes" element={<Solicitudesurgentes />} />
             <Route path="/Gestionusr" element={<Gestionusuarios />} />
-            <Route path="/Gestionsalas" element={<SalaManager />} />
+            <Route path="/SalaManager" element={<SalaManager />} />
             <Route path="/services" element={<Services />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/ayuda" element={<Ayuda />} />
