@@ -50,6 +50,7 @@ import Consultaurgencia from './screens/Urgencias/Consultaurgencia';
 import Solicitudesurgentes from './screens/Urgencias/Urgentes';
 import Gestionusuarios from './screens/Gestorusuarios/Gestionusr';
 import SalaManager from './screens/Salas/SalaManager';
+import SolicitudesInsumos from './screens/Insumos/solicitudesInsumos';
 
 function App() {
   Aos.init();
@@ -118,6 +119,7 @@ function App() {
             <Route path="/services" element={<Services />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/ayuda" element={<Ayuda />} />
+            <Route path="/solicitudesInsumos" element={<SolicitudesInsumos />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
