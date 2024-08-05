@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import Layout from "../../Layout";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Gestionusuarios() {
   const navigate = useNavigate();
@@ -20,14 +20,11 @@ function Gestionusuarios() {
   const [error, setError] = useState("");
   const [errors, setErrors] = useState({});
 
-  const [formData, setFormData] = useState({
-    nombre: "",
-    dia_anestesio: "",
-    turno_anestesio: "",
-    sala_anestesio: "",
-    hora_inicio: "",
-    hora_fin: "",
-  });
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchField, setSearchField] = useState("nombre");
+
+  const [filterNombre, setFilterNombre] = useState("");
+  const [filterEmail, setFilterEmail] = useState("");
 
   const [usuarios, setUsuarios] = useState([]);
   const [success, setSuccess] = useState("");
@@ -49,24 +46,24 @@ function Gestionusuarios() {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Fetch usuarios on component mount
-  useEffect(() => {
-    const fetchUsuarios = async () => {
-      try {
-        const response = await fetch(`${baseURL}/api/users/users`);
-        if (!response.ok) {
-          const data = await response.json();
-          setError(data.message);
-        } else {
-          const data = await response.json();
-          setUsuarios(data);
-        }
-      } catch (err) {
-        console.error("Error fetching users:", err);
-        setError("Error fetching users. Please try again later.");
+  // Mover fetchUsuarios fuera del useEffect
+  const fetchUsuarios = async () => {
+    try {
+      const response = await fetch(`${baseURL}/api/users/users`);
+      if (!response.ok) {
+        const data = await response.json();
+        setError(data.message);
+      } else {
+        const data = await response.json();
+        setUsuarios(data);
       }
-    };
+    } catch (err) {
+      console.error("Error fetching users:", err);
+      setError("Error fetching users. Please try again later.");
+    }
+  };
 
+  useEffect(() => {
     fetchUsuarios();
   }, []);
 
@@ -101,8 +98,15 @@ function Gestionusuarios() {
   // Save edited user
   const handleSave = async (e) => {
     e.preventDefault();
-    const { id_usuario, nombre, ap_paterno, ap_materno, nivel_usuario, email, cedula } =
-      userToEdit;
+    const {
+      id_usuario,
+      nombre,
+      ap_paterno,
+      ap_materno,
+      nivel_usuario,
+      email,
+      cedula,
+    } = userToEdit;
 
     try {
       // Primero, desactivamos cualquier notificación existente
@@ -133,7 +137,9 @@ function Gestionusuarios() {
         console.log("Updated user:", updatedUser); // Agregado para depuración
         console.log("Usuarios state:", usuarios); // Agregado para depuración
         setUsuarios(
-          usuarios.map((user) => (user.id_usuario === id_usuario ? updatedUser : user))
+          usuarios.map((user) =>
+            user.id_usuario === id_usuario ? updatedUser : user
+          )
         );
         setShowModal(false);
         toast.success("User updated successfully"); // Mostrar mensaje de éxito
@@ -156,22 +162,11 @@ function Gestionusuarios() {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-  
+
     if (!validateForm()) {
       return;
     }
-  
-    // Depuración: Verifica los datos antes de enviarlos
-    console.log({
-      nombre,
-      ap_paterno: apPaterno,
-      ap_materno: apMaterno,
-      email,
-      password,
-      nivel_usuario: nivelUsuario,
-      cedula,
-    });
-  
+
     try {
       const response = await axios.post(`${baseURL}/api/auth/register`, {
         nombre,
@@ -182,8 +177,10 @@ function Gestionusuarios() {
         nivel_usuario: nivelUsuario,
         cedula,
       });
-  
+
       if (response.status === 201) {
+        // Si el registro es exitoso, actualiza la lista de usuarios
+        fetchUsuarios();
       } else {
         setError(response.data.message);
       }
@@ -192,7 +189,16 @@ function Gestionusuarios() {
       setError("Error en el registro. Inténtalo de nuevo más tarde.");
     }
   };
-  
+
+  // Filtrar usuarios según el término de búsqueda y el campo seleccionado
+  const usuariosFiltrados = usuarios.filter((user) => {
+    if (searchField === "nombre") {
+      return user.nombre.toLowerCase().includes(searchTerm.toLowerCase());
+    } else if (searchField === "email") {
+      return user.email.toLowerCase().includes(searchTerm.toLowerCase());
+    }
+    return true; // Si no se selecciona un campo válido, no filtra
+  });
 
   return (
     <Layout>
@@ -287,21 +293,6 @@ function Gestionusuarios() {
                 </div>
 
                 <div className="w-1/4">
-                  <label>Nivel de Usuario</label>
-                  <input
-                    type="text"
-                    value={nivelUsuario}
-                    onChange={(e) => setNivelUsuario(e.target.value)}
-                    className={`w-full p-3 border ${
-                      errors.nivelUsuario ? "border-red-500" : "border-gray-300"
-                    } rounded-lg`}
-                  />
-                  {errors.nivelUsuario && (
-                    <span className="text-red-500">{errors.nivelUsuario}</span>
-                  )}
-                </div>
-
-                <div className="w-1/4">
                   <label>Cédula</label>
                   <input
                     type="text"
@@ -315,221 +306,222 @@ function Gestionusuarios() {
                     <span className="text-red-500">{errors.cedula}</span>
                   )}
                 </div>
+
+                <div className="w-1/4">
+                  <label>Nivel de usuario</label>
+                  <select
+                    value={nivelUsuario}
+                    onChange={(e) => setNivelUsuario(e.target.value)}
+                    className="mt-1 block w-full px-4 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Seleccionar</option>
+                    <option value="1">
+                      (1) Dashboard, Solicitudes, Agenda
+                    </option>
+                    <option value="2">(2) Dashboard, Evaluación</option>
+                    <option value="3">(3) Bitacora, y Dasboard</option>
+                    <option value="4">(4) Anestesiólogos, Dashboard</option>
+                    <option value="5">(5) Todos ( Admin ) </option>
+                  </select>
+                </div>
               </div>
-<<<<<<< HEAD
-              <div className="px-2 py-2 text-right mb-4">
-              <button
-                onClick={handleRegister}
-                className="bg-[#365b77] text-white px-5 py-2 rounded-md hover:bg-[#7498b6]"
+
+              <div className="px-2 py-2 text-right mb-2">
+                <button
+                  onClick={handleRegister}
+                  className="bg-[#365b77] text-white px-5 py-2 rounded-md hover:bg-[#7498b6]"
                 >
-                Registrar
+                  Registrar
                 </button>
               </div>
-            </div>
-
-            {error && (
-              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
-                {error}
-              </div>
-            )}
-            {success && (
-              <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4">
-                {success}
-              </div>
-            )}
-            <div className="overflow-hidden border-b border-white-200 shadow sm:rounded-lg">
-              <table className="min-w-full divide-y divide-white-200">
-                <thead className="bg-[#365b77] text-white">
-                  <tr>
-                    <th className="px-4 py-2">Nombre</th>
-                    <th className="px-4 py-2">Apellido Paterno</th>
-                    <th className="px-4 py-2">Apellido Materno</th>
-                    <th className="px-4 py-2">Email</th>
-                    <th className="px-4 py-2">Nivel de Usuario</th>
-                    <th className="px-4 py-2">Acciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {usuarios.length > 0 ? (
-                    usuarios.map((user) => (
-                      <tr key={user.id_usuario}>
-                        <td className="border px-4 py-2">{user.nombre}</td>
-                        <td className="border px-4 py-2">{user.ap_paterno}</td>
-                        <td className="border px-4 py-2">{user.ap_materno}</td>
-                        <td className="border px-4 py-2">{user.email}</td>
-                        <td className="border px-4 py-2 text-center">
-                          {user.nivel_usuario}
-                        </td>
-
-                        <td className="border px-6 py-2 flex justify-center items-center">
-                          <button
-                            className="bg-blue-500 text-white px-4 py-2 rounded mr-2 hover:bg-blue-700"
-                            onClick={() => handleEdit(user)}
-                          >
-                            Editar
-                          </button>
-                          <button
-                            className="bg-[#CB2525] text-white px-4 py-2 rounded-md hover:bg-[#E54F4F]"
-                            onClick={() => handleDelete(user.id_usuario)}
-                          >
-                            Eliminar
-                          </button>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="6" className="border px-4 py-2 text-center">
-                        No hay usuarios disponibles
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-=======
-              <button
-                onClick={handleRegister}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg"
-              >
-                Registrar
-              </button>
->>>>>>> 9aca871b631fef27c2dd9ec8d93623cd26ff132c
             </div>
           </div>
         </div>
 
-        <table className="w-full border-collapse">
-          <thead>
-            <tr>
-              <th className="border p-2">Nombre</th>
-              <th className="border p-2">Apellido Paterno</th>
-              <th className="border p-2">Apellido Materno</th>
-              <th className="border p-2">Email</th>
-              <th className="border p-2">Nivel Usuario</th>
-              <th className="border p-2">Cédula</th>
-              <th className="border p-2">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            {usuarios.map((user) => (
-              <tr key={user.id_usuario}>
-                <td className="border p-2">{user.nombre}</td>
-                <td className="border p-2">{user.ap_paterno}</td>
-                <td className="border p-2">{user.ap_materno}</td>
-                <td className="border p-2">{user.email}</td>
-                <td className="border p-2">{user.nivel_usuario}</td>
-                <td className="border p-2">{user.cedula}</td>
-                <td className="border p-2 flex justify-center space-x-4">
-                  <button
-                    onClick={() => handleEdit(user)}
-                    className="bg-blue-500 text-white px-2 py-1 rounded"
-                  >
-                    Editar
-                  </button>
-                  <button
-                    onClick={() => handleDelete(user.id_usuario)}
-                    className="bg-red-500 text-white px-2 py-1 rounded"
-                  >
-                    Eliminar
-                  </button>
-                </td>
+        {/* Filtros de búsqueda */}
+        <div className="text-left mb-2">
+          <div className="flex justify-center  items-center space-x-2"> {/* Reducido el espacio */}
+            <input
+              type="text"
+              placeholder="Buscar..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-md w-64"
+            />
+            <select
+              value={searchField}
+              onChange={(e) => setSearchField(e.target.value)}
+              className="px-3 py-2 border border-gray-300 rounded-md"
+            >
+              <option value="nombre">Nombre</option>
+              <option value="email">Email</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="overflow-hidden border-b border-white-200 shadow sm:rounded-lg">
+          <table className="min-w-full divide-y divide-white-200">
+            <thead className="bg-[#365b77] text-white">
+              <tr>
+                <th className="px-4 py-2">Nombre</th>
+                <th className="px-4 py-2">Apellido Paterno</th>
+                <th className="px-4 py-2">Apellido Materno</th>
+                <th className="px-4 py-2">Email</th>
+                <th className="px-4 py-2">Nivel de Usuario</th>
+                <th className="px-4 py-2">Acciones</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+            </thead>
+            <tbody>
+              {usuariosFiltrados.length > 0 ? (
+                usuariosFiltrados.map((user) => (
+                  <tr key={user.id_usuario}>
+                    <td className="border px-4 py-2">{user.nombre}</td>
+                    <td className="border px-4 py-2">{user.ap_paterno}</td>
+                    <td className="border px-4 py-2">{user.ap_materno}</td>
+                    <td className="border px-4 py-2">{user.email}</td>
+                    <td className="border px-4 py-2 text-center">
+                      {user.nivel_usuario}
+                    </td>
 
-      {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-6 rounded shadow-lg w-1/3">
-            <h2 className="text-xl mb-4">Editar Usuario</h2>
-            <form onSubmit={handleSave}>
-              <div className="mb-4">
-                <label htmlFor="nombre" className="block text-gray-700 mb-2">Nombre</label>
-                <input
-                  type="text"
-                  id="nombre"
-                  name="nombre"
-                  value={userToEdit.nombre}
-                  onChange={handleInputChange}
-                  className="w-full p-3 border rounded-lg"
-                />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="ap_paterno" className="block text-gray-700 mb-2">Apellido Paterno</label>
-                <input
-                  type="text"
-                  id="ap_paterno"
-                  name="ap_paterno"
-                  value={userToEdit.ap_paterno}
-                  onChange={handleInputChange}
-                  className="w-full p-3 border rounded-lg"
-                />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="ap_materno" className="block text-gray-700 mb-2">Apellido Materno</label>
-                <input
-                  type="text"
-                  id="ap_materno"
-                  name="ap_materno"
-                  value={userToEdit.ap_materno}
-                  onChange={handleInputChange}
-                  className="w-full p-3 border rounded-lg"
-                />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="email" className="block text-gray-700 mb-2">Email</label>
-                <input
-                  type="email"
-                  id="email"
-                  name="email"
-                  value={userToEdit.email}
-                  onChange={handleInputChange}
-                  className="w-full p-3 border rounded-lg"
-                />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="nivel_usuario" className="block text-gray-700 mb-2">Nivel de Usuario</label>
-                <input
-                  type="text"
-                  id="nivel_usuario"
-                  name="nivel_usuario"
-                  value={userToEdit.nivel_usuario}
-                  onChange={handleInputChange}
-                  className="w-full p-3 border rounded-lg"
-                />
-              </div>
-              <div className="mb-4">
-                <label htmlFor="cedula" className="block text-gray-700 mb-2">Cédula</label>
-                <input
-                  type="text"
-                  id="cedula"
-                  name="cedula"
-                  value={userToEdit.cedula}
-                  onChange={handleInputChange}
-                  className="w-full p-3 border rounded-lg"
-                />
-              </div>
-              <div className="flex justify-end space-x-4">
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="bg-gray-500 text-white px-4 py-2 rounded"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  className="bg-blue-500 text-white px-4 py-2 rounded"
-                >
-                  Guardar
-                </button>
-              </div>
-            </form>
-          </div>
+                    <td className="border px-6 py-2 flex justify-center items-center">
+                      <button
+                        className="bg-blue-500 text-white px-4 py-2 rounded mr-2 hover:bg-blue-700"
+                        onClick={() => handleEdit(user)}
+                      >
+                        Editar
+                      </button>
+                      <button
+                        className="bg-[#CB2525] text-white px-4 py-2 rounded-md hover:bg-[#E54F4F]"
+                        onClick={() => handleDelete(user.id_usuario)}
+                      >
+                        Eliminar
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="6" className="border px-4 py-2 text-center">
+                    No hay usuarios disponibles
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
-      )}
 
+        {showModal && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+            <div className="bg-white p-6 rounded shadow-lg w-1/3">
+              <h2 className="text-xl mb-4">Editar Usuario</h2>
+              <form onSubmit={handleSave}>
+                <div className="mb-4">
+                  <label htmlFor="nombre" className="block text-gray-700 mb-2">
+                    Nombre
+                  </label>
+                  <input
+                    type="text"
+                    id="nombre"
+                    name="nombre"
+                    value={userToEdit.nombre}
+                    onChange={handleInputChange}
+                    className="w-full p-3 border rounded-lg"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label
+                    htmlFor="ap_paterno"
+                    className="block text-gray-700 mb-2"
+                  >
+                    Apellido Paterno
+                  </label>
+                  <input
+                    type="text"
+                    id="ap_paterno"
+                    name="ap_paterno"
+                    value={userToEdit.ap_paterno}
+                    onChange={handleInputChange}
+                    className="w-full p-3 border rounded-lg"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label
+                    htmlFor="ap_materno"
+                    className="block text-gray-700 mb-2"
+                  >
+                    Apellido Materno
+                  </label>
+                  <input
+                    type="text"
+                    id="ap_materno"
+                    name="ap_materno"
+                    value={userToEdit.ap_materno}
+                    onChange={handleInputChange}
+                    className="w-full p-3 border rounded-lg"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label htmlFor="email" className="block text-gray-700 mb-2">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={userToEdit.email}
+                    onChange={handleInputChange}
+                    className="w-full p-3 border rounded-lg"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label
+                    htmlFor="nivel_usuario"
+                    className="block text-gray-700 mb-2"
+                  >
+                    Nivel de Usuario
+                  </label>
+                  <input
+                    type="text"
+                    id="nivel_usuario"
+                    name="nivel_usuario"
+                    value={userToEdit.nivel_usuario}
+                    onChange={handleInputChange}
+                    className="w-full p-3 border rounded-lg"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label htmlFor="cedula" className="block text-gray-700 mb-2">
+                    Cédula
+                  </label>
+                  <input
+                    type="text"
+                    id="cedula"
+                    name="cedula"
+                    value={userToEdit.cedula}
+                    onChange={handleInputChange}
+                    className="w-full p-3 border rounded-lg"
+                  />
+                </div>
+                <div className="flex justify-end space-x-4">
+                  <button
+                    type="submit"
+                    className="bg-green-500 bg-opacity-20 text-green-500 text-sm p-4 rounded-lg font-light"
+                  >
+                    Guardar cambios
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowModal(false)}
+                    className="bg-red-500 bg-opacity-20 text-red-500 text-sm p-4 rounded-lg font-light"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+      </div>
       <ToastContainer />
     </Layout>
   );

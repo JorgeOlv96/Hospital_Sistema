@@ -472,6 +472,7 @@ function Solicitudes() {
         )}
 
         <div className="flex flex-col space-y-4 mt-4">
+          
           {/* Filtros de búsqueda */}
           <div className="mt-8">
             <div className="text-left">
