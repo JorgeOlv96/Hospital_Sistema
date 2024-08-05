@@ -117,8 +117,9 @@ function Gestionusuarios() {
 
     return (
         <Layout>
-            <div className="p-6">
-                <h1 className="text-2xl font-bold mb-6">Gestión de Usuarios</h1>
+         <div className="flex flex-col gap-4 mb-6">
+        <h1 className="text-xl font-semibold">Gestion de usuarios</h1>
+        
                 {error && (
                     <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
                         {error}
@@ -159,7 +160,7 @@ function Gestionusuarios() {
                                             </button>
                                             <button
                                                 className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-                                                onClick={() => handleDelete(user.id)}
+                                                onClick={() => handleDelete(user.id_usuario)}
                                             >
                                                 Eliminar
                                             </button>
@@ -176,11 +177,7 @@ function Gestionusuarios() {
                         </tbody>
 
                 </table>
-                <Link to="/register">
-                    <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                        Registrar Usuario
-                    </button>
-                </Link>
+
             </div>
             {showModal && (
                 <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
@@ -262,6 +259,7 @@ function Gestionusuarios() {
                             </button>
                         </form>
                     </div>
+                    
                 </div>
             )}
         </Layout>
