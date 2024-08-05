@@ -158,11 +158,11 @@ function Gestionusuarios() {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-
+  
     if (!validateForm()) {
       return;
     }
-
+  
     // Depuración: Verifica los datos antes de enviarlos
     console.log({
       nombre,
@@ -173,7 +173,7 @@ function Gestionusuarios() {
       nivel_usuario: nivelUsuario,
       cedula,
     });
-
+  
     try {
       const response = await axios.post(`${baseURL}/api/auth/register`, {
         nombre,
@@ -184,9 +184,8 @@ function Gestionusuarios() {
         nivel_usuario: nivelUsuario,
         cedula,
       });
-
+  
       if (response.status === 201) {
-        navigate("/login");
       } else {
         setError(response.data.message);
       }
@@ -195,6 +194,7 @@ function Gestionusuarios() {
       setError("Error en el registro. Inténtalo de nuevo más tarde.");
     }
   };
+  
 
   return (
     <Layout>
@@ -322,11 +322,11 @@ function Gestionusuarios() {
                 </div>
               </div>
               <div className="px-2 py-2 text-right mb-4">
-                <button
-                  onSubmit={handleRegister}
-                  className="bg-[#365b77] text-white px-5 py-2 rounded-md hover:bg-[#7498b6]"
+              <button
+                onClick={handleRegister}
+                className="bg-[#365b77] text-white px-5 py-2 rounded-md hover:bg-[#7498b6]"
                 >
-                  Registrar
+                Registrar
                 </button>
               </div>
             </div>
