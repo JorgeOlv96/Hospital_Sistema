@@ -1,0 +1,134 @@
+/* Estilos existentes */
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+  }
+  
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .status-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .switch-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px; /* Espacio entre el interruptor y el texto */
+  }
+  
+  .status-text {
+    margin-left: 10px; /* Espacio entre el interruptor y el texto */
+    font-size: 14px; /* Tamaño de fuente, ajustable */
+  }
+  
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .1s;
+    border-radius: 34px;
+  }
+  
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .1s;
+    border-radius: 50%;
+  }
+  
+  input:checked + .slider {
+    background-color: #4CAF50;
+  }
+  
+  input:checked + .slider:before {
+    transform: translateX(26px);
+  }
+  
+  /* Estilo para slider redondeado */
+  .slider.round {
+    border-radius: 34px;
+  }
+  
+  .slider.round:before {
+    border-radius: 50%;
+  }
+  
+  /* Estilos para el gráfico y la tabla */
+  .container {
+    display: flex;
+    gap: 20px; /* Espacio entre la tabla y el gráfico */
+  }
+  
+  .table-container {
+    flex: 1;
+  }
+  
+  .chart-container {
+    flex: 1;
+    max-width: 500px; /* Tamaño máximo del gráfico */
+  }
+  .charts-container {
+    display: flex;
+    gap: 16px; /* Espacio entre los gráficos */
+  }
+  
+  .chart-item {
+    flex: 1; /* Hace que ambos gráficos ocupen el mismo espacio */
+  }
+  .content-container {
+    display: flex;
+    gap: 16px; /* Espacio entre la tabla y los gráficos */
+  }
+  
+  .table-container {
+    flex: 1;
+    overflow-x: auto; /* Permite el desplazamiento horizontal si es necesario */
+  }
+  
+  .charts-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px; /* Espacio entre los gráficos */
+  }
+  
+  .chart-item {
+    flex: 1;
+    max-width: 680px; /* Aumenta el ancho máximo de los gráficos */
+    max-height: 400px; /* Aumenta la altura máxima de los gráficos */
+  }
+  
+  .pie-chart {
+    align-items: center; /* Centra los gráficos horizontalmente */
+    margin-left: 160px; /* Ajusta el valor según necesites para mover el gráfico a la derecha */
+  }
+  
+  
+  @media (max-width: 780px) {
+    .chart-item {
+      max-width: 200%;
+      max-height: 240px; /* Ajusta el tamaño de los gráficos en pantallas pequeñas */
+    }
+  }
+  

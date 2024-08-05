@@ -198,7 +198,7 @@ function Gestionusuarios() {
                                 />
                             </div>
                             <div className="mb-4">
-                                <label className="block text-gray-700">Apellido Paterno</label>
+                                <label className="block text-gray-700">Apellido Paternos</label>
                                 <input
                                     type="text"
                                     name="ap_paterno"
