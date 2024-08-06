@@ -18,6 +18,7 @@ function Programaranestesiologo() {
 
   const [anesthesiologists, setAnesthesiologists] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [salasDisponibles, setSalasDisponibles] = useState([]);
   const [anesthesiologistsPerPage] = useState(10);
   const [sortBy, setSortBy] = useState(null);
   const [sortOrder, setSortOrder] = useState("asc");
@@ -211,6 +212,24 @@ function Programaranestesiologo() {
     })
     .slice(indexOfFirstAnesthesiologist, indexOfLastAnesthesiologist);
 
+  
+  useEffect(() => {
+      fetchSalasDisponibles();
+    }, []);
+  
+    const fetchSalasDisponibles = async () => {
+      try {
+        const response = await axios.get(`${baseURL}/api/salas/salas`);
+        const disponibles = response.data.filter(sala => sala.estado);
+        setSalasDisponibles(disponibles);
+      } catch (error) {
+        console.error('Error fetching salas:', error);
+      }
+    };
+
+
+
+
   // Cambiar página
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -337,7 +356,8 @@ function Programaranestesiologo() {
                 <label className="block text-sm font-medium text-gray-700">
                   Asignar sala
                 </label>
-                <select
+               
+               <select
                   name="sala_anestesio"
                   value={formData.sala_anestesio}
                   onChange={handleInputChange}
@@ -377,6 +397,8 @@ function Programaranestesiologo() {
                     Consulta Externa Piso 2
                   </option>
                 </select>
+
+
               </div>
             </div>
             <div className="px-2 py-2 text-right">

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import Layout from "../Layout";
-import { BsCheckCircleFill, BsClockFill, BsXCircleFill } from "react-icons/bs";
+import { BsCheckCircleFill, BsClockFill, BsXCircleFill, BsFillCalendarCheckFill } from "react-icons/bs";
 import axios from "axios";
 import { DashboardSmallChart } from "../components/Charts";
 import AnesthesiologistsCount from '../components/AnesthesiologistsCount';
@@ -37,6 +37,13 @@ const initialDashboardCards = [
     icon: BsXCircleFill,
     value: 0,
     color: ["bg-[#F6E05E]", "text-[#F6E05E]", "#F6E05E"],
+  },
+  {
+    id: 5,
+    title: "Realizadas este mes",
+    icon: BsFillCalendarCheckFill,
+    value: 0,
+    color: ["bg-blue-500", "text-blue-500", "#1E90FF"],
   },
 ];
 
@@ -80,6 +87,7 @@ function Dashboard() {
             `${baseURL}/api/solicitudes/preprogramadas`,
           realizadas: `${baseURL}/api/solicitudes/realizadas`,
           suspendidas: `${baseURL}/api/solicitudes/suspendidas`,
+          realizadasMes: `${baseURL}/api/solicitudes/realizadasMes`,
         };
 
         const [
@@ -87,6 +95,7 @@ function Dashboard() {
           preprogramadasResponse,
           realizadasResponse,
           suspendidasResponse,
+          realizadasMesResponse,
         ] = await Promise.all(
           Object.values(endpoints).map((endpoint) => axios.get(endpoint))
         );
@@ -95,6 +104,7 @@ function Dashboard() {
         const preprogramadasCount = preprogramadasResponse.data.length;
         const realizadasCount = realizadasResponse.data.length;
         const suspendidasCount = suspendidasResponse.data.length;
+        const realizadasMesCount = realizadasMesResponse.data.length;
 
         const updatedCards = initialDashboardCards.map((card) => {
           switch (card.title) {
@@ -106,6 +116,8 @@ function Dashboard() {
               return { ...card, value: realizadasCount };
             case "Suspendidas":
               return { ...card, value: suspendidasCount };
+            case "Realizadas este mes":
+                return { ...card, value: realizadasMesCount };
             default:
               return card;
           }

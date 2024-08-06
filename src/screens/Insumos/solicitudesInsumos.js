@@ -169,6 +169,58 @@ function SolicitudesInsumos() {
       <div className="flex flex-col gap-4 mb-6">
         <h1 className="text-xl font-semibold">Solicitudes Insumos</h1>
         
+         {/* Filtros de búsqueda */}
+         <div className="mt-8">
+            <div className="text-left">
+              <div className="flex items-center justify-center mb-4">
+                <div className="flex items-center space-x-4">
+                  <input
+                    type="text"
+                    placeholder="Buscar..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="px-3 py-2 border border-gray-300 rounded-md w-64"
+                  />
+                  <select
+                    value={searchField}
+                    onChange={(e) => setSearchField(e.target.value)}
+                    className="px-3 py-2 border border-gray-300 rounded-md"
+                  >
+                    <option value="id_solicitud">ID</option>
+                    <option value="folio">Folio</option>
+                    <option value="nombre_paciente">Nombre</option>
+                    <option value="nombre_especialidad">Especialidad</option>
+                    <option value="fecha_solicitud">Fecha</option>
+                    <option value="estado_solicitud">Estado</option>
+                  </select>
+
+                  <div className="flex items-center space-x-2">
+                    <label> Por fecha De:</label>
+                    <input
+                      type="date"
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                      className="px-3 py-2 border border-gray-300 rounded-md"
+                    />
+                    <label>A:</label>
+                    <input
+                      type="date"
+                      value={endDate}
+                      onChange={(e) => setEndDate(e.target.value)}
+                      className="px-3 py-2 border border-gray-300 rounded-md"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+
+
+
+
+
         <div className="overflow-x-auto">
         <table className="min-w-full shadow-md rounded-lg overflow-hidden">
           <thead className="bg-[#365b77] text-white">
