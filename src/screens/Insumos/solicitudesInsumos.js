@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import axios from "axios";
 import Layout from "../../Layout";
 import AddAppointmentModalInsumos from "../../components/Modals/AddApointmentModalInsumos";
@@ -10,11 +10,23 @@ function SolicitudesInsumos() {
   const [showModal, setShowModal] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
+  const [perPage, setPerPage] = useState(9);
+  const [filterState, setFilterState] = useState("all");
+  const [searchField, setSearchField] = useState("nombre_paciente");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
+  const [sortBy, setSortBy] = useState(null);
+  const [sortOrder, setSortOrder] = useState("asc");
+  const [page, setPage] = useState(1);
   const [sortConfig, setSortConfig] = useState({
     key: "fecha_solicitada",
     direction: "asc",
   });
   const itemsPerPage = 10;
+
+  const startIndex = (page - 1) * perPage;
+  const endIndex = startIndex + perPage;
 
   const previousSolicitudesRef = useRef([]);
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
@@ -73,6 +85,36 @@ function SolicitudesInsumos() {
     setOpen(true);
   };
 
+
+  const filteredSolicitudes = useMemo(() => {
+    return solicitudes
+      .filter((solicitud) => {
+        const fieldValue = solicitud[searchField];
+
+        if (typeof fieldValue === "string") {
+          return fieldValue.toLowerCase().includes(searchTerm.toLowerCase());
+        } else if (typeof fieldValue === "number") {
+          return fieldValue.toString().includes(searchTerm.toLowerCase());
+        } else {
+          return false;
+        }
+      })
+      .filter((solicitud) => {
+        if (filterState === "all") return true;
+        return solicitud.estado_solicitud.toLowerCase() === filterState;
+      })
+      .filter((solicitud) => {
+        const solicitudDate = new Date(solicitud.fecha_solicitud);
+        const start = startDate ? new Date(startDate) : null;
+        const end = endDate ? new Date(endDate) : null;
+
+        if (start && solicitudDate < start) return false;
+        if (end && solicitudDate > end) return false;
+        return true;
+      });
+  }, [solicitudes, searchTerm, searchField, filterState, startDate, endDate]);
+
+
   const handleSort = (key) => {
     let direction = "asc";
     if (sortConfig.key === key && sortConfig.direction === "asc") {
@@ -89,6 +131,21 @@ function SolicitudesInsumos() {
     });
     setSolicitudes(sortedSolicitudes);
   };
+
+  const sortedSolicitudes = useMemo(() => {
+    let sorted = [...filteredSolicitudes];
+    if (sortBy) {
+      sorted.sort((a, b) => {
+        const factor = sortOrder === "asc" ? 1 : -1;
+        if (typeof a[sortBy] === "string") {
+          return factor * a[sortBy].localeCompare(b[sortBy]);
+        } else {
+          return factor * (a[sortBy] - b[sortBy]);
+        }
+      });
+    }
+    return sorted;
+  }, [filteredSolicitudes, sortBy, sortOrder]);
 
   const paginatedSolicitudes = solicitudes.slice(
     currentPage * itemsPerPage,
@@ -111,7 +168,9 @@ function SolicitudesInsumos() {
       <Toaster position="top-right" reverseOrder={false} />
       <div className="flex flex-col gap-4 mb-6">
         <h1 className="text-xl font-semibold">Solicitudes Insumos</h1>
-        <table className="min-w-full divide-y divide-white-200">
+        
+        <div className="overflow-x-auto">
+        <table className="min-w-full shadow-md rounded-lg overflow-hidden">
           <thead className="bg-[#365b77] text-white">
             <tr className="border border-gray-300 md:border-none block md:table-row absolute -top-full md:top-auto -left-full md:left-auto md:relative">
               <th
@@ -147,8 +206,14 @@ function SolicitudesInsumos() {
               <th className="p-2">Acciones</th>
             </tr>
           </thead>
-          <tbody className="block md:table-row-group">
-            {paginatedSolicitudes.map((solicitud) => (
+          <tbody>
+                        {sortedSolicitudes
+                          .slice(startIndex, endIndex)
+                          .map((solicitud) => {
+                            const formattedDate = new Date(
+                              solicitud.fecha_solicitud
+                            ).toLocaleDateString();
+                            return (
               <tr
                 key={solicitud.id_solicitud}
                 className="bg-white border border-gray-300 md:border-none block md:table-row"
@@ -177,26 +242,31 @@ function SolicitudesInsumos() {
                   </button>
                 </td>
               </tr>
-            ))}
+              );
+            })}
           </tbody>
         </table>
-        
-        <div className="flex justify-between mt-4">
-          <button
-            disabled={currentPage === 0}
-            onClick={() => setCurrentPage(currentPage - 1)}
-            className="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50"
-          >
-            Anterior
-          </button>
-          <button
-            disabled={currentPage >= totalPages - 1}
-            onClick={() => setCurrentPage(currentPage + 1)}
-            className="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50"
-          >
-            Siguiente
-          </button>
         </div>
+        
+        {/* Paginación */}
+          <div className="flex justify-center mt-4">
+            <button
+              onClick={() => setPage(page - 1)}
+              disabled={page === 1}
+              className="bg-[#365b77] hover:bg-[#7498b6] text-white font-bold py-2 px-4 rounded-l"
+            >
+              Anterior
+            </button>
+            <span className="mx-4">Página {page}</span>
+            <button
+              onClick={() => setPage(page + 1)}
+              disabled={endIndex >= sortedSolicitudes.length}
+              className="bg-[#365b77] hover:bg-[#7498b6] text-white font-bold py-2 px-4 rounded-r"
+            >
+              Siguiente
+            </button>
+          </div>
+
       </div>
     </Layout>
   );

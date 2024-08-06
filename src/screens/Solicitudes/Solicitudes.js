@@ -852,6 +852,7 @@ function Solicitudes() {
               </div>
             </div>
           </div>
+          
           {/* Paginación */}
           <div className="flex justify-center mt-4">
             <button
