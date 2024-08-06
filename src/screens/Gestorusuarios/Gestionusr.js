@@ -2,12 +2,21 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import Layout from "../../Layout";
-import { toast } from "react-toastify";
 
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function Gestionusuarios() {
+  const [formData, setFormData] = useState({
+    nombre: "",
+    dia_anestesio: "",
+    turno_anestesio: "",
+    sala_anestesio: "",
+    hora_inicio: "",
+    hora_fin: "",
+  });
+
+
   const navigate = useNavigate();
 
   const [nombre, setNombre] = useState("");
@@ -162,11 +171,11 @@ function Gestionusuarios() {
 
   const handleRegister = async (e) => {
     e.preventDefault();
-
+  
     if (!validateForm()) {
       return;
     }
-
+  
     try {
       const response = await axios.post(`${baseURL}/api/auth/register`, {
         nombre,
@@ -177,19 +186,33 @@ function Gestionusuarios() {
         nivel_usuario: nivelUsuario,
         cedula,
       });
-
+  
       if (response.status === 201) {
         // Si el registro es exitoso, actualiza la lista de usuarios
         fetchUsuarios();
+  
+        // Mostrar notificación de éxito
+        toast.success("Usuario agregado correctamente");
+  
+        // Limpiar el formulario
+        setNombre("");
+        setApPaterno("");
+        setApMaterno("");
+        setEmail("");
+        setPassword("");
+        setNivelUsuario("");
+        setCedula("");
       } else {
         setError(response.data.message);
       }
     } catch (err) {
       console.error("Error en el registro:", err);
       setError("Error en el registro. Inténtalo de nuevo más tarde.");
+      // Mostrar notificación de error
+      toast.error("Error al registrar el usuario");
     }
   };
-
+  
   // Filtrar usuarios según el término de búsqueda y el campo seleccionado
   const usuariosFiltrados = usuarios.filter((user) => {
     if (searchField === "nombre") {
@@ -522,7 +545,8 @@ function Gestionusuarios() {
           </div>
         )}
       </div>
-      <ToastContainer />
+       {/* Mostrar notificaciones */}
+       <ToastContainer position="bottom-right" />
     </Layout>
   );
 }
