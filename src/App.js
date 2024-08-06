@@ -81,8 +81,6 @@ function App() {
 
   return (
     <>
-      {/* Toaster */}
-      <Toast />
       {/* Routes */}
       <BrowserRouter>
         <Routes>
@@ -123,7 +121,6 @@ function App() {
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
-        <ToastContainer />
       </BrowserRouter>
     </>
   );
