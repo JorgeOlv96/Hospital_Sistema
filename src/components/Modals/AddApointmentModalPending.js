@@ -119,6 +119,7 @@ function AddAppointmentModalPending({
         throw new Error("Network response was not ok");
       }
       closeModal();
+      window.location.reload();
     } catch (error) {
       console.error("Error saving changes:", error);
     }
