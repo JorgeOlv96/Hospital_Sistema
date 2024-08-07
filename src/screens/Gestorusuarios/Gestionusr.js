@@ -16,7 +16,6 @@ function Gestionusuarios() {
     hora_fin: "",
   });
 
-
   const navigate = useNavigate();
 
   const [nombre, setNombre] = useState("");
@@ -76,12 +75,6 @@ function Gestionusuarios() {
     fetchUsuarios();
   }, []);
 
-  // Edit user and open modal
-  const handleEdit = (user) => {
-    setUserToEdit(user);
-    setShowModal(true);
-  };
-
   // Delete user
   const handleDelete = async (id) => {
     try {
@@ -92,10 +85,11 @@ function Gestionusuarios() {
         const data = await response.json();
         setError(data.message);
       } else {
-        // Remove user from state without needing to refetch
+        // Filtrar el usuario eliminado de la lista
         setUsuarios((prevUsuarios) =>
           prevUsuarios.filter((user) => user.id_usuario !== id)
         );
+
         setSuccess("User deleted successfully.");
       }
     } catch (err) {
@@ -107,60 +101,48 @@ function Gestionusuarios() {
   // Save edited user
   const handleSave = async (e) => {
     e.preventDefault();
-    const {
-      id_usuario,
-      nombre,
-      ap_paterno,
-      ap_materno,
-      nivel_usuario,
-      email,
-      cedula,
-    } = userToEdit;
+
+    if (!userToEdit) return;
 
     try {
-      // Primero, desactivamos cualquier notificación existente
       toast.dismiss();
 
-      // Realiza la solicitud de actualización
-      const response = await fetch(`${baseURL}/api/users/users/${id_usuario}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          nombre,
-          ap_paterno,
-          ap_materno,
-          nivel_usuario,
-          email,
-          cedula,
-        }),
-      });
+      const response = await fetch(
+        `${baseURL}/api/users/users/${userToEdit.id_usuario}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(userToEdit),
+        }
+      );
 
       if (!response.ok) {
         const data = await response.json();
         setError(data.message);
-        toast.error(data.message); // Mostrar mensaje de error
+        toast.error(data.message);
       } else {
         const updatedUser = await response.json();
-        console.log("Updated user:", updatedUser); // Agregado para depuración
-        console.log("Usuarios state:", usuarios); // Agregado para depuración
-        setUsuarios(
-          usuarios.map((user) =>
-            user.id_usuario === id_usuario ? updatedUser : user
+
+        // Actualizar la lista local de usuarios
+        setUsuarios((prevUsuarios) =>
+          prevUsuarios.map((user) =>
+            user.id_usuario === updatedUser.id_usuario ? updatedUser : user
           )
         );
+
         setShowModal(false);
-        toast.success("User updated successfully"); // Mostrar mensaje de éxito
+        toast.success("Usuario actualizado correctamente");
       }
     } catch (err) {
       console.error("Error updating user:", err);
       setError("Error updating user. Please try again later.");
-      toast.error("Error updating user. Please try again later."); // Mostrar mensaje de error
+      toast.error("Error updating user. Please try again later.");
     }
   };
 
-  // Handle input change in the modal form
+  // Manejar cambios en los inputs del formulario modal
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setUserToEdit((prevUser) => ({
@@ -169,13 +151,19 @@ function Gestionusuarios() {
     }));
   };
 
+  // Edit user and open modal
+  const handleEdit = (user) => {
+    setUserToEdit(user);
+    setShowModal(true);
+  };
+
   const handleRegister = async (e) => {
     e.preventDefault();
-  
+
     if (!validateForm()) {
       return;
     }
-  
+
     try {
       const response = await axios.post(`${baseURL}/api/auth/register`, {
         nombre,
@@ -186,14 +174,14 @@ function Gestionusuarios() {
         nivel_usuario: nivelUsuario,
         cedula,
       });
-  
+
       if (response.status === 201) {
         // Si el registro es exitoso, actualiza la lista de usuarios
         fetchUsuarios();
-  
+
         // Mostrar notificación de éxito
         toast.success("Usuario agregado correctamente");
-  
+
         // Limpiar el formulario
         setNombre("");
         setApPaterno("");
@@ -212,13 +200,19 @@ function Gestionusuarios() {
       toast.error("Error al registrar el usuario");
     }
   };
-  
+
   // Filtrar usuarios según el término de búsqueda y el campo seleccionado
   const usuariosFiltrados = usuarios.filter((user) => {
     if (searchField === "nombre") {
-      return user.nombre.toLowerCase().includes(searchTerm.toLowerCase());
+      return (
+        user.nombre &&
+        user.nombre.toLowerCase().includes(searchTerm.toLowerCase())
+      );
     } else if (searchField === "email") {
-      return user.email.toLowerCase().includes(searchTerm.toLowerCase());
+      return (
+        user.email &&
+        user.email.toLowerCase().includes(searchTerm.toLowerCase())
+      );
     }
     return true; // Si no se selecciona un campo válido, no filtra
   });
@@ -342,9 +336,12 @@ function Gestionusuarios() {
                       (1) Dashboard, Solicitudes, Agenda
                     </option>
                     <option value="2">(2) Dashboard, Evaluación</option>
-                    <option value="3">(3) Bitacora, y Dasboard</option>
-                    <option value="4">(4) Anestesiólogos, Dashboard</option>
-                    <option value="5">(5) Todos ( Admin ) </option>
+                    <option value="3">
+                      (3) Bitacora Enfermeria y Dasboard
+                    </option>
+                    <option value="3">(4) Bitacora Anestesio y Dasboard</option>
+                    <option value="4">(5) Anestesiólogos, Dashboard</option>
+                    <option value="5">(6) Todos ( Admin ) </option>
                   </select>
                 </div>
               </div>
@@ -363,7 +360,9 @@ function Gestionusuarios() {
 
         {/* Filtros de búsqueda */}
         <div className="text-left mb-2">
-          <div className="flex justify-center  items-center space-x-2"> {/* Reducido el espacio */}
+          <div className="flex justify-center  items-center space-x-2">
+            {" "}
+            {/* Reducido el espacio */}
             <input
               type="text"
               placeholder="Buscar..."
@@ -413,6 +412,7 @@ function Gestionusuarios() {
                       >
                         Editar
                       </button>
+
                       <button
                         className="bg-[#CB2525] text-white px-4 py-2 rounded-md hover:bg-[#E54F4F]"
                         onClick={() => handleDelete(user.id_usuario)}
@@ -444,11 +444,12 @@ function Gestionusuarios() {
                   </label>
                   <input
                     type="text"
-                    id="nombre"
                     name="nombre"
-                    value={userToEdit.nombre}
+                    value={userToEdit?.nombre || ""}
                     onChange={handleInputChange}
-                    className="w-full p-3 border rounded-lg"
+                    className={`w-full p-3 border ${
+                      errors.nombre ? "border-red-500" : "border-gray-300"
+                    } rounded-lg`}
                   />
                 </div>
                 <div className="mb-4">
@@ -462,7 +463,7 @@ function Gestionusuarios() {
                     type="text"
                     id="ap_paterno"
                     name="ap_paterno"
-                    value={userToEdit.ap_paterno}
+                    value={userToEdit.ap_paterno || ""}
                     onChange={handleInputChange}
                     className="w-full p-3 border rounded-lg"
                   />
@@ -478,7 +479,7 @@ function Gestionusuarios() {
                     type="text"
                     id="ap_materno"
                     name="ap_materno"
-                    value={userToEdit.ap_materno}
+                    value={userToEdit.ap_materno || ""}
                     onChange={handleInputChange}
                     className="w-full p-3 border rounded-lg"
                   />
@@ -492,10 +493,11 @@ function Gestionusuarios() {
                     id="email"
                     name="email"
                     value={userToEdit.email}
-                    onChange={handleInputChange}
+                    onChange={handleInputChange || ""}
                     className="w-full p-3 border rounded-lg"
                   />
                 </div>
+
                 <div className="mb-4">
                   <label
                     htmlFor="nivel_usuario"
@@ -503,15 +505,29 @@ function Gestionusuarios() {
                   >
                     Nivel de Usuario
                   </label>
-                  <input
-                    type="text"
+                  <select
                     id="nivel_usuario"
                     name="nivel_usuario"
-                    value={userToEdit.nivel_usuario}
+                    value={userToEdit.nivel_usuario || ""}
                     onChange={handleInputChange}
                     className="w-full p-3 border rounded-lg"
-                  />
+                  >
+                    <option value="">Seleccionar</option>
+                    <option value="1">
+                      (1) Dashboard, Solicitudes, Agenda
+                    </option>
+                    <option value="2">(2) Dashboard, Evaluación</option>
+                    <option value="3">
+                      (3) Bitacora Enfermeria y Dashboard
+                    </option>
+                    <option value="4">
+                      (4) Bitacora Anestesio y Dashboard
+                    </option>
+                    <option value="5">(5) Anestesiólogos, Dashboard</option>
+                    <option value="6">(6) Todos (Admin)</option>
+                  </select>
                 </div>
+
                 <div className="mb-4">
                   <label htmlFor="cedula" className="block text-gray-700 mb-2">
                     Cédula
@@ -520,7 +536,7 @@ function Gestionusuarios() {
                     type="text"
                     id="cedula"
                     name="cedula"
-                    value={userToEdit.cedula}
+                    value={userToEdit.cedula || ""}
                     onChange={handleInputChange}
                     className="w-full p-3 border rounded-lg"
                   />
@@ -545,8 +561,8 @@ function Gestionusuarios() {
           </div>
         )}
       </div>
-       {/* Mostrar notificaciones */}
-       <ToastContainer position="bottom-right" />
+      {/* Mostrar notificaciones */}
+      <ToastContainer position="bottom-right" />
     </Layout>
   );
 }
