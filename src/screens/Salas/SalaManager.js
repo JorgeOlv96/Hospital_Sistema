@@ -44,10 +44,20 @@ const SalaManager = () => {
 
   const toggleEstado = async (id, estadoActual) => {
     try {
+<<<<<<< HEAD
         await axios.put(`${baseURL}/api/salas/salas/${id}`, {
             estado: !estadoActual,
         });
         fetchSalas(); // Actualiza la lista después de la actualización
+=======
+      const newEstado = !estadoActual;
+      const ultimaActualizacion = newEstado ? new Date().toISOString() : null; // Guardar la fecha de desactivación
+      await axios.put(`${baseURL}/api/salas/salas/${id}`, {
+        estado: newEstado,
+        ultima_actualizacion: ultimaActualizacion, // Enviar la fecha de desactivación al servidor
+      });
+      fetchSalas(); // Refresh the list after updating
+>>>>>>> 18c5acde67573e1316715a1f8f6edbd9450b9507
     } catch (error) {
         console.error("Error updating sala state:", error);
     }
@@ -57,6 +67,7 @@ const SalaManager = () => {
   const calculateInactiveTime = (ultimaActualizacion, estado) => {
     if (estado) return 0; // Si está encendida, no hay tiempo inactivo
 
+<<<<<<< HEAD
     const now = new Date();
     const lastUpdate = new Date(ultimaActualizacion);
     const diffMs = now - lastUpdate;
@@ -64,6 +75,13 @@ const SalaManager = () => {
     return diffMinutes;
 };
 
+=======
+  const formatFechaHora = (fechaHora) => {
+    // Eliminar 'T', 'Z' y los ceros al final
+    return fechaHora.replace('T', ' ').replace('Z', '').replace('.000', '');
+  };
+  
+>>>>>>> 18c5acde67573e1316715a1f8f6edbd9450b9507
 
   // Prepare data for the bar chart
   const barChartData = {
@@ -108,8 +126,7 @@ const SalaManager = () => {
                   <th className="text-center py-2">ID</th>
                   <th className="text-center py-2">Nombre</th>
                   <th className="text-center py-2">Estado</th>
-                  <th className="text-center py-2">Tiempo Inactivo</th>{" "}
-                  {/* Nueva columna */}
+                  <th className="text-center py-2">Última Desactivación</th> {/* Nueva columna */}
                   <th className="text-center py-2">Acciones</th>
                 </tr>
               </thead>
@@ -128,12 +145,18 @@ const SalaManager = () => {
                       </div>
                     </td>
                     <td className="text-center py-2">
+<<<<<<< HEAD
                         {sala.ultima_actualizacion
                             ? `${calculateInactiveTime(sala.ultima_actualizacion, sala.estado)} minutos`
                             : "N/A"}
                     </td>
 
                     {/* Nueva celda */}
+=======
+  {sala.estado ? '---' : sala.ultima_actualizacion ? formatFechaHora(sala.ultima_actualizacion) : "N/A"}
+</td>
+
+>>>>>>> 18c5acde67573e1316715a1f8f6edbd9450b9507
                     <td className="text-center py-2">
                       <div className="switch-container">
                         <label className="switch">
