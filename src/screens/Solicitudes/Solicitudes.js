@@ -11,7 +11,7 @@ function Solicitudes() {
   const [open, setOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [page, setPage] = useState(1);
-  const [perPage, setPerPage] = useState(9);
+  const [perPage] = useState(9);
   const [sortBy, setSortBy] = useState(null);
   const [sortOrder, setSortOrder] = useState("asc");
   const [searchTerm, setSearchTerm] = useState("");
@@ -107,8 +107,7 @@ function Solicitudes() {
         const end = endDate ? new Date(endDate) : null;
 
         if (start && solicitudDate < start) return false;
-        if (end && solicitudDate > end) return false;
-        return true;
+        return !(end && solicitudDate > end);
       });
   }, [solicitudes, searchTerm, searchField, filterState, startDate, endDate]);
 
@@ -715,6 +714,16 @@ function Solicitudes() {
                           </th>
                           <th
                             className="px-4 py-3 cursor-pointer"
+                            onClick={() => handleSort("fecha_solicitud")}
+                          >
+                            Insumos{" "}
+                            <span>
+                              {sortBy === "req_insumo" &&
+                                (sortOrder === "asc" ? "▲" : "▼")}
+                            </span>
+                          </th>
+                          <th
+                            className="px-4 py-3 cursor-pointer"
                             onClick={() => handleSort("estado_solicitud")}
                           >
                             Estado{" "}
@@ -730,9 +739,6 @@ function Solicitudes() {
                         {sortedSolicitudes
                           .slice(startIndex, endIndex)
                           .map((solicitud) => {
-                            const formattedDate = new Date(
-                              solicitud.fecha_solicitud
-                            ).toLocaleDateString();
                             return (
                               <tr
                                 key={solicitud.id_solicitud}
@@ -748,12 +754,16 @@ function Solicitudes() {
                                   {solicitud.nombre_paciente}{" "}
                                   {solicitud.ap_paterno} {solicitud.ap_materno}
                                 </td>
-                                <td className="border px-4 py-2">
+                                <td className="border px-4 py-2 text-center">
                                   {solicitud.nombre_especialidad}
                                 </td>
-                                <td className="border px-4 py-2">
+                                <td className="border px-4 py-2 text-center">
                                   {solicitud.fecha_solicitud}
                                 </td>
+                                <td className="border px-4 py-2 text-center">
+                                  {solicitud.req_insumo}
+                                </td>
+
                                 <td className="border px-4 py-2">
                                   <div
                                     className={`inline-block px-1 py-1 rounded-lg ${getEstadoColor(
@@ -774,7 +784,7 @@ function Solicitudes() {
                                     {solicitud.estado_solicitud}
                                   </div>
                                 </td>
-                                <td className="border px-4 py-2">
+                                <td className="border px-4 py-2 text-center">
                                   <button
                                     onClick={() => handleViewModal(solicitud)}
                                     className="bg-[#365b77] text-white px-4 py-2 rounded-md hover:bg-[#7498b6]"

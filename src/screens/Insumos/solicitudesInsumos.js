@@ -147,13 +147,6 @@ function SolicitudesInsumos() {
     return sorted;
   }, [filteredSolicitudes, sortBy, sortOrder]);
 
-  const paginatedSolicitudes = solicitudes.slice(
-    currentPage * itemsPerPage,
-    (currentPage + 1) * itemsPerPage
-  );
-
-  const totalPages = Math.ceil(solicitudes.length / itemsPerPage);
-
   return (
     <Layout>
       {open && selectedAppointment && (
