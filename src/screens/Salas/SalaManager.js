@@ -53,6 +53,14 @@ const SalaManager = () => {
     }
   };
 
+  const calculateInactiveTime = (ultimaActualizacion) => {
+    const now = new Date();
+    const lastUpdate = new Date(ultimaActualizacion);
+    const diffMs = now - lastUpdate;
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+    return diffMinutes;
+  };
+
   // Prepare data for the bar chart
   const barChartData = {
     labels: salas.map((sala) => `Sala ${sala.nombre_sala}`),
@@ -115,11 +123,9 @@ const SalaManager = () => {
                         </span>
                       </div>
                     </td>
-
                     <td className="text-center py-2">
-                      {/* Asegúrate de que 'sala.tiempo_inactivo' esté en el formato adecuado */}
-                      {sala.tiempo_inactivo
-                        ? `${sala.tiempo_inactivo} minutos`
+                      {sala.ultima_actualizacion
+                        ? `${calculateInactiveTime(sala.ultima_actualizacion)} minutos`
                         : "N/A"}
                     </td>{" "}
                     {/* Nueva celda */}
