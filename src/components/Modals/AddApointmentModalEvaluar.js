@@ -421,7 +421,6 @@ function AddAppointmentModalEvaluar({
               </div>
             </div>
           </div>
-
           <div className="flex justify-between mt-4">
             <button
               onClick={handlePreprogramar}
@@ -435,27 +434,25 @@ function AddAppointmentModalEvaluar({
               {isEditing ? (
                 <>
                   <button
-                      className="bg-red-500 bg-opacity-20 text-red-500 text-sm p-4 rounded-lg font-light"
-                      onClick={handleCancelChanges}
-                    >
-                      Cancelar
-                    </button>
-                    <button
-                      className="bg-green-500 bg-opacity-20 text-green-500 text-sm p-4 rounded-lg font-light"
-                      onClick={handleSaveChanges}
-                    >
-                      Guardar Cambios
-                    </button>
-                </>
-              ) : (
-                <>
-                  <button
-                    className="bg-blue-500 bg-opacity-20 text-blue-500 text-sm p-4 rounded-lg font-light"
-                    onClick={() => setIsEditing(true)}
+                    className="bg-red-500 bg-opacity-20 text-red-500 text-sm p-4 rounded-lg font-light"
+                    onClick={handleCancelChanges}
                   >
-                    Editar
+                    Cancelar
+                  </button>
+                  <button
+                    className="bg-green-500 bg-opacity-20 text-green-500 text-sm p-4 rounded-lg font-light"
+                    onClick={handleSaveChanges}
+                  >
+                    Guardar Cambios
                   </button>
                 </>
+              ) : (
+                <button
+                  className="bg-blue-500 bg-opacity-20 text-blue-500 text-sm p-4 rounded-lg font-light"
+                  onClick={() => setIsEditing(true)}
+                >
+                  Editar
+                </button>
               )}
             </div>
           </div>
