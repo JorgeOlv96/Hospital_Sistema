@@ -43,8 +43,10 @@ import Evaluacionmedica from './screens/Evaluacion';
 import Anestesiólogos from './screens/Anestesiologos';
 import Programaranestesiologo from './screens/Anestesio/Programaranestesiologo';
 import Bitacora from './screens/Bitacora';
+import Bitacoraanestesio from './screens/Bitacoraanestesio';
 import Bitacoraenfermeria from './screens/BitacoraEnfermeria/Bitaenfermeria';
 import Consultabitacora from './screens/BitacoraEnfermeria/Consultabitacora';
+import ConsultabitacoraAnestesio from './screens/BitacoraEnfermeria/Consultabitacoraanestesio';
 import Solicitudurgencia from './screens/Urgencias/Solicitudurgencia';
 import Consultaurgencia from './screens/Urgencias/Consultaurgencia';
 import Solicitudesurgentes from './screens/Urgencias/Urgentes';
@@ -109,6 +111,7 @@ function App() {
             <Route path="/bitacora" element={<Bitacora />} />
             <Route path="/bitacora/Bitaenfermeria" element={<Bitacoraenfermeria />} />
             <Route path="/bitacora/Consultabitacora/:id" element={<Consultabitacora />} />
+            <Route path="/bitacora/Consultabitacoraanestesio/:id" element={<ConsultabitacoraAnestesio />} />
             <Route path="/urgencias/Solicitudurgencia" element={<Solicitudurgencia />} />
             <Route path="/urgencias/Consultaurgencia" element={<Consultaurgencia />} />
             <Route path="/urgencias/Urgentes" element={<Solicitudesurgentes />} />
@@ -118,6 +121,7 @@ function App() {
             <Route path="/settings" element={<Settings />} />
             <Route path="/ayuda" element={<Ayuda />} />
             <Route path="/solicitudesInsumos" element={<SolicitudesInsumos />} />
+            <Route path="/bitacoraanestesio" element={<Bitacoraanestesio />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>

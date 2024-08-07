@@ -6,7 +6,7 @@ import Modal from "../../components/Modals/Modal";
 import { MultiSelect } from "react-multi-select-component";
 import AsyncSelect from "react-select/async";
 
-const Consultabitacora = () => {
+const ConsultabitacoraAnestesio = () => {
   const options = [
     { label: "General", value: "general" },
     { label: "TIVA", value: "tiva" },
@@ -592,8 +592,8 @@ const Consultabitacora = () => {
                   type="text"
                   id="enf_quirirjica"
                   name="enf_quirirjica"
-                  onChange={handleChange}
-                  className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full`}
+                  readOnly
+                  className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
                 />
               </div>
             </div>
@@ -611,8 +611,8 @@ const Consultabitacora = () => {
                   type="text"
                   id="enf_circulante"
                   name="enf_circulante"
-                  onChange={handleChange}
-                  className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full`}
+                  readOnly
+                  className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
                 />
               </div>
             </div>
@@ -644,13 +644,12 @@ const Consultabitacora = () => {
                 Entr. quirófano:
               </label>
               <input
-                placeholder="Minutos"
                 type="time"
                 id="hora_entrada"
                 name="hora_entrada"
-                value={patientData.hora_entrada || ""}
-                onChange={handleChange}
-                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white cursor-default`}
+                value={patientData.hora_entrada || "N/A"}
+                readOnly
+                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
               />
             </div>
             <div className="mr-4 w-full">
@@ -666,8 +665,8 @@ const Consultabitacora = () => {
                 id="hi_anestesia"
                 name="hi_anestesia"
                 value={patientData.hi_anestesia || ""}
-                readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                onChange={handleChange}
+                className={`rounded-lg px-3 py-2 w-full bg-white`}
               />
             </div>
 
@@ -678,12 +677,21 @@ const Consultabitacora = () => {
               >
                 Tipo Anes:
               </label>
-              <input
+              <MultiSelect
                 options={options}
-                value={patientData.tipo_anestesia}
-                readOnly
+                value={selected}
+                onChange={handleInputChange}
                 labelledBy="Seleccionar tipo de anestesia"
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                overrideStrings={{
+                  allItemsAreSelected: "Todo seleccionado",
+                  clearSearch: "Limpiar búsqueda",
+                  noOptions: "Sin opciones",
+                  search: "Buscar",
+                  selectAll: "Seleccionar todo",
+                  selectSomeItems: "Seleccionar",
+                }}
+                className="border border-[#A8D5B1] rounded-lg w-full bg-[#A8D5B1] text-[#333333] cursor-pointer text-sm"
+                style={{ minHeight: "auto" }}
               />
             </div>
             <div class="w-full mr-4">
@@ -699,8 +707,8 @@ const Consultabitacora = () => {
                 id="hora_incision"
                 name="hora_incision"
                 value={patientData.hora_incision || ""}
-                onChange={handleChange}
-                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white`}
+                readOnly
+                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
               />
             </div>
 
@@ -717,8 +725,8 @@ const Consultabitacora = () => {
                 id="hora_cierre"
                 name="hora_cierre"
                 value={patientData.hora_cierre || ""}
-                onChange={handleChange}
-                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white`}
+                readOnly
+                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
               />
             </div>
 
@@ -735,8 +743,8 @@ const Consultabitacora = () => {
                 id="ht_anestesia"
                 name="ht_anestesia"
                 value={patientData.ht_anestesia || ""}
-                readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                onChange={handleChange}
+                className={`rounded-lg px-3 py-2 w-full bg-white`}
               />
             </div>
 
@@ -753,8 +761,8 @@ const Consultabitacora = () => {
                 id="hora_salida"
                 name="hora_salida"
                 value={patientData.hora_salida || ""}
-                onChange={handleChange}
-                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white cursor-default`}
+                readOnly
+                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
               />
             </div>
             <div class="w-full mr-4">
@@ -769,8 +777,8 @@ const Consultabitacora = () => {
                 id="egreso"
                 name="egreso"
                 value={patientData.egreso || ""}
-                onChange={handleChange}
-                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white cursor-default`}
+                readOnly
+                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
               ></input>
             </div>
 
@@ -824,25 +832,9 @@ const Consultabitacora = () => {
                   id="procedimiento_extra"
                   name="procedimiento_extra"
                   value={procedimientoExtra}
-                  onChange={(e) => setProcedimientoExtra(e.target.value)}
-                  className="rounded-lg px-3 py-2 w-full bg-white"
+                  readOnly
+                  className={ `"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
                 ></input>
-              </div>
-              <div className="mr-4" style={{ width: "12%" }}>
-                <label
-                  htmlFor="agregar_procedimiento"
-                  className="block font-semibold text-white mb-1"
-                >
-                  Agregar más
-                </label>
-                <button
-                  id="agregar_procedimiento"
-                  name="agregar_procedimiento"
-                  className="border-[#A8D5B1] rounded-lg px-3 py-2 w-full bg-[#A8D5B1] text-white cursor-pointer"
-                  onClick={agregarProcedimiento}
-                >
-                  +
-                </button>
               </div>
             </div>
           </div>
@@ -949,4 +941,4 @@ const Consultabitacora = () => {
   );
 };
 
-export default Consultabitacora;
+export default ConsultabitacoraAnestesio;

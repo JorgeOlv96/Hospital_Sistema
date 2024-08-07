@@ -42,55 +42,61 @@ export const MenuDatas = [
     title: 'Dashboard',
     path: '/dashboard',
     icon: HiOutlineHome,
-    viewRole: [1, 2, 3, 4, 5]
+    viewRole: [1, 2, 3, 4, 5, 6]
   },
   {
     title: 'Solicitudes ',
     path: '/solicitudes',
     icon: FaWpforms,
-    viewRole: [1, 5]
+    viewRole: [1, 6]
   },
   {
     title: 'Evaluación',
     path: '/evaluacion',
     icon: LuFileSpreadsheet,
-    viewRole: [2, 5]
+    viewRole: [2, 6]
   },
   {
     title: 'Agenda',
     path: '/appointments',
     icon: FaRegCalendarAlt,
-    viewRole: [1, 5]
+    viewRole: [1, 6]
   },
   {
     title: 'Anestesiólogos',
     path: '/anestesiólogos',
     icon: PiSyringe,
-    viewRole: [4, 5]
+    viewRole: [5, 6]
   },
   {
-    title: 'Bitácora',
-    path: '/Bitacora',
+    title: 'Bitácora enfermería',
+    path: '/bitacora/Bitaenfermeria',
     icon: LiaUserNurseSolid,
-    viewRole: [3, 5]
+    viewRole: [3, 6]
+  },
+  {
+    title: 'Bitácora anestesiología',
+    path: '/Bitacoraanestesio',
+    icon: LiaUserNurseSolid,
+    viewRole: [4, 6]
   },
   {
     title: 'Gestion de usuarios',
     path: '/Gestionusr',
     icon: FaWpforms, // Puedes cambiar este icono por uno más representativo si lo deseas
-    viewRole: [5] // Solo accesible para el nivel 5
+    viewRole: [6] // Solo accesible para el nivel 5
   },
   {
     title: 'Gestor de salas',
     path: '/SalaManager',
     icon: FaWpforms, // Puedes cambiar este icono por uno más representativo si lo deseas
-    viewRole: [5] // Solo accesible para el nivel 5
+    viewRole: [6] // Solo accesible para el nivel 5
   },
   {
     title: 'Solicitudes insumos',
     path: '/solicitudesInsumos',
     icon: FaWpforms, // Puedes cambiar este icono por uno más representativo si lo deseas
-    viewRole: [5] // Solo accesible para el nivel 5
+    viewRole: [2, 6] // Solo accesible para el nivel 5
   },
 ];
 
