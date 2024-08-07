@@ -770,7 +770,7 @@ const Consultabitacora = () => {
                 name="egreso"
                 value={patientData.egreso || ""}
                 onChange={handleChange}
-                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white cursor-default`}
+                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white`}
               ></input>
             </div>
 

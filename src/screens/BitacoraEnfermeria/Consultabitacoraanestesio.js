@@ -138,7 +138,7 @@ const ConsultabitacoraAnestesio = () => {
       }
       setSuspendModalOpen(false);
       closeModal();
-      navigate("/bitacora/Bitaenfermeria");
+      navigate("/Bitacoraanestesio");
     } catch (error) {
       console.error("Error suspending appointment:", error);
     }
@@ -147,32 +147,14 @@ const ConsultabitacoraAnestesio = () => {
   const handleSave = async () => {
     try {
       const {
-        nuevos_procedimientos_extra,
-        hora_entrada,
-        hora_incision,
-        hora_cierre,
-        hora_salida,
-        egreso,
-        enf_quirurgica,
-        enf_circulante,
         hi_anestesia,
         tipo_anestesia,
         ht_anestesia,
       } = patientData;
-      const response = await fetch(`${baseURL}/api/solicitudes/bitacoraenf/${id}`,
+      const response = await fetch(`${baseURL}/api/solicitudes/bitacoranes/${id}`,
         {
           method: "PATCH",
           body: JSON.stringify({
-            nuevos_procedimientos_extra: JSON.stringify(
-              nuevos_procedimientos_extra
-            ),
-            hora_entrada,
-            hora_incision,
-            hora_cierre,
-            hora_salida,
-            egreso,
-            enf_quirurgica,
-            enf_circulante,
             hi_anestesia,
             tipo_anestesia,
             ht_anestesia,
@@ -185,7 +167,7 @@ const ConsultabitacoraAnestesio = () => {
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-      navigate("/bitacora/Bitaenfermeria");
+      navigate("/Bitacoraanestesio");
     } catch (error) {
       console.error("Error saving changes:", error);
     }
@@ -234,7 +216,7 @@ const ConsultabitacoraAnestesio = () => {
         <h1 className="text-xl font-semibold">Consulta Paciente</h1>
         <div className="flex my-4 justify-between">
           <Link
-            to="/bitacora/Bitaenfermeria"
+            to="/Bitacoraanestesio"
             className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
           >
             <span style={{ display: "inline-flex", alignItems: "center" }}>
@@ -242,13 +224,6 @@ const ConsultabitacoraAnestesio = () => {
               <span style={{ marginLeft: "5px" }}>Regresar a bitácora</span>
             </span>
           </Link>
-
-          <button
-            onClick={handleSuspend}
-            className="bg-red-500 hover:bg-red-700 text-white py-2 px-4 rounded inline-flex items-center"
-          >
-            Suspender cirugía
-          </button>
         </div>
 
         <div class="flex flex-col p-4 bg-[#85AD8D] rounded-lg ">
