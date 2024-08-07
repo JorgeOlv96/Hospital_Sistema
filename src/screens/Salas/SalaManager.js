@@ -44,8 +44,11 @@ const SalaManager = () => {
 
   const toggleEstado = async (id, estadoActual) => {
     try {
+      const newEstado = !estadoActual;
+      const ultimaActualizacion = newEstado ? new Date().toISOString() : null; // Guardar la fecha de desactivación
       await axios.put(`${baseURL}/api/salas/salas/${id}`, {
-        estado: !estadoActual,
+        estado: newEstado,
+        ultima_actualizacion: ultimaActualizacion, // Enviar la fecha de desactivación al servidor
       });
       fetchSalas(); // Refresh the list after updating
     } catch (error) {
@@ -53,13 +56,11 @@ const SalaManager = () => {
     }
   };
 
-  const calculateInactiveTime = (ultimaActualizacion) => {
-    const now = new Date();
-    const lastUpdate = new Date(ultimaActualizacion);
-    const diffMs = now - lastUpdate;
-    const diffMinutes = Math.floor(diffMs / (1000 * 60));
-    return diffMinutes;
+  const formatFechaHora = (fechaHora) => {
+    // Eliminar 'T', 'Z' y los ceros al final
+    return fechaHora.replace('T', ' ').replace('Z', '').replace('.000', '');
   };
+  
 
   // Prepare data for the bar chart
   const barChartData = {
@@ -104,8 +105,7 @@ const SalaManager = () => {
                   <th className="text-center py-2">ID</th>
                   <th className="text-center py-2">Nombre</th>
                   <th className="text-center py-2">Estado</th>
-                  <th className="text-center py-2">Tiempo Inactivo</th>{" "}
-                  {/* Nueva columna */}
+                  <th className="text-center py-2">Última Desactivación</th> {/* Nueva columna */}
                   <th className="text-center py-2">Acciones</th>
                 </tr>
               </thead>
@@ -124,11 +124,9 @@ const SalaManager = () => {
                       </div>
                     </td>
                     <td className="text-center py-2">
-                      {sala.ultima_actualizacion
-                        ? `${calculateInactiveTime(sala.ultima_actualizacion)} minutos`
-                        : "N/A"}
-                    </td>{" "}
-                    {/* Nueva celda */}
+  {sala.estado ? '---' : sala.ultima_actualizacion ? formatFechaHora(sala.ultima_actualizacion) : "N/A"}
+</td>
+
                     <td className="text-center py-2">
                       <div className="switch-container">
                         <label className="switch">
