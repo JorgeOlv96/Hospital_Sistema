@@ -131,4 +131,22 @@
       max-height: 240px; /* Ajusta el tamaño de los gráficos en pantallas pequeñas */
     }
   }
+
+  .status-text {
+    display: inline-block;
+    padding: 2px 8px; /* Ajusta el padding según sea necesario */
+    border-radius: 4px; /* Para bordes redondeados */
+    font-weight: bold; /* Opcional: para hacer el texto más visible */
+  }
+  
+  .available {
+    background-color: #d4edda; /* Verde claro */
+    color: #155724; /* Verde oscuro para el texto */
+  }
+  
+  .unavailable {
+    background-color: #f8d7da; /* Rojo claro */
+    color: #721c24; /* Rojo oscuro para el texto */
+  }
+  
   

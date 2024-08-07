@@ -110,11 +110,12 @@ const SalaManager = () => {
                     </td>
                     <td className="text-center py-2">
                       <div className="status-container">
-                        <span className="status-text">
+                        <span className={`status-text ${sala.estado ? 'available' : 'unavailable'}`}>
                           {sala.estado ? "Disponible" : "No disponible"}
                         </span>
                       </div>
                     </td>
+
                     <td className="text-center py-2">
                       {/* Asegúrate de que 'sala.tiempo_inactivo' esté en el formato adecuado */}
                       {sala.tiempo_inactivo
