@@ -98,51 +98,52 @@ function Gestionusuarios() {
     }
   };
 
- // Save edited user
-const handleSave = async (e) => {
-  e.preventDefault();
+  // Save edited user
+  const handleSave = async (e) => {
+    e.preventDefault();
 
-  if (!userToEdit) return;
+    if (!userToEdit) return;
 
-  try {
-    toast.dismiss();
+    try {
+      toast.dismiss();
 
-    const response = await fetch(
-      `${baseURL}/api/users/users/${userToEdit.id_usuario}`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(userToEdit),
+      const response = await fetch(
+        `${baseURL}/api/users/users/${userToEdit.id_usuario}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(userToEdit),
+        }
+      );
+
+      // Check if the response is ok, otherwise handle the error
+      if (!response.ok) {
+        const { message } = await response.json();
+        throw new Error(message);
       }
-    );
 
-    // Check if the response is ok, otherwise handle the error
-    if (!response.ok) {
-      const { message } = await response.json();
-      throw new Error(message);
+      // If the response is ok, update the state with the updated user
+      const updatedUser = await response.json();
+      setUsuarios((prevUsuarios) =>
+        prevUsuarios.map((user) =>
+          user.id_usuario === updatedUser.id_usuario ? updatedUser : user
+        )
+      );
+
+      // Close the modal and show a success message
+      setShowModal(false);
+      toast.success("Usuario actualizado correctamente");
+    } catch (err) {
+      // Handle any errors from the try block or fetch
+      console.error("Error updating user:", err);
+      setError(err.message || "Error updating user. Please try again later.");
+      toast.error(
+        err.message || "Error updating user. Please try again later."
+      );
     }
-
-    // If the response is ok, update the state with the updated user
-    const updatedUser = await response.json();
-    setUsuarios((prevUsuarios) =>
-      prevUsuarios.map((user) =>
-        user.id_usuario === updatedUser.id_usuario ? updatedUser : user
-      )
-    );
-
-    // Close the modal and show a success message
-    setShowModal(false);
-    toast.success("Usuario actualizado correctamente");
-  } catch (err) {
-    // Handle any errors from the try block or fetch
-    console.error("Error updating user:", err);
-    setError(err.message || "Error updating user. Please try again later.");
-    toast.error(err.message || "Error updating user. Please try again later.");
-  }
-};
-
+  };
 
   // Manejar cambios en los inputs del formulario modal
   const handleInputChange = (event) => {

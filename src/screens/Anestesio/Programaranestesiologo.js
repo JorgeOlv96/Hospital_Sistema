@@ -20,17 +20,23 @@ function Programaranestesiologo() {
   const [currentPage, setCurrentPage] = useState(1);
   const [salasDisponibles, setSalasDisponibles] = useState([]);
   const [anesthesiologistsPerPage] = useState(10);
+
+  const [page, setPage] = useState(1);
+const [endIndex, setEndIndex] = useState(10);
+const [sortedSolicitudes, setSortedSolicitudes] = useState([]);
+
   const [sortBy, setSortBy] = useState(null);
   const [sortOrder, setSortOrder] = useState("asc");
   const [searchTerm, setSearchTerm] = useState("");
   const [searchField, setSearchField] = useState("nombre_paciente");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
-  const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
+  const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
 
   const fetchActiveAnesthesiologists = async (inputValue) => {
     try {
-      const response = await fetch(`${baseURL}/api/anestesiologos/activos?search=${inputValue}`
+      const response = await fetch(
+        `${baseURL}/api/anestesiologos/activos?search=${inputValue}`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -110,15 +116,13 @@ function Programaranestesiologo() {
         return;
       }
 
-      const response = await fetch(`${baseURL}/api/anestesio/anestesiologos`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        }
-      );
+      const response = await fetch(`${baseURL}/api/anestesio/anestesiologos`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -153,7 +157,8 @@ function Programaranestesiologo() {
       )
     ) {
       try {
-        const response = await fetch(`${baseURL}/api/anestesio/anestesiologos/${id}`,
+        const response = await fetch(
+          `${baseURL}/api/anestesio/anestesiologos/${id}`,
           {
             method: "DELETE",
           }
@@ -177,8 +182,7 @@ function Programaranestesiologo() {
 
   const fetchAnesthesiologists = async () => {
     try {
-      const response = await fetch(`${baseURL}/api/anestesio/anestesiologos`
-      );
+      const response = await fetch(`${baseURL}/api/anestesio/anestesiologos`);
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -200,9 +204,9 @@ function Programaranestesiologo() {
   }, []);
 
   // Calcular índices para la paginación
-  const indexOfLastAnesthesiologist = currentPage * anesthesiologistsPerPage;
-  const indexOfFirstAnesthesiologist =
-    indexOfLastAnesthesiologist - anesthesiologistsPerPage;
+const indexOfLastAnesthesiologist = page * anesthesiologistsPerPage;
+const indexOfFirstAnesthesiologist = indexOfLastAnesthesiologist - anesthesiologistsPerPage;
+
 
   // Filtrar anestesiólogos según el término de búsqueda y el campo seleccionado
   const currentAnesthesiologists = anesthesiologists
@@ -212,35 +216,40 @@ function Programaranestesiologo() {
     })
     .slice(indexOfFirstAnesthesiologist, indexOfLastAnesthesiologist);
 
-  
   useEffect(() => {
-      fetchSalasDisponibles();
-    }, []);
-  
-    const fetchSalasDisponibles = async () => {
-      try {
-        const response = await axios.get(`${baseURL}/api/salas/salas`);
-        const disponibles = response.data.filter(sala => sala.estado);
-        setSalasDisponibles(disponibles);
-      } catch (error) {
-        console.error('Error fetching salas:', error);
-      }
-    };
+    fetchSalasDisponibles();
+  }, []);
 
-
-
-
-  // Cambiar página
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-  const handleSort = (field) => {
-    if (sortBy === field) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    } else {
-      setSortBy(field);
-      setSortOrder("asc");
+  const fetchSalasDisponibles = async () => {
+    try {
+      const response = await axios.get(`${baseURL}/api/salas/salas`);
+      const disponibles = response.data.filter((sala) => sala.estado);
+      setSalasDisponibles(disponibles);
+    } catch (error) {
+      console.error("Error fetching salas:", error);
     }
   };
+
+  // Cambiar página
+const paginate = (pageNumber) => {
+  setPage(pageNumber);
+  setEndIndex(pageNumber * anesthesiologistsPerPage);
+};
+
+const handleSort = (field) => {
+  const newSortOrder = sortBy === field ? (sortOrder === "asc" ? "desc" : "asc") : "asc";
+  setSortBy(field);
+  setSortOrder(newSortOrder);
+
+  const sortedData = [...anesthesiologists].sort((a, b) => {
+    if (a[field] < b[field]) return newSortOrder === "asc" ? -1 : 1;
+    if (a[field] > b[field]) return newSortOrder === "asc" ? 1 : -1;
+    return 0;
+  });
+
+  setSortedSolicitudes(sortedData);
+};
+
 
   // Función para obtener el color de fondo basado en el turno
   const getTurnColor = (turno_anestesio) => {
@@ -286,12 +295,12 @@ function Programaranestesiologo() {
                   Nombre de anestesiólogo
                 </label>
                 <input
-                placeholder="Nombre del anestesiologo"
-                type="text"
-                id="nombre"
-                name="nombre"
-                value={formData.nombre}
-                onChange={handleInputChange}
+                  placeholder="Nombre del anestesiologo"
+                  type="text"
+                  id="nombre"
+                  name="nombre"
+                  value={formData.nombre}
+                  onChange={handleInputChange}
                   className="block w-full px-4 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   style={{ minHeight: "auto" }}
                 />
@@ -356,8 +365,8 @@ function Programaranestesiologo() {
                 <label className="block text-sm font-medium text-gray-700">
                   Asignar sala
                 </label>
-               
-               <select
+
+                <select
                   name="sala_anestesio"
                   value={formData.sala_anestesio}
                   onChange={handleInputChange}
@@ -397,8 +406,6 @@ function Programaranestesiologo() {
                     Consulta Externa Piso 2
                   </option>
                 </select>
-
-
               </div>
             </div>
             <div className="px-2 py-2 text-right">
@@ -441,7 +448,7 @@ function Programaranestesiologo() {
           </div>
 
           <div className="overflow-hidden border-b border-white-200 shadow sm:rounded-lg">
-            <table className="min-w-full divide-y divide-white-200">
+            <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-[#365b77] text-white">
                 <tr>
                   <th
@@ -494,17 +501,17 @@ function Programaranestesiologo() {
               <tbody className="bg-white divide-y divide-gray-200">
                 {currentAnesthesiologists.map((anesthesiologist) => (
                   <tr key={anesthesiologist.folio}>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4 whitespace-nowrap border-r border-gray-300">
                       <div className="text-sm font-medium text-gray-900">
                         {anesthesiologist.nombre}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-6 py-4 whitespace-nowrap border-r border-gray-300">
                       <div className="text-sm text-gray-900">
                         {anesthesiologist.dia_anestesio}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border-r border-gray-300">
                       <span
                         className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
                         style={{
@@ -516,17 +523,16 @@ function Programaranestesiologo() {
                         {anesthesiologist.turno_anestesio}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border-r border-gray-300">
                       {anesthesiologist.sala_anestesio}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border-r border-gray-300">
                       {anesthesiologist.hora_inicio}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border-r border-gray-300">
                       {anesthesiologist.hora_fin}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                     
                       <button
                         onClick={() =>
                           handleDeleteAnesthesiologist(
@@ -537,131 +543,38 @@ function Programaranestesiologo() {
                       >
                         Eliminar
                       </button>
-
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
-            <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
-              <div className="flex-1 flex justify-between sm:hidden">
-                <button
-                  onClick={() =>
-                    setCurrentPage((prevPage) =>
-                      prevPage > 1 ? prevPage - 1 : prevPage
-                    )
-                  }
-                  disabled={currentPage === 1}
-                  className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-                >
-                  Anterior
-                </button>
-                <button
-                  onClick={() =>
-                    setCurrentPage((prevPage) =>
-                      prevPage <
-                      Math.ceil(
-                        anesthesiologists.length / anesthesiologistsPerPage
-                      )
-                        ? prevPage + 1
-                        : prevPage
-                    )
-                  }
-                  disabled={
-                    currentPage ===
-                    Math.ceil(
-                      anesthesiologists.length / anesthesiologistsPerPage
-                    )
-                  }
-                  className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
-                >
-                  Siguiente
-                </button>
-              </div>
-              <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-                <div>
-                  <p className="text-sm text-gray-700">
-                    Página <span className="font-medium">{currentPage}</span> de{" "}
-                    <span className="font-medium">
-                      {Math.ceil(
-                        anesthesiologists.length / anesthesiologistsPerPage
-                      )}
-                    </span>{" "}
-                    • Resultados{" "}
-                    <span className="font-medium">
-                      {anesthesiologists.length}
-                    </span>
-                  </p>
-                </div>
-                <div>
-                  <nav
-                    className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px"
-                    aria-label="Pagination"
-                  >
-                    <button
-                      onClick={() =>
-                        setCurrentPage((prevPage) =>
-                          prevPage > 1 ? prevPage - 1 : prevPage
-                        )
-                      }
-                      disabled={currentPage === 1}
-                      className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                    >
-                      <span className="sr-only">Anterior</span>
-                      <svg
-                        className="h-5 w-5"
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                        aria-hidden="true"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M10.293 14.707a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414l4-4a1 1 0 111.414 1.414L7.414 9H15a1 1 0 110 2H7.414l2.293 2.293a1 1 0 010 1.414z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </button>
-                    <button
-                      onClick={() =>
-                        setCurrentPage((prevPage) =>
-                          prevPage <
-                          Math.ceil(
-                            anesthesiologists.length / anesthesiologistsPerPage
-                          )
-                            ? prevPage + 1
-                            : prevPage
-                        )
-                      }
-                      disabled={
-                        currentPage ===
-                        Math.ceil(
-                          anesthesiologists.length / anesthesiologistsPerPage
-                        )
-                      }
-                      className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50"
-                    >
-                      <span className="sr-only">Siguiente</span>
-                      <svg
-                        className="h-5 w-5"
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 20 20"
-                        fill="currentColor"
-                        aria-hidden="true"
-                      >
-                        <path
-                          fillRule="evenodd"
-                          d="M9.707 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586L9.707 6.707a1 1 0 010-1.414z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </button>
-                  </nav>
-                </div>
-              </div>
-            </div>
+
+            
+            
           </div>
         </div>
+
+
+
+{/* Paginación */}
+<div className="flex justify-center mt-4">
+              <button
+                onClick={() => setPage(page - 1)}
+                disabled={page === 1}
+                className="bg-[#365b77] hover:bg-[#7498b6] text-white font-bold py-2 px-4 rounded-l"
+              >
+                Anterior
+              </button>
+              <span className="mx-4">Página {page}</span>
+              <button
+                onClick={() => setPage(page + 1)}
+                disabled={endIndex >= sortedSolicitudes.length}
+                className="bg-[#365b77] hover:bg-[#7498b6] text-white font-bold py-2 px-4 rounded-r"
+              >
+                Siguiente
+              </button>
+            </div>
+
         {/* Mostrar notificaciones */}
         <ToastContainer position="bottom-right" />
       </div>

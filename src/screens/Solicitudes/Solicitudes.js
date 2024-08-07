@@ -881,6 +881,7 @@ function Solicitudes() {
               Siguiente
             </button>
           </div>
+          
         </div>
       </div>
     </Layout>

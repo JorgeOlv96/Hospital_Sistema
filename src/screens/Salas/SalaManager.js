@@ -44,22 +44,26 @@ const SalaManager = () => {
 
   const toggleEstado = async (id, estadoActual) => {
     try {
-      await axios.put(`${baseURL}/api/salas/salas/${id}`, {
-        estado: !estadoActual,
-      });
-      fetchSalas(); // Refresh the list after updating
+        await axios.put(`${baseURL}/api/salas/salas/${id}`, {
+            estado: !estadoActual,
+        });
+        fetchSalas(); // Actualiza la lista después de la actualización
     } catch (error) {
-      console.error("Error updating sala state:", error);
+        console.error("Error updating sala state:", error);
     }
-  };
+};
 
-  const calculateInactiveTime = (ultimaActualizacion) => {
+
+  const calculateInactiveTime = (ultimaActualizacion, estado) => {
+    if (estado) return 0; // Si está encendida, no hay tiempo inactivo
+
     const now = new Date();
     const lastUpdate = new Date(ultimaActualizacion);
     const diffMs = now - lastUpdate;
     const diffMinutes = Math.floor(diffMs / (1000 * 60));
     return diffMinutes;
-  };
+};
+
 
   // Prepare data for the bar chart
   const barChartData = {
@@ -124,10 +128,11 @@ const SalaManager = () => {
                       </div>
                     </td>
                     <td className="text-center py-2">
-                      {sala.ultima_actualizacion
-                        ? `${calculateInactiveTime(sala.ultima_actualizacion)} minutos`
-                        : "N/A"}
-                    </td>{" "}
+                        {sala.ultima_actualizacion
+                            ? `${calculateInactiveTime(sala.ultima_actualizacion, sala.estado)} minutos`
+                            : "N/A"}
+                    </td>
+
                     {/* Nueva celda */}
                     <td className="text-center py-2">
                       <div className="switch-container">
@@ -135,7 +140,7 @@ const SalaManager = () => {
                           <input
                             type="checkbox"
                             checked={sala.estado}
-                            onChange={() => toggleEstado(sala.id, sala.estado)}
+                            onChange={() => toggleEstado(sala.id, sala.estado, sala.ultima_actualizacion)}
                           />
                           <span className="slider round"></span>
                         </label>
