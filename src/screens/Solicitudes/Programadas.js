@@ -125,6 +125,12 @@ function Solicitudesprogramadas() {
 
   return (
     <Layout>
+      <div
+        data-aos="fade-right"
+        data-aos-duration="1000"
+        data-aos-delay="100"
+        data-aos-offset="200"
+      >
       <div className="flex flex-col gap-2 mb-4">
         <h1 className="text-xl font-semibold">Solicitudes programadas</h1>
         <div className="flex my-4 space-x-4">
@@ -223,10 +229,10 @@ function Solicitudesprogramadas() {
                     Especialidad <span>{sortBy === "nombre_especialidad" ? (sortOrder === "asc" ? "▲" : "▼") : ""}</span>
                   </th>
                   <th className="px-4 py-2 cursor-pointer" onClick={() => handleSort("fecha_solicitada")}>
-                    Fecha solicitada <span>{sortBy === "fecha_solicitada" ? (sortOrder === "asc" ? "▲" : "▼") : ""}</span>
+                    Fecha programada <span>{sortBy === "fecha_solicitada" ? (sortOrder === "asc" ? "▲" : "▼") : ""}</span>
                   </th>
                   <th className="px-4 py-2 cursor-pointer" onClick={() => handleSort("sala_quirofano")}>
-                    Sala solicitada <span>{sortBy === "sala_quirofano" ? (sortOrder === "asc" ? "▲" : "▼") : ""}</span>
+                    Sala programada <span>{sortBy === "sala_quirofano" ? (sortOrder === "asc" ? "▲" : "▼") : ""}</span>
                   </th>
                   <th className="px-4 py-2 cursor-pointer">
                     Estado 
@@ -300,6 +306,7 @@ function Solicitudesprogramadas() {
               </button>
             </div>
           </div>
+      </div>
     </Layout>
   );
 }

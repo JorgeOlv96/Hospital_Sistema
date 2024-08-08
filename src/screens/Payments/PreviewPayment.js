@@ -21,6 +21,12 @@ function PreviewPayment() {
 
   return (
     <Layout>
+      <div
+        data-aos="fade-right"
+        data-aos-duration="1000"
+        data-aos-delay="100"
+        data-aos-offset="200"
+      >
       {isShareOpen && (
         <ShareModal
           isOpen={isShareOpen}
@@ -162,6 +168,7 @@ function PreviewPayment() {
             </div>
           </div>
         </div>
+      </div>
       </div>
     </Layout>
   );

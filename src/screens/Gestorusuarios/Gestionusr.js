@@ -29,7 +29,7 @@ function Gestionusuarios() {
   const [errors, setErrors] = useState({});
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchField, setSearchField] = useState("nombre");
+  const [searchField, setSearchField] = useState("nombre_paciente");
 
   const [filterNombre, setFilterNombre] = useState("");
   const [filterEmail, setFilterEmail] = useState("");
@@ -222,6 +222,12 @@ function Gestionusuarios() {
 
   return (
     <Layout>
+      <div
+        data-aos="fade-right"
+        data-aos-duration="1000"
+        data-aos-delay="100"
+        data-aos-offset="200"
+      >
       <div className="flex flex-col gap-4 mb-6">
         <h1 className="text-xl font-semibold">Gestión de Usuarios</h1>
 
@@ -377,7 +383,9 @@ function Gestionusuarios() {
               value={searchField}
               onChange={(e) => setSearchField(e.target.value)}
               className="px-3 py-2 border border-gray-300 rounded-md"
-            >
+            > 
+              
+              <option value="">Seleccionar</option>
               <option value="nombre">Nombre</option>
               <option value="email">Email</option>
             </select>
@@ -566,6 +574,7 @@ function Gestionusuarios() {
       </div>
       {/* Mostrar notificaciones */}
       <ToastContainer position="bottom-right" />
+      </div>
     </Layout>
   );
 }

@@ -62,6 +62,12 @@ function Patients() {
 
   return (
     <Layout>
+      <div
+        data-aos="fade-right"
+        data-aos-duration="1000"
+        data-aos-delay="100"
+        data-aos-offset="200"
+      >
       {/* add button */}
       <Link
         to="/patients/create"
@@ -92,6 +98,7 @@ function Patients() {
         ))}
       </div>
       {/* datas */}
+      </div>
     </Layout>
   );
 }

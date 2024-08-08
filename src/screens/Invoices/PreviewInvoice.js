@@ -25,6 +25,12 @@ function PreviewInvoice() {
 
   return (
     <Layout>
+      <div
+        data-aos="fade-right"
+        data-aos-duration="1000"
+        data-aos-delay="100"
+        data-aos-offset="200"
+      >
       {isOpen && (
         <PaymentModal
           isOpen={isOpen}
@@ -163,6 +169,7 @@ function PreviewInvoice() {
             </div>
           </div>
         </div>
+      </div>
       </div>
     </Layout>
   );

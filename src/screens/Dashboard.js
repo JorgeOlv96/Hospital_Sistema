@@ -3,9 +3,6 @@ import Layout from "../Layout";
 import { BsCheckCircleFill, BsClockFill, BsXCircleFill, BsFillCalendarCheckFill } from "react-icons/bs";
 import axios from "axios";
 import { DashboardSmallChart } from "../components/Charts";
-import AnesthesiologistsCount from '../components/AnesthesiologistsCount';
-import AnesthesiologistsDistribution from '../components/AnesthesiologistsDistribution';
-import AnesthesiologistsCalendar from '../components/AnesthesiologistsCalendar';
 import { AuthContext } from "../AuthContext";
 
 
@@ -139,7 +136,19 @@ function Dashboard() {
 
   return (
     <Layout>
+      <div
+        data-aos="fade-right"
+        data-aos-duration="1000"
+        data-aos-delay="100"
+        data-aos-offset="200"
+      >
       {/* Welcome message */}
+      <div
+      data-aos="fade-right"
+      data-aos-duration="1000"
+      data-aos-delay="100"
+      data-aos-offset="200"
+      >
       <div className="bg-gradient-to-r from-[#365b77] to-[#7498b6] text-white px-6 py-4 rounded-lg shadow-lg mb-6 flex items-center">
         <span className="text-lg font-semibold">
           {isLoading
@@ -177,6 +186,8 @@ function Dashboard() {
             </div>
           </div>
         ))}
+      </div>
+      </div>
       </div>
     </Layout>
   );

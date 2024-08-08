@@ -29,6 +29,12 @@ function Doctors() {
 
   return (
     <Layout>
+      <div
+        data-aos="fade-right"
+        data-aos-duration="1000"
+        data-aos-delay="100"
+        data-aos-offset="200"
+      >
       {
         // add doctor modal
         isOpen && (
@@ -91,6 +97,7 @@ function Doctors() {
             }}
           />
         </div>
+      </div>
       </div>
     </Layout>
   );

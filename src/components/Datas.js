@@ -36,6 +36,13 @@ import { FaSyringe } from "react-icons/fa";
 import { LuFileSpreadsheet } from "react-icons/lu";
 import { PiSyringe } from "react-icons/pi";
 import { LiaUserNurseSolid } from "react-icons/lia";
+import { RiNurseFill } from "react-icons/ri";
+import { FaUserCog } from "react-icons/fa";
+import { FaBedPulse } from "react-icons/fa6";
+import { AiOutlineMedicineBox } from "react-icons/ai";
+import { IoIosPulse } from "react-icons/io";
+import { GrUserSettings } from "react-icons/gr";
+
 
 export const MenuDatas = [
   {
@@ -77,25 +84,25 @@ export const MenuDatas = [
   {
     title: 'Bitácora anestesiología',
     path: '/Bitacoraanestesio',
-    icon: LiaUserNurseSolid,
+    icon: RiNurseFill ,
     viewRole: [4, 6]
   },
   {
     title: 'Gestion de usuarios',
     path: '/Gestionusr',
-    icon: FaWpforms, // Puedes cambiar este icono por uno más representativo si lo deseas
+    icon: GrUserSettings , // Puedes cambiar este icono por uno más representativo si lo deseas
     viewRole: [6] // Solo accesible para el nivel 5
   },
   {
     title: 'Gestor de salas',
     path: '/SalaManager',
-    icon: FaWpforms, // Puedes cambiar este icono por uno más representativo si lo deseas
+    icon: IoIosPulse  , // Puedes cambiar este icono por uno más representativo si lo deseas
     viewRole: [6] // Solo accesible para el nivel 5
   },
   {
     title: 'Solicitudes insumos',
     path: '/solicitudesInsumos',
-    icon: FaWpforms, // Puedes cambiar este icono por uno más representativo si lo deseas
+    icon: AiOutlineMedicineBox , // Puedes cambiar este icono por uno más representativo si lo deseas
     viewRole: [2, 6] // Solo accesible para el nivel 5
   },
 ];

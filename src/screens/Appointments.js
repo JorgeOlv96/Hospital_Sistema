@@ -14,7 +14,7 @@ import { FaHospital } from "react-icons/fa";
 
 moment.locale("es");
 
-const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
+const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
 const CustomToolbar = ({ date, view, onView, onNavigate, onPrint }) => {
   const goToBack = () => {
     const newDate = moment(date)
@@ -61,7 +61,7 @@ const CustomToolbar = ({ date, view, onView, onNavigate, onPrint }) => {
           to="/solicitudes/Programarsolicitud"
           className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
         >
-          Programar solicitud
+          Gestionar solicitudes
         </Link>
 
         <div className="flex ml-auto">
@@ -138,8 +138,7 @@ function Appointments() {
 
   const fetchAppointments = async () => {
     try {
-      const response = await fetch(`${baseURL}/api/solicitudes/programadas`
-      );
+      const response = await fetch(`${baseURL}/api/solicitudes/programadas`);
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -221,7 +220,8 @@ function Appointments() {
 
     try {
       // Fetch de las solicitudes programadas
-      const solicitudesResponse = await fetch(`${baseURL}/api/solicitudes/programadas`
+      const solicitudesResponse = await fetch(
+        `${baseURL}/api/solicitudes/programadas`
       );
       if (!solicitudesResponse.ok) {
         throw new Error("Network response for solicitudes was not ok");
@@ -354,30 +354,55 @@ function Appointments() {
               </tr>
             </thead>
             <tbody>
-              ${['Matutino', 'Vespertino', 'Nocturno'].map(turno => `
+              ${["Matutino", "Vespertino", "Nocturno"]
+                .map(
+                  (turno) => `
                 <tr class="turno-section">
-                  <td colspan="13">${turno} (de ${turno === 'Matutino' ? '08:00 a 14:00' : turno === 'Vespertino' ? '14:00 a 20:00' : '20:00 a 06:00'})</td>
+                  <td colspan="13">${turno} (de ${
+                    turno === "Matutino"
+                      ? "08:00 a 14:00"
+                      : turno === "Vespertino"
+                      ? "14:00 a 20:00"
+                      : "20:00 a 06:00"
+                  })</td>
                 </tr>
                 ${todaysRegistrations
-                  .filter(appointment => {
-                    const hour = moment(appointment.hora_solicitada, "HH:mm").hour();
-                    if (turno === 'Matutino') return hour >= 8 && hour <= 14;
-                    if (turno === 'Vespertino') return hour >= 14 && hour <= 20;
+                  .filter((appointment) => {
+                    const hour = moment(
+                      appointment.hora_solicitada,
+                      "HH:mm"
+                    ).hour();
+                    if (turno === "Matutino") return hour >= 8 && hour <= 14;
+                    if (turno === "Vespertino") return hour >= 14 && hour <= 20;
                     return hour >= 20 || hour < 8;
                   })
-                  .map((appointment, index) => `
+                  .map(
+                    (appointment, index) => `
                     <tr>
                       <td>${index + 1}</td>
                       <td>${appointment.folio || ""}</td>
-                      <td>${moment(appointment.hora_asignada, "HH:mm").format("LT")}</td>
+                      <td>${moment(appointment.hora_asignada, "HH:mm").format(
+                        "LT"
+                      )}</td>
                       <td>Sala: ${appointment.sala_quirofano || ""}</td>
-                      <td>${appointment.nombre_paciente} ${appointment.ap_paterno} ${appointment.ap_materno}</td>
-                      <td>${appointment.sexo ? (appointment.sexo === "Femenino" ? "F" : "M") : "No especificado"}</td>
+                      <td>${appointment.nombre_paciente} ${
+                      appointment.ap_paterno
+                    } ${appointment.ap_materno}</td>
+                      <td>${
+                        appointment.sexo
+                          ? appointment.sexo === "Femenino"
+                            ? "F"
+                            : "M"
+                          : "No especificado"
+                      }</td>
                      <td>
                         ${(() => {
                           const procedimientos =
                             appointment.procedimientos_paciente || "";
-                          const [beforeDash, afterDash] = procedimientos.split("-", 2);
+                          const [beforeDash, afterDash] = procedimientos.split(
+                            "-",
+                            2
+                          );
                           const truncatedBeforeDash = beforeDash.slice(0, 20);
                           return `${truncatedBeforeDash}${
                             afterDash ? "-" + afterDash : ""
@@ -385,7 +410,9 @@ function Appointments() {
                         })()}
                       </td>
                       <td>${appointment.clave_esp || ""}</td>
-                      <td>${moment(appointment.fecha_programada).format("DD-MM-YYYY")}</td>
+                      <td>${moment(appointment.fecha_programada).format(
+                        "DD-MM-YYYY"
+                      )}</td>
                       <td>${appointment.tiempo_estimado} min</td>
                       <td>
                           ${(() => {
@@ -401,9 +428,12 @@ function Appointments() {
                         </td>
                         <td>
                               ${(() => {
-                                const nombreanes = appointment.nombre_anestesiologo || "";
+                                const nombreanes =
+                                  appointment.nombre_anestesiologo || "";
                                 const words = nombreanes.split(" ");
-                                const truncatedName = words.slice(0, 2).join(" ");
+                                const truncatedName = words
+                                  .slice(0, 2)
+                                  .join(" ");
                                 return truncatedName;
                               })()}
                       </td>
@@ -417,8 +447,12 @@ function Appointments() {
                         </td>
                       <td>${appointment.req_insumo || ""}</td>
                     </tr>
-                  `).join('')}
-              `).join('')}
+                  `
+                  )
+                  .join("")}
+              `
+                )
+                .join("")}
             </tbody>
           </table>
       
@@ -443,22 +477,26 @@ function Appointments() {
                   "Con_Ext_P1_vesp",
                   "Con_Ext_P2_vesp",
                 ]
-                  .map(room => `
+                  .map(
+                    (room) => `
                     <td>
                       ${todaysAnesthesiologists
-                        .filter(anesthesiologist => anesthesiologist.sala_anestesio === room)
-                        .map(anesthesiologist => anesthesiologist.nombre)
+                        .filter(
+                          (anesthesiologist) =>
+                            anesthesiologist.sala_anestesio === room
+                        )
+                        .map((anesthesiologist) => anesthesiologist.nombre)
                         .join(", ")}
                     </td>`
                   )
-                  .join('')}
+                  .join("")}
               </tr>
             </tbody>
           </table>
         </body>
       </html>
       `;
-      
+
       // Crear una ventana de impresión y escribir el contenido
       const printWindow = window.open("", "_blank");
       printWindow.document.open();
@@ -472,43 +510,27 @@ function Appointments() {
 
   return (
     <Layout>
-      <AddAppointmentModalProgramado
-        closeModal={handleCloseModal}
-        isOpen={openModal}
-        appointmentId={selectedEvent.id}
-        onSuspendAppointment={(appointmentId) => {
-          fetchAppointments();
-        }}
-      />
-      <CustomToolbar
-        date={selectedDate}
-        view={view}
-        onNavigate={(date) => {
-          setSelectedDate(date);
-          handleSelectDate(date);
-        }}
-        onView={handleViewChange}
-        onPrint={printDailyAppointments}
-      />
-      {view === "operatingRooms" ? (
-        <OperatingRoomSchedule
-          date={selectedDate}
-          appointments={appointments}
-          onEventClick={handleEventClick}
+      <div
+        data-aos="fade-right"
+        data-aos-duration="1000"
+        data-aos-delay="100"
+        data-aos-offset="200"
+      >
+      <div
+        data-aos="fade-right"
+        data-aos-duration="1000"
+        data-aos-delay="100"
+        data-aos-offset="200"
+      >
+        <AddAppointmentModalProgramado
+          closeModal={handleCloseModal}
+          isOpen={openModal}
+          appointmentId={selectedEvent.id}
+          onSuspendAppointment={(appointmentId) => {
+            fetchAppointments();
+          }}
         />
-      ) : (
-        <Calendar
-          localizer={localizer}
-          events={appointments}
-          startAccessor="start"
-          endAccessor="end"
-          style={{ height: 900, marginBottom: 50 }}
-          onSelectEvent={handleEventClick}
-          defaultDate={selectedDate}
-          timeslots={1}
-          resizable
-          step={60}
-          selectable
+        <CustomToolbar
           date={selectedDate}
           view={view}
           onNavigate={(date) => {
@@ -516,9 +538,39 @@ function Appointments() {
             handleSelectDate(date);
           }}
           onView={handleViewChange}
-          toolbar={false}
+          onPrint={printDailyAppointments}
         />
-      )}
+        {view === "operatingRooms" ? (
+          <OperatingRoomSchedule
+            date={selectedDate}
+            appointments={appointments}
+            onEventClick={handleEventClick}
+          />
+        ) : (
+          <Calendar
+            localizer={localizer}
+            events={appointments}
+            startAccessor="start"
+            endAccessor="end"
+            style={{ height: 900, marginBottom: 50 }}
+            onSelectEvent={handleEventClick}
+            defaultDate={selectedDate}
+            timeslots={1}
+            resizable
+            step={60}
+            selectable
+            date={selectedDate}
+            view={view}
+            onNavigate={(date) => {
+              setSelectedDate(date);
+              handleSelectDate(date);
+            }}
+            onView={handleViewChange}
+            toolbar={false}
+          />
+        )}
+      </div>
+      </div>
     </Layout>
   );
 }

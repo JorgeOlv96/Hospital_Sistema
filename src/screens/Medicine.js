@@ -25,6 +25,12 @@ function Medicine() {
 
   return (
     <Layout>
+      <div
+        data-aos="fade-right"
+        data-aos-duration="1000"
+        data-aos-delay="100"
+        data-aos-offset="200"
+      >
       {isOpen && (
         <AddEditMedicineModal
           datas={data}
@@ -79,6 +85,7 @@ function Medicine() {
         <div className="mt-8 w-full overflow-x-scroll">
           <MedicineTable data={medicineData} onEdit={onEdit} />
         </div>
+      </div>
       </div>
     </Layout>
   );

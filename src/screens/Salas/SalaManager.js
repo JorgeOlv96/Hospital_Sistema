@@ -44,12 +44,6 @@ const SalaManager = () => {
 
   const toggleEstado = async (id, estadoActual) => {
     try {
-<<<<<<< HEAD
-        await axios.put(`${baseURL}/api/salas/salas/${id}`, {
-            estado: !estadoActual,
-        });
-        fetchSalas(); // Actualiza la lista después de la actualización
-=======
       const newEstado = !estadoActual;
       const ultimaActualizacion = newEstado ? new Date().toISOString() : null; // Guardar la fecha de desactivación
       await axios.put(`${baseURL}/api/salas/salas/${id}`, {
@@ -57,31 +51,30 @@ const SalaManager = () => {
         ultima_actualizacion: ultimaActualizacion, // Enviar la fecha de desactivación al servidor
       });
       fetchSalas(); // Refresh the list after updating
->>>>>>> 18c5acde67573e1316715a1f8f6edbd9450b9507
     } catch (error) {
-        console.error("Error updating sala state:", error);
+      console.error("Error updating sala state:", error);
     }
-};
-
+  };
 
   const calculateInactiveTime = (ultimaActualizacion, estado) => {
     if (estado) return 0; // Si está encendida, no hay tiempo inactivo
 
-<<<<<<< HEAD
     const now = new Date();
-    const lastUpdate = new Date(ultimaActualizacion);
-    const diffMs = now - lastUpdate;
-    const diffMinutes = Math.floor(diffMs / (1000 * 60));
-    return diffMinutes;
-};
+    const ultimaActualizacionDate = new Date(ultimaActualizacion);
+    const differenceInMs = now - ultimaActualizacionDate;
 
-=======
+    // Convertir a horas, minutos o segundos según sea necesario
+    const hours = Math.floor(differenceInMs / (1000 * 60 * 60));
+    const minutes = Math.floor((differenceInMs % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((differenceInMs % (1000 * 60)) / 1000);
+
+    return { hours, minutes, seconds };
+  };
+
   const formatFechaHora = (fechaHora) => {
     // Eliminar 'T', 'Z' y los ceros al final
     return fechaHora.replace('T', ' ').replace('Z', '').replace('.000', '');
   };
-  
->>>>>>> 18c5acde67573e1316715a1f8f6edbd9450b9507
 
   // Prepare data for the bar chart
   const barChartData = {
@@ -114,6 +107,12 @@ const SalaManager = () => {
 
   return (
     <Layout>
+      <div
+        data-aos="fade-right"
+        data-aos-duration="1000"
+        data-aos-delay="100"
+        data-aos-offset="200"
+      >
       <div className="p-6">
         <h1 className="text-2xl font-bold mb-6">
           Gestión de Salas de Quirófano
@@ -145,25 +144,16 @@ const SalaManager = () => {
                       </div>
                     </td>
                     <td className="text-center py-2">
-<<<<<<< HEAD
-                        {sala.ultima_actualizacion
-                            ? `${calculateInactiveTime(sala.ultima_actualizacion, sala.estado)} minutos`
-                            : "N/A"}
+                      {sala.estado ? '---' : sala.ultima_actualizacion ? formatFechaHora(sala.ultima_actualizacion) : "N/A"}
                     </td>
 
-                    {/* Nueva celda */}
-=======
-  {sala.estado ? '---' : sala.ultima_actualizacion ? formatFechaHora(sala.ultima_actualizacion) : "N/A"}
-</td>
-
->>>>>>> 18c5acde67573e1316715a1f8f6edbd9450b9507
                     <td className="text-center py-2">
                       <div className="switch-container">
                         <label className="switch">
                           <input
                             type="checkbox"
                             checked={sala.estado}
-                            onChange={() => toggleEstado(sala.id, sala.estado, sala.ultima_actualizacion)}
+                            onChange={() => toggleEstado(sala.id, sala.estado)}
                           />
                           <span className="slider round"></span>
                         </label>
@@ -186,6 +176,7 @@ const SalaManager = () => {
             </div>
           </div>
         </div>
+      </div>
       </div>
     </Layout>
   );

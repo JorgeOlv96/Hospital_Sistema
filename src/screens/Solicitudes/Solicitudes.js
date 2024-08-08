@@ -433,6 +433,19 @@ function Solicitudes() {
 
   return (
     <Layout>
+      <div
+        data-aos="fade-right"
+        data-aos-duration="1000"
+        data-aos-delay="100"
+        data-aos-offset="200"
+      >
+   <div
+      data-aos="fade-right"
+      data-aos-duration="1000"
+      data-aos-delay="100"
+      data-aos-offset="200"
+      >
+
       <div className="flex flex-col gap-4 mb-6">
         <h1 className="text-xl font-semibold">Solicitudes</h1>
         <div className="my-4 flex items-center">
@@ -883,6 +896,8 @@ function Solicitudes() {
           </div>
           
         </div>
+      </div>
+      </div>
       </div>
     </Layout>
   );

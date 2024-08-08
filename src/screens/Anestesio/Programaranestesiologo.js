@@ -271,6 +271,12 @@ const handleSort = (field) => {
 
   return (
     <Layout>
+      <div
+        data-aos="fade-right"
+        data-aos-duration="1000"
+        data-aos-delay="100"
+        data-aos-offset="200"
+      >
       <div className="flex flex-col gap-2 mb-4">
         <h1 className="text-xl font-semibold">Anestesiólogos asignados</h1>
         <div className="my-4">
@@ -435,6 +441,7 @@ const handleSort = (field) => {
                     onChange={(e) => setSearchField(e.target.value)}
                     className="px-3 py-2 border border-gray-300 rounded-md"
                   >
+                    <option value="">Seleccionar</option>
                     <option value="nombre">Nombre</option>
                     <option value="dia_anestesio">Día asignado</option>
                     <option value="turno_anestesio">Turno asignado</option>
@@ -577,6 +584,7 @@ const handleSort = (field) => {
 
         {/* Mostrar notificaciones */}
         <ToastContainer position="bottom-right" />
+      </div>
       </div>
     </Layout>
   );

@@ -40,7 +40,14 @@ function Bitacora() {
 
   return (
     <Layout>
+      <div
+        data-aos="fade-right"
+        data-aos-duration="1000"
+        data-aos-delay="100"
+        data-aos-offset="200"
+      >
       <CustomToolbar />
+      </div>
     </Layout>
   );
 }

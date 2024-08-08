@@ -37,6 +37,12 @@ function EditInvoice() {
 
   return (
     <Layout>
+      <div
+        data-aos="fade-right"
+        data-aos-duration="1000"
+        data-aos-delay="100"
+        data-aos-offset="200"
+      >
       {isOpen && (
         <PatientMedicineServiceModal
           closeModal={() => setIsOpen(!isOpen)}
@@ -173,6 +179,7 @@ function EditInvoice() {
             />
           </div>
         </div>
+      </div>
       </div>
     </Layout>
   );

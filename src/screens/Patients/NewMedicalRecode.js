@@ -49,6 +49,12 @@ function NewMedicalRecode() {
 
   return (
     <Layout>
+      <div
+        data-aos="fade-right"
+        data-aos-duration="1000"
+        data-aos-delay="100"
+        data-aos-offset="200"
+      >
       {
         // modal
         isOpen && (
@@ -208,6 +214,7 @@ function NewMedicalRecode() {
             />
           </div>
         </div>
+      </div>
       </div>
     </Layout>
   );

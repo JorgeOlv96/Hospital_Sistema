@@ -230,6 +230,12 @@ const Consultabitacora = () => {
 
   return (
     <Layout>
+      <div
+        data-aos="fade-right"
+        data-aos-duration="1000"
+        data-aos-delay="100"
+        data-aos-offset="200"
+      >
       <div className="flex flex-col gap-2 mb-4">
         <h1 className="text-xl font-semibold">Consulta Paciente</h1>
         <div className="flex my-4 justify-between">
@@ -945,6 +951,7 @@ const Consultabitacora = () => {
           </div>
         </Modal>
       )}
+      </div>
     </Layout>
   );
 };

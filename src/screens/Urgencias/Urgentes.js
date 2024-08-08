@@ -124,6 +124,12 @@ function Solicitudesurgentes() {
 
   return (
     <Layout>
+      <div
+        data-aos="fade-right"
+        data-aos-duration="1000"
+        data-aos-delay="100"
+        data-aos-offset="200"
+      >
       <div className="flex flex-col gap-2 mb-4">
         <h1 className="text-xl font-semibold">Solicitudes Urgentes</h1>
         <div className="flex my-4 space-x-4">
@@ -341,6 +347,7 @@ function Solicitudesurgentes() {
               Siguiente
             </button>
           </div>
+      </div>
       </div>
     </Layout>
   );

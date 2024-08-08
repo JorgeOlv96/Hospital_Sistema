@@ -7,6 +7,12 @@ import PersonalInfo from '../../components/UsedComp/PersonalInfo';
 function CreatePatient() {
   return (
     <Layout>
+      <div
+        data-aos="fade-right"
+        data-aos-duration="1000"
+        data-aos-delay="100"
+        data-aos-offset="200"
+      >
       <div className="flex items-center gap-4">
         <Link
           to="/patients"
@@ -24,6 +30,7 @@ function CreatePatient() {
         className="bg-white my-8 rounded-xl border-[1px] border-border p-6"
       >
         <PersonalInfo titles={false} />
+      </div>
       </div>
     </Layout>
   );

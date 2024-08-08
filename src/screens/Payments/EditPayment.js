@@ -21,6 +21,12 @@ function EditPayment() {
 
   return (
     <Layout>
+      <div
+        data-aos="fade-right"
+        data-aos-duration="1000"
+        data-aos-delay="100"
+        data-aos-offset="200"
+      >
       <div className="flex items-center gap-4">
         <Link
           to="/payments"
@@ -141,6 +147,7 @@ function EditPayment() {
             />
           </div>
         </div>
+      </div>
       </div>
     </Layout>
   );

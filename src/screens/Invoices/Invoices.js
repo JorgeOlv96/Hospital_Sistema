@@ -11,6 +11,12 @@ import { Link } from 'react-router-dom';
 function Invoices() {
   return (
     <Layout>
+      <div
+        data-aos="fade-right"
+        data-aos-duration="1000"
+        data-aos-delay="100"
+        data-aos-offset="200"
+      >
       {/* add button */}
       <Link
         to="/invoices/create"
@@ -49,6 +55,7 @@ function Invoices() {
         <div className="mt-8 w-full overflow-x-scroll">
           <InvoiceTable data={invoicesData} />
         </div>
+      </div>
       </div>
     </Layout>
   );

@@ -25,6 +25,12 @@ function Services() {
 
   return (
     <Layout>
+      <div
+        data-aos="fade-right"
+        data-aos-duration="1000"
+        data-aos-delay="100"
+        data-aos-offset="200"
+      >
       {isOpen && (
         <AddEditServiceModal
           datas={data}
@@ -79,6 +85,7 @@ function Services() {
         <div className="mt-8 w-full overflow-x-scroll">
           <ServiceTable data={servicesData.slice(1, 100)} onEdit={onEdit} />
         </div>
+      </div>
       </div>
     </Layout>
   );

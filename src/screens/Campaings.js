@@ -39,6 +39,12 @@ function Campaings() {
 
   return (
     <Layout>
+      <div
+        data-aos="fade-right"
+        data-aos-duration="1000"
+        data-aos-delay="100"
+        data-aos-offset="200"
+      >
       {isOpen && (
         <CampaignModal isOpen={isOpen} closeModal={closeModal} data={data} />
       )}
@@ -107,6 +113,7 @@ function Campaings() {
             </div>
           </div>
         ))}
+      </div>
       </div>
     </Layout>
   );

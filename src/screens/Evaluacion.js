@@ -121,6 +121,20 @@ function Evaluacion() {
 
   return (
     <Layout>
+      <div
+        data-aos="fade-right"
+        data-aos-duration="1000"
+        data-aos-delay="100"
+        data-aos-offset="200"
+      >
+
+<div
+      data-aos="fade-right"
+      data-aos-duration="1000"
+      data-aos-delay="100"
+      data-aos-offset="200"
+      >
+
       <div className="flex flex-col gap-8 mb-8">
         <h1 className="text-xl font-semibold">Evaluación pendientes</h1>
 
@@ -311,6 +325,8 @@ function Evaluacion() {
             Siguiente
           </button>
         </div>
+      </div>
+      </div>
       </div>
     </Layout>
   );
