@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import axios from "axios";
 import Layout from "../../Layout";
 import AddAppointmentModalInsumos from "../../components/Modals/AddApointmentModalInsumos";
-import toast, { Toaster } from 'react-hot-toast';
+import toast, { Toaster } from "react-hot-toast";
 
 function SolicitudesInsumos() {
   const [solicitudes, setSolicitudes] = useState([]);
@@ -48,17 +48,23 @@ function SolicitudesInsumos() {
         );
 
         // Ordenar los datos por fecha_solicitada más próxima al inicio
-        const sortedData = filteredData.sort((a, b) => new Date(a.fecha_solicitada) - new Date(b.fecha_solicitada));
+        const sortedData = filteredData.sort(
+          (a, b) => new Date(a.fecha_solicitada) - new Date(b.fecha_solicitada)
+        );
 
         // Mostrar notificación si hay nuevas solicitudes pendientes
         const previousSolicitudes = previousSolicitudesRef.current;
         const newSolicitudes = sortedData.filter(
           (solicitud) =>
-            !previousSolicitudes.some((prev) => prev.id_solicitud === solicitud.id_solicitud)
+            !previousSolicitudes.some(
+              (prev) => prev.id_solicitud === solicitud.id_solicitud
+            )
         );
 
         if (newSolicitudes.length > 0) {
-          toast.success(`Tienes ${newSolicitudes.length} nueva(s) solicitud(es) pendiente(s) que requieren insumos.`);
+          toast.success(
+            `Tienes ${newSolicitudes.length} nueva(s) solicitud(es) pendiente(s) que requieren insumos.`
+          );
         }
 
         setSolicitudes(sortedData);
@@ -84,7 +90,6 @@ function SolicitudesInsumos() {
     setSelectedAppointment(solicitud);
     setOpen(true);
   };
-
 
   const filteredSolicitudes = useMemo(() => {
     return solicitudes
@@ -114,7 +119,6 @@ function SolicitudesInsumos() {
       });
   }, [solicitudes, searchTerm, searchField, filterState, startDate, endDate]);
 
-
   const handleSort = (key) => {
     let direction = "asc";
     if (sortConfig.key === key && sortConfig.direction === "asc") {
@@ -130,6 +134,34 @@ function SolicitudesInsumos() {
       }
     });
     setSolicitudes(sortedSolicitudes);
+  };
+
+  const getEstadoColor = (estado) => {
+    switch (estado.toLowerCase()) {
+      case "programada":
+        return "bg-green-400";
+      case "realizada":
+        return "bg-blue-400";
+      case "suspendida":
+        return "bg-yellow-400";
+      case "pendiente":
+        return "bg-orange-400";
+      case "Pre-programada":
+        return "bg-red-400";
+      case "Urgencia":
+        return "bg-red-400";
+      default:
+        return "";
+    }
+  };
+
+  const getEstadoColorStyle = (estado) => {
+    switch (estado.toLowerCase()) {
+      case "programada":
+        return { backgroundColor: "#68D391", color: "black" }; // Color de fondo verde y texto negro
+      default:
+        return {};
+    }
   };
 
   const sortedSolicitudes = useMemo(() => {
@@ -155,21 +187,21 @@ function SolicitudesInsumos() {
         data-aos-delay="100"
         data-aos-offset="200"
       >
-      {open && selectedAppointment && (
-        <AddAppointmentModalInsumos
-          datas={solicitudes}
-          isOpen={open}
-          closeModal={handleModal}
-          appointmentId={selectedAppointment.id_solicitud}
-        />
-      )}
+        {open && selectedAppointment && (
+          <AddAppointmentModalInsumos
+            datas={solicitudes}
+            isOpen={open}
+            closeModal={handleModal}
+            appointmentId={selectedAppointment.id_solicitud}
+          />
+        )}
 
-      <Toaster position="top-right" reverseOrder={false} />
-      <div className="flex flex-col gap-4 mb-6">
-        <h1 className="text-xl font-semibold">Solicitudes Insumos</h1>
-        
-         {/* Filtros de búsqueda */}
-         <div className="mt-8">
+        <Toaster position="top-right" reverseOrder={false} />
+        <div className="flex flex-col gap-4 mb-6">
+          <h1 className="text-xl font-semibold">Solicitudes Insumos</h1>
+
+          {/* Filtros de búsqueda */}
+          <div className="mt-8">
             <div className="text-left">
               <div className="flex items-center justify-center mb-4">
                 <div className="flex items-center space-x-4">
@@ -214,111 +246,134 @@ function SolicitudesInsumos() {
             </div>
           </div>
 
-
-
-
-
-
-
-        <div className="overflow-x-auto">
-        <table className="min-w-full shadow-md rounded-lg overflow-hidden">
-          <thead className="bg-[#365b77] text-white">
-            <tr className="border border-gray-300 md:border-none block md:table-row absolute -top-full md:top-auto -left-full md:left-auto md:relative">
-              <th
-                onClick={() => handleSort("folio")}
-                className="p-2 cursor-pointer"
-              >
-                Folio
-              </th>
-              <th
-                onClick={() => handleSort("nombre_paciente")}
-                className="p-2 cursor-pointer"
-              >
-                Nombre
-              </th>
-              <th
-                onClick={() => handleSort("nombre_especialidad")}
-                className="p-2 cursor-pointer"
-              >
-                Especialidad
-              </th>
-              <th
-                onClick={() => handleSort("fecha_solicitada")}
-                className="p-2 cursor-pointer"
-              >
-                Fecha
-              </th>
-              <th
-                onClick={() => handleSort("estado_solicitud")}
-                className="p-2 cursor-pointer"
-              >
-                Estado
-              </th>
-              <th className="p-2">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-                        {sortedSolicitudes
-                          .slice(startIndex, endIndex)
-                          .map((solicitud) => {
-                            const formattedDate = new Date(
-                              solicitud.fecha_solicitud
-                            ).toLocaleDateString();
-                            return (
-              <tr
-                key={solicitud.id_solicitud}
-                className="bg-white border border-gray-300 md:border-none block md:table-row"
-              >
-                <td className="p-2 md:border md:border-gray-300 text-left block md:table-cell">
-                  {solicitud.folio}
-                </td>
-                <td className="p-2 md:border md:border-gray-300 text-left block md:table-cell">
-                  {solicitud.nombre_paciente} {solicitud.ap_paterno} {solicitud.ap_materno}
-                </td>
-                <td className="p-2 md:border md:border-gray-300 text-left block md:table-cell">
-                  {solicitud.nombre_especialidad}
-                </td>
-                <td className="p-2 md:border md:border-gray-300 text-left block md:table-cell">
-                  {solicitud.fecha_solicitada}
-                </td>
-                <td className="p-2 md:border md:border-gray-300 text-left block md:table-cell">
-                  {solicitud.estado_solicitud}
-                </td>
-                <td className="p-2 md:border md:border-gray-300 text-left block md:table-cell">
-                  <button
-                    onClick={() => handleViewModal(solicitud)}
-                    className="bg-[#365b77] text-white px-4 py-2 rounded-md hover:bg-[#7498b6]"
+          <div className="overflow-x-auto">
+                        <table className="min-w-full shadow-md rounded-lg overflow-hidden">
+                          <thead className="bg-[#365b77] text-white">
+                <tr className="border border-gray-300 md:border-none block md:table-row absolute -top-full md:top-auto -left-full md:left-auto md:relative">
+                  <th
+                    onClick={() => handleSort("folio")}
+                    className="p-2 cursor-pointer"
                   >
-                    Ver
-                  </button>
-                </td>
-              </tr>
-              );
-            })}
-          </tbody>
-        </table>
-        </div>
-        
-        {/* Paginación */}
-          <div className="flex justify-center mt-4">
+                    Folio
+                  </th>
+                  <th
+                    onClick={() => handleSort("nombre_paciente")}
+                    className="p-2 cursor-pointer"
+                  >
+                    Nombre
+                  </th>
+                  <th
+                    onClick={() => handleSort("nombre_especialidad")}
+                    className="p-2 cursor-pointer"
+                  >
+                    Especialidad
+                  </th>
+                  <th
+                    onClick={() => handleSort("fecha_solicitada")}
+                    className="p-2 cursor-pointer"
+                  >
+                    Fecha
+                  </th>
+                  <th
+                    onClick={() => handleSort("estado_solicitud")}
+                    className="p-2 cursor-pointer"
+                  >
+                    Estado
+                  </th>
+                  <th className="p-2">Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sortedSolicitudes
+                  .slice(startIndex, endIndex)
+                  .map((solicitud) => {
+                    const formattedDate = new Date(
+                      solicitud.fecha_solicitud
+                    ).toLocaleDateString();
+                    return (
+                      <tr
+                        key={solicitud.id_solicitud}
+                        className="bg-blue-50 hover:bg-[#7498b6]"
+                      >
+                        <td className="p-2 md:border md:border-gray-300 text-left block md:table-cell">
+                          {solicitud.folio}
+                        </td>
+                        <td className="p-2 md:border md:border-gray-300 text-left block md:table-cell">
+                          {solicitud.nombre_paciente} {solicitud.ap_paterno}{" "}
+                          {solicitud.ap_materno}
+                        </td>
+                        <td className="p-2 md:border md:border-gray-300 text-left block md:table-cell">
+                          {solicitud.nombre_especialidad}
+                        </td>
+                        <td className="p-2 md:border md:border-gray-300 text-left block md:table-cell">
+                          {solicitud.fecha_solicitada}
+                        </td>
+                        <td className="border px-4 py-2">
+                          <div
+                            className={`inline-block px-1 py-1 rounded-lg ${getEstadoColor(
+                              solicitud.estado_solicitud
+                            )}`}
+                            style={{
+                              ...getEstadoColorStyle(
+                                solicitud.estado_solicitud
+                              ),
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              height: "100%",
+                              width: "100%",
+                              textAlign: "center",
+                            }}
+                          >
+                            {solicitud.estado_solicitud}
+                          </div>
+                        </td>
+                        <td className="p-2 md:border md:border-gray-300 text-left block md:table-cell">
+                          <button
+                            onClick={() => handleViewModal(solicitud)}
+                            className="bg-[#365b77] text-white px-4 py-2 rounded-md hover:bg-[#7498b6]"
+                          >
+                            Ver
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Paginación */}
+          <div className="flex justify-center items-center mt-6 space-x-4">
             <button
               onClick={() => setPage(page - 1)}
               disabled={page === 1}
-              className="bg-[#365b77] hover:bg-[#7498b6] text-white font-bold py-2 px-4 rounded-l"
+              className={`${
+                page === 1
+                  ? "bg-gray-300 cursor-not-allowed"
+                  : "bg-[#365b77] hover:bg-[#7498b6]"
+              } text-white font-semibold py-2 px-6 rounded-full shadow-md transition-all duration-300 ease-in-out transform hover:scale-105`}
             >
-              Anterior
+              &#8592;
             </button>
-            <span className="mx-4">Página {page}</span>
+            <span className="text-lg font-semibold text-gray-800">
+              Página {page}
+            </span>
             <button
               onClick={() => setPage(page + 1)}
               disabled={endIndex >= sortedSolicitudes.length}
-              className="bg-[#365b77] hover:bg-[#7498b6] text-white font-bold py-2 px-4 rounded-r"
+              className={`${
+                endIndex >= sortedSolicitudes.length
+                  ? "bg-gray-300 cursor-not-allowed"
+                  : "bg-[#365b77] hover:bg-[#7498b6]"
+              } text-white font-semibold py-2 px-6 rounded-full shadow-md transition-all duration-300 ease-in-out transform hover:scale-105`}
             >
-              Siguiente
+              &#8594;
             </button>
           </div>
 
-      </div>
+
+        </div>
       </div>
     </Layout>
   );

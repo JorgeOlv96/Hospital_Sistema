@@ -276,21 +276,31 @@ function Bitacoraanestesio() {
         )}
 
          {/* Paginación */}
-         <div className="flex justify-center mt-4">
+         <div className="flex justify-center items-center mt-6 space-x-4">
             <button
               onClick={() => setPage(page - 1)}
               disabled={page === 1}
-              className="bg-[#365b77] hover:bg-[#7498b6] text-white font-bold py-2 px-4 rounded-l"
+              className={`${
+                page === 1
+                  ? "bg-gray-300 cursor-not-allowed"
+                  : "bg-[#365b77] hover:bg-[#7498b6]"
+              } text-white font-semibold py-2 px-6 rounded-full shadow-md transition-all duration-300 ease-in-out transform hover:scale-105`}
             >
-              Anterior
+              &#8592;
             </button>
-            <span className="mx-4">Página {page}</span>
+            <span className="text-lg font-semibold text-gray-800">
+              Página {page}
+            </span>
             <button
               onClick={() => setPage(page + 1)}
               disabled={endIndex >= filteredAppointments.length}
-              className="bg-[#365b77] hover:bg-[#7498b6] text-white font-bold py-2 px-4 rounded-r"
+              className={`${
+                endIndex >= filteredAppointments.length
+                  ? "bg-gray-300 cursor-not-allowed"
+                  : "bg-[#365b77] hover:bg-[#7498b6]"
+              } text-white font-semibold py-2 px-6 rounded-full shadow-md transition-all duration-300 ease-in-out transform hover:scale-105`}
             >
-              Siguiente
+              &#8594;
             </button>
           </div>
 

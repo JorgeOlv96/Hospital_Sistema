@@ -407,7 +407,7 @@ function Gestionusuarios() {
             <tbody>
               {usuariosFiltrados.length > 0 ? (
                 usuariosFiltrados.map((user) => (
-                  <tr key={user.id_usuario}>
+                  <tr key={user.id_usuario} className="bg-blue-50 hover:bg-[#7498b6]" >
                     <td className="border px-4 py-2">{user.nombre}</td>
                     <td className="border px-4 py-2">{user.ap_paterno}</td>
                     <td className="border px-4 py-2">{user.ap_materno}</td>

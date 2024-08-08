@@ -22,8 +22,8 @@ function Programaranestesiologo() {
   const [anesthesiologistsPerPage] = useState(10);
 
   const [page, setPage] = useState(1);
-const [endIndex, setEndIndex] = useState(10);
-const [sortedSolicitudes, setSortedSolicitudes] = useState([]);
+  const [endIndex, setEndIndex] = useState(10);
+  const [sortedSolicitudes, setSortedSolicitudes] = useState([]);
 
   const [sortBy, setSortBy] = useState(null);
   const [sortOrder, setSortOrder] = useState("asc");
@@ -204,9 +204,9 @@ const [sortedSolicitudes, setSortedSolicitudes] = useState([]);
   }, []);
 
   // Calcular índices para la paginación
-const indexOfLastAnesthesiologist = page * anesthesiologistsPerPage;
-const indexOfFirstAnesthesiologist = indexOfLastAnesthesiologist - anesthesiologistsPerPage;
-
+  const indexOfLastAnesthesiologist = page * anesthesiologistsPerPage;
+  const indexOfFirstAnesthesiologist =
+    indexOfLastAnesthesiologist - anesthesiologistsPerPage;
 
   // Filtrar anestesiólogos según el término de búsqueda y el campo seleccionado
   const currentAnesthesiologists = anesthesiologists
@@ -231,25 +231,25 @@ const indexOfFirstAnesthesiologist = indexOfLastAnesthesiologist - anesthesiolog
   };
 
   // Cambiar página
-const paginate = (pageNumber) => {
-  setPage(pageNumber);
-  setEndIndex(pageNumber * anesthesiologistsPerPage);
-};
+  const paginate = (pageNumber) => {
+    setPage(pageNumber);
+    setEndIndex(pageNumber * anesthesiologistsPerPage);
+  };
 
-const handleSort = (field) => {
-  const newSortOrder = sortBy === field ? (sortOrder === "asc" ? "desc" : "asc") : "asc";
-  setSortBy(field);
-  setSortOrder(newSortOrder);
+  const handleSort = (field) => {
+    const newSortOrder =
+      sortBy === field ? (sortOrder === "asc" ? "desc" : "asc") : "asc";
+    setSortBy(field);
+    setSortOrder(newSortOrder);
 
-  const sortedData = [...anesthesiologists].sort((a, b) => {
-    if (a[field] < b[field]) return newSortOrder === "asc" ? -1 : 1;
-    if (a[field] > b[field]) return newSortOrder === "asc" ? 1 : -1;
-    return 0;
-  });
+    const sortedData = [...anesthesiologists].sort((a, b) => {
+      if (a[field] < b[field]) return newSortOrder === "asc" ? -1 : 1;
+      if (a[field] > b[field]) return newSortOrder === "asc" ? 1 : -1;
+      return 0;
+    });
 
-  setSortedSolicitudes(sortedData);
-};
-
+    setSortedSolicitudes(sortedData);
+  };
 
   // Función para obtener el color de fondo basado en el turno
   const getTurnColor = (turno_anestesio) => {
@@ -277,314 +277,320 @@ const handleSort = (field) => {
         data-aos-delay="100"
         data-aos-offset="200"
       >
-      <div className="flex flex-col gap-2 mb-4">
-        <h1 className="text-xl font-semibold">Anestesiólogos asignados</h1>
-        <div className="my-4">
-          <div>
-            <Link
-              to="/anestesiólogos"
-              className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
-            >
-              <span>Ver agenda de Anestesiólogos</span>
-            </Link>
-          </div>
-        </div>
-
-        <div className="flex flex-col">
-          <div className="flex flex-col">
-            <div className="flex mb-2 space-x-4">
-              <div className="w-1/4">
-                <label
-                  style={{ marginBottom: "30px" }}
-                  className="text-sm font-medium text-gray-700"
-                >
-                  Nombre de anestesiólogo
-                </label>
-                <input
-                  placeholder="Nombre del anestesiologo"
-                  type="text"
-                  id="nombre"
-                  name="nombre"
-                  value={formData.nombre}
-                  onChange={handleInputChange}
-                  className="block w-full px-4 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  style={{ minHeight: "auto" }}
-                />
-              </div>
-
-              <div className="w-1/4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Asignar día
-                </label>
-                <input
-                  type="date"
-                  name="dia_anestesio"
-                  value={formData.dia_anestesio}
-                  onChange={handleInputChange}
-                  placeholder="dd/mm/aaaa"
-                  className="mt-1 block w-full px-4 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div className="w-1/4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Asignar turno
-                </label>
-                <select
-                  name="turno_anestesio"
-                  value={formData.turno_anestesio}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full px-4 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Seleccionar</option>
-                  <option value="Matutino">Matutino</option>
-                  <option value="Vespertino">Vespertino</option>
-                  <option value="Nocturno">Nocturno</option>
-                </select>
-              </div>
-
-              <div className="w-1/8">
-                <label className="block text-sm font-medium text-gray-700">
-                  Hora Inicio
-                </label>
-                <input
-                  type="text"
-                  name="hora_inicio"
-                  value={formData.hora_inicio}
-                  readOnly
-                  className="mt-1 block w-full px-2 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-200 cursor-default"
-                />
-              </div>
-              <div className="w-1/8">
-                <label className="block text-sm font-medium text-gray-700">
-                  Hora Fin
-                </label>
-                <input
-                  type="text"
-                  name="hora_fin"
-                  value={formData.hora_fin}
-                  readOnly
-                  className="mt-1 block w-full px-2 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-200 cursor-default"
-                />
-              </div>
-
-              <div className="w-1/4">
-                <label className="block text-sm font-medium text-gray-700">
-                  Asignar sala
-                </label>
-
-                <select
-                  name="sala_anestesio"
-                  value={formData.sala_anestesio}
-                  onChange={handleInputChange}
-                  className="mt-1 block w-full px-4 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">Seleccionar</option>
-                  <option value="A1">Sala A1</option>
-                  <option value="A2">Sala A2</option>
-                  <option value="T1">Sala T1</option>
-                  <option value="T2">Sala T2</option>
-                  <option value="1">Sala 1</option>
-                  <option value="2">Sala 2</option>
-                  <option value="3">Sala 3</option>
-                  <option value="4">Sala 4</option>
-                  <option value="5">Sala 5</option>
-                  <option value="6">Sala 6</option>
-                  <option value="E">Sala E</option>
-                  <option value="H">Sala H</option>
-                  <option value="RX">Sala RX</option>
-
-                  <option value="Recup_Matutino" className="font-bold">
-                    Recuperación Matutino
-                  </option>
-                  <option value="Con_Ext_P1_mat" className="font-bold">
-                    Consulta Externa Piso 1
-                  </option>
-                  <option value="Con_Ext_P2_mat" className="font-bold">
-                    Consulta Externa Piso 2
-                  </option>
-                  <option value="Rec_Vespertino" className="font-bold">
-                    Recuperación Vespertino
-                  </option>
-                  <option value="Con_Ext_P1_vesp" className="font-bold">
-                    Consulta Externa Piso 1
-                  </option>
-                  <option value="Con_Ext_P2_vesp" className="font-bold">
-                    Consulta Externa Piso 2
-                  </option>
-                </select>
-              </div>
-            </div>
-            <div className="px-2 py-2 text-right">
-              <button
-                onClick={handleSaveAnesthesiologist}
-                className="bg-[#365b77] text-white px-5 py-2 rounded-md hover:bg-[#7498b6]"
+        <div className="flex flex-col gap-2 mb-4">
+          <h1 className="text-xl font-semibold">Anestesiólogos asignados</h1>
+          <div className="my-4">
+            <div>
+              <Link
+                to="/anestesiólogos"
+                className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
               >
-                Guardar
-              </button>
+                <span>Ver agenda de Anestesiólogos</span>
+              </Link>
             </div>
           </div>
 
-          {/* Filtros de búsqueda */}
-          <div className="mt-1/2">
-            <div className="text-left">
-              <div className="flex items-center justify-center mb-4">
-                <div className="flex items-center space-x-4">
+          <div className="flex flex-col">
+            <div className="flex flex-col">
+              <div className="flex mb-2 space-x-4">
+                <div className="w-1/4">
+                  <label
+                    style={{ marginBottom: "30px" }}
+                    className="text-sm font-medium text-gray-700"
+                  >
+                    Nombre de anestesiólogo
+                  </label>
                   <input
+                    placeholder="Nombre del anestesiologo"
                     type="text"
-                    placeholder="Buscar..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="px-3 py-2 border border-gray-300 rounded-md w-64"
+                    id="nombre"
+                    name="nombre"
+                    value={formData.nombre}
+                    onChange={handleInputChange}
+                    className="block w-full px-4 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    style={{ minHeight: "auto" }}
                   />
+                </div>
+
+                <div className="w-1/4">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Asignar día
+                  </label>
+                  <input
+                    type="date"
+                    name="dia_anestesio"
+                    value={formData.dia_anestesio}
+                    onChange={handleInputChange}
+                    placeholder="dd/mm/aaaa"
+                    className="mt-1 block w-full px-4 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                </div>
+                <div className="w-1/4">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Asignar turno
+                  </label>
                   <select
-                    value={searchField}
-                    onChange={(e) => setSearchField(e.target.value)}
-                    className="px-3 py-2 border border-gray-300 rounded-md"
+                    name="turno_anestesio"
+                    value={formData.turno_anestesio}
+                    onChange={handleInputChange}
+                    className="mt-1 block w-full px-4 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="">Seleccionar</option>
-                    <option value="nombre">Nombre</option>
-                    <option value="dia_anestesio">Día asignado</option>
-                    <option value="turno_anestesio">Turno asignado</option>
-                    <option value="hora_inicio">Hora inicio</option>
-                    <option value="hora_fin">Hora fin</option>
-                    <option value="sala_anestesio">Sala asignada</option>
+                    <option value="Matutino">Matutino</option>
+                    <option value="Vespertino">Vespertino</option>
+                    <option value="Nocturno">Nocturno</option>
+                  </select>
+                </div>
+
+                <div className="w-1/8">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Hora Inicio
+                  </label>
+                  <input
+                    type="text"
+                    name="hora_inicio"
+                    value={formData.hora_inicio}
+                    readOnly
+                    className="mt-1 block w-full px-2 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-200 cursor-default"
+                  />
+                </div>
+                <div className="w-1/8">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Hora Fin
+                  </label>
+                  <input
+                    type="text"
+                    name="hora_fin"
+                    value={formData.hora_fin}
+                    readOnly
+                    className="mt-1 block w-full px-2 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-200 cursor-default"
+                  />
+                </div>
+
+                <div className="w-1/4">
+                  <label className="block text-sm font-medium text-gray-700">
+                    Asignar sala
+                  </label>
+
+                  <select
+                    name="sala_anestesio"
+                    value={formData.sala_anestesio}
+                    onChange={handleInputChange}
+                    className="mt-1 block w-full px-4 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  >
+                    <option value="">Seleccionar</option>
+                    <option value="A1">Sala A1</option>
+                    <option value="A2">Sala A2</option>
+                    <option value="T1">Sala T1</option>
+                    <option value="T2">Sala T2</option>
+                    <option value="1">Sala 1</option>
+                    <option value="2">Sala 2</option>
+                    <option value="3">Sala 3</option>
+                    <option value="4">Sala 4</option>
+                    <option value="5">Sala 5</option>
+                    <option value="6">Sala 6</option>
+                    <option value="E">Sala E</option>
+                    <option value="H">Sala H</option>
+                    <option value="RX">Sala RX</option>
+
+                    <option value="Recup_Matutino" className="font-bold">
+                      Recuperación Matutino
+                    </option>
+                    <option value="Con_Ext_P1_mat" className="font-bold">
+                      Consulta Externa Piso 1
+                    </option>
+                    <option value="Con_Ext_P2_mat" className="font-bold">
+                      Consulta Externa Piso 2
+                    </option>
+                    <option value="Rec_Vespertino" className="font-bold">
+                      Recuperación Vespertino
+                    </option>
+                    <option value="Con_Ext_P1_vesp" className="font-bold">
+                      Consulta Externa Piso 1
+                    </option>
+                    <option value="Con_Ext_P2_vesp" className="font-bold">
+                      Consulta Externa Piso 2
+                    </option>
                   </select>
                 </div>
               </div>
+              <div className="px-2 py-2 text-right">
+                <button
+                  onClick={handleSaveAnesthesiologist}
+                  className="bg-[#365b77] text-white px-5 py-2 rounded-md hover:bg-[#7498b6]"
+                >
+                  Guardar
+                </button>
+              </div>
             </div>
-          </div>
 
-          <div className="overflow-hidden border-b border-white-200 shadow sm:rounded-lg">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-[#365b77] text-white">
-                <tr>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-white-500 uppercase tracking-wider"
-                  >
-                    Nombre
-                    <span>
-                      {sortBy === "nombre" && (sortOrder === "asc" ? "▲" : "▼")}
-                    </span>
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-white-500 uppercase tracking-wider"
-                  >
-                    Día asignado
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-white-500 uppercase tracking-wider"
-                  >
-                    Turno asignado
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-white-500 uppercase tracking-wider"
-                  >
-                    Sala asignada
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-white-500 uppercase tracking-wider"
-                  >
-                    Hora inicio
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-white-500 uppercase tracking-wider"
-                  >
-                    Hora fin
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-white-500 uppercase tracking-wider"
-                  >
-                    Acciones
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {currentAnesthesiologists.map((anesthesiologist) => (
-                  <tr key={anesthesiologist.folio}>
-                    <td className="px-6 py-4 whitespace-nowrap border-r border-gray-300">
-                      <div className="text-sm font-medium text-gray-900">
-                        {anesthesiologist.nombre}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap border-r border-gray-300">
-                      <div className="text-sm text-gray-900">
-                        {anesthesiologist.dia_anestesio}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border-r border-gray-300">
-                      <span
-                        className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
-                        style={{
-                          backgroundColor: getTurnColor(
-                            anesthesiologist.turno_anestesio
-                          ),
-                        }}
-                      >
-                        {anesthesiologist.turno_anestesio}
+            {/* Filtros de búsqueda */}
+            <div className="mt-1/2">
+              <div className="text-left">
+                <div className="flex items-center justify-center mb-4">
+                  <div className="flex items-center space-x-4">
+                    <input
+                      type="text"
+                      placeholder="Buscar..."
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      className="px-3 py-2 border border-gray-300 rounded-md w-64"
+                    />
+                    <select
+                      value={searchField}
+                      onChange={(e) => setSearchField(e.target.value)}
+                      className="px-3 py-2 border border-gray-300 rounded-md"
+                    >
+                      <option value="">Seleccionar</option>
+                      <option value="nombre">Nombre</option>
+                      <option value="dia_anestesio">Día asignado</option>
+                      <option value="turno_anestesio">Turno asignado</option>
+                      <option value="hora_inicio">Hora inicio</option>
+                      <option value="hora_fin">Hora fin</option>
+                      <option value="sala_anestesio">Sala asignada</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="overflow-hidden border-b border-white-200 shadow sm:rounded-lg">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-[#365b77] text-white">
+                  <tr>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-white-500 uppercase tracking-wider"
+                    >
+                      Nombre
+                      <span>
+                        {sortBy === "nombre" &&
+                          (sortOrder === "asc" ? "▲" : "▼")}
                       </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border-r border-gray-300">
-                      {anesthesiologist.sala_anestesio}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border-r border-gray-300">
-                      {anesthesiologist.hora_inicio}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border-r border-gray-300">
-                      {anesthesiologist.hora_fin}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      <button
-                        onClick={() =>
-                          handleDeleteAnesthesiologist(
-                            anesthesiologist.id_anestesiologo
-                          )
-                        }
-                        className="bg-[#CB2525] text-white px-5 py-2 rounded-md hover:bg-[#E54F4F]"
-                      >
-                        Eliminar
-                      </button>
-                    </td>
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-white-500 uppercase tracking-wider"
+                    >
+                      Día asignado
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-white-500 uppercase tracking-wider"
+                    >
+                      Turno asignado
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-white-500 uppercase tracking-wider"
+                    >
+                      Sala asignada
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-white-500 uppercase tracking-wider"
+                    >
+                      Hora inicio
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-white-500 uppercase tracking-wider"
+                    >
+                      Hora fin
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-white-500 uppercase tracking-wider"
+                    >
+                      Acciones
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-
-            
-            
-          </div>
-        </div>
-
-
-
-{/* Paginación */}
-<div className="flex justify-center mt-4">
-              <button
-                onClick={() => setPage(page - 1)}
-                disabled={page === 1}
-                className="bg-[#365b77] hover:bg-[#7498b6] text-white font-bold py-2 px-4 rounded-l"
-              >
-                Anterior
-              </button>
-              <span className="mx-4">Página {page}</span>
-              <button
-                onClick={() => setPage(page + 1)}
-                disabled={endIndex >= sortedSolicitudes.length}
-                className="bg-[#365b77] hover:bg-[#7498b6] text-white font-bold py-2 px-4 rounded-r"
-              >
-                Siguiente
-              </button>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {currentAnesthesiologists.map((anesthesiologist) => (
+                    <tr key={anesthesiologist.folio}>
+                      <td className="px-6 py-4 whitespace-nowrap border-r border-gray-300">
+                        <div className="text-sm font-medium text-gray-900">
+                          {anesthesiologist.nombre}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap border-r border-gray-300">
+                        <div className="text-sm text-gray-900">
+                          {anesthesiologist.dia_anestesio}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border-r border-gray-300">
+                        <span
+                          className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
+                          style={{
+                            backgroundColor: getTurnColor(
+                              anesthesiologist.turno_anestesio
+                            ),
+                          }}
+                        >
+                          {anesthesiologist.turno_anestesio}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border-r border-gray-300">
+                        {anesthesiologist.sala_anestesio}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border-r border-gray-300">
+                        {anesthesiologist.hora_inicio}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border-r border-gray-300">
+                        {anesthesiologist.hora_fin}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <button
+                          onClick={() =>
+                            handleDeleteAnesthesiologist(
+                              anesthesiologist.id_anestesiologo
+                            )
+                          }
+                          className="bg-[#CB2525] text-white px-5 py-2 rounded-md hover:bg-[#E54F4F]"
+                        >
+                          Eliminar
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
+          </div>
 
-        {/* Mostrar notificaciones */}
-        <ToastContainer position="bottom-right" />
-      </div>
+          {/* Paginación */}
+          <div className="flex justify-center items-center mt-6 space-x-4">
+            <button
+              onClick={() => setPage(page - 1)}
+              disabled={page === 1}
+              className={`${
+                page === 1
+                  ? "bg-gray-300 cursor-not-allowed"
+                  : "bg-[#365b77] hover:bg-[#7498b6]"
+              } text-white font-semibold py-2 px-6 rounded-full shadow-md transition-all duration-300 ease-in-out transform hover:scale-105`}
+            >
+              &#8592;
+            </button>
+            <span className="text-lg font-semibold text-gray-800">
+              Página {page}
+            </span>
+            <button
+              onClick={() => setPage(page + 1)}
+              disabled={endIndex >= sortedSolicitudes.length}
+              className={`${
+                endIndex >= sortedSolicitudes.length
+                  ? "bg-gray-300 cursor-not-allowed"
+                  : "bg-[#365b77] hover:bg-[#7498b6]"
+              } text-white font-semibold py-2 px-6 rounded-full shadow-md transition-all duration-300 ease-in-out transform hover:scale-105`}
+            >
+              &#8594;
+            </button>
+          </div>
+
+          {/* Mostrar notificaciones */}
+          <ToastContainer position="bottom-right" />
+        </div>
       </div>
     </Layout>
   );
