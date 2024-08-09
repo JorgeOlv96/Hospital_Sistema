@@ -55,6 +55,7 @@ import Solicitudesurgentes from './screens/Urgencias/Urgentes';
 import Gestionusuarios from './screens/Gestorusuarios/Gestionusr';
 import SalaManager from './screens/Salas/SalaManager';
 import SolicitudesInsumos from './screens/Insumos/solicitudesInsumos';
+import GestorManager from './screens/Productividad/Gestorproductividad';
 
 function App() {
   Aos.init();
@@ -121,6 +122,7 @@ function App() {
             <Route path="/urgencias/Urgentes" element={<Solicitudesurgentes />} />
             <Route path="/Gestionusr" element={<Gestionusuarios />} />
             <Route path="/SalaManager" element={<SalaManager />} />
+            <Route path="/Gestorproductividad" element={<GestorManager />} />
             <Route path="/services" element={<Services />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/ayuda" element={<Ayuda />} />

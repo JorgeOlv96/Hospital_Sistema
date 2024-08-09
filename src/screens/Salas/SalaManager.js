@@ -113,12 +113,11 @@ const SalaManager = () => {
         data-aos-delay="100"
         data-aos-offset="200"
       >
-      <div className="p-6">
-        <h1 className="text-2xl font-bold mb-6">
-          Gestión de Salas de Quirófano
-        </h1>
+       <div className="flex flex-col gap-4 mb-6">
+       <h1 className="text-xl font-semibold">Gestor de Salas de Quirófano</h1>
+       
         <div className="content-container">
-          <div className="table-container">
+          <div className="table-container sm:rounded-lg">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-[#365b77] text-white">
                 <tr>
@@ -131,7 +130,7 @@ const SalaManager = () => {
               </thead>
               <tbody>
                 {salas.map((sala) => (
-                  <tr key={sala.id} className="border-b">
+                  <tr key={sala.id} className="bg-blue-50 hover:bg-[#7498b6]">
                     <td className="text-center py-2">{sala.id}</td>
                     <td className="text-center py-2">
                       Sala {sala.nombre_sala}

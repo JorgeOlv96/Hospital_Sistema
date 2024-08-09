@@ -42,6 +42,8 @@ import { FaBedPulse } from "react-icons/fa6";
 import { AiOutlineMedicineBox } from "react-icons/ai";
 import { IoIosPulse } from "react-icons/io";
 import { GrUserSettings } from "react-icons/gr";
+import { BiBarChartAlt } from "react-icons/bi";
+
 
 
 export const MenuDatas = [
@@ -88,7 +90,7 @@ export const MenuDatas = [
     viewRole: [4, 6]
   },
   {
-    title: 'Gestion de usuarios',
+    title: 'Gestor de usuarios',
     path: '/Gestionusr',
     icon: GrUserSettings , // Puedes cambiar este icono por uno más representativo si lo deseas
     viewRole: [6] // Solo accesible para el nivel 5
@@ -103,6 +105,12 @@ export const MenuDatas = [
     title: 'Solicitudes insumos',
     path: '/solicitudesInsumos',
     icon: AiOutlineMedicineBox , // Puedes cambiar este icono por uno más representativo si lo deseas
+    viewRole: [2, 6] // Solo accesible para el nivel 5
+  },
+  {
+    title: 'Gestor de productividad',
+    path: '/Gestorproductividad',
+    icon: BiBarChartAlt , // Puedes cambiar este icono por uno más representativo si lo deseas
     viewRole: [2, 6] // Solo accesible para el nivel 5
   },
 ];

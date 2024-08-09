@@ -1,0 +1,95 @@
+/* GestorManager.css */
+
+.gestor-container {
+    padding: 20px;
+  }
+  
+  .export-button {
+    background-color: #365b77;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-bottom: 20px;
+  }
+  
+  .export-button:hover {
+    background-color: #7498b6;
+  }
+  
+  .historico-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .historico-table th, .historico-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  
+  .historico-table th {
+    background-color: #f4f4f4;
+  }
+  
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+  }
+  
+  .pagination-button {
+    background-color: #365b77;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin: 0 10px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+  }
+  
+  .pagination-button:hover {
+    background-color: #7498b6;
+  }
+  
+  .pagination-button.disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+  }
+  
+  .pagination-info {
+    font-size: 16px;
+    color: #333;
+    font-weight: 600;
+  }
+  .section-separator {
+    margin: 2rem 0; /* Ajusta el margen según tus necesidades */
+  }  
+
+/* Estilo para los títulos de las secciones */
+.section-title {
+    background-color: #365b77;
+    color: #ffffff; /* Color del texto en blanco para contraste */
+    padding: 10px; /* Ajusta el padding según sea necesario */
+    border-radius: 5px; /* Opcional: para esquinas redondeadas */
+    margin-bottom: 1rem; /* Espacio debajo del título */
+  }
+  
+  /* Estilo para la tabla y el encabezado */
+  .historico-table thead th {
+    background-color: #365b77; /* Color de fondo para el encabezado de la tabla */
+    color: #ffffff; /* Color del texto en blanco para contraste */
+    padding: 10px; /* Ajusta el padding según sea necesario */
+    
+  }
+  
+  /* Separador */
+  .section-separator {
+    border-top: 1px solid #d1d5db; /* Color de la línea divisoria */
+    margin: 2rem 0; /* Ajusta el margen según sea necesario */
+  }
+  

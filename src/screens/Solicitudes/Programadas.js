@@ -108,15 +108,17 @@ function Solicitudesprogramadas() {
   });
 
   const filteredAppointments = sortedAppointments.filter((appointment) => {
+    const appointmentDate = new Date(appointment.fecha_solicitud).toDateString();
+    const filterDate = new Date(filter.fecha).toDateString();
+    
     return (
-      (filter.fecha === "" ||
-        appointment.fecha_solicitud.includes(filter.fecha)) &&
-      (filter.especialidad === "" ||
-        appointment.nombre_especialidad.includes(filter.especialidad)) &&
-      (filter.estado === "" ||
-        appointment.estado_solicitud.includes(filter.estado))
+      (filter.fecha === "" || appointmentDate === filterDate) &&
+      (filter.especialidad === "" || appointment.nombre_especialidad.toLowerCase().includes(filter.especialidad.toLowerCase())) &&
+      (filter.estado === "" || appointment.estado_solicitud.toLowerCase().includes(filter.estado.toLowerCase()))
     );
   });
+  
+
 
   const startIndex = (page - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
