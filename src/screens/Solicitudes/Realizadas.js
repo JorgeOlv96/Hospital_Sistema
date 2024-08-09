@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, navigate } from "react";
 import Layout from "../../Layout";
 import axios from "axios";
-import AddAppointmentModalPending from "../../components/Modals/AddApointmentModalPending";
-import { Link } from "react-router-dom";
+import AddApointmentModalRealizada from "../../components/Modals/AddApointmentModalRealizada";
+import { useNavigate, Link } from "react-router-dom";
 
-function ProgramarSolicitud() {
+function Solicitudesrealizadas() {
   const [pendingAppointments, setPendingAppointments] = useState([]);
+  const navigate = useNavigate();
   const [filter, setFilter] = useState({
     fecha: "",
     especialidad: "",
-    estado: "Pre-programada",
+    estado: "Realizada",
   });
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [open, setOpen] = useState(false);
@@ -25,7 +26,7 @@ function ProgramarSolicitud() {
 
   const fetchPendingAppointments = async () => {
     try {
-      const response = await fetch(`${baseURL}/api/solicitudes/preprogramadas`);
+      const response = await fetch(`${baseURL}/api/solicitudes/reailizadas`);
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
@@ -33,6 +34,15 @@ function ProgramarSolicitud() {
       setPendingAppointments(data);
     } catch (error) {
       console.error("Error fetching pending appointments:", error);
+    }
+  };
+
+  const handleViewClick = (appointment) => {
+    if (appointment.id_solicitud) {
+      navigate(`/solicitudes/Consultarealizada/${appointment.id_solicitud}`);
+    } else {
+      console.error("El ID de la cita no está definido:", appointment);
+      // Puedes manejar este caso de otra manera, como mostrar un mensaje de error o redirigir a una página predeterminada.
     }
   };
 
@@ -79,8 +89,8 @@ function ProgramarSolicitud() {
 
   const getEstadoColorStyle = (estado) => {
     switch (estado.toLowerCase()) {
-      case "pre-programada":
-        return { backgroundColor: "#06ABC9", color: "black" }; // Color de fondo rojo y texto negro
+      case "realizada":
+        return { backgroundColor: "#63B3ED", color: "black" }; // Color de fondo rojo y texto negro
       default:
         return {};
     }
@@ -129,7 +139,7 @@ function ProgramarSolicitud() {
         data-aos-offset="200"
       >
         <div className="flex flex-col gap-2 mb-4">
-          <h1 className="text-xl font-semibold">Solicitudes pre-programadas</h1>
+          <h1 className="text-xl font-semibold">Solicitudes realizadas</h1>
           <div className="flex my-4 space-x-4">
             <div>
               <Link
@@ -137,6 +147,15 @@ function ProgramarSolicitud() {
                 className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
               >
                 <span>Ver agenda</span>
+              </Link>
+            </div>
+
+            <div>
+              <Link
+                to="/solicitudes/Programarsolicitud"
+                className="bg-[#06ABC9] hover:bg-[#00C5E8] text-white py-2 px-4 rounded inline-flex items-center"
+              >
+                <span>Ver todas las pre-programadas</span>
               </Link>
             </div>
 
@@ -151,15 +170,6 @@ function ProgramarSolicitud() {
 
             <div>
               <Link
-                to="/solicitudes/Solicitudreaizada"
-                className="bg-[#63B3ED] hover:bg-[#63B3ED] text-white py-2 px-4 rounded inline-flex items-center"
-              >
-                <span>Ver todas las realizadas</span>
-              </Link>
-            </div>
-
-            <div>
-              <Link
                 to="/solicitudes/Solicitudsuspendida"
                 className="bg-[#D87D09] hover:bg-[#BF6E07] text-white py-2 px-4 rounded inline-flex items-center"
               >
@@ -169,7 +179,7 @@ function ProgramarSolicitud() {
           </div>
 
           {open && selectedAppointment && (
-            <AddAppointmentModalPending
+            <AddApointmentModalRealizada
               datas={pendingAppointments}
               isOpen={open}
               closeModal={handleModal}
@@ -220,7 +230,7 @@ function ProgramarSolicitud() {
 
           {filteredAppointments.length === 0 ? (
             <div className="text-center text-gray-500 mt-4">
-              No hay solicitudes pendientes :)
+              No hay realizadas :)
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -228,65 +238,71 @@ function ProgramarSolicitud() {
                 <thead className="bg-[#365b77] text-white">
                   <tr>
                     <th
-                      className="px-4 py-3 cursor-pointer"
+                      className="px-4 py-2 cursor-pointer"
                       onClick={() => handleSort("folio")}
                     >
                       Folio{" "}
                       <span>
-                        {sortBy === "folio" &&
-                          (sortOrder === "asc" ? "▲" : "▼")}
+                        {sortBy === "folio"
+                          ? sortOrder === "asc"
+                            ? "▲"
+                            : "▼"
+                          : ""}
                       </span>
                     </th>
                     <th
-                      className="px-4 py-3 cursor-pointer"
+                      className="px-4 py-2 cursor-pointer"
                       onClick={() => handleSort("nombre_paciente")}
                     >
-                      Nombre{" "}
+                      Nombre del paciente{" "}
                       <span>
-                        {sortBy === "nombre_paciente" &&
-                          (sortOrder === "asc" ? "▲" : "▼")}
+                        {sortBy === "nombre_paciente"
+                          ? sortOrder === "asc"
+                            ? "▲"
+                            : "▼"
+                          : ""}
                       </span>
                     </th>
                     <th
-                      className="px-4 py-3 cursor-pointer"
+                      className="px-4 py-2 cursor-pointer"
                       onClick={() => handleSort("nombre_especialidad")}
                     >
                       Especialidad{" "}
                       <span>
-                        {sortBy === "nombre_especialidad" &&
-                          (sortOrder === "asc" ? "▲" : "▼")}
+                        {sortBy === "nombre_especialidad"
+                          ? sortOrder === "asc"
+                            ? "▲"
+                            : "▼"
+                          : ""}
                       </span>
                     </th>
                     <th
-                      className="px-4 py-3 cursor-pointer"
+                      className="px-4 py-2 cursor-pointer"
                       onClick={() => handleSort("fecha_solicitada")}
                     >
-                      Fecha{" "}
+                      Fecha solicitada{" "}
                       <span>
-                        {sortBy === "fecha_solicitada" &&
-                          (sortOrder === "asc" ? "▲" : "▼")}
+                        {sortBy === "fecha_solicitada"
+                          ? sortOrder === "asc"
+                            ? "▲"
+                            : "▼"
+                          : ""}
                       </span>
                     </th>
                     <th
-                      className="px-4 py-3 cursor-pointer"
+                      className="px-4 py-2 cursor-pointer"
                       onClick={() => handleSort("sala_quirofano")}
                     >
-                      Sala{" "}
+                      Sala solicitada{" "}
                       <span>
-                        {sortBy === "sala_quirofano" &&
-                          (sortOrder === "asc" ? "▲" : "▼")}
+                        {sortBy === "sala_quirofano"
+                          ? sortOrder === "asc"
+                            ? "▲"
+                            : "▼"
+                          : ""}
                       </span>
                     </th>
-                    <th
-                      className="px-4 py-3 cursor-pointer"
-                      onClick={() => handleSort("estado_solicitud")}
-                    >
-                      Estado{" "}
-                      <span>
-                        {sortBy === "estado_solicitud" &&
-                          (sortOrder === "asc" ? "▲" : "▼")}
-                      </span>
-                    </th>
+                    <th className="px-4 py-2 cursor-pointer">Estado</th>
                     <th className="px-4 py-3">Acciones</th>
                   </tr>
                 </thead>
@@ -300,16 +316,16 @@ function ProgramarSolicitud() {
                       >
                         <td className="px-4 py-2">{appointment.folio}</td>
                         <td className="px-4 py-2">
-                          {appointment.nombre_paciente}{" "}
-                          {appointment.apellido_paciente}
+                          {appointment.nombre_paciente} {appointment.ap_paterno}{" "}
+                          {appointment.ap_materno}
                         </td>
                         <td className="px-4 py-2">
                           {appointment.nombre_especialidad}
                         </td>
                         <td className="px-4 py-2">
-                          {appointment.fecha_solicitud}
+                          {appointment.fecha_programada}
                         </td>
-                        <td className="px-4 py-2">
+                        <td className="px-4 py-2 flex justify-center">
                           {appointment.sala_quirofano}
                         </td>
                         <td className="border px-4 py-2">
@@ -332,12 +348,12 @@ function ProgramarSolicitud() {
                             {appointment.estado_solicitud}
                           </div>
                         </td>
-                        <td className="px-4 py-2">
-                          <button
-                            onClick={() => handleViewModal(appointment)}
+                        <td className="px-4 py-2 flex justify-center">
+                        <button
+                            onClick={() => handleViewClick(appointment)}
                             className="bg-[#365b77] text-white px-5 py-2 rounded-md hover:bg-[#7498b6]"
                           >
-                            Gestionar
+                            Ver
                           </button>
                         </td>
                       </tr>
@@ -346,7 +362,7 @@ function ProgramarSolicitud() {
               </table>
             </div>
           )}
-
+          
           {/* Paginación */}
           <div className="flex justify-center items-center mt-6 space-x-4">
             <button
@@ -376,11 +392,10 @@ function ProgramarSolicitud() {
             </button>
           </div>
 
-
         </div>
       </div>
     </Layout>
   );
 }
 
-export default ProgramarSolicitud;
+export default Solicitudesrealizadas;

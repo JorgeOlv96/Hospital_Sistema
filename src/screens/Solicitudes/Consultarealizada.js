@@ -6,7 +6,7 @@ import Modal from "../../components/Modals/Modal";
 import { MultiSelect } from "react-multi-select-component";
 import AsyncSelect from "react-select/async";
 
-const Consultabitacora = () => {
+const Consultarealizada = () => {
   const options = [
     { label: "General", value: "general" },
     { label: "TIVA", value: "tiva" },
@@ -17,24 +17,9 @@ const Consultabitacora = () => {
   ];
 
   const { id } = useParams();
-  const [patientData, setPatientData] = useState({
-    hora_entrada: "",
-    hora_incision: "",
-    hora_cierre: "",
-    hora_salida: "",
-    egreso: "",
-    enf_quirurgica: "",
-    enf_circulante: "",
-    tipo_anestesia: [],
-    nuevos_procedimientos_extra: [],
-  });
+  const [patientData, setPatientData] = useState({});
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  const [suspendModalOpen, setSuspendModalOpen] = useState(false);
-  const [suspendReason, setSuspendReason] = useState("");
-  const [suspendDetail, setSuspendDetail] = useState("");
-  const [suspendDetailOptions, setSuspendDetailOptions] = useState([]);
-  const [error, setError] = useState("");
   const [procedimientoExtra, setProcedimientoExtra] = useState("");
   const [selected, setSelected] = useState([]);
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
@@ -64,170 +49,6 @@ const Consultabitacora = () => {
     fetchAppointmentData();
   }, [id]);
 
-  const fetchSuspendDetailOptions = async (category) => {
-    try {
-      const response = await fetch(`${baseURL}/api/solicitudes/motivos-suspension?category=${category}`
-      );
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const data = await response.json();
-      const options = data.map((option) => option.motivo);
-      setSuspendDetailOptions(options);
-    } catch (error) {
-      console.error("Error fetching suspend detail options:", error);
-    }
-  };
-
-  const fetchActiveNurses = async (inputValue) => {
-    try {
-      const response = await fetch(`${baseURL}/api/enfermeras/activos?search=${inputValue}`
-      );
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const data = await response.json();
-      return data.map((enfermeras) => ({
-        label: enfermeras.nombre_completo,
-        value: enfermeras.nombre_completo,
-      }));
-    } catch (error) {
-      console.error("Error fetching active nurses:", error);
-      return [];
-    }
-  };
-
-  const handleSuspendReasonChange = (e) => {
-    const selectedReason = e.target.value;
-    setSuspendReason(selectedReason);
-    if (selectedReason) {
-      fetchSuspendDetailOptions(selectedReason.toLowerCase());
-    } else {
-      setSuspendDetailOptions([]);
-    }
-  };
-
-  const handleSuspend = () => {
-    setSuspendModalOpen(true);
-  };
-
-  const closeModal = () => {
-    setSuspendModalOpen(false);
-  };
-
-  const handleSuspendSubmit = async () => {
-    if (!suspendReason || !suspendDetail) {
-      setError("Por favor, selecciona un motivo y un detalle de suspensión.");
-      return;
-    }
-    try {
-      const response = await fetch(`${baseURL}/api/solicitudes/suspender/${id}`,
-        {
-          method: "PATCH",
-          body: JSON.stringify({
-            suspendReason,
-            suspendDetail,
-          }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      setSuspendModalOpen(false);
-      closeModal();
-      navigate("/bitacora/Bitaenfermeria");
-    } catch (error) {
-      console.error("Error suspending appointment:", error);
-    }
-  };
-
-  const handleSave = async () => {
-    try {
-      const {
-        nuevos_procedimientos_extra,
-        hora_entrada,
-        hora_incision,
-        hora_cierre,
-        hora_salida,
-        egreso,
-        enf_quirurgica,
-        enf_circulante,
-        hi_anestesia,
-        tipo_anestesia,
-        ht_anestesia,
-      } = patientData;
-      const response = await fetch(`${baseURL}/api/solicitudes/bitacoraenf/${id}`,
-        {
-          method: "PATCH",
-          body: JSON.stringify({
-            nuevos_procedimientos_extra: JSON.stringify(
-              nuevos_procedimientos_extra
-            ),
-            hora_entrada,
-            hora_incision,
-            hora_cierre,
-            hora_salida,
-            egreso,
-            enf_quirurgica,
-            enf_circulante,
-            hi_anestesia,
-            tipo_anestesia,
-            ht_anestesia,
-          }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      navigate("/bitacora/Bitaenfermeria");
-    } catch (error) {
-      console.error("Error saving changes:", error);
-    }
-  };
-
-  const handleSelectChange = (selectedOption) => {
-    setPatientData((prevFormData) => ({
-      ...prevFormData,
-      enf_quirurgica: selectedOption ? selectedOption.value : "",
-    }));
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setPatientData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  const handleInputChange = (selectedOptions) => {
-    if (!Array.isArray(selectedOptions)) return;
-    setSelected(selectedOptions);
-    const values = selectedOptions.map((option) => option.value);
-    setPatientData((prevData) => ({
-      ...prevData,
-      tipo_anestesia: values,
-    }));
-  };
-
-  const agregarProcedimiento = () => {
-    setPatientData((prevData) => ({
-      ...prevData,
-      nuevos_procedimientos_extra: Array.isArray(
-        prevData.nuevos_procedimientos_extra
-      )
-        ? [...prevData.nuevos_procedimientos_extra, procedimientoExtra]
-        : [procedimientoExtra],
-    }));
-    setProcedimientoExtra(""); // Limpiar el campo después de agregar
-  };
-
   return (
     <Layout>
       <div
@@ -237,27 +58,20 @@ const Consultabitacora = () => {
         data-aos-offset="200"
       >
       <div className="flex flex-col gap-2 mb-4">
-        <h1 className="text-xl font-semibold">Consulta Paciente</h1>
+        <h1 className="text-xl font-semibold">Consulta de solicitud realizada</h1>
         <div className="flex my-4 justify-between">
           <Link
-            to="/bitacora/Bitaenfermeria"
+            to="/solicitudes/Solicitudreaizada"
             className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
           >
             <span style={{ display: "inline-flex", alignItems: "center" }}>
               <span>&lt;</span>
-              <span style={{ marginLeft: "5px" }}>Regresar a bitácora</span>
+              <span style={{ marginLeft: "5px" }}>Regresar a realizadas</span>
             </span>
           </Link>
-
-          <button
-            onClick={handleSuspend}
-            className="bg-red-500 hover:bg-red-700 text-white py-2 px-4 rounded inline-flex items-center"
-          >
-            Suspender cirugía
-          </button>
         </div>
 
-        <div class="flex flex-col p-4 bg-[#85AD8D] rounded-lg ">
+        <div class="flex flex-col p-4 bg-[#0dafbf] rounded-lg ">
           <div class="flex mb-4">
             <div class="w-full mr-4">
               <label
@@ -272,7 +86,7 @@ const Consultabitacora = () => {
                 name="folio"
                 value={patientData.folio || "N/A"}
                 readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
               />
             </div>
 
@@ -287,7 +101,7 @@ const Consultabitacora = () => {
                 placeholder="Nombre del cirujano"
                 value={patientData.nombre_cirujano || "N/A"}
                 readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
               />
             </div>
           </div>
@@ -307,7 +121,7 @@ const Consultabitacora = () => {
                 name="ap_paterno"
                 value={patientData.ap_paterno || "N/A"}
                 readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
               />
             </div>
 
@@ -325,7 +139,7 @@ const Consultabitacora = () => {
                 name="ap_materno"
                 value={patientData.ap_materno || "N/A"}
                 readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
               />
             </div>
 
@@ -343,7 +157,7 @@ const Consultabitacora = () => {
                 name="nombre_paciente"
                 value={patientData.nombre_paciente || "N/A"}
                 readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
               />
             </div>
 
@@ -361,7 +175,7 @@ const Consultabitacora = () => {
                 name="no_expediente"
                 value={patientData.no_expediente || "N/A"}
                 readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
               />
             </div>
 
@@ -379,7 +193,7 @@ const Consultabitacora = () => {
                 name="edad"
                 value={patientData.edad || "N/A"}
                 readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
               />
             </div>
 
@@ -395,7 +209,7 @@ const Consultabitacora = () => {
                 name="sexo"
                 value={patientData.sexo || "N/A"}
                 readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
               ></input>
             </div>
 
@@ -412,7 +226,7 @@ const Consultabitacora = () => {
                 name="sala_quirofano"
                 value={patientData.sala_quirofano || "N/A"}
                 readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
               ></input>
             </div>
           </div>
@@ -431,7 +245,7 @@ const Consultabitacora = () => {
                 name="fecha_nacimiento"
                 value={patientData.fecha_nacimiento || "N/A"}
                 readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
               />
             </div>
 
@@ -447,7 +261,7 @@ const Consultabitacora = () => {
                 name="tipo_admision"
                 value={patientData.tipo_admision || "N/A"}
                 readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
               ></input>
             </div>
 
@@ -463,7 +277,7 @@ const Consultabitacora = () => {
                 name="tipo_intervencion"
                 value={patientData.tipo_intervencion || "N/A"}
                 readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
               ></input>
             </div>
 
@@ -479,7 +293,7 @@ const Consultabitacora = () => {
                 name="nombre_especialidad"
                 value={patientData.nombre_especialidad || "N/A"}
                 readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
               ></input>
             </div>
 
@@ -495,7 +309,7 @@ const Consultabitacora = () => {
                 name="turno_solicitado"
                 value={patientData.turno_solicitado || "N/A"}
                 readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
               ></input>
             </div>
 
@@ -513,7 +327,7 @@ const Consultabitacora = () => {
                 name="tiempo_estimado"
                 value={patientData.tiempo_estimado || "N/A"}
                 readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
               />
             </div>
 
@@ -529,7 +343,7 @@ const Consultabitacora = () => {
                 name="req_insumo"
                 value={patientData.req_insumo || "N/A"}
                 readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
               ></input>
             </div>
           </div>
@@ -548,7 +362,7 @@ const Consultabitacora = () => {
                 name="fecha_solicitada"
                 value={patientData.fecha_programada || "N/A"}
                 readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
               />
             </div>
 
@@ -565,7 +379,7 @@ const Consultabitacora = () => {
                 name="hora_asignada"
                 value={patientData.hora_asignada || "N/A"}
                 readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
               />
             </div>
 
@@ -581,7 +395,7 @@ const Consultabitacora = () => {
                 name="procedimientos_paciente"
                 value={patientData.nombre_anestesiologo || "N/A"}
                 readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
               ></input>
             </div>
 
@@ -598,8 +412,8 @@ const Consultabitacora = () => {
                   type="text"
                   id="enf_quirurgica"
                   name="enf_quirurgica"
-                  onChange={handleChange}
-                  className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full`}
+                  value={patientData.enf_quirurgica || "N/A"}
+                  className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
                 />
               </div>
             </div>
@@ -613,12 +427,12 @@ const Consultabitacora = () => {
               </label>
               <div className="relative">
               <input
-                  placeholder="Enf. Circulante"
+                  placeholder="Enf. Quirúrgica"
                   type="text"
                   id="enf_circulante"
                   name="enf_circulante"
-                  onChange={handleChange}
-                  className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full`}
+                  value={patientData.enf_circulante || "N/A"}
+                  className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
                 />
               </div>
             </div>
@@ -635,7 +449,7 @@ const Consultabitacora = () => {
                 name="req_insumo"
                 value={patientData.estado_solicitud || "N/A"}
                 readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
               ></input>
             </div>
           </div>
@@ -655,8 +469,8 @@ const Consultabitacora = () => {
                 id="hora_entrada"
                 name="hora_entrada"
                 value={patientData.hora_entrada || ""}
-                onChange={handleChange}
-                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white cursor-default`}
+                readOnly
+                className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
               />
             </div>
             <div className="mr-4 w-full">
@@ -673,7 +487,7 @@ const Consultabitacora = () => {
                 name="hi_anestesia"
                 value={patientData.hi_anestesia || ""}
                 readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
               />
             </div>
 
@@ -689,7 +503,7 @@ const Consultabitacora = () => {
                 value={patientData.tipo_anestesia}
                 readOnly
                 labelledBy="Seleccionar tipo de anestesia"
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
               />
             </div>
             <div class="w-full mr-4">
@@ -705,8 +519,8 @@ const Consultabitacora = () => {
                 id="hora_incision"
                 name="hora_incision"
                 value={patientData.hora_incision || ""}
-                onChange={handleChange}
-                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white`}
+                readOnly
+                className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default"`}
               />
             </div>
 
@@ -723,8 +537,8 @@ const Consultabitacora = () => {
                 id="hora_cierre"
                 name="hora_cierre"
                 value={patientData.hora_cierre || ""}
-                onChange={handleChange}
-                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white`}
+                readOnly
+                className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
               />
             </div>
 
@@ -742,7 +556,7 @@ const Consultabitacora = () => {
                 name="ht_anestesia"
                 value={patientData.ht_anestesia || ""}
                 readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
               />
             </div>
 
@@ -759,8 +573,8 @@ const Consultabitacora = () => {
                 id="hora_salida"
                 name="hora_salida"
                 value={patientData.hora_salida || ""}
-                onChange={handleChange}
-                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white cursor-default`}
+                readOnly
+                className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
               />
             </div>
             <div class="w-full mr-4">
@@ -775,8 +589,8 @@ const Consultabitacora = () => {
                 id="egreso"
                 name="egreso"
                 value={patientData.egreso || ""}
-                onChange={handleChange}
-                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white`}
+                readOnly
+                className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
               ></input>
             </div>
 
@@ -793,7 +607,7 @@ const Consultabitacora = () => {
               name="procedimientos_paciente"
               value={patientData.procedimientos_paciente || "N/A"}
               readOnly
-              className="border-[#A8D5B1] rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default"
+              className="border-[#a8e7ed] rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default"
             ></input>
           </div>
           <div>
@@ -824,31 +638,15 @@ const Consultabitacora = () => {
                   htmlFor="procedimiento_extra"
                   className="block font-semibold text-white mb-1"
                 >
-                  Agregar procedimiento:
+                  Procedimientos adicionales:
                 </label>
                 <input
                   id="procedimiento_extra"
                   name="procedimiento_extra"
-                  value={procedimientoExtra}
-                  onChange={(e) => setProcedimientoExtra(e.target.value)}
-                  className="rounded-lg px-3 py-2 w-full bg-white"
+                  value={patientData.nuevos_procedimientos_extra || "N/A"}
+                  readOnly
+                  className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
                 ></input>
-              </div>
-              <div className="mr-4" style={{ width: "12%" }}>
-                <label
-                  htmlFor="agregar_procedimiento"
-                  className="block font-semibold text-white mb-1"
-                >
-                  Agregar más
-                </label>
-                <button
-                  id="agregar_procedimiento"
-                  name="agregar_procedimiento"
-                  className="border-[#A8D5B1] rounded-lg px-3 py-2 w-full bg-[#A8D5B1] text-white cursor-pointer"
-                  onClick={agregarProcedimiento}
-                >
-                  +
-                </button>
               </div>
             </div>
           </div>
@@ -859,7 +657,7 @@ const Consultabitacora = () => {
                 htmlFor="diagnostico_paciente"
                 className="block font-semibold text-white mb-1"
               >
-                Diagnóstico del paciente
+                Diagnóstico del paciente:
               </label>
               <textarea
                 placeholder="Diagnóstico del paciente"
@@ -868,92 +666,17 @@ const Consultabitacora = () => {
                 rows="4"
                 value={patientData.diagnostico || "N/A"}
                 readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
               ></textarea>
             </div>
           </div>
         </div>
-
-        <div className="flex justify-center mt-4">
-          <button
-            onClick={handleSave}
-            className="bg-[#365b77] text-white px-4 py-2 rounded"
-          >
-            Guardar
-          </button>
-        </div>
       </div>
 
-      {suspendModalOpen && (
-        <Modal
-          closeModal={() => setSuspendModalOpen(false)}
-          isOpen={suspendModalOpen}
-          title={"Suspender Cita"}
-          width={"max-w-lg"}
-        >
-          <div className="p-4">
-            <div className="flex flex-col">
-              <label className="block font-semibold text-gray-700 mb-2">
-                Motivo de suspensión:
-              </label>
-              <select
-                className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                value={suspendReason}
-                onChange={handleSuspendReasonChange}
-              >
-                <option value="">Selecciona una categoría</option>
-                <option value="Paciente">Paciente</option>
-                <option value="Administrativas">Administrativas</option>
-                <option value="Apoyo_clinico">Apoyo Clínico</option>
-                <option value="Team_quirurgico">Team Quirúrgico</option>
-                <option value="Infraestructura">Infraestructura</option>
-                <option value="Tiempo_quirurgico">Tiempo Quirúrgico</option>
-                <option value="Emergencias">Emergencias</option>
-                <option value="Gremiales">Gremiales</option>
-              </select>
-            </div>
-
-            <div className="flex flex-col mt-4">
-              <label className="block font-semibold text-gray-700 mb-2">
-                Detalle:
-              </label>
-              <select
-                className="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                value={suspendDetail}
-                onChange={(e) => setSuspendDetail(e.target.value)}
-              >
-                <option value="">Selecciona un detalle</option>
-                {suspendDetailOptions.map((option, index) => (
-                  <option key={index} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Mensaje de error */}
-            {error && <div className="mt-4 text-red-600">{error}</div>}
-
-            <div className="flex justify-end mt-4">
-              <button
-                onClick={() => setSuspendModalOpen(false)}
-                className="bg-[#001B58] bg-opacity-20 text-[#001B58] text-sm p-4 rounded-lg font-light mr-2"
-              >
-                Cancelar
-              </button>
-              <button
-                onClick={handleSuspendSubmit}
-                className="bg-red-600 bg-opacity-5 text-red-600 text-sm p-4 rounded-lg font-light ml-2"
-              >
-                Suspender
-              </button>
-            </div>
-          </div>
-        </Modal>
-      )}
+    
       </div>
     </Layout>
   );
 };
 
-export default Consultabitacora;
+export default Consultarealizada;

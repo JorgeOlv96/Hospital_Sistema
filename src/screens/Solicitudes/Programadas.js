@@ -152,6 +152,15 @@ function Solicitudesprogramadas() {
 
             <div>
               <Link
+                to="/solicitudes/Solicitudreaizada"
+                className="bg-[#63B3ED] hover:bg-[#63B3ED] text-white py-2 px-4 rounded inline-flex items-center"
+              >
+                <span>Ver todas las realizadas</span>
+              </Link>
+            </div>
+
+            <div>
+              <Link
                 to="/solicitudes/Solicitudsuspendida"
                 className="bg-[#D87D09] hover:bg-[#BF6E07] text-white py-2 px-4 rounded inline-flex items-center"
               >

@@ -39,6 +39,7 @@ import Ayuda from './HelpPage';
 import Programarsolicitud from './screens/Solicitudes/Programarsolicitud';
 import Solicitudesprogramadas from './screens/Solicitudes/Programadas';
 import Solicitudessuspendidas from './screens/Solicitudes/Suspendidas';
+import Solicitudesrealizadas from './screens/Solicitudes/Realizadas';
 import Evaluacionmedica from './screens/Evaluacion';
 import Anestesiólogos from './screens/Anestesiologos';
 import Programaranestesiologo from './screens/Anestesio/Programaranestesiologo';
@@ -47,6 +48,7 @@ import Bitacoraanestesio from './screens/Bitacoraanestesio';
 import Bitacoraenfermeria from './screens/BitacoraEnfermeria/Bitaenfermeria';
 import Consultabitacora from './screens/BitacoraEnfermeria/Consultabitacora';
 import ConsultabitacoraAnestesio from './screens/BitacoraEnfermeria/Consultabitacoraanestesio';
+import Consultarealizada from './screens/Solicitudes/Consultarealizada';
 import Solicitudurgencia from './screens/Urgencias/Solicitudurgencia';
 import Consultaurgencia from './screens/Urgencias/Consultaurgencia';
 import Solicitudesurgentes from './screens/Urgencias/Urgentes';
@@ -100,6 +102,7 @@ function App() {
             <Route path="/solicitudes/Programarsolicitud" element={<Programarsolicitud />} />
             <Route path="/solicitudes/Solicitudesprogramadas" element={<Solicitudesprogramadas />} />
             <Route path="/solicitudes/Solicitudsuspendida" element={<Solicitudessuspendidas />} />
+            <Route path="/solicitudes/Solicitudreaizada" element={<Solicitudesrealizadas />} />
             <Route path="/evaluacion" element={<Evaluacionmedica />} />
             {/* Others */}
             <Route path="/appointments" element={<Appointments />} />
@@ -112,6 +115,7 @@ function App() {
             <Route path="/bitacora/Bitaenfermeria" element={<Bitacoraenfermeria />} />
             <Route path="/bitacora/Consultabitacora/:id" element={<Consultabitacora />} />
             <Route path="/bitacora/Consultabitacoraanestesio/:id" element={<ConsultabitacoraAnestesio />} />
+            <Route path="/solicitudes/Consultarealizada/:id" element={<Consultarealizada />} />
             <Route path="/urgencias/Solicitudurgencia" element={<Solicitudurgencia />} />
             <Route path="/urgencias/Consultaurgencia" element={<Consultaurgencia />} />
             <Route path="/urgencias/Urgentes" element={<Solicitudesurgentes />} />

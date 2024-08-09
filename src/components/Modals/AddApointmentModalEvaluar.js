@@ -10,6 +10,7 @@ function AddAppointmentModalEvaluar({
   onSuspendAppointment,
 }) {
   const [patientData, setPatientData] = useState({});
+  const [salasDisponibles, setSalasDisponibles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [originalData, setOriginalData] = useState({});
@@ -18,11 +19,14 @@ function AddAppointmentModalEvaluar({
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    const parsedValue = name === 'sala_quirofano' ? parseInt(value) : value;
+  
     setPatientData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: parsedValue,
     }));
   };
+  
 
   useEffect(() => {
     if (isOpen && appointmentId) {
@@ -48,11 +52,45 @@ function AddAppointmentModalEvaluar({
     }
   }, [isOpen, appointmentId]);
 
+  useEffect(() => {
+    fetchSalasDisponibles();
+  }, []);
+
+  useEffect(() => {
+    if (patientData.fecha_solicitada && patientData.hora_solicitada) {
+      fetchSalasDisponibles();
+    }
+  }, [patientData.fecha_solicitada, patientData.hora_solicitada]);
+
+  const fetchSalasDisponibles = async () => {
+    try {
+      const response = await axios.get(`${baseURL}/api/salas/salas`);
+      const disponibles = response.data.filter(sala => sala.estado);
+      
+      const salasVacias = await Promise.all(
+        disponibles.map(async (sala) => {
+          const ocupada = await axios.get(
+            `${baseURL}/api/salas/salas/${sala.id}`,
+            {
+              params: {
+                fecha: patientData.fecha_solicitada,
+                hora: patientData.hora_solicitada,
+              },
+            }
+          );
+          return ocupada.data.ocupada ? null : sala;
+        })
+      );
+
+      setSalasDisponibles(salasVacias.filter(Boolean));
+    } catch (error) {
+      console.error('Error fetching salas:', error);
+    }
+  };  
+
   const handleSaveChanges = async () => {
     try {
-      console.log("Datos a enviar:", patientData);
-      console.log("ID de la solicitud:", appointmentId); // Verificar el appointmentId
-
+      console.log("Datos a enviar:", patientData); // Verifica los datos aquí
       const response = await fetch(
         `${baseURL}/api/solicitudes/actualizarevaluacion/${appointmentId}`,
         {
@@ -63,16 +101,17 @@ function AddAppointmentModalEvaluar({
           },
         }
       );
-
+      
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-      closeModal(); // Cerrar el modal después de guardar los cambios
+      closeModal(); 
       window.location.reload();
     } catch (error) {
       console.error("Error saving changes:", error);
     }
   };
+  
 
   const handleCancelChanges = () => {
     setPatientData(originalData); // Deshacer cambios
@@ -353,23 +392,30 @@ function AddAppointmentModalEvaluar({
               </div>
 
               <div className="mr-4 w-full">
-                <label className="block font-semibold text-gray-700 mb-2">
-                  Sala solicitada:
-                </label>
-                {isEditing ? (
-                  <input
-                    type="text"
-                    name="sala_quirofano"
-                    value={patientData.sala_quirofano}
-                    onChange={handleChange}
-                    className="bg-white p-3 rounded-lg"
-                  />
-                ) : (
-                  <p className="bg-gray-200 p-3 rounded-lg">
-                    {patientData?.sala_quirofano || "N/A"}
-                  </p>
-                )}
-              </div>
+            <label className="block font-semibold text-gray-700 mb-2">
+              Sala solicitada:
+            </label>
+            {isEditing ? (
+              <select
+                id="sala_quirofano"
+                name="sala_quirofano"
+                value={patientData.sala_quirofano}
+                onChange={handleChange}
+                className={`border rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+              >
+                <option value="">Seleccionar</option>
+                {salasDisponibles.map((sala) => (
+                  <option key={sala.id} value={sala.id}>
+                    {sala.nombre_sala}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <p className="bg-gray-200 p-3 rounded-lg">
+                {patientData?.sala_quirofano || "N/A"}
+              </p>
+            )}
+          </div>
 
               <div className="mr-4 w-full">
                 <label className="block font-semibold text-gray-700 mb-2">

@@ -348,9 +348,9 @@ function Gestionusuarios() {
                     <option value="3">
                       (3) Bitacora Enfermeria y Dasboard
                     </option>
-                    <option value="3">(4) Bitacora Anestesio y Dasboard</option>
-                    <option value="4">(5) Anestesiólogos, Dashboard</option>
-                    <option value="5">(6) Todos ( Admin ) </option>
+                    <option value="4">(4) Bitacora Anestesio y Dasboard</option>
+                    <option value="5">(5) Anestesiólogos, Dashboard</option>
+                    <option value="6">(6) Todos ( Admin ) </option>
                   </select>
                 </div>
               </div>
