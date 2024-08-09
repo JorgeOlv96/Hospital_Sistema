@@ -401,7 +401,7 @@ function AddAppointmentModalPending({
             </div>
           </div>
 
-          <div className="flex justify-between mt-8">
+          <div className="flex justify-between mt-8">   
             <button
               onClick={handleProgramAppointment}
               className="bg-[#001B58] bg-opacity-20 text-[#001B58] text-sm p-4 rounded-lg font-light"

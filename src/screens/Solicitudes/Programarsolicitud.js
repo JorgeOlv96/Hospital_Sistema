@@ -188,7 +188,7 @@ function ProgramarSolicitud() {
               <input
                 type="text"
                 name="especialidad"
-                value={filter.especialidad}
+                value={filter.nombre_especialidad}
                 onChange={handleFilterChange}
                 className="border border-gray-300 rounded-lg px-2 py-1 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]"
               />

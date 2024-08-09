@@ -229,7 +229,7 @@ function Gestionusuarios() {
         data-aos-offset="200"
       >
       <div className="flex flex-col gap-4 mb-6">
-        <h1 className="text-xl font-semibold">Gestión de Usuarios</h1>
+        <h1 className="text-xl font-semibold">Gestor de Usuarios</h1>
 
         <div className="my-4 flex items-center">
           <div className="flex flex-col">
@@ -552,6 +552,8 @@ function Gestionusuarios() {
                     className="w-full p-3 border rounded-lg"
                   />
                 </div>
+
+                
                 <div className="flex justify-end space-x-4">
                   <button
                     type="submit"
