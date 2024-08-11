@@ -317,96 +317,103 @@ function GestorManager() {
       </div>
 
       {/* Tarjeta para Conteo de Especialidades */}
-      <div
-        className={`card ${
-          expandedCard === "especialidades" ? "expanded" : ""
-        }`}
+<div
+  className={`card ${
+    expandedCard === "especialidades" ? "expanded" : ""
+  }`}
+  onClick={(e) => {
+    // Evita cerrar el card si se hace clic en los botones de vista
+    if (!e.target.closest(".view-toggle") && !e.target.closest(".pagination-buttons")) {
+      handleCardClick("especialidades");
+    }
+  }}
+>
+  <h2 className="card-title">Conteo de Especialidades</h2>
+  {/* Mostrar los botones de vista solo si la tarjeta está expandida */}
+  {expandedCard === "especialidades" && (
+    <div className="view-toggle">
+      <button
+        className={viewMode === "table" ? "active" : ""}
         onClick={(e) => {
-          // Evita cerrar el card si se hace clic en los botones de paginación
-          if (!e.target.closest(".pagination-buttons")) {
-            handleCardClick("especialidades");
-          }
+          e.stopPropagation(); // Previene que el clic en el botón de vista cierre la tarjeta
+          setViewMode("table");
         }}
       >
-        <h2 className="card-title">Conteo de Especialidades</h2>
-        <div
-          className={`view-toggle ${
-            expandedCard === "especialidades" ? "expanded" : ""
-          }`}
-        >
-          <button
-            className={viewMode === "table" ? "active" : ""}
-            onClick={() => setViewMode("table")}
-          >
-            Tabla
-          </button>
-          <button
-            className={viewMode === "chart" ? "active" : ""}
-            onClick={() => setViewMode("chart")}
-          >
-            Gráfica
-          </button>
-        </div>
-        <div
-          className={`card-content ${
-            expandedCard === "especialidades" ? "expanded" : ""
-          }`}
-        >
-          {viewMode === "table" ? (
-            <table className="historico-table">
-              <thead>
-                <tr>
-                  <th>Especialidad</th>
-                  <th>Pendientes</th>
-                  <th>Preprogramadas</th>
-                  <th>Programadas</th>
-                  <th>Realizadas</th>
-                  <th>Suspendidas</th>
+        Tabla
+      </button>
+      <button
+        className={viewMode === "chart" ? "active" : ""}
+        onClick={(e) => {
+          e.stopPropagation(); // Previene que el clic en el botón de vista cierre la tarjeta
+          setViewMode("chart");
+        }}
+      >
+        Gráfica
+      </button>
+    </div>
+  )}
+  <div
+    className={`card-content ${
+      expandedCard === "especialidades" ? "expanded" : ""
+    }`}
+  >
+    {viewMode === "table" ? (
+      <table className="historico-table">
+        <thead>
+          <tr>
+            <th>Especialidad</th>
+            <th>Pendientes</th>
+            <th>Preprogramadas</th>
+            <th>Programadas</th>
+            <th>Realizadas</th>
+            <th>Suspendidas</th>
+          </tr>
+        </thead>
+        <tbody>
+          {paginateespecialidadesCount.map((especialidad, index) => (
+            <tr key={index}>
+              <td>{especialidad.especialidad}</td>
+              <td>{especialidad.pendientes}</td>
+              <td>{especialidad.preprogramadas}</td>
+              <td>{especialidad.programadas}</td>
+              <td>{especialidad.realizadas}</td>
+              <td>{especialidad.suspendidas}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    ) : (
+      <Bar data={chartData} options={chartOptions} />
+    )}
 
-                </tr>
-              </thead>
-              <tbody>
-                {paginateespecialidadesCount.map((especialidad, index) => (
-                  <tr key={index}>
-                    <td>{especialidad.especialidad}</td>
-                    <td>{especialidad.pendientes}</td>
-                    <td>{especialidad.preprogramadas}</td>
-                    <td>{especialidad.programadas}</td>
-                    <td>{especialidad.realizadas}</td>
-                    <td>{especialidad.suspendidas}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          ) : (
-            <Bar data={chartData} options={chartOptions} />
-          )}
-
-          {/* Botones de navegación */}
-          <div className="pagination-buttons">
-            <button
-              disabled={page === 1}
-              onClick={(e) => {
-                e.stopPropagation();
-                setPage(page - 1);
-              }}
-            >
-              Anterior
-            </button>
-            <button
-              disabled={
-                page === Math.ceil(historicoSolicitudes.length / itemsPerPage)
-              }
-              onClick={(e) => {
-                e.stopPropagation();
-                setPage(page + 1);
-              }}
-            >
-              Siguiente
-            </button>
-          </div>
-        </div>
+    {/* Botones de navegación */}
+    {expandedCard === "especialidades" && (
+      <div className="pagination-buttons">
+        <button
+          disabled={page === 1}
+          onClick={(e) => {
+            e.stopPropagation(); // Previene que el clic en el botón de navegación cierre la tarjeta
+            setPage(page - 1);
+          }}
+        >
+          Anterior
+        </button>
+        <button
+          disabled={
+            page === Math.ceil(historicoSolicitudes.length / itemsPerPage)
+          }
+          onClick={(e) => {
+            e.stopPropagation(); // Previene que el clic en el botón de navegación cierre la tarjeta
+            setPage(page + 1);
+          }}
+        >
+          Siguiente
+        </button>
       </div>
+    )}
+  </div>
+</div>
+
 
       {/* Tarjeta para Histórico de Anestesiologos */}
       <div
