@@ -30,14 +30,22 @@ function Gestionusuarios() {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [searchField, setSearchField] = useState("nombre_paciente");
-
+  const [updatedPantallas, setUpdatedPantallas] = useState([]);
   const [filterNombre, setFilterNombre] = useState("");
   const [filterEmail, setFilterEmail] = useState("");
-
+  const [pantallasDisponibles, setPantallasDisponibles] = useState([]);
   const [usuarios, setUsuarios] = useState([]);
   const [success, setSuccess] = useState("");
   const [showModal, setShowModal] = useState(false);
-  const [userToEdit, setUserToEdit] = useState(null);
+  const [userToEdit, setUserToEdit] = useState({
+    nombre: "",
+    ap_paterno: "",
+    ap_materno: "",
+    email: "",
+    nivel_usuario: "",
+    cedula: "",
+    pantallasDisponibles: [], // Agregar este campo
+  });
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
 
   const validateForm = () => {
@@ -50,10 +58,21 @@ function Gestionusuarios() {
     if (!nivelUsuario) newErrors.nivelUsuario = "Campo requerido";
     if (!cedula) newErrors.cedula = "Campo requerido";
 
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
+  const handleFilterChange = (searchTerm) => {
+    // Filter pantallasDisponibles based on searchTerm
+    const filteredPantallas = pantallasDisponibles.filter((pantalla) => {
+      // Implement your filtering logic here, e.g., by name
+      return pantalla.name.toLowerCase().includes(searchTerm.toLowerCase());
+    });
+  
+    // Update filtered data state
+    setUpdatedPantallas(filteredPantallas);
+  };
   // Mover fetchUsuarios fuera del useEffect
   const fetchUsuarios = async () => {
     try {
@@ -98,52 +117,59 @@ function Gestionusuarios() {
     }
   };
 
-  // Save edited user
-  const handleSave = async (e) => {
-    e.preventDefault();
+// Save edited user
+const handleSave = async (e) => {
+  e.preventDefault();
 
-    if (!userToEdit) return;
+  if (!userToEdit) return;
 
-    try {
-      toast.dismiss();
+  try {
+    toast.dismiss();
 
-      const response = await fetch(
-        `${baseURL}/api/users/users/${userToEdit.id_usuario}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(userToEdit),
-        }
-      );
+    console.log('Pantallas disponibles:', userToEdit.pantallasDisponibles);
 
-      // Check if the response is ok, otherwise handle the error
-      if (!response.ok) {
-        const { message } = await response.json();
-        throw new Error(message);
+    // Asegúrate de incluir pantallasDisponibles en userToEdit
+    const response = await fetch(
+      `${baseURL}/api/users/users/${userToEdit.id_usuario}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...userToEdit,
+          pantallasDisponibles: userToEdit.pantallasDisponibles.join(","), // Debe coincidir con el nombre que esperas en el backend
+        }),
+        
       }
+    );
 
-      // If the response is ok, update the state with the updated user
-      const updatedUser = await response.json();
-      setUsuarios((prevUsuarios) =>
-        prevUsuarios.map((user) =>
-          user.id_usuario === updatedUser.id_usuario ? updatedUser : user
-        )
-      );
-
-      // Close the modal and show a success message
-      setShowModal(false);
-      toast.success("Usuario actualizado correctamente");
-    } catch (err) {
-      // Handle any errors from the try block or fetch
-      console.error("Error updating user:", err);
-      setError(err.message || "Error updating user. Please try again later.");
-      toast.error(
-        err.message || "Error updating user. Please try again later."
-      );
+    // Check if the response is ok, otherwise handle the error
+    if (!response.ok) {
+      const { message } = await response.json();
+      throw new Error(message);
     }
-  };
+
+    // If the response is ok, update the state with the updated user
+    const updatedUser = await response.json();
+    setUsuarios((prevUsuarios) =>
+      prevUsuarios.map((user) =>
+        user.id_usuario === updatedUser.id_usuario ? updatedUser : user
+      )
+    );
+
+    // Close the modal and show a success message
+    setShowModal(false);
+    toast.success("Usuario actualizado correctamente");
+  } catch (err) {
+    // Handle any errors from the try block or fetch
+    console.error("Error updating user:", err);
+    setError(err.message || "Error updating user. Please try again later.");
+    toast.error(
+      err.message || "Error updating user. Please try again later."
+    );
+  }
+};
 
   // Manejar cambios en los inputs del formulario modal
   const handleInputChange = (event) => {
@@ -179,13 +205,9 @@ function Gestionusuarios() {
       });
 
       if (response.status === 201) {
-        // Si el registro es exitoso, actualiza la lista de usuarios
         fetchUsuarios();
-
-        // Mostrar notificación de éxito
         toast.success("Usuario agregado correctamente");
 
-        // Limpiar el formulario
         setNombre("");
         setApPaterno("");
         setApMaterno("");
@@ -199,11 +221,9 @@ function Gestionusuarios() {
     } catch (err) {
       console.error("Error en el registro:", err);
       setError("Error en el registro. Inténtalo de nuevo más tarde.");
-      // Mostrar notificación de error
       toast.error("Error al registrar el usuario");
     }
   };
-
   // Filtrar usuarios según el término de búsqueda y el campo seleccionado
   const usuariosFiltrados = usuarios.filter((user) => {
     if (searchField === "nombre") {
@@ -415,7 +435,6 @@ function Gestionusuarios() {
                     <td className="border px-4 py-2 text-center">
                       {user.nivel_usuario}
                     </td>
-
                     <td className="border px-6 py-2 flex justify-center items-center">
                       <button
                         className="bg-blue-500 text-white px-4 py-2 rounded mr-2 hover:bg-blue-700"
@@ -552,6 +571,43 @@ function Gestionusuarios() {
                     className="w-full p-3 border rounded-lg"
                   />
                 </div>
+
+                <div className="w-full">
+  <label>Pantallas Disponibles</label>
+  <div className="grid grid-cols-2 gap-4">
+    {["Dashboard", "Solicitudes", "Evaluación", "Agenda", "Anestesiólogos", "Bitácora enfermería", "Bitácora anestesiología", "Gestor de salas", "Solicitudes insumos", "Gestor de productividad", "Gestor de usuarios"].map((screen) => (
+      <div key={screen} className="flex items-center">
+        <input
+          type="checkbox"
+          id={screen}
+          name="pantallasDisponibles"
+          value={screen}
+          checked={userToEdit?.pantallasDisponibles?.includes(screen) || false}
+          onChange={(e) => {
+            const { checked, value } = e.target;
+            setUserToEdit((prevUser) => {
+              const updatedPantallas = Array.isArray(prevUser.pantallasDisponibles) ? prevUser.pantallasDisponibles : [];
+              if (checked) {
+                  // Agregar el valor si la casilla está marcada
+                  updatedPantallas.push(value);
+              } else {
+                  // Eliminar el valor si la casilla está desmarcada
+                  const index = updatedPantallas.indexOf(value);
+                  if (index > -1) {
+                      updatedPantallas.splice(index, 1);
+                  }
+              }
+              return { ...prevUser, pantallasDisponibles: updatedPantallas }; // Actualiza el estado
+          });
+          }}
+        />
+        <label htmlFor={screen} className="ml-2">{screen}</label>
+      </div>
+    ))}
+  </div>
+</div>
+
+
 
                 
                 <div className="flex justify-end space-x-4">

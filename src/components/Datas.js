@@ -54,7 +54,7 @@ export const MenuDatas = [
     viewRole: [1, 2, 3, 4, 5, 6]
   },
   {
-    title: 'Solicitudes ',
+    title: 'Solicitudes',
     path: '/solicitudes',
     icon: FaWpforms,
     viewRole: [1, 6]
@@ -115,13 +115,19 @@ export const MenuDatas = [
   },
 ];
 
-// Función para obtener elementos del menú según el rol de usuario
 export const getMenuItemsForUser = (user) => {
   if (!user || !user.rol_user) {
     return [];
   }
 
-  return MenuDatas.filter(item => !item.viewRole || item.viewRole.includes(user.rol_user));
+  // Convierte 'pantallas' a un array
+  const pantallasArray = user.pantallas ? user.pantallas.split(',') : [];
+
+  // Filtra los elementos del menú
+  return MenuDatas.filter(item => 
+    (item.viewRole ? item.viewRole.includes(user.rol_user) : true) && 
+    pantallasArray.includes(item.title) // Verifica si la pantalla está en el array
+  );
 };
 
 export const memberData = [
