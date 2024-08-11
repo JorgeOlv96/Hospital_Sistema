@@ -89,7 +89,7 @@ function Header() {
             <div className="items-center md:flex hidden">
               <MenuSelect datas={DropDown1}>
                 <div className="flex gap-4 items-center p-4 rounded-lg">
-                  <div className="w-10 h-10 rounded-full border border-dashed border-subMain flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-full border-subMain flex items-center justify-center">
                     <FontAwesomeIcon icon={faUser} size="2x" />
                   </div>
                   <p className="text-sm text-textGray font-medium">

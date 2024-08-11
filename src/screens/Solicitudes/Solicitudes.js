@@ -538,11 +538,10 @@ function Solicitudes() {
                         <option value="id_solicitud">ID</option>
                         <option value="folio">Folio</option>
                         <option value="nombre_paciente">Nombre</option>
-                        <option value="nombre_especialidad">
-                          Especialidad
-                        </option>
+                        <option value="nombre_especialidad">Especialidad</option>
                         <option value="fecha_solicitud">Fecha</option>
                         <option value="estado_solicitud">Estado</option>
+                        <option value="sala_quirofano">Sala</option>
                       </select>
 
                       <div className="flex items-center space-x-2">
@@ -806,6 +805,16 @@ function Solicitudes() {
                               </th>
                               <th
                                 className="px-4 py-3 cursor-pointer"
+                                onClick={() => handleSort("fecha_solicitud")}
+                              >
+                                Sala{" "}
+                                <span>
+                                  {sortBy === "sala" &&
+                                    (sortOrder === "asc" ? "▲" : "▼")}
+                                </span>
+                              </th>
+                              <th
+                                className="px-4 py-3 cursor-pointer"
                                 onClick={() => handleSort("estado_solicitud")}
                               >
                                 Estado{" "}
@@ -845,6 +854,9 @@ function Solicitudes() {
                                     </td>
                                     <td className="border px-4 py-2 text-center">
                                       {solicitud.req_insumo}
+                                    </td>
+                                    <td className="border px-4 py-2 text-center">
+                                      {solicitud.sala_quirofano}
                                     </td>
 
                                     <td className="border px-4 py-2">
