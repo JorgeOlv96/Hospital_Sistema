@@ -17,7 +17,22 @@ function AddAppointmentModalPending({
   });
   const [loading, setLoading] = useState(true);
   const modalRef = useRef(null);
+  const [salasDisponibles, setSalasDisponibles] = useState([]);
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
+
+  useEffect(() => {
+    fetchSalasDisponibles();
+  }, []);
+
+  const fetchSalasDisponibles = async () => {
+    try {
+      const response = await axios.get(`${baseURL}/api/salas/salas`);
+      const disponibles = response.data.filter(sala => sala.estado);
+      setSalasDisponibles(disponibles);
+    } catch (error) {
+      console.error('Error fetching salas:', error);
+    }
+  };
 
   const handleChange = async (e) => {
     const { name, value } = e.target;
@@ -329,18 +344,28 @@ function AddAppointmentModalPending({
 
           <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
             <div className="flex  mb-4">
-              <div className="mr-4 w-full">
-                <label className="block font-semibold text-gray-700 mb-2">
-                  Quirófano asignado:
-                </label>
-                <input
-                  type="text"
-                  name="sala_quirofano"
-                  value={patientData.sala_quirofano || ""}
-                  onChange={handleChange}
-                  className="bg-white p-3 rounded-lg w-full"
-                />
-              </div>
+            <div className="mr-4 w-full">
+    <label
+      htmlFor="sala_quirofano"
+      className="block font-semibold text-black mb-1"
+    >
+      Sala asignada:
+    </label>
+    <select
+      id="sala_quirofano"
+      name="sala_quirofano"
+      value={patientData.sala_quirofano || ""}
+      onChange={handleChange}
+      className="bg-white p-3 rounded-lg w-full"
+    >
+      <option value="">Seleccionar</option>
+      {salasDisponibles.map((sala) => (
+        <option key={sala.id} value={sala.nombre_sala}>
+          {sala.nombre_sala}
+        </option>
+      ))}
+    </select>
+  </div>
 
               <div className="w-full">
                 <label className="block font-semibold text-gray-700 mb-2">
