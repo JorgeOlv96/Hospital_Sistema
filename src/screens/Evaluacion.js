@@ -164,43 +164,48 @@ function Evaluacion() {
               />
             )}
 
-            {/* Filtros */}
-            <div className="flex gap-4 mb-4 items-center">
-              <input
-                type="text"
-                placeholder="Filtrar por nombre"
-                value={nameFilter}
-                onChange={(e) => setNameFilter(e.target.value)}
-                className="border rounded-lg px-4 py-2"
-              />
-              <input
-                type="text"
-                placeholder="Filtrar por especialidad"
-                value={specialtyFilter}
-                onChange={(e) => setSpecialtyFilter(e.target.value)}
-                className="border rounded-lg px-4 py-2"
-              />
-              <input
-                type="date"
-                value={dateFilter}
-                onChange={(e) => setDateFilter(e.target.value)}
-                className="border rounded-lg px-4 py-2"
-              />
-              <input
-              type="text"
-              placeholder="Filtrar por estado"
-              name="estado"
-              value={
-                filter.estado || appointment?.estado_solicitud || 'No disponible'
-              }
-              onChange={handleFilterChange}
-              readOnly
-              className="border rounded-lg px-4 py-2"
-              style={{
-                ...getEstadoColorStyle(appointment.estado_solicitud),
-              }}
-            />
-        </div>
+            {/* Contenedor de filtros centrado */}
+            <div className="flex justify-center">
+              {/* Filtros */}
+              <div className="flex gap-4 mb-4 items-center">
+                <input
+                  type="text"
+                  placeholder="Filtrar por nombre"
+                  value={nameFilter}
+                  onChange={(e) => setNameFilter(e.target.value)}
+                  className="border rounded-lg px-4 py-2"
+                />
+                <input
+                  type="text"
+                  placeholder="Filtrar por especialidad"
+                  value={specialtyFilter}
+                  onChange={(e) => setSpecialtyFilter(e.target.value)}
+                  className="border rounded-lg px-4 py-2"
+                />
+                <input
+                  type="date"
+                  value={dateFilter}
+                  onChange={(e) => setDateFilter(e.target.value)}
+                  className="border rounded-lg px-4 py-2"
+                />
+                <input
+                  type="text"
+                  placeholder="Filtrar por estado"
+                  name="estado"
+                  value={
+                    filter.estado ||
+                    appointment?.estado_solicitud ||
+                    "No disponible"
+                  }
+                  onChange={handleFilterChange}
+                  readOnly
+                  className="border rounded-lg px-4 py-2"
+                  style={{
+                    ...getEstadoColorStyle(appointment.estado_solicitud),
+                  }}
+                />
+              </div>
+            </div>
 
             {filteredAppointments.length === 0 ? (
               <div className="text-center text-gray-500 mt-4">

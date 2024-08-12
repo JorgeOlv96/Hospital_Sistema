@@ -20,10 +20,15 @@ function Solicitudesrealizadas() {
   const itemsPerPage = 10;
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
 
-    // Estados para los filtros
-    const [nameFilter, setNameFilter] = useState("");
-    const [specialtyFilter, setSpecialtyFilter] = useState("");
-    const [dateFilter, setDateFilter] = useState("");
+  // Estados para los filtros
+  const [nameFilter, setNameFilter] = useState("");
+  const [specialtyFilter, setSpecialtyFilter] = useState("");
+  const [dateFilter, setDateFilter] = useState("");
+
+  const appointment = {
+    estado_solicitud: "Realizada", // o cualquier otro estado que tengas
+    // otros datos aquí
+  };
 
   useEffect(() => {
     fetchPendingAppointments();
@@ -199,8 +204,10 @@ function Solicitudesrealizadas() {
             />
           )}
 
+          {/* Contenedor de filtros centrado */}
+          <div className="flex justify-center">
             {/* Filtros */}
-            <div className="flex gap-4 mb-4">
+            <div className="flex gap-4 mb-4 items-center">
               <input
                 type="text"
                 placeholder="Filtrar por nombre"
@@ -221,7 +228,24 @@ function Solicitudesrealizadas() {
                 onChange={(e) => setDateFilter(e.target.value)}
                 className="border rounded-lg px-4 py-2"
               />
+              <input
+                type="text"
+                placeholder="Filtrar por estado"
+                name="estado"
+                value={
+                  filter.estado ||
+                  appointment?.estado_solicitud ||
+                  "No disponible"
+                }
+                onChange={handleFilterChange}
+                readOnly
+                className="border rounded-lg px-4 py-2"
+                style={{
+                  ...getEstadoColorStyle(appointment.estado_solicitud),
+                }}
+              />
             </div>
+          </div>
 
           {filteredAppointments.length === 0 ? (
             <div className="text-center text-gray-500 mt-4">
@@ -344,7 +368,7 @@ function Solicitudesrealizadas() {
                           </div>
                         </td>
                         <td className="px-4 py-2 flex justify-center">
-                        <button
+                          <button
                             onClick={() => handleViewClick(appointment)}
                             className="bg-[#365b77] text-white px-5 py-2 rounded-md hover:bg-[#7498b6]"
                           >
@@ -357,7 +381,7 @@ function Solicitudesrealizadas() {
               </table>
             </div>
           )}
-          
+
           {/* Paginación */}
           <div className="flex justify-center items-center mt-6 space-x-4">
             <button
@@ -386,7 +410,6 @@ function Solicitudesrealizadas() {
               &#8594;
             </button>
           </div>
-
         </div>
       </div>
     </Layout>

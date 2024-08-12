@@ -6,11 +6,7 @@ import { Link } from "react-router-dom";
 
 function ProgramarSolicitud() {
   const [pendingAppointments, setPendingAppointments] = useState([]);
-  const [filter, setFilter] = useState({
-    fecha: "",
-    especialidad: "",
-    estado: "Pre-programada",
-  });
+
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [open, setOpen] = useState(false);
   const [sortBy, setSortBy] = useState(null);
@@ -23,6 +19,24 @@ function ProgramarSolicitud() {
   const [nameFilter, setNameFilter] = useState("");
   const [specialtyFilter, setSpecialtyFilter] = useState("");
   const [dateFilter, setDateFilter] = useState("");
+
+  const [filter, setFilter] = useState({
+    estado: "", // valor inicial para el estado de la solicitud
+    // otros filtros aquí
+  });
+
+  const appointment = {
+    estado_solicitud: "Pre-programada", // o cualquier otro estado que tengas
+    // otros datos aquí
+  };
+
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilter((prevFilter) => ({
+      ...prevFilter,
+      [name]: value,
+    }));
+  };
 
   useEffect(() => {
     fetchPendingAppointments();
@@ -40,7 +54,6 @@ function ProgramarSolicitud() {
       console.error("Error fetching pending appointments:", error);
     }
   };
-
 
   const handleViewModal = (appointment) => {
     setSelectedAppointment(appointment);
@@ -134,6 +147,7 @@ function ProgramarSolicitud() {
       >
         <div className="flex flex-col gap-2 mb-4">
           <h1 className="text-xl font-semibold">Solicitudes pre-programadas</h1>
+
           <div className="flex my-4 space-x-4">
             <div>
               <Link
@@ -182,8 +196,10 @@ function ProgramarSolicitud() {
             />
           )}
 
-          {/* Filtros */}
-          <div className="flex gap-4 mb-4">
+          {/* Contenedor de filtros centrado */}
+          <div className="flex justify-center">
+            {/* Filtros */}
+            <div className="flex gap-4 mb-4 items-center">
               <input
                 type="text"
                 placeholder="Filtrar por nombre"
@@ -204,7 +220,24 @@ function ProgramarSolicitud() {
                 onChange={(e) => setDateFilter(e.target.value)}
                 className="border rounded-lg px-4 py-2"
               />
+              <input
+                type="text"
+                placeholder="Filtrar por estado"
+                name="estado"
+                value={
+                  filter.estado ||
+                  appointment?.estado_solicitud ||
+                  "No disponible"
+                }
+                onChange={handleFilterChange}
+                readOnly
+                className="border rounded-lg px-4 py-2"
+                style={{
+                  ...getEstadoColorStyle(appointment.estado_solicitud),
+                }}
+              />
             </div>
+          </div>
 
           {filteredAppointments.length === 0 ? (
             <div className="text-center text-gray-500 mt-4">
@@ -363,8 +396,6 @@ function ProgramarSolicitud() {
               &#8594;
             </button>
           </div>
-
-
         </div>
       </div>
     </Layout>

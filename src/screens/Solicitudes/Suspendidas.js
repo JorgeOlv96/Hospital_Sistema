@@ -6,11 +6,6 @@ import { Link } from "react-router-dom";
 
 function Solicitudessuspendidas() {
   const [pendingAppointments, setPendingAppointments] = useState([]);
-  const [filter, setFilter] = useState({
-    fecha: "",
-    especialidad: "",
-    estado: "Suspendida",
-  });
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [open, setOpen] = useState(false);
   const [sortBy, setSortBy] = useState(null);
@@ -23,6 +18,24 @@ function Solicitudessuspendidas() {
   const [nameFilter, setNameFilter] = useState("");
   const [specialtyFilter, setSpecialtyFilter] = useState("");
   const [dateFilter, setDateFilter] = useState("");
+
+  const [filter, setFilter] = useState({
+    estado: "", // valor inicial para el estado de la solicitud
+    // otros filtros aquí
+  });
+
+  const appointment = {
+    estado_solicitud: "Suspendida", // o cualquier otro estado que tengas
+    // otros datos aquí
+  };
+
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilter((prevFilter) => ({
+      ...prevFilter,
+      [name]: value,
+    }));
+  };
 
   useEffect(() => {
     fetchPendingAppointments();
@@ -39,14 +52,6 @@ function Solicitudessuspendidas() {
     } catch (error) {
       console.error("Error fetching pending appointments:", error);
     }
-  };
-
-  const handleFilterChange = (e) => {
-    const { name, value } = e.target;
-    setFilter({
-      ...filter,
-      [name]: value,
-    });
   };
 
   const handleViewModal = (appointment) => {
@@ -177,7 +182,6 @@ function Solicitudessuspendidas() {
                 <span>Ver todas las realizadas</span>
               </Link>
             </div>
-
           </div>
 
           {open && selectedAppointment && (
@@ -190,8 +194,10 @@ function Solicitudessuspendidas() {
             />
           )}
 
+          {/* Contenedor de filtros centrado */}
+          <div className="flex justify-center">
             {/* Filtros */}
-            <div className="flex gap-4 mb-4">
+            <div className="flex gap-4 mb-4 items-center">
               <input
                 type="text"
                 placeholder="Filtrar por nombre"
@@ -212,7 +218,24 @@ function Solicitudessuspendidas() {
                 onChange={(e) => setDateFilter(e.target.value)}
                 className="border rounded-lg px-4 py-2"
               />
+              <input
+                type="text"
+                placeholder="Filtrar por estado"
+                name="estado"
+                value={
+                  filter.estado ||
+                  appointment?.estado_solicitud ||
+                  "No disponible"
+                }
+                onChange={handleFilterChange}
+                readOnly
+                className="border rounded-lg px-4 py-2"
+                style={{
+                  ...getEstadoColorStyle(appointment.estado_solicitud),
+                }}
+              />
             </div>
+          </div>
 
           {filteredAppointments.length === 0 ? (
             <div className="text-center text-gray-500 mt-4">
@@ -348,7 +371,7 @@ function Solicitudessuspendidas() {
               </table>
             </div>
           )}
-          
+
           {/* Paginación */}
           <div className="flex justify-center items-center mt-6 space-x-4">
             <button
@@ -377,7 +400,6 @@ function Solicitudessuspendidas() {
               &#8594;
             </button>
           </div>
-
         </div>
       </div>
     </Layout>

@@ -19,10 +19,15 @@ function Solicitudesprogramadas() {
   const itemsPerPage = 10;
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
 
-    // Estados para los filtros
-    const [nameFilter, setNameFilter] = useState("");
-    const [specialtyFilter, setSpecialtyFilter] = useState("");
-    const [dateFilter, setDateFilter] = useState("");
+  // Estados para los filtros
+  const [nameFilter, setNameFilter] = useState("");
+  const [specialtyFilter, setSpecialtyFilter] = useState("");
+  const [dateFilter, setDateFilter] = useState("");
+
+  const appointment = {
+    estado_solicitud: "Programada", // o cualquier otro estado que tengas
+    // otros datos aquí
+  };
 
   useEffect(() => {
     fetchPendingAppointments();
@@ -85,8 +90,8 @@ function Solicitudesprogramadas() {
 
   const getEstadoColorStyle = (estado) => {
     switch (estado.toLowerCase()) {
-      case "pendiente":
-        return { backgroundColor: "#E9972F", color: "black" }; // Color de fondo verde y texto negro
+      case "programada":
+        return { backgroundColor: "#68D391" }; // Color de fondo verde y texto negro
       default:
         return {};
     }
@@ -128,8 +133,6 @@ function Solicitudesprogramadas() {
 
     return matchesName && matchesSpecialty && matchesDate;
   });
-  
-
 
   const startIndex = (page - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -192,8 +195,10 @@ function Solicitudesprogramadas() {
             />
           )}
 
-          {/* Filtros */}
-          <div className="flex gap-4 mb-4">
+          {/* Contenedor de filtros centrado */}
+          <div className="flex justify-center">
+            {/* Filtros */}
+            <div className="flex gap-4 mb-4 items-center">
               <input
                 type="text"
                 placeholder="Filtrar por nombre"
@@ -214,7 +219,24 @@ function Solicitudesprogramadas() {
                 onChange={(e) => setDateFilter(e.target.value)}
                 className="border rounded-lg px-4 py-2"
               />
+              <input
+                type="text"
+                placeholder="Filtrar por estado"
+                name="estado"
+                value={
+                  filter.estado ||
+                  appointment?.estado_solicitud ||
+                  "No disponible"
+                }
+                onChange={handleFilterChange}
+                readOnly
+                className="border rounded-lg px-4 py-2"
+                style={{
+                  ...getEstadoColorStyle(appointment.estado_solicitud),
+                }}
+              />
             </div>
+          </div>
 
           {filteredAppointments.length === 0 ? (
             <div className="text-center text-gray-500 mt-4">
@@ -379,8 +401,6 @@ function Solicitudesprogramadas() {
               &#8594;
             </button>
           </div>
-
-          
         </div>
       </div>
     </Layout>

@@ -538,7 +538,9 @@ function Solicitudes() {
                         <option value="id_solicitud">ID</option>
                         <option value="folio">Folio</option>
                         <option value="nombre_paciente">Nombre</option>
-                        <option value="nombre_especialidad">Especialidad</option>
+                        <option value="nombre_especialidad">
+                          Especialidad
+                        </option>
                         <option value="fecha_solicitud">Fecha</option>
                         <option value="estado_solicitud">Estado</option>
                         <option value="sala_quirofano">Sala</option>
@@ -967,10 +969,12 @@ function Solicitudes() {
                   onClick={() => setPage(page - 1)}
                   disabled={page === 1}
                   className={`${
-                    page === 1 ? 'bg-gray-300 cursor-not-allowed' : 'bg-[#365b77] hover:bg-[#7498b6]'
+                    page === 1
+                      ? "bg-gray-300 cursor-not-allowed"
+                      : "bg-[#365b77] hover:bg-[#7498b6]"
                   } text-white font-semibold py-2 px-6 rounded-full shadow-md transition-all duration-300 ease-in-out transform hover:scale-105`}
                 >
-                  &#8592; 
+                  &#8592;
                 </button>
                 <span className="text-lg font-semibold text-gray-800">
                   Página {page}
@@ -979,15 +983,14 @@ function Solicitudes() {
                   onClick={() => setPage(page + 1)}
                   disabled={endIndex >= sortedSolicitudes.length}
                   className={`${
-                    endIndex >= sortedSolicitudes.length ? 'bg-gray-300 cursor-not-allowed' : 'bg-[#365b77] hover:bg-[#7498b6]'
+                    endIndex >= sortedSolicitudes.length
+                      ? "bg-gray-300 cursor-not-allowed"
+                      : "bg-[#365b77] hover:bg-[#7498b6]"
                   } text-white font-semibold py-2 px-6 rounded-full shadow-md transition-all duration-300 ease-in-out transform hover:scale-105`}
                 >
-                   &#8594;
+                  &#8594;
                 </button>
               </div>
-
-
-              
             </div>
           </div>
         </div>
