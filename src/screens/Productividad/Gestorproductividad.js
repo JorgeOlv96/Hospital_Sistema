@@ -77,6 +77,7 @@ function GestorManager() {
           preprogramadas: 0,
           programadas: 0,
           realizadas: 0,
+         // urgencia: 0,
           suspendidas: 0,          
         };
       }
@@ -129,7 +130,7 @@ function GestorManager() {
         acc[sala].pendientes += 1;
       } else if (solicitud.estado_solicitud.toLowerCase() === "suspendida") {
         acc[sala].suspendidas += 1;
-      } else if (solicitud.estado_solicitud.toLowerCase() === "preprogramada") {
+      } else if (solicitud.estado_solicitud.toLowerCase() === "pre-programada") {
         acc[sala].preprogramadas += 1;
       }
 
