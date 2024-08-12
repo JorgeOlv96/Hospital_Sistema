@@ -30,6 +30,8 @@ function GestorManager() {
   const [historicoAnestesiologos, setHistoricoAnestesiologos] = useState([]);
   const [especialidadesCount, setEspecialidadesCount] = useState([]);
   const [salasCount, setSalasCount] = useState([]);
+  const [tiempoInactividadSalas, setTiempoInactividadSalas] = useState([]);
+  const [salas, setSalas] = useState([]);
 
   const [page, setPage] = useState(1);
   const itemsPerPage = 5;
@@ -66,6 +68,46 @@ function GestorManager() {
     fetchHistoricoAnestesiologos();
   }, []);
 
+  // Fetch salas
+  const fetchSalas = async () => {
+    try {
+      const response = await axios.get(`${baseURL}/api/salas/salas`);
+      setSalas(response.data);
+    } catch (error) {
+      console.error("Error fetching salas:", error);
+    }
+  };
+
+  // Fetch tiempoInactividadSalas (si es necesario)
+  const fetchTiempoInactividadSalas = async () => {
+    try {
+      const response = await axios.get(`${baseURL}/api/salas/salas`);
+      setTiempoInactividadSalas(response.data);
+    } catch (error) {
+      console.error("Error fetching tiempo inactividad salas:", error);
+    }
+  };
+
+  // Toggle estado de sala
+  const toggleEstado = async (id, estadoActual) => {
+    try {
+      const newEstado = !estadoActual;
+      const ultimaActualizacion = newEstado ? new Date().toISOString() : null;
+      await axios.put(`${baseURL}/api/salas/salas/${id}`, {
+        estado: newEstado,
+        ultima_actualizacion: ultimaActualizacion,
+      });
+      fetchSalas(); // Refresh the list after updating
+    } catch (error) {
+      console.error("Error updating sala state:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchSalas();
+    fetchTiempoInactividadSalas(); // Cargar datos de tiempo inactividad
+  }, []);
+
   const countEspecialidades = (solicitudes) => {
     const countMap = solicitudes.reduce((acc, solicitud) => {
       const especialidad = solicitud.nombre_especialidad || "Desconocida";
@@ -77,8 +119,8 @@ function GestorManager() {
           preprogramadas: 0,
           programadas: 0,
           realizadas: 0,
-         // urgencia: 0,
-          suspendidas: 0,          
+          // urgencia: 0,
+          suspendidas: 0,
         };
       }
 
@@ -113,12 +155,12 @@ function GestorManager() {
     const countMap = solicitudes.reduce((acc, solicitud) => {
       const sala = solicitud.sala_quirofano || "Desconocida";
       if (!acc[sala]) {
-        acc[sala] = { 
+        acc[sala] = {
           pendientes: 0,
           preprogramadas: 0,
           programadas: 0,
           realizadas: 0,
-          suspendidas: 0, 
+          suspendidas: 0,
         };
       }
 
@@ -130,10 +172,11 @@ function GestorManager() {
         acc[sala].pendientes += 1;
       } else if (solicitud.estado_solicitud.toLowerCase() === "suspendida") {
         acc[sala].suspendidas += 1;
-      } else if (solicitud.estado_solicitud.toLowerCase() === "pre-programada") {
+      } else if (
+        solicitud.estado_solicitud.toLowerCase() === "pre-programada"
+      ) {
         acc[sala].preprogramadas += 1;
       }
-
 
       return acc;
     }, {});
@@ -152,38 +195,46 @@ function GestorManager() {
 
   const exportToExcel = () => {
     const workbook = XLSX.utils.book_new();
+
+    // Convertir los datos a hojas de Excel
     const solicitudesSheet = XLSX.utils.json_to_sheet(historicoSolicitudes);
     const anestesiologosSheet = XLSX.utils.json_to_sheet(
       historicoAnestesiologos
     );
+    const especialidadesSheet = XLSX.utils.json_to_sheet(especialidadesCount);
+    const salasSheet = XLSX.utils.json_to_sheet(salasCount);
 
+    // Agregar las hojas al libro de Excel
     XLSX.utils.book_append_sheet(workbook, solicitudesSheet, "Solicitudes");
     XLSX.utils.book_append_sheet(
       workbook,
       anestesiologosSheet,
       "Anestesiologos"
     );
+    XLSX.utils.book_append_sheet(
+      workbook,
+      especialidadesSheet,
+      "Conteo Especialidades"
+    );
+    XLSX.utils.book_append_sheet(workbook, salasSheet, "Conteo Salas");
 
+    // Obtener la fecha actual y formatear el nombre del archivo
     const today = new Date();
     const formattedDate = today.toISOString().slice(0, 10);
     const fileName = `Productividad_${formattedDate}.xlsx`;
 
+    // Guardar el archivo
     XLSX.writeFile(workbook, fileName);
   };
 
   const startIndex = (page - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
   const paginatedSolicitudes = historicoSolicitudes.slice(startIndex, endIndex);
-  const paginatedAnestesiologos = historicoAnestesiologos.slice(
-    startIndex,
-    endIndex
-  );
-  const paginateespecialidadesCount = especialidadesCount.slice(
-    startIndex,
-    endIndex
-  );
-    // Paginación de datos
-    const paginatedSalasCount = salasCount.slice(startIndex, endIndex);
+  const paginatedAnestesiologos = historicoAnestesiologos.slice( startIndex, endIndex);
+  const paginateespecialidadesCount = especialidadesCount.slice( startIndex, endIndex);
+  const paginatedSalas = tiempoInactividadSalas.slice(startIndex, endIndex);
+  const paginatedSalasCount = salasCount.slice(startIndex, endIndex);
+  const totalPages = Math.ceil(tiempoInactividadSalas.length / itemsPerPage);
 
   const chartData = {
     labels: especialidadesCount.map((item) => item.especialidad),
@@ -318,103 +369,105 @@ function GestorManager() {
       </div>
 
       {/* Tarjeta para Conteo de Especialidades */}
-<div
-  className={`card ${
-    expandedCard === "especialidades" ? "expanded" : ""
-  }`}
-  onClick={(e) => {
-    // Evita cerrar el card si se hace clic en los botones de vista
-    if (!e.target.closest(".view-toggle") && !e.target.closest(".pagination-buttons")) {
-      handleCardClick("especialidades");
-    }
-  }}
->
-  <h2 className="card-title">Conteo de Especialidades</h2>
-  {/* Mostrar los botones de vista solo si la tarjeta está expandida */}
-  {expandedCard === "especialidades" && (
-    <div className="view-toggle">
-      <button
-        className={viewMode === "table" ? "active" : ""}
+      <div
+        className={`card ${
+          expandedCard === "especialidades" ? "expanded" : ""
+        }`}
         onClick={(e) => {
-          e.stopPropagation(); // Previene que el clic en el botón de vista cierre la tarjeta
-          setViewMode("table");
-        }}
-      >
-        Tabla
-      </button>
-      <button
-        className={viewMode === "chart" ? "active" : ""}
-        onClick={(e) => {
-          e.stopPropagation(); // Previene que el clic en el botón de vista cierre la tarjeta
-          setViewMode("chart");
-        }}
-      >
-        Gráfica
-      </button>
-    </div>
-  )}
-  <div
-    className={`card-content ${
-      expandedCard === "especialidades" ? "expanded" : ""
-    }`}
-  >
-    {viewMode === "table" ? (
-      <table className="historico-table">
-        <thead>
-          <tr>
-            <th>Especialidad</th>
-            <th>Pendientes</th>
-            <th>Preprogramadas</th>
-            <th>Programadas</th>
-            <th>Realizadas</th>
-            <th>Suspendidas</th>
-          </tr>
-        </thead>
-        <tbody>
-          {paginateespecialidadesCount.map((especialidad, index) => (
-            <tr key={index}>
-              <td>{especialidad.especialidad}</td>
-              <td>{especialidad.pendientes}</td>
-              <td>{especialidad.preprogramadas}</td>
-              <td>{especialidad.programadas}</td>
-              <td>{especialidad.realizadas}</td>
-              <td>{especialidad.suspendidas}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    ) : (
-      <Bar data={chartData} options={chartOptions} />
-    )}
-
-    {/* Botones de navegación */}
-    {expandedCard === "especialidades" && (
-      <div className="pagination-buttons">
-        <button
-          disabled={page === 1}
-          onClick={(e) => {
-            e.stopPropagation(); // Previene que el clic en el botón de navegación cierre la tarjeta
-            setPage(page - 1);
-          }}
-        >
-          Anterior
-        </button>
-        <button
-          disabled={
-            page === Math.ceil(historicoSolicitudes.length / itemsPerPage)
+          // Evita cerrar el card si se hace clic en los botones de vista
+          if (
+            !e.target.closest(".view-toggle") &&
+            !e.target.closest(".pagination-buttons")
+          ) {
+            handleCardClick("especialidades");
           }
-          onClick={(e) => {
-            e.stopPropagation(); // Previene que el clic en el botón de navegación cierre la tarjeta
-            setPage(page + 1);
-          }}
+        }}
+      >
+        <h2 className="card-title">Conteo de Especialidades</h2>
+        {/* Mostrar los botones de vista solo si la tarjeta está expandida */}
+        {expandedCard === "especialidades" && (
+          <div className="view-toggle">
+            <button
+              className={viewMode === "table" ? "active" : ""}
+              onClick={(e) => {
+                e.stopPropagation(); // Previene que el clic en el botón de vista cierre la tarjeta
+                setViewMode("table");
+              }}
+            >
+              Tabla
+            </button>
+            <button
+              className={viewMode === "chart" ? "active" : ""}
+              onClick={(e) => {
+                e.stopPropagation(); // Previene que el clic en el botón de vista cierre la tarjeta
+                setViewMode("chart");
+              }}
+            >
+              Gráfica
+            </button>
+          </div>
+        )}
+        <div
+          className={`card-content ${
+            expandedCard === "especialidades" ? "expanded" : ""
+          }`}
         >
-          Siguiente
-        </button>
-      </div>
-    )}
-  </div>
-</div>
+          {viewMode === "table" ? (
+            <table className="historico-table">
+              <thead>
+                <tr>
+                  <th>Especialidad</th>
+                  <th>Pendientes</th>
+                  <th>Preprogramadas</th>
+                  <th>Programadas</th>
+                  <th>Realizadas</th>
+                  <th>Suspendidas</th>
+                </tr>
+              </thead>
+              <tbody>
+                {paginateespecialidadesCount.map((especialidad, index) => (
+                  <tr key={index}>
+                    <td>{especialidad.especialidad}</td>
+                    <td>{especialidad.pendientes}</td>
+                    <td>{especialidad.preprogramadas}</td>
+                    <td>{especialidad.programadas}</td>
+                    <td>{especialidad.realizadas}</td>
+                    <td>{especialidad.suspendidas}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <Bar data={chartData} options={chartOptions} />
+          )}
 
+          {/* Botones de navegación */}
+          {expandedCard === "especialidades" && (
+            <div className="pagination-buttons">
+              <button
+                disabled={page === 1}
+                onClick={(e) => {
+                  e.stopPropagation(); // Previene que el clic en el botón de navegación cierre la tarjeta
+                  setPage(page - 1);
+                }}
+              >
+                Anterior
+              </button>
+              <button
+                disabled={
+                  page === Math.ceil(historicoSolicitudes.length / itemsPerPage)
+                }
+                onClick={(e) => {
+                  e.stopPropagation(); // Previene que el clic en el botón de navegación cierre la tarjeta
+                  setPage(page + 1);
+                }}
+              >
+                Siguiente
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* Tarjeta para Histórico de Anestesiologos */}
       <div
@@ -484,69 +537,127 @@ function GestorManager() {
 
       {/* Tarjeta para Conteo de Salas */}
       <div>
-      {/* Tarjeta para Conteo de Salas */}
-      <div
-        className={`card ${expandedCard === "salas" ? "expanded" : ""}`}
-        onClick={(e) => {
-          // Evita cerrar el card si se hace clic en los botones de navegación
-          if (!e.target.closest(".pagination-buttons")) {
-            handleCardClick("salas");
-          }
-        }}
-      >
-        <h2 className="card-title">Conteo de Salas</h2>
+        {/* Tarjeta para Conteo de Salas */}
         <div
-          className={`card-content ${expandedCard === "salas" ? "expanded" : ""}`}
+          className={`card ${expandedCard === "salas" ? "expanded" : ""}`}
+          onClick={(e) => {
+            // Evita cerrar el card si se hace clic en los botones de navegación
+            if (!e.target.closest(".pagination-buttons")) {
+              handleCardClick("salas");
+            }
+          }}
         >
-          <table className="historico-table">
-            <thead>
-              <tr>
-                <th>Sala</th>
-                <th>Pendientes</th>
+          <h2 className="card-title">Conteo de Salas</h2>
+          <div
+            className={`card-content ${
+              expandedCard === "salas" ? "expanded" : ""
+            }`}
+          >
+            <table className="historico-table">
+              <thead>
+                <tr>
+                  <th>Sala</th>
+                  <th>Pendientes</th>
                   <th>Preprogramadas</th>
                   <th>Programadas</th>
                   <th>Realizadas</th>
                   <th>Suspendidas</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paginatedSalasCount.map((sala, index) => (
-                <tr key={index}>
-                  <td>{sala.sala}</td>
-                  <td>{sala.pendientes}</td>
-                  <td>{sala.preprogramadas}</td>
-                  <td>{sala.programadas}</td>
-                  <td>{sala.realizadas}</td>
-                  <td>{sala.suspendidas}</td>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {paginatedSalasCount.map((sala, index) => (
+                  <tr key={index}>
+                    <td>{sala.sala}</td>
+                    <td>{sala.pendientes}</td>
+                    <td>{sala.preprogramadas}</td>
+                    <td>{sala.programadas}</td>
+                    <td>{sala.realizadas}</td>
+                    <td>{sala.suspendidas}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
 
-          {/* Botones de navegación */}
-          <div className="pagination-buttons">
-            <button
-              disabled={page === 1}
-              onClick={(e) => {
-                e.stopPropagation(); // Evita que se cierre el card
-                setPage(page - 1);
-              }}
-            >
-              Anterior
-            </button>
-            <button
-              disabled={page === Math.ceil(salasCount.length / itemsPerPage)}
-              onClick={(e) => {
-                e.stopPropagation(); // Evita que se cierre el card
-                setPage(page + 1);
-              }}
-            >
-              Siguiente
-            </button>
+            {/* Botones de navegación */}
+            <div className="pagination-buttons">
+              <button
+                disabled={page === 1}
+                onClick={(e) => {
+                  e.stopPropagation(); // Evita que se cierre el card
+                  setPage(page - 1);
+                }}
+              >
+                Anterior
+              </button>
+              <button
+                disabled={page === Math.ceil(salasCount.length / itemsPerPage)}
+                onClick={(e) => {
+                  e.stopPropagation(); // Evita que se cierre el card
+                  setPage(page + 1);
+                }}
+              >
+                Siguiente
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+
+      {/* Tarjeta para Tiempo de Inactividad de Salas */}
+      <div
+      className={`card ${expandedCard === "tiempoInactividad" ? "expanded" : ""}`}
+      onClick={(e) => {
+        if (!e.target.closest(".pagination-buttons")) {
+          handleCardClick("tiempoInactividad");
+        }
+      }}
+    >
+      <h2 className="card-title">Tiempo de Inactividad de Salas</h2>
+      <div
+        className={`card-content ${expandedCard === "tiempoInactividad" ? "expanded" : ""}`}
+      >
+        <table className="historico-table">
+          <thead>
+            <tr>
+              <th>Sala</th>
+              <th>Tiempo Inactivo (horas)</th>
+              <th>Veces Inactiva</th>
+            </tr>
+          </thead>
+          <tbody>
+            {paginatedSalas.map((item, index) => (
+              <tr key={index}>
+                <td>{item.nombre_sala}</td>
+                <td>{item.tiempo_inactivo}</td>
+                <td>{item.veces_inactiva}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {/* Botones de navegación */}
+        <div className="pagination-buttons">
+          <button
+            disabled={page === 1}
+            onClick={(e) => {
+              e.stopPropagation(); // Evita que se cierre el card
+              setPage(page - 1);
+            }}
+          >
+            Anterior
+          </button>
+          <button
+            disabled={page === totalPages}
+            onClick={(e) => {
+              e.stopPropagation(); // Evita que se cierre el card
+              setPage(page + 1);
+            }}
+          >
+            Siguiente
+          </button>
+          </div>
+        </div>
+      </div>
     </Layout>
   );
 }

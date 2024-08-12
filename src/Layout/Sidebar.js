@@ -6,7 +6,6 @@ import { AuthContext } from '../AuthContext';
 
 function Sidebar() {
   const { user } = useContext(AuthContext);
-  console.log(user);
 
   // Obtener los elementos del menú según el rol del usuario
   const menuItems = getMenuItemsForUser(user);
