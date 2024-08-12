@@ -62,6 +62,16 @@ function Gestionusuarios() {
     return Object.keys(newErrors).length === 0;
   };
 
+  const nivelUsuarioMap = {
+    1: "Programación Qx",
+    2: "Enfermería",
+    3: "Anestesiología",
+    4: "Médico",
+    5: "Analista de producción",
+    6: "Admin"
+  };
+
+
   const handleFilterChange = (searchTerm) => {
     // Filter pantallasDisponibles based on searchTerm
     const filteredPantallas = pantallasDisponibles.filter((pantalla) => {
@@ -352,7 +362,7 @@ function Gestionusuarios() {
                   </div>
 
                   <div className="w-1/4">
-                    <label>Nivel de usuario</label>
+                    <label>Rol de usuario</label>
                     <select
                       value={nivelUsuario}
                       onChange={(e) => setNivelUsuario(e.target.value)}
@@ -413,7 +423,7 @@ function Gestionusuarios() {
                   <th className="px-4 py-2">Apellido Paterno</th>
                   <th className="px-4 py-2">Apellido Materno</th>
                   <th className="px-4 py-2">Email</th>
-                  <th className="px-4 py-2">Nivel de Usuario</th>
+                  <th className="px-4 py-2">Rol de usuario</th>
                   <th className="px-4 py-2">Acciones</th>
                 </tr>
               </thead>
@@ -428,9 +438,7 @@ function Gestionusuarios() {
                       <td className="border px-4 py-2">{user.ap_paterno}</td>
                       <td className="border px-4 py-2">{user.ap_materno}</td>
                       <td className="border px-4 py-2">{user.email}</td>
-                      <td className="border px-4 py-2 text-center">
-                        {user.nivel_usuario}
-                      </td>
+                      <td className="border px-4 py-2">{nivelUsuarioMap[user.nivel_usuario] || "Desconocido"}</td>
                       <td className="border px-6 py-2 flex justify-center items-center">
                         <button
                           className="bg-blue-500 text-white px-4 py-2 rounded mr-2 hover:bg-blue-700"
@@ -538,7 +546,7 @@ function Gestionusuarios() {
                         htmlFor="nivel_usuario"
                         className="block text-gray-700 mb-2"
                       >
-                        Nivel de Usuario
+                        Rol de usuario
                       </label>
                       <select
                         id="nivel_usuario"
