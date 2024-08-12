@@ -21,6 +21,24 @@ function Evaluacion() {
   const [specialtyFilter, setSpecialtyFilter] = useState("");
   const [dateFilter, setDateFilter] = useState("");
 
+  const [filter, setFilter] = useState({
+    estado: "", // valor inicial para el estado de la solicitud
+    // otros filtros aquí
+  });
+
+  const appointment = {
+    estado_solicitud: "Pendiente", // o cualquier otro estado que tengas
+    // otros datos aquí
+  };
+
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilter((prevFilter) => ({
+      ...prevFilter,
+      [name]: value,
+    }));
+  };
+
   useEffect(() => {
     fetchPendingAppointments();
   }, []);
@@ -147,7 +165,7 @@ function Evaluacion() {
             )}
 
             {/* Filtros */}
-            <div className="flex gap-4 mb-4">
+            <div className="flex gap-4 mb-4 items-center">
               <input
                 type="text"
                 placeholder="Filtrar por nombre"
@@ -168,7 +186,21 @@ function Evaluacion() {
                 onChange={(e) => setDateFilter(e.target.value)}
                 className="border rounded-lg px-4 py-2"
               />
-            </div>
+              <input
+              type="text"
+              placeholder="Filtrar por estado"
+              name="estado"
+              value={
+                filter.estado || appointment?.estado_solicitud || 'No disponible'
+              }
+              onChange={handleFilterChange}
+              readOnly
+              className="border rounded-lg px-4 py-2"
+              style={{
+                ...getEstadoColorStyle(appointment.estado_solicitud),
+              }}
+            />
+        </div>
 
             {filteredAppointments.length === 0 ? (
               <div className="text-center text-gray-500 mt-4">
@@ -333,7 +365,6 @@ function Evaluacion() {
                 &#8594;
               </button>
             </div>
-            
           </div>
         </div>
       </div>

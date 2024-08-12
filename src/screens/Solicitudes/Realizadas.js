@@ -20,6 +20,11 @@ function Solicitudesrealizadas() {
   const itemsPerPage = 10;
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
 
+    // Estados para los filtros
+    const [nameFilter, setNameFilter] = useState("");
+    const [specialtyFilter, setSpecialtyFilter] = useState("");
+    const [dateFilter, setDateFilter] = useState("");
+
   useEffect(() => {
     fetchPendingAppointments();
   }, []);
@@ -116,15 +121,21 @@ function Solicitudesrealizadas() {
     return 0;
   });
 
+  // Método de filtrado
   const filteredAppointments = sortedAppointments.filter((appointment) => {
-    return (
-      (filter.fecha === "" ||
-        appointment.fecha_solicitud.includes(filter.fecha)) &&
-      (filter.especialidad === "" ||
-        appointment.nombre_especialidad.includes(filter.especialidad)) &&
-      (filter.estado === "" ||
-        appointment.estado_solicitud.includes(filter.estado))
-    );
+    const matchesName =
+      `${appointment.nombre_paciente} ${appointment.ap_paterno} ${appointment.ap_materno}`
+        .toLowerCase()
+        .includes(nameFilter.toLowerCase());
+    const matchesSpecialty = appointment.nombre_especialidad
+      .toLowerCase()
+      .includes(specialtyFilter.toLowerCase());
+    const matchesDate = dateFilter
+      ? new Date(appointment.fecha_solicitada).toISOString().slice(0, 10) ===
+        dateFilter
+      : true;
+
+    return matchesName && matchesSpecialty && matchesDate;
   });
 
   const startIndex = (page - 1) * itemsPerPage;
@@ -188,45 +199,29 @@ function Solicitudesrealizadas() {
             />
           )}
 
-          <div className="flex mb-4 space-x-4">
-            <div className="flex-1">
-              <label className="block font-semibold">Filtrar por Fecha:</label>
+            {/* Filtros */}
+            <div className="flex gap-4 mb-4">
+              <input
+                type="text"
+                placeholder="Filtrar por nombre"
+                value={nameFilter}
+                onChange={(e) => setNameFilter(e.target.value)}
+                className="border rounded-lg px-4 py-2"
+              />
+              <input
+                type="text"
+                placeholder="Filtrar por especialidad"
+                value={specialtyFilter}
+                onChange={(e) => setSpecialtyFilter(e.target.value)}
+                className="border rounded-lg px-4 py-2"
+              />
               <input
                 type="date"
-                name="fecha"
-                value={filter.fecha}
-                onChange={handleFilterChange}
-                className="border border-gray-300 rounded-lg px-2 py-1 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]"
+                value={dateFilter}
+                onChange={(e) => setDateFilter(e.target.value)}
+                className="border rounded-lg px-4 py-2"
               />
             </div>
-
-            <div className="flex-1">
-              <label className="block font-semibold">
-                Filtrar por Especialidad:
-              </label>
-              <input
-                type="text"
-                name="especialidad"
-                value={filter.especialidad}
-                onChange={handleFilterChange}
-                className="border border-gray-300 rounded-lg px-2 py-1 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]"
-              />
-            </div>
-
-            <div className="flex-1">
-              <label className="block font-semibold">
-                Estado de Solicitud:
-              </label>
-              <input
-                type="text"
-                name="estado"
-                value={filter.estado}
-                onChange={handleFilterChange}
-                readOnly
-                className="border border-gray-300 rounded-lg px-2 py-1 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]"
-              />
-            </div>
-          </div>
 
           {filteredAppointments.length === 0 ? (
             <div className="text-center text-gray-500 mt-4">
