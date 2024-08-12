@@ -512,7 +512,7 @@ function CrearSolicitud() {
       >
         <option value="">Seleccionar</option>
         {salasDisponibles.map((sala) => (
-          <option key={sala.id} value={sala.id}>
+          <option key={sala.id} value={sala.nombre_sala}>
             {sala.nombre_sala}
           </option>
         ))}

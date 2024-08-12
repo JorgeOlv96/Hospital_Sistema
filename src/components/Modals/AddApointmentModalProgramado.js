@@ -19,6 +19,7 @@ function AddAppointmentModalProgramado({
   const [suspendReason, setSuspendReason] = useState("");
   const [suspendDetail, setSuspendDetail] = useState("");
   const [suspendDetailOptions, setSuspendDetailOptions] = useState([]);
+  const [salasDisponibles, setSalasDisponibles] = useState([]);
   const [error, setError] = useState("");
   const modalRef = useRef(null);
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
@@ -79,6 +80,19 @@ function AddAppointmentModalProgramado({
       setSuspendDetailOptions(options);
     } catch (error) {
       console.error("Error fetching suspend detail options:", error);
+    }
+  };
+  useEffect(() => {
+    fetchSalasDisponibles();
+  }, []);
+
+  const fetchSalasDisponibles = async () => {
+    try {
+      const response = await axios.get(`${baseURL}/api/salas/salas`);
+      const disponibles = response.data.filter(sala => sala.estado);
+      setSalasDisponibles(disponibles);
+    } catch (error) {
+      console.error('Error fetching salas:', error);
     }
   };
   
@@ -274,19 +288,28 @@ function AddAppointmentModalProgramado({
                   className="bg-white p-3 rounded-lg w-full"
                 />
               </div>
-
-              <div className="w-full">
-                <label className="block font-semibold text-gray-700 mb-2">
-                  Sala de quirófano:
-                </label>
-                <input
-                  type="text"
-                  name="sala_quirofano"
-                  value={patientData.sala_quirofano || ""}
-                  onChange={handleChange}
-                  className="bg-white p-3 rounded-lg w-full"
-                />
-              </div>
+              <div className="mr-4 w-full">
+    <label
+      htmlFor="sala_quirofano"
+      className="block font-semibold text-black mb-1"
+    >
+      Sala asignada:
+    </label>
+    <select
+      id="sala_quirofano"
+      name="sala_quirofano"
+      value={patientData.sala_quirofano || ""}
+      onChange={handleChange}
+      className="bg-white p-3 rounded-lg w-full"
+    >
+      <option value="">Seleccionar</option>
+      {salasDisponibles.map((sala) => (
+        <option key={sala.id} value={sala.nombre_sala}>
+          {sala.nombre_sala}
+        </option>
+      ))}
+    </select>
+  </div>
             </div>
           </div>
 

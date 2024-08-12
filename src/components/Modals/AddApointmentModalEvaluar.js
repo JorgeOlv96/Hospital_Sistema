@@ -19,11 +19,10 @@ function AddAppointmentModalEvaluar({
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    const parsedValue = name === 'sala_quirofano' ? parseInt(value) : value;
   
     setPatientData((prevData) => ({
       ...prevData,
-      [name]: parsedValue,
+      [name]: value,
     }));
   };
   
@@ -56,37 +55,15 @@ function AddAppointmentModalEvaluar({
     fetchSalasDisponibles();
   }, []);
 
-  useEffect(() => {
-    if (patientData.fecha_solicitada && patientData.hora_solicitada) {
-      fetchSalasDisponibles();
-    }
-  }, [patientData.fecha_solicitada, patientData.hora_solicitada]);
-
   const fetchSalasDisponibles = async () => {
     try {
       const response = await axios.get(`${baseURL}/api/salas/salas`);
       const disponibles = response.data.filter(sala => sala.estado);
-      
-      const salasVacias = await Promise.all(
-        disponibles.map(async (sala) => {
-          const ocupada = await axios.get(
-            `${baseURL}/api/salas/salas/${sala.id}`,
-            {
-              params: {
-                fecha: patientData.fecha_solicitada,
-                hora: patientData.hora_solicitada,
-              },
-            }
-          );
-          return ocupada.data.ocupada ? null : sala;
-        })
-      );
-
-      setSalasDisponibles(salasVacias.filter(Boolean));
+      setSalasDisponibles(disponibles);
     } catch (error) {
       console.error('Error fetching salas:', error);
     }
-  };  
+  };
 
   const handleSaveChanges = async () => {
     try {
@@ -399,16 +376,16 @@ function AddAppointmentModalEvaluar({
               <select
                 id="sala_quirofano"
                 name="sala_quirofano"
-                value={patientData.sala_quirofano}
+                value={patientData.sala_quirofano || ""}
                 onChange={handleChange}
                 className={`border rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
               >
-                <option value="">Seleccionar</option>
-                {salasDisponibles.map((sala) => (
-                  <option key={sala.id} value={sala.id}>
-                    {sala.nombre_sala}
-                  </option>
-                ))}
+      <option value="">Seleccionar</option>
+      {salasDisponibles.map((sala) => (
+        <option key={sala.id} value={sala.nombre_sala}>
+          {sala.nombre_sala}
+        </option>
+      ))}
               </select>
             ) : (
               <p className="bg-gray-200 p-3 rounded-lg">
