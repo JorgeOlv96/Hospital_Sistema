@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 
 const AnesthesiologistsBySpecialtyCard = () => {
   const [data, setData] = useState({});
+  const [error, setError] = useState(null);
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch(`${baseURL}/api/anestesio/anestesiologos`);
-        const anesthesiologists = response.data;
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const anesthesiologists = await response.json();
 
         const specialtyCounts = {};
         anesthesiologists.forEach(anesthesiologist => {
@@ -19,12 +22,15 @@ const AnesthesiologistsBySpecialtyCard = () => {
 
         setData(specialtyCounts);
       } catch (error) {
+        setError(error.message);
         console.error('Error fetching anesthesiologists by specialty:', error);
       }
     };
 
     fetchData();
-  }, []);
+  }, [baseURL]);
+
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <div className="bg-white rounded-xl border-[1px] border-border p-5 shadow-md">

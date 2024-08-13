@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Line } from 'react-chartjs-2';
-import axios from 'axios';
 import {
   Chart as ChartJS,
   LineElement,
@@ -25,13 +24,17 @@ ChartJS.register(
 
 const AssignmentsPerDayChart = () => {
   const [data, setData] = useState({ dates: [], counts: [] });
+  const [error, setError] = useState(null);
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetch(`${baseURL}/api/anestesio/anestesiologos`);
-        const anesthesiologists = response.data;
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const anesthesiologists = await response.json();
 
         const assignmentsPerDay = {};
         anesthesiologists.forEach(anesthesiologist => {
@@ -44,12 +47,15 @@ const AssignmentsPerDayChart = () => {
           counts: Object.values(assignmentsPerDay),
         });
       } catch (error) {
+        setError(error.message);
         console.error('Error fetching assignments per day:', error);
       }
     };
 
     fetchData();
-  }, []);
+  }, [baseURL]);
+
+  if (error) return <div>Error: {error}</div>;
 
   const chartData = {
     labels: data.dates,
