@@ -3,8 +3,8 @@ import AsyncCreatableSelect from "react-select/async-creatable";
 import { FixedSizeList } from "react-window";
 import axios from "axios";
 
-const ProcedureSelect = ({ onChange }) => {
-  const [selectedOption, setSelectedOption] = useState(null);
+const ProcedureSelect = ({ onChange, value }) => {
+  const [selectedOption, setSelectedOption] = useState(value);
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
 
   const loadOptions = (inputValue, callback) => {
@@ -48,6 +48,21 @@ const ProcedureSelect = ({ onChange }) => {
       components={{ MenuList: VirtualizedSelect }}
       placeholder="Seleccionar o escribir procedimiento..."
       isClearable
+      styles={{
+        control: (provided, state) => ({
+          ...provided,
+          backgroundColor: state.selectProps.value ? '#A8CBD5' : '#FFFFFF', // Blanco por defecto
+          borderColor: state.isFocused ? '#4F638F' : provided.borderColor,
+          boxShadow: state.isFocused ? '0 0 0 1px #4F638F' : provided.boxShadow,
+          '&:hover': {
+            borderColor: '#4F638F',
+          },
+        }),
+        menu: (provided) => ({
+          ...provided,
+          zIndex: 9999, // Asegúrate de que el menú se muestre sobre otros elementos
+        }),
+      }}
     />
   );
 };

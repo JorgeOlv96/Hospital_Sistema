@@ -1,0 +1,18 @@
+/* styles.css */
+
+/* Estilos generales */
+.bg-dry {
+    background-color: #f5f5f5;
+    color: #000;
+  }
+  
+  /* Estilos para el modo oscuro */
+  .dark {
+    background-color: #121212;
+    color: #ffffff;
+  }
+  
+  .dark .bg-dry {
+    background-color: #1e1e1e;
+  }
+  

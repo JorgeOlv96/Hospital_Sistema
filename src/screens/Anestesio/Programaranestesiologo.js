@@ -51,6 +51,7 @@ function Programaranestesiologo() {
       return [];
     }
   };
+  
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -58,7 +59,7 @@ function Programaranestesiologo() {
       ...prevFormData,
       [name]: value,
     }));
-
+  
     if (name === "turno_anestesio") {
       switch (value) {
         case "Matutino":
@@ -91,6 +92,7 @@ function Programaranestesiologo() {
       }
     }
   };
+  
 
   const handleSelectChange = (selectedOption) => {
     setFormData((prevFormData) => ({
@@ -98,6 +100,7 @@ function Programaranestesiologo() {
       nombre: selectedOption ? selectedOption.value : "",
     }));
   };
+  
 
   const handleSaveAnesthesiologist = async () => {
     try {
@@ -108,14 +111,14 @@ function Programaranestesiologo() {
           anesthesiologist.turno_anestesio === formData.turno_anestesio &&
           anesthesiologist.sala_anestesio === formData.sala_anestesio
       );
-
+  
       if (existingAssignment) {
         toast.error(
           "Ya hay un anestesiólogo asignado a esta sala en el mismo día."
         );
         return;
       }
-
+  
       const response = await fetch(`${baseURL}/api/anestesio/anestesiologos`, {
         method: "POST",
         headers: {
@@ -128,10 +131,10 @@ function Programaranestesiologo() {
       }
       const data = await response.json();
       console.log("Anesthesiologist saved successfully:", data);
-
+  
       // Mostrar notificación de éxito
       toast.success("¡Anestesiólogo asignado con éxito!");
-
+  
       // Limpiar el formulario
       setFormData({
         nombre: "",
@@ -141,7 +144,7 @@ function Programaranestesiologo() {
         hora_inicio: "",
         hora_fin: "",
       });
-
+  
       // Actualizar la lista de anestesiólogos después de guardar uno nuevo
       fetchAnesthesiologists();
     } catch (error) {
@@ -150,6 +153,8 @@ function Programaranestesiologo() {
       toast.error("Error al guardar el anestesiólogo");
     }
   };
+
+
   const handleDeleteAnesthesiologist = async (id) => {
     if (
       window.confirm(
@@ -163,13 +168,13 @@ function Programaranestesiologo() {
             method: "DELETE",
           }
         );
-
+  
         const data = await response.json();
-
+  
         if (!response.ok) {
           throw new Error(data.message || "Network response was not ok");
         }
-
+  
         // Actualizar la lista de anestesiólogos después de eliminar uno
         fetchAnesthesiologists();
         toast.success(data.message || "Anestesiólogo eliminado con éxito");
@@ -179,6 +184,7 @@ function Programaranestesiologo() {
       }
     }
   };
+  
 
   const fetchAnesthesiologists = async () => {
     try {
@@ -194,10 +200,10 @@ function Programaranestesiologo() {
       setAnesthesiologists(data);
     } catch (error) {
       console.error("Error fetching anesthesiologists:", error);
-
-      toast.error("Error al guardar el anestesiólogo");
+  
+      toast.error("Error al obtener los anestesiólogos");
     }
-  };
+  };  
 
   useEffect(() => {
     fetchAnesthesiologists();
@@ -220,30 +226,33 @@ function Programaranestesiologo() {
     fetchSalasDisponibles();
   }, []);
 
+
   const fetchSalasDisponibles = async () => {
-    try {
-      const response = await axios.get(`${baseURL}/api/salas/salas`);
-      const disponibles = response.data.filter((sala) => sala.estado);
-      setSalasDisponibles(disponibles);
-    } catch (error) {
-      console.error("Error fetching salas:", error);
-    }
-  };
+  try {
+    const response = await axios.get(`${baseURL}/api/salas/salas`);
+    const disponibles = response.data.filter((sala) => sala.estado);
+    setSalasDisponibles(disponibles);
+  } catch (error) {
+    console.error("Error fetching salas:", error);
+  }
+};
 
-  const handleSort = (field) => {
-    const newSortOrder =
-      sortBy === field ? (sortOrder === "asc" ? "desc" : "asc") : "asc";
-    setSortBy(field);
-    setSortOrder(newSortOrder);
 
-    const sortedData = [...anesthesiologists].sort((a, b) => {
-      if (a[field] < b[field]) return newSortOrder === "asc" ? -1 : 1;
-      if (a[field] > b[field]) return newSortOrder === "asc" ? 1 : -1;
-      return 0;
-    });
+const handleSort = (field) => {
+  const newSortOrder =
+    sortBy === field ? (sortOrder === "asc" ? "desc" : "asc") : "asc";
+  setSortBy(field);
+  setSortOrder(newSortOrder);
 
-    setSortedSolicitudes(sortedData);
-  };
+  const sortedData = [...anesthesiologists].sort((a, b) => {
+    if (a[field] < b[field]) return newSortOrder === "asc" ? -1 : 1;
+    if (a[field] > b[field]) return newSortOrder === "asc" ? 1 : -1;
+    return 0;
+  });
+
+  setSortedSolicitudes(sortedData);
+};
+
 
   // Función para obtener el color de fondo basado en el turno
   const getTurnColor = (turno_anestesio) => {
@@ -255,9 +264,10 @@ function Programaranestesiologo() {
       case "Nocturno":
         return "rgba(255, 169, 89, 0.43)";
       default:
-        return "#FFFFFF"; // color predeterminado
+        return "transparent";
     }
   };
+  
 
   const handleSearch = () => {
     setCurrentPage(1);
@@ -529,7 +539,7 @@ function Programaranestesiologo() {
                   {currentAnesthesiologists.map((anesthesiologist, index) => (
                     <tr key={anesthesiologist.folio}>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border-r border-gray-300">
-                        {index + 1}
+                        {(page - 1) * anesthesiologistsPerPage + index + 1}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap border-r border-gray-300">
                         <div className="text-sm font-medium text-gray-900">

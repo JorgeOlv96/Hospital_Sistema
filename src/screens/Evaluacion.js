@@ -216,6 +216,12 @@ function Evaluacion() {
                 <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
                   <thead className="bg-[#365b77] text-white">
                     <tr>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-white-500 uppercase tracking-wider"
+                    >
+                      ID
+                    </th>
                       <th
                         className="px-4 py-2 cursor-pointer"
                         onClick={() => handleSort("folio")}
@@ -287,12 +293,12 @@ function Evaluacion() {
                   </thead>
                   <tbody>
                     {filteredAppointments
-                      .slice(startIndex, endIndex)
-                      .map((appointment) => (
-                        <tr
-                          key={appointment.id}
-                          className="bg-blue-50 hover:bg-blue-300"
-                        >
+                    .slice(startIndex, endIndex)
+                    .map((appointment, index) => (
+                      <tr key={appointment.id} className="bg-blue-50 hover:bg-blue-300">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border-r border-gray-300">
+                          {startIndex + index + 1}
+                        </td>
                           <td className="px-4 py-2">{appointment.folio}</td>
                           <td className="px-4 py-2">
                             {appointment.nombre_paciente}{" "}

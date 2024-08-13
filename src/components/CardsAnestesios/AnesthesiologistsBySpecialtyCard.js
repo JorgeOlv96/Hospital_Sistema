@@ -16,7 +16,7 @@ const AnesthesiologistsBySpecialtyCard = () => {
 
         const specialtyCounts = {};
         anesthesiologists.forEach(anesthesiologist => {
-          const specialty = anesthesiologist.especialidad; // Asumiendo que hay un campo especialidad
+          const specialty = anesthesiologist.sala_quirofano; // Asumiendo que hay un campo especialidad
           specialtyCounts[specialty] = (specialtyCounts[specialty] || 0) + 1;
         });
 
