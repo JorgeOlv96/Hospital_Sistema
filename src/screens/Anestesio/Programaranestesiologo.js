@@ -230,12 +230,6 @@ function Programaranestesiologo() {
     }
   };
 
-  // Cambiar página
-  const paginate = (pageNumber) => {
-    setPage(pageNumber);
-    setEndIndex(pageNumber * anesthesiologistsPerPage);
-  };
-
   const handleSort = (field) => {
     const newSortOrder =
       sortBy === field ? (sortOrder === "asc" ? "desc" : "asc") : "asc";
@@ -267,6 +261,25 @@ function Programaranestesiologo() {
 
   const handleSearch = () => {
     setCurrentPage(1);
+  };
+
+  // Cambiar página
+  const paginate = (pageNumber) => {
+    setPage(pageNumber);
+    setEndIndex(pageNumber * anesthesiologistsPerPage);
+  };
+
+  // Funciones de paginación para adelante y regreso
+  const handleNextPage = () => {
+    if (page < Math.ceil(anesthesiologists.length / anesthesiologistsPerPage)) {
+      paginate(page + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (page > 1) {
+      paginate(page - 1);
+    }
   };
 
   return (
@@ -462,6 +475,12 @@ function Programaranestesiologo() {
                       scope="col"
                       className="px-6 py-3 text-left text-xs font-medium text-white-500 uppercase tracking-wider"
                     >
+                      ID
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-white-500 uppercase tracking-wider"
+                    >
                       Nombre
                       <span>
                         {sortBy === "nombre" &&
@@ -507,8 +526,11 @@ function Programaranestesiologo() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {currentAnesthesiologists.map((anesthesiologist) => (
+                  {currentAnesthesiologists.map((anesthesiologist, index) => (
                     <tr key={anesthesiologist.folio}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border-r border-gray-300">
+                        {index + 1}
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap border-r border-gray-300">
                         <div className="text-sm font-medium text-gray-900">
                           {anesthesiologist.nombre}
@@ -559,10 +581,10 @@ function Programaranestesiologo() {
             </div>
           </div>
 
-          {/* Paginación */}
+          {/* Controles de paginación */}
           <div className="flex justify-center items-center mt-6 space-x-4">
             <button
-              onClick={() => setPage(page - 1)}
+              onClick={handlePreviousPage}
               disabled={page === 1}
               className={`${
                 page === 1
@@ -576,10 +598,14 @@ function Programaranestesiologo() {
               Página {page}
             </span>
             <button
-              onClick={() => setPage(page + 1)}
-              disabled={endIndex >= sortedSolicitudes.length}
+              onClick={handleNextPage}
+              disabled={
+                page >=
+                Math.ceil(anesthesiologists.length / anesthesiologistsPerPage)
+              }
               className={`${
-                endIndex >= sortedSolicitudes.length
+                page >=
+                Math.ceil(anesthesiologists.length / anesthesiologistsPerPage)
                   ? "bg-gray-300 cursor-not-allowed"
                   : "bg-[#365b77] hover:bg-[#7498b6]"
               } text-white font-semibold py-2 px-6 rounded-full shadow-md transition-all duration-300 ease-in-out transform hover:scale-105`}
