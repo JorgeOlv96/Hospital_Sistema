@@ -124,14 +124,9 @@ function Bitacoraanestesio() {
         data-aos-offset="200"
       >
       <div className="flex flex-col gap-2 mb-4">
-        <h1 className="text-xl font-semibold">Bitacora Enfermería</h1>
+        <h1 className="text-xl font-semibold">Bitacora Anestesiología</h1>
         <div className="my-4 flex space-x-4">
-          <Link
-            to="/urgencias/Solicitudurgencia"
-            className="btn btn-sm btn-secondary p-2 bg-red-500 text-white rounded-lg"
-          >
-            Agregar URGENCIA
-          </Link>
+    
           <Link
             to="/urgencias/Urgentes"
             className="bg-[#5DB259] hover:bg-[#528E4F] text-white py-2 px-4 rounded-lg inline-flex items-center"

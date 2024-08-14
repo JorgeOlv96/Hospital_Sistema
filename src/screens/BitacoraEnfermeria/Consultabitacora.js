@@ -622,26 +622,46 @@ const Consultabitacora = () => {
                 />
               </div>
             </div>
-
-            <div className="mr-4" style={{ width: "75%" }}>
+            
+            <div className="w-full mr-4">
               <label
-                htmlFor="req_insumo"
+                htmlFor="enf_circulante"
                 className="block font-semibold text-white mb-1"
               >
-                Estado
+                Se preeveían ( pcdt.):
+              </label>
+              <div className="relative">
+              <input
+                  placeholder="Enf. Circulante"
+                  type="text"
+                  id="enf_circulante"
+                  name="enf_circulante"
+                  value={patientData.procedimientos_extra + " más" || "N/A"}
+                  readOnly
+                  className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                />
+              </div>
+            </div>
+
+            <div className="mr-4" style={{ width: "75%" }}>
+            <label
+                htmlFor="egreso"
+                className="block font-semibold text-white mb-1"
+              >
+                Egresa a:
               </label>
               <input
-                id="req_insumo"
-                name="req_insumo"
-                value={patientData.estado_solicitud || "N/A"}
-                readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                type="text"
+                id="egreso"
+                name="egreso"
+                value={patientData.egreso || ""}
+                onChange={handleChange}
+                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white`}
               ></input>
             </div>
           </div>
 
           <div class="flex mb-4">
-            
           <div class="w-full mr-4">
               <label
                 htmlFor="procedimientos_paciente"
@@ -659,6 +679,8 @@ const Consultabitacora = () => {
                 className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white cursor-default`}
               />
             </div>
+
+
             <div className="mr-4 w-full">
               <label
                 htmlFor="tiempo_estimado"
@@ -692,6 +714,8 @@ const Consultabitacora = () => {
                 className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
               />
             </div>
+
+
             <div class="w-full mr-4">
               <label
                 htmlFor="tiempo_estimado"
@@ -710,7 +734,7 @@ const Consultabitacora = () => {
               />
             </div>
 
-            <div className="mr-4" style={{ width: "50%" }}>
+            <div className="w-full mr-4">
               <label
                 htmlFor="tiempo_estimado"
                 className="block font-semibold text-white mb-1"
@@ -746,7 +770,7 @@ const Consultabitacora = () => {
               />
             </div>
 
-            <div className="mr-4 w-full">
+            <div className="mr-4" style={{ width: "75%" }}>
               <label
                 htmlFor="tiempo_estimado"
                 className="block font-semibold text-white mb-1"
@@ -763,23 +787,7 @@ const Consultabitacora = () => {
                 className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white cursor-default`}
               />
             </div>
-            <div class="w-full mr-4">
-              <label
-                htmlFor="egreso"
-                className="block font-semibold text-white mb-1"
-              >
-                Egresa a:
-              </label>
-              <input
-                type="text"
-                id="egreso"
-                name="egreso"
-                value={patientData.egreso || ""}
-                onChange={handleChange}
-                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white`}
-              ></input>
-            </div>
-
+      
           </div>
           <div className="mr-4 w-full">
             <label
