@@ -123,7 +123,8 @@ function Gestionusuarios() {
           prevUsuarios.filter((user) => user.id_usuario !== id)
         );
 
-        setSuccess("User deleted successfully.");
+        setSuccess("Usuario eliminado correctamente.");
+        toast.success("Usuario eliminado correctamente.");
       }
     } catch (err) {
       console.error("Error deleting user:", err);
@@ -256,6 +257,9 @@ function Gestionusuarios() {
 
   return (
     <Layout>
+         {/* Mostrar notificaciones */}
+         <ToastContainer position="bottom-right" />
+
       <div
         data-aos="fade-right"
         data-aos-duration="1000"
@@ -667,8 +671,7 @@ function Gestionusuarios() {
             </div>
           )}
         </div>
-        {/* Mostrar notificaciones */}
-        <ToastContainer position="bottom-right" />
+     
       </div>
     </Layout>
   );
