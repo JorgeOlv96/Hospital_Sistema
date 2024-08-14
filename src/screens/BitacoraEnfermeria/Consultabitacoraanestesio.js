@@ -597,26 +597,47 @@ const ConsultabitacoraAnestesio = () => {
                 />
               </div>
             </div>
-
-            <div className="mr-4" style={{ width: "75%" }}>
+            
+            <div className="w-full mr-4">
               <label
-                htmlFor="req_insumo"
+                htmlFor="enf_circulante"
                 className="block font-semibold text-white mb-1"
               >
-                Estado
+                Se preeveían ( proc. ):
+              </label>
+              <div className="relative">
+              <input
+                  placeholder="Enf. Circulante"
+                  type="text"
+                  id="enf_circulante"
+                  name="enf_circulante"
+                  value={patientData.procedimientos_extra + " más" || "N/A"}
+                  readOnly
+                  className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                />
+              </div>
+            </div>
+
+            <div className="mr-4" style={{ width: "75%" }}>
+            <label
+                htmlFor="egreso"
+                className="block font-semibold text-white mb-1"
+              >
+                Egresa a:
               </label>
               <input
-                id="req_insumo"
-                name="req_insumo"
-                value={patientData.estado_solicitud || "N/A"}
+                type="text"
+                id="egreso"
+                name="egreso"
                 readOnly
+                value={patientData.egreso || ""}
+                onChange={handleChange}
                 className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
               ></input>
             </div>
           </div>
 
           <div class="flex mb-4">
-            
           <div class="w-full mr-4">
               <label
                 htmlFor="procedimientos_paciente"
@@ -675,6 +696,7 @@ const ConsultabitacoraAnestesio = () => {
                 style={{ minHeight: "auto" }}
               />
             </div>
+
             <div class="w-full mr-4">
               <label
                 htmlFor="tiempo_estimado"
@@ -693,7 +715,7 @@ const ConsultabitacoraAnestesio = () => {
               />
             </div>
 
-            <div className="mr-4" style={{ width: "50%" }}>
+            <div class="w-full mr-4">
               <label
                 htmlFor="tiempo_estimado"
                 className="block font-semibold text-white mb-1"
@@ -729,7 +751,7 @@ const ConsultabitacoraAnestesio = () => {
               />
             </div>
 
-            <div className="mr-4 w-full">
+            <div className="mr-4" style={{ width: "75%" }}>
               <label
                 htmlFor="tiempo_estimado"
                 className="block font-semibold text-white mb-1"
@@ -746,22 +768,7 @@ const ConsultabitacoraAnestesio = () => {
                 className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
               />
             </div>
-            <div class="w-full mr-4">
-              <label
-                htmlFor="egreso"
-                className="block font-semibold text-white mb-1"
-              >
-                Egresa a:
-              </label>
-              <input
-                type="text"
-                id="egreso"
-                name="egreso"
-                value={patientData.egreso || ""}
-                readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
-              ></input>
-            </div>
+  
 
           </div>
           <div className="mr-4 w-full">
