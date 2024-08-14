@@ -204,9 +204,9 @@ function Dashboard() {
         </div>
         {/* Carrusel de tarjetas */}
         <div className="w-full">
-          <Slider {...carouselSettings}>
+        <Slider {...carouselSettings}>
             {dashboardCards.map((card) => (
-              <div key={card.id} className="bg-white rounded-xl border-[1px] border-border p-5 shadow-md">
+              <div key={card.id} className="bg-white rounded-xl border-[1px] border-border p-5 shadow-md card-zoom">
                 <div className="flex gap-4 items-center">
                   <div className={`w-10 h-10 flex-colo bg-opacity-10 rounded-md ${card.color[1]} ${card.color[0]}`}>
                     <card.icon />

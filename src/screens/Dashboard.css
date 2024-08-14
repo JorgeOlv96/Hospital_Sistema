@@ -33,4 +33,92 @@
   .slick-next::before {
     display: none; /* Oculta las flechas predeterminadas */
   }
+  .card-zoom {
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .card-zoom:hover {
+    transform: scale(1.05); /* Ajusta el valor de scale según el tamaño del zoom que desees */
+  }
+  @keyframes walking {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+  
+  .doctor-animated {
+    animation: walking 5s linear infinite;
+  }
+  
+  .doctor {
+    position: relative;
+    width: 30px;
+    height: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .doctor-head {
+    width: 20px;
+    height: 20px;
+    background-color: #ffe0bd; /* Color piel */
+    border-radius: 50%;
+  }
+  
+  .doctor-body {
+    width: 24px;
+    height: 30px;
+    background-color: #ffffff; /* Color de la bata */
+    border-radius: 5px;
+    position: relative;
+    z-index: 1;
+  }
+  
+  .doctor-arm {
+    width: 8px;
+    height: 20px;
+    background-color: #ffe0bd; /* Color piel */
+    position: absolute;
+    top: 20px;
+    z-index: 0;
+  }
+  
+  .doctor-arm.left {
+    left: -10px;
+  }
+  
+  .doctor-arm.right {
+    right: -10px;
+  }
+  
+  .doctor-leg {
+    width: 8px;
+    height: 20px;
+    background-color: #000000; /* Color del pantalón */
+    position: absolute;
+    top: 50px;
+    z-index: 0;
+  }
+  
+  .doctor-leg.left {
+    left: 4px;
+  }
+  
+  .doctor-leg.right {
+    right: 4px;
+  }
+  
+  .doctor-hat {
+    width: 15px;
+    height: 7px;
+    background-color: #ffffff; /* Color de la gorra */
+    border-radius: 3px;
+    position: absolute;
+    top: -7px;
+  }
+    
   

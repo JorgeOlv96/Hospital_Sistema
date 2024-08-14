@@ -94,7 +94,7 @@ const AnesthesiologistsByShiftChart = () => {
   };
 
   return (
-    <div className="bg-white rounded-xl border-[1px] border-border p-5 shadow-md">
+    <div className="bg-white rounded-xl border-[1px] border-border p-5 shadow-md card-zoom">
       <h3 className="text-lg font-medium mb-4">Anestesiólogos por Turno</h3>
       <Bar data={chartData} options={chartOptions} />
     </div>

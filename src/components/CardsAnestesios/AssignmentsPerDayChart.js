@@ -71,7 +71,7 @@ const AssignmentsPerDayChart = () => {
   };
 
   return (
-    <div className="bg-white rounded-xl border-[1px] border-border p-5 shadow-md">
+    <div className="bg-white rounded-xl border-[1px] border-border p-5 shadow-md card-zoom">
       <h3 className="text-lg font-medium mb-4">Asignaciones por Día</h3>
       <Line data={chartData} />
     </div>

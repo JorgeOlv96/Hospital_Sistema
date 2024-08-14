@@ -329,8 +329,18 @@ function CrearSolicitud() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     if (validateForm()) {
+      // Verificar si la sala seleccionada está activa
+      const selectedSala = salasDisponibles.find(sala => sala.nombre_sala === formData.sala_quirofano);
+      if (!selectedSala || !selectedSala.estado) {
+        setErrors((prevErrors) => ({
+          ...prevErrors,
+          sala_quirofano: 'La sala seleccionada no está activa.',
+        }));
+        return;
+      }
+  
       try {
         // Verificar si ya existe una solicitud con la misma fecha, hora, sala y tiempo estimado
         const checkResponse = await fetch(`${baseURL}/api/solicitudes/check`, {
@@ -345,13 +355,13 @@ function CrearSolicitud() {
             tiempo_estimado: formData.tiempo_estimado,
           }),
         });
-
+  
         if (!checkResponse.ok) {
           throw new Error("Network response was not ok");
         }
-
+  
         const checkData = await checkResponse.json();
-
+  
         if (checkData.exists) {
           setErrors((prevErrors) => ({
             ...prevErrors,
@@ -360,7 +370,7 @@ function CrearSolicitud() {
           }));
           return;
         }
-
+  
         // Enviar la solicitud a la API si no existe conflicto
         const response = await fetch(`${baseURL}/api/solicitudes`, {
           method: selectedSolicitud ? "PUT" : "POST",
@@ -369,11 +379,11 @@ function CrearSolicitud() {
           },
           body: JSON.stringify(formData),
         });
-
+  
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
-
+  
         const data = await response.json();
         console.log("Formulario válido y enviado:", formData);
         navigate("/solicitudes");
@@ -384,6 +394,7 @@ function CrearSolicitud() {
       console.log("Formulario inválido");
     }
   };
+  
 
   const getTurnColor = (turno_anestesio) => {
     switch (turno_anestesio) {
@@ -614,11 +625,13 @@ function CrearSolicitud() {
                     } rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
                   >
                     <option value="">Seleccionar</option>
-                    {salasDisponibles.map((sala) => (
-                      <option key={sala.id} value={sala.nombre_sala}>
-                        {sala.nombre_sala}
-                      </option>
-                    ))}
+                    {salasDisponibles
+                      .filter((sala) => sala.estado)
+                      .map((sala) => (
+                        <option key={sala.id} value={sala.nombre_sala}>
+                          {sala.nombre_sala}
+                        </option>
+                      ))}
                   </select>
                   {errors.sala_quirofano && (
                     <p className="text-red-500">{errors.sala_quirofano}</p>
@@ -649,11 +662,11 @@ function CrearSolicitud() {
                     className={`border ${
                       formData.fecha_nacimiento
                         ? "bg-[#A8CBD5] border-[#A8CBD5]"
-                        : "border-gray-300"
+                        : ""
                     } rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58] mt-2 ${
                       isFechaNacimientoValid
-                        ? "border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                        : "border-red-500 focus:ring-red-500 focus:border-red-500"
+                        ? ""
+                        : ""
                     }`}
                   />
                   {!isFechaNacimientoValid && (
