@@ -105,6 +105,11 @@ function Gestionusuarios() {
 
   // Delete user
   const handleDelete = async (id) => {
+    if (
+      window.confirm(
+        "¿Estás seguro de que quieres eliminar este Usuario?"
+      )
+    ) {
     try {
       const response = await fetch(`${baseURL}/api/users/users/${id}`, {
         method: "DELETE",
@@ -124,6 +129,7 @@ function Gestionusuarios() {
       console.error("Error deleting user:", err);
       setError("Error deleting user. Please try again later.");
     }
+  }
   };
 
   // Save edited user
