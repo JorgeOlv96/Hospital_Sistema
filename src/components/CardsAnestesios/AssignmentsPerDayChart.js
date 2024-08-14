@@ -27,6 +27,24 @@ const AssignmentsPerDayChart = () => {
   const [error, setError] = useState(null);
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
 
+  // Función para obtener el lunes de la semana actual
+  const getStartOfWeek = (date) => {
+    const day = date.getDay();
+    const diff = date.getDate() - day + (day === 0 ? -6 : 1);
+    return new Date(date.setDate(diff));
+  };
+
+  // Función para generar un array con las fechas de la semana actual
+  const getDatesForCurrentWeek = (startOfWeek) => {
+    const dates = [];
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(startOfWeek);
+      date.setDate(startOfWeek.getDate() + i);
+      dates.push(date.toISOString().split('T')[0]);
+    }
+    return dates;
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -36,15 +54,28 @@ const AssignmentsPerDayChart = () => {
         }
         const anesthesiologists = await response.json();
 
+        // Obtener el lunes de la semana actual
+        const today = new Date();
+        const startOfWeek = getStartOfWeek(new Date(today));
+        const datesOfWeek = getDatesForCurrentWeek(startOfWeek);
+
+        // Inicializar un objeto para las asignaciones con todos los días de la semana actual
         const assignmentsPerDay = {};
+        datesOfWeek.forEach(date => {
+          assignmentsPerDay[date] = 0;
+        });
+
+        // Contar las asignaciones por día
         anesthesiologists.forEach(anesthesiologist => {
-          const date = anesthesiologist.dia_anestesio;
-          assignmentsPerDay[date] = (assignmentsPerDay[date] || 0) + 1;
+          const date = new Date(anesthesiologist.dia_anestesio).toISOString().split('T')[0];
+          if (assignmentsPerDay.hasOwnProperty(date)) {
+            assignmentsPerDay[date] += 1;
+          }
         });
 
         setData({
-          dates: Object.keys(assignmentsPerDay),
-          counts: Object.values(assignmentsPerDay),
+          dates: datesOfWeek,
+          counts: datesOfWeek.map(date => assignmentsPerDay[date]),
         });
       } catch (error) {
         setError(error.message);

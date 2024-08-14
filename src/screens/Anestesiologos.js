@@ -7,7 +7,7 @@ import { BiChevronLeft, BiChevronRight, BiTime } from "react-icons/bi";
 import { HiOutlineViewGrid } from "react-icons/hi";
 import { HiOutlineCalendarDays } from "react-icons/hi2";
 import { Link } from "react-router-dom";
-import OperatingRoomSchedule from "../components/OperatingRoomSchedule";
+import OperatingRoomScheduleAnestesio from "../components/OperatingRoomScheduleAnestesio";
 import { FaHospital } from "react-icons/fa";
 import axios from "axios";
 
@@ -186,7 +186,7 @@ function Anesthesiologos() {
         data-aos-delay="100"
         data-aos-offset="200"
       >
-      <CustomToolbar
+<CustomToolbar
         date={selectedDate}
         view={view}
         onNavigate={(date) => {
@@ -196,7 +196,7 @@ function Anesthesiologos() {
         onView={handleViewChange}
       />
       {view === "operatingRooms" ? (
-        <OperatingRoomSchedule
+        <OperatingRoomScheduleAnestesio
           date={selectedDate}
           appointments={anesthesiologists}
           onEventClick={handleEventClick}

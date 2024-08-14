@@ -118,7 +118,7 @@ const CustomToolbar = ({ date, view, onView, onNavigate, onPrint }) => {
             onChange={(e) => {
               const selectedDate = new Date(e.target.value);
               onNavigate(selectedDate);
-              onView("day");
+              onView("operatingRooms");
             }}
             className="px-4 py-2 border border-subMain rounded-md text-subMain"
           />
