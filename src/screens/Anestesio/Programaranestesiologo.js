@@ -294,6 +294,7 @@ const handleSort = (field) => {
 
   return (
     <Layout>
+      <ToastContainer position="bottom-right" />
       <div
         data-aos="fade-right"
         data-aos-duration="1000"
@@ -625,7 +626,6 @@ const handleSort = (field) => {
           </div>
 
           {/* Mostrar notificaciones */}
-          <ToastContainer position="bottom-right" />
         </div>
       </div>
     </Layout>
