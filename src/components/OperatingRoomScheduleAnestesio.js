@@ -5,10 +5,16 @@ import './OperatingRoomScheduleAnestesio.css';
 const OperatingRooms = ['A1', 'A2', 'T1', 'T2', '1', '2', '3', '4', '5', '6', 'E', 'H', 'RX'];
 
 const OperatingRoomScheduleAnestesio = ({ date, appointments, onEventClick }) => {
-  // Filtrar las citas para la fecha seleccionada
-  const filteredAppointments = appointments.filter(app =>
-    moment(app.start).isSame(date, 'day') || moment(app.end).isSame(date, 'day')
-  );
+  // Filtrar las citas para la fecha seleccionada, incluyendo eventos que cruzan la medianoche
+  const filteredAppointments = appointments.filter(app => {
+    const appStart = moment(app.start);
+    const appEnd = moment(app.end);
+    return (
+      appStart.isSame(date, 'day') || 
+      appEnd.isSame(date, 'day') || 
+      (appStart.isBefore(date, 'day') && appEnd.isAfter(date, 'day'))
+    );
+  });
 
   // Genera las filas y columnas para la tabla de horarios de quirófano
   const generateSchedule = () => {
