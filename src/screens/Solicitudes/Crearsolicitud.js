@@ -11,6 +11,8 @@ import "react-toastify/dist/ReactToastify.css";
 function CrearSolicitud() {
   const [selectedSolicitud] = useState(null);
   const [isFechaNacimientoValid, setIsFechaNacimientoValid] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+
   const [isFieldTouched, setIsFieldTouched] = useState({
     fecha_nacimiento: false,
     curp: false,
@@ -332,7 +334,9 @@ function CrearSolicitud() {
   
     if (validateForm()) {
       // Verificar si la sala seleccionada está activa
-      const selectedSala = salasDisponibles.find(sala => sala.nombre_sala === formData.sala_quirofano);
+      const selectedSala = salasDisponibles.find(
+        (sala) => sala.nombre_sala === formData.sala_quirofano
+      );
       if (!selectedSala || !selectedSala.estado) {
         setErrors((prevErrors) => ({
           ...prevErrors,
@@ -342,11 +346,13 @@ function CrearSolicitud() {
       }
   
       try {
+        setIsLoading(true); // Iniciar el estado de carga
+  
         // Verificar si ya existe una solicitud con la misma fecha, hora, sala y tiempo estimado
         const checkResponse = await fetch(`${baseURL}/api/solicitudes/check`, {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             fecha_solicitada: formData.fecha_solicitada,
@@ -357,7 +363,7 @@ function CrearSolicitud() {
         });
   
         if (!checkResponse.ok) {
-          throw new Error("Network response was not ok");
+          throw new Error('Network response was not ok');
         }
   
         const checkData = await checkResponse.json();
@@ -365,49 +371,52 @@ function CrearSolicitud() {
         if (checkData.exists) {
           setErrors((prevErrors) => ({
             ...prevErrors,
-            solicitud_conflicto:
-              "Ya existe una solicitud para la misma fecha, hora y sala!.",
+            solicitud_conflicto: 'Ya existe una solicitud para la misma fecha, hora y sala!.',
           }));
+          setIsLoading(false); // Detener el estado de carga en caso de conflicto
           return;
         }
   
         // Enviar la solicitud a la API si no existe conflicto
         const response = await fetch(`${baseURL}/api/solicitudes`, {
-          method: selectedSolicitud ? "PUT" : "POST",
+          method: selectedSolicitud ? 'PUT' : 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify(formData),
         });
   
         if (!response.ok) {
-          throw new Error("Network response was not ok");
+          throw new Error('Network response was not ok');
         }
   
         const data = await response.json();
-        console.log("Formulario válido y enviado:", formData);
-        navigate("/solicitudes");
+        console.log('Formulario válido y enviado:', formData);
+        setIsLoading(false); // Detener el estado de carga después de enviar la solicitud
+        navigate('/solicitudes');
       } catch (error) {
-        console.error("Error en la solicitud:", error);
+        console.error('Error en la solicitud:', error);
+        setIsLoading(false); // Detener el estado de carga en caso de error
       }
     } else {
-      console.log("Formulario inválido");
+      console.log('Formulario inválido');
     }
   };
   
+  
+const getTurnColor = (turno_anestesio) => {
+  switch (turno_anestesio) {
+    case "Matutino":
+      return "#81a4ff"; // color matutino sólido
+    case "Vespertino":
+      return "#7acb49"; // color vespertino sólido
+    case "Nocturno":
+      return "#ffa959"; // color nocturno sólido
+    default:
+      return "#FFFFFF"; // color predeterminado
+  }
+};
 
-  const getTurnColor = (turno_anestesio) => {
-    switch (turno_anestesio) {
-      case "Matutino":
-        return "rgba(129, 164, 255, 0.43)";
-      case "Vespertino":
-        return "rgba(109, 255, 19, 0.43)";
-      case "Nocturno":
-        return "rgba(255, 169, 89, 0.43)";
-      default:
-        return "#FFFFFF"; // color predeterminado
-    }
-  };
 
   return (
     <Layout>
@@ -433,6 +442,33 @@ function CrearSolicitud() {
               </span>
             </div>
           )}
+
+    {isLoading && (
+      <p className="flex items-center text-blue-700 font-bold text-xl mt-4 bg-blue-100 p-4 rounded-lg shadow-lg border border-blue-200 animate-pulse">
+        <svg
+          className="w-6 h-6 mr-2 text-blue-500 animate-spin"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            className="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            strokeWidth="4"
+            fill="none"
+          />
+          <path
+            className="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 0115.97-1.3 4 4 0 00-5.88 4.08A4 4 0 004 12z"
+          />
+        </svg>
+        Guardando solicitud...
+      </p>
+    )}
+
 
           <form onSubmit={handleSubmit}>
             <div class="flex flex-col p-4 bg-[#557996] rounded-lg ">
@@ -959,7 +995,7 @@ function CrearSolicitud() {
                       errors.turno_solicitado
                         ? "border-red-500"
                         : "border-gray-300"
-                    } rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+                    } rounded-lg px-3 py-2 focus:ring-2 w-full`}
                     style={{
                       backgroundColor: getTurnColor(formData.turno_solicitado),
                     }}
@@ -1085,7 +1121,7 @@ function CrearSolicitud() {
                 type="submit"
                 className="bg-[#365b77] text-white px-4 py-2 rounded"
               >
-                Enviar
+                Guardar
               </button>
             </div>
           </form>
