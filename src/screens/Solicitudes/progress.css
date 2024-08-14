@@ -1,0 +1,14 @@
+/* MyComponent.css */
+.progress-bar {
+    width: 100%;
+    background-color: #f3f3f3;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  
+  .progress {
+    height: 8px;
+    background-color: #007bff;
+    transition: width 0.3s;
+  }
+  

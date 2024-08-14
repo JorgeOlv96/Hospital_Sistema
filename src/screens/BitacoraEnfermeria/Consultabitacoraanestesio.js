@@ -783,7 +783,7 @@ const ConsultabitacoraAnestesio = () => {
               name="procedimientos_paciente"
               value={patientData.procedimientos_paciente || "N/A"}
               readOnly
-              className="border-[#A8D5B1] rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default"
+              className="border-[#A8D5B1] rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default mb-2 "
             ></input>
           </div>
           <div>
