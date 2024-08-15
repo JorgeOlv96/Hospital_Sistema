@@ -5,6 +5,7 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { startOfWeek, endOfWeek, format } from "date-fns"; 
 
 function Programaranestesiologo() {
   const [formData, setFormData] = useState({
@@ -32,6 +33,10 @@ function Programaranestesiologo() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
+
+  const startOfCurrentWeek = startOfWeek(new Date(), { weekStartsOn: 1 });
+  const endOfCurrentWeek = endOfWeek(new Date(), { weekStartsOn: 1 });
+
 
   const fetchActiveAnesthesiologists = async (inputValue) => {
     try {
@@ -192,22 +197,28 @@ function Programaranestesiologo() {
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-      const data = await response.json();
-      // Ordenar por fecha más reciente a más antigua
-      data.sort(
-        (a, b) => new Date(b.fecha_asignacion) - new Date(a.fecha_asignacion)
-      );
+      let data = await response.json();
+
+      // Filtra los anestesiólogos que están programados dentro de la semana actual
+      data = data.filter((anesthesiologist) => {
+        const dia_anestesio = new Date(anesthesiologist.dia_anestesio);
+        return (
+          dia_anestesio >= startOfCurrentWeek && dia_anestesio <= endOfCurrentWeek
+        );
+      });
+
       setAnesthesiologists(data);
     } catch (error) {
       console.error("Error fetching anesthesiologists:", error);
-  
       toast.error("Error al obtener los anestesiólogos");
     }
-  };  
+  };
 
   useEffect(() => {
     fetchAnesthesiologists();
   }, []);
+
+  
 
   // Calcular índices para la paginación
   const indexOfLastAnesthesiologist = page * anesthesiologistsPerPage;

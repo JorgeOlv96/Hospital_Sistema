@@ -219,8 +219,16 @@ function Evaluacion() {
                     <th
                       scope="col"
                       className="px-6 py-3 text-left text-xs font-medium text-white-500 uppercase tracking-wider"
+                      onClick={() => handleSort("id_solicitud")}
                     >
-                      ID
+                      ID {" "}
+                      <span>
+                          {sortBy === "id_solicitud"
+                            ? sortOrder === "asc"
+                              ? "▲"
+                              : "▼"
+                            : ""}
+                        </span>
                     </th>
                       <th
                         className="px-4 py-2 cursor-pointer"
@@ -297,7 +305,7 @@ function Evaluacion() {
                     .map((appointment, index) => (
                       <tr key={appointment.id} className="bg-blue-50 hover:bg-blue-300">
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border-r border-gray-300">
-                          {startIndex + index + 1}
+                          {appointment.id_solicitud}
                         </td>
                           <td className="px-4 py-2">{appointment.folio}</td>
                           <td className="px-4 py-2">
