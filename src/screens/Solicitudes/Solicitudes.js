@@ -789,7 +789,7 @@ function Solicitudes() {
                                 className="px-4 py-3 cursor-pointer"
                                 onClick={() => handleSort("fecha_solicitud")}
                               >
-                                Fecha{" "}
+                                Fecha de solicitud{" "}
                                 <span>
                                   {sortBy === "fecha_solicitud" &&
                                     (sortOrder === "asc" ? "▲" : "▼")}

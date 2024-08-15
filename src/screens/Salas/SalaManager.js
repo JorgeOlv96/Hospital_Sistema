@@ -42,19 +42,42 @@ const SalaManager = () => {
     }
   };
 
-  const toggleEstado = async (id, estadoActual) => {
+  const fetchSolicitudes = async (salaId) => {
     try {
-      const newEstado = !estadoActual;
-      const ultimaActualizacion = newEstado ? new Date().toISOString() : null; // Guardar la fecha de desactivación
-      await axios.put(`${baseURL}/api/salas/salas/${id}`, {
-        estado: newEstado,
-        ultima_actualizacion: ultimaActualizacion, // Enviar la fecha de desactivación al servidor
+      const response = await axios.get(`${baseURL}/api/solicitudes`, {
+        params: { salaId, fecha: new Date().toISOString().split("T")[0] }
       });
-      fetchSalas(); // Refresh the list after updating
+      return response.data.length;
     } catch (error) {
-      console.error("Error updating sala state:", error);
+      console.error("Error fetching solicitudes:", error);
+      return 0;
     }
   };
+
+  const toggleEstado = async (id, estadoActual) => {
+    try {
+        if (estadoActual) { // Cambiado a estadoActual para cuando la sala está encendida
+            // Si se va a desactivar la sala, verificar si hay solicitudes programadas
+            const solicitudesProgramadas = await fetchSolicitudes(id);
+
+            if (solicitudesProgramadas > 0) {
+                alert(`Hay ${solicitudesProgramadas} solicitudes programadas para el día de hoy. No puedes desactivar esta sala.`);
+                return;
+            }
+        }
+
+        const newEstado = !estadoActual;
+        const ultimaActualizacion = newEstado ? new Date().toISOString() : null; // Guardar la fecha de desactivación
+        await axios.put(`${baseURL}/api/salas/salas/${id}`, {
+            estado: newEstado,
+            ultima_actualizacion: ultimaActualizacion, // Enviar la fecha de desactivación al servidor
+        });
+        fetchSalas(); // Refrescar la lista después de actualizar
+    } catch (error) {
+        console.error("Error updating sala state:", error);
+    }
+};
+
 
   const calculateInactiveTime = (ultimaActualizacion, estado) => {
     if (estado) return 0; // Si está encendida, no hay tiempo inactivo
@@ -63,7 +86,6 @@ const SalaManager = () => {
     const ultimaActualizacionDate = new Date(ultimaActualizacion);
     const differenceInMs = now - ultimaActualizacionDate;
 
-    // Convertir a horas, minutos o segundos según sea necesario
     const hours = Math.floor(differenceInMs / (1000 * 60 * 60));
     const minutes = Math.floor((differenceInMs % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((differenceInMs % (1000 * 60)) / 1000);
@@ -72,7 +94,6 @@ const SalaManager = () => {
   };
 
   const formatFechaHora = (fechaHora) => {
-    // Eliminar 'T', 'Z' y los ceros al final
     return fechaHora.replace('T', ' ').replace('Z', '').replace('.000', '');
   };
 
@@ -124,7 +145,7 @@ const SalaManager = () => {
                   <th className="text-center py-2">ID</th>
                   <th className="text-center py-2">Nombre</th>
                   <th className="text-center py-2">Estado</th>
-                  <th className="text-center py-2">Última Desactivación</th> {/* Nueva columna */}
+                  <th className="text-center py-2">Última Desactivación</th>
                   <th className="text-center py-2">Acciones</th>
                 </tr>
               </thead>
