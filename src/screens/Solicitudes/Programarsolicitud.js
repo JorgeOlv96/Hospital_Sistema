@@ -282,9 +282,9 @@ function ProgramarSolicitud() {
                       className="px-4 py-3 cursor-pointer"
                       onClick={() => handleSort("fecha_solicitada")}
                     >
-                      Fecha{" "}
+                      Fecha de solicitud{" "}
                       <span>
-                        {sortBy === "fecha_solicitada" &&
+                        {sortBy === "fecha_solicitud" &&
                           (sortOrder === "asc" ? "▲" : "▼")}
                       </span>
                     </th>
