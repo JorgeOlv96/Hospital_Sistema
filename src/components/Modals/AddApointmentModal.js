@@ -90,7 +90,26 @@ function AddAppointmentModal({
         </div>
       ) : (
         <div className="p-4">
-          <div className="mr-4 w-full">
+          <div className="flex justify-between">
+            <button
+              onClick={closeModal}
+              className="bg-blue-500 bg-opacity-20 text-blue-500 text-sm p-4 rounded-lg font-light"
+              style={{ marginBottom: "8px" }}
+            >
+              Cerrar
+            </button>
+
+            {patientData?.estado_solicitud === "Pendiente" && (
+              <button
+                onClick={handleDelete}
+                className="bg-red-500 bg-opacity-20 text-red-500 text-sm p-4 rounded-lg font-light"
+              >
+                Eliminar solicitud
+              </button>
+            )}
+          </div>
+
+          <div className="mr-4 w-full mb-2">
             <label className="block font-semibold text-gray-700 mb-2">
               Folio:
             </label>
@@ -259,24 +278,6 @@ function AddAppointmentModal({
           </div>
         </div>
       )}
-
-      <div className="flex justify-between mt-4">
-        <button
-          onClick={closeModal}
-          className="bg-blue-500 bg-opacity-20 text-blue-500 text-sm p-4 rounded-lg font-light"
-        >
-          Cerrar
-        </button>
-
-        {patientData?.estado_solicitud === "Pendiente" && (
-          <button
-            onClick={handleDelete}
-            className="bg-red-500 bg-opacity-20 text-red-500 text-sm p-4 rounded-lg font-light"
-          >
-            Eliminar solicitud
-          </button>
-        )}
-      </div>
     </Modal>
   );
 }

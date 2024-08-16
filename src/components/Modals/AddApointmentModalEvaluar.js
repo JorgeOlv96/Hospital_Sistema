@@ -19,13 +19,12 @@ function AddAppointmentModalEvaluar({
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-  
+
     setPatientData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
   };
-  
 
   useEffect(() => {
     if (isOpen && appointmentId) {
@@ -58,10 +57,10 @@ function AddAppointmentModalEvaluar({
   const fetchSalasDisponibles = async () => {
     try {
       const response = await axios.get(`${baseURL}/api/salas/salas`);
-      const disponibles = response.data.filter(sala => sala.estado);
+      const disponibles = response.data.filter((sala) => sala.estado);
       setSalasDisponibles(disponibles);
     } catch (error) {
-      console.error('Error fetching salas:', error);
+      console.error("Error fetching salas:", error);
     }
   };
 
@@ -78,17 +77,16 @@ function AddAppointmentModalEvaluar({
           },
         }
       );
-      
+
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-      closeModal(); 
+      closeModal();
       window.location.reload();
     } catch (error) {
       console.error("Error saving changes:", error);
     }
   };
-  
 
   const handleCancelChanges = () => {
     setPatientData(originalData); // Deshacer cambios
@@ -131,7 +129,43 @@ function AddAppointmentModalEvaluar({
         </div>
       ) : (
         <div className="p-4">
-          <div className="mr-4 w-full">
+          <div className="flex justify-between">
+            <button
+              onClick={handlePreprogramar}
+              className="bg-[#06ABC9] bg-opacity-20 text-[#001B58] text-sm p-4 rounded-lg font-light"
+              style={{ marginBottom: "8px" }}
+            >
+              Pre-programar
+            </button>
+
+            <div className="flex space-x-2">
+              {isEditing ? (
+                <>
+                  <button
+                    className="bg-red-500 bg-opacity-20 text-red-500 text-sm p-4 rounded-lg font-light"
+                    onClick={handleCancelChanges}
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    className="bg-green-500 bg-opacity-20 text-green-500 text-sm p-4 rounded-lg font-light"
+                    onClick={handleSaveChanges}
+                  >
+                    Guardar Cambios
+                  </button>
+                </>
+              ) : (
+                <button
+                  className="bg-blue-500 bg-opacity-20 text-blue-500 text-sm p-4 rounded-lg font-light"
+                  onClick={() => setIsEditing(true)}
+                >
+                  Editar
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div className="mr-4 w-full mb-2">
             <label className="block font-semibold text-gray-700 mb-2">
               Folio:
             </label>
@@ -369,30 +403,30 @@ function AddAppointmentModalEvaluar({
               </div>
 
               <div className="mr-4 w-full">
-            <label className="block font-semibold text-gray-700 mb-2">
-              Sala solicitada:
-            </label>
-            {isEditing ? (
-              <select
-                id="sala_quirofano"
-                name="sala_quirofano"
-                value={patientData.sala_quirofano || ""}
-                onChange={handleChange}
-                className={`border rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-              >
-      <option value="">Seleccionar</option>
-      {salasDisponibles.map((sala) => (
-        <option key={sala.id} value={sala.nombre_sala}>
-          {sala.nombre_sala}
-        </option>
-      ))}
-              </select>
-            ) : (
-              <p className="bg-gray-200 p-3 rounded-lg">
-                {patientData?.sala_quirofano || "N/A"}
-              </p>
-            )}
-          </div>
+                <label className="block font-semibold text-gray-700 mb-2">
+                  Sala solicitada:
+                </label>
+                {isEditing ? (
+                  <select
+                    id="sala_quirofano"
+                    name="sala_quirofano"
+                    value={patientData.sala_quirofano || ""}
+                    onChange={handleChange}
+                    className={`border rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+                  >
+                    <option value="">Seleccionar</option>
+                    {salasDisponibles.map((sala) => (
+                      <option key={sala.id} value={sala.nombre_sala}>
+                        {sala.nombre_sala}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <p className="bg-gray-200 p-3 rounded-lg">
+                    {patientData?.sala_quirofano || "N/A"}
+                  </p>
+                )}
+              </div>
 
               <div className="mr-4 w-full">
                 <label className="block font-semibold text-gray-700 mb-2">
@@ -417,7 +451,6 @@ function AddAppointmentModalEvaluar({
 
           <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
             <div className="flex mb-4">
-              
               <div className="mr-4 w-full">
                 <label className="block font-semibold text-gray-700 mb-2">
                   Procedimientos paciente:
@@ -426,7 +459,7 @@ function AddAppointmentModalEvaluar({
                   {patientData?.procedimientos_paciente || "N/A"}
                 </p>
               </div>
-              
+
               <div className="mr-4 w-full">
                 <label className="block font-semibold text-gray-700 mb-2">
                   Procedimientos extra:
@@ -444,42 +477,6 @@ function AddAppointmentModalEvaluar({
                   </p>
                 )}
               </div>
-            </div>
-          </div>
-          
-          <div className="flex justify-between mt-4">
-            <button
-              onClick={handlePreprogramar}
-              className="bg-[#06ABC9] bg-opacity-20 text-[#001B58] text-sm p-4 rounded-lg font-light"
-              style={{ marginBottom: "8px" }}
-            >
-              Pre-programar
-            </button>
-
-            <div className="flex space-x-2">
-              {isEditing ? (
-                <>
-                  <button
-                    className="bg-red-500 bg-opacity-20 text-red-500 text-sm p-4 rounded-lg font-light"
-                    onClick={handleCancelChanges}
-                  >
-                    Cancelar
-                  </button>
-                  <button
-                    className="bg-green-500 bg-opacity-20 text-green-500 text-sm p-4 rounded-lg font-light"
-                    onClick={handleSaveChanges}
-                  >
-                    Guardar Cambios
-                  </button>
-                </>
-              ) : (
-                <button
-                  className="bg-blue-500 bg-opacity-20 text-blue-500 text-sm p-4 rounded-lg font-light"
-                  onClick={() => setIsEditing(true)}
-                >
-                  Editar
-                </button>
-              )}
             </div>
           </div>
         </div>

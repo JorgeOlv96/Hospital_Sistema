@@ -16,7 +16,7 @@ function AddApointmentModalRealizada({
   });
   const [loading, setLoading] = useState(true);
   const modalRef = useRef(null);
-  const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
+  const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
   const handleChange = (e) => {
     const { name, value } = e.target;
     setPatientData((prevData) => ({
@@ -43,7 +43,8 @@ function AddApointmentModalRealizada({
     if (isOpen && appointmentId) {
       const fetchAppointmentData = async () => {
         try {
-          const response = await fetch(`${baseURL}/api/solicitudes/${appointmentId}`
+          const response = await fetch(
+            `${baseURL}/api/solicitudes/${appointmentId}`
           );
           if (!response.ok) {
             throw new Error("Network response was not ok");
@@ -63,12 +64,8 @@ function AddApointmentModalRealizada({
 
   const handleProgramAppointment = async () => {
     try {
-      const {
-        fecha_programada,
-        hora_asignada,
-        turno,
-        nombre_anestesiologo,
-      } = patientData;
+      const { fecha_programada, hora_asignada, turno, nombre_anestesiologo } =
+        patientData;
       console.log("Datos a enviar:", {
         fecha_programada,
         hora_asignada,
@@ -76,7 +73,8 @@ function AddApointmentModalRealizada({
         nombre_anestesiologo,
       });
 
-      const response = await fetch(`${baseURL}/api/solicitudes/programar/${appointmentId}`,
+      const response = await fetch(
+        `${baseURL}/api/solicitudes/programar/${appointmentId}`,
         {
           method: "PUT",
           body: JSON.stringify({
@@ -104,7 +102,8 @@ function AddApointmentModalRealizada({
 
   const handleReprogramar = async () => {
     try {
-      const response = await fetch(`${baseURL}/api/solicitudes/reprogramar/${appointmentId}`,
+      const response = await fetch(
+        `${baseURL}/api/solicitudes/reprogramar/${appointmentId}`,
         {
           method: "PATCH",
         }
@@ -136,7 +135,17 @@ function AddApointmentModalRealizada({
         </div>
       ) : (
         <div className="p-4">
-          <div className="mr-4 w-full">
+          <div className="flex justify-center">
+            <button
+              onClick={handleReprogramar}
+              className="bg-[#001B58] bg-opacity-20 text-[#001B58] text-sm p-4 rounded-lg font-light"
+              style={{ marginBottom: "8px" }}
+            >
+              Reprogramar cita
+            </button>
+          </div>
+
+          <div className="mr-4 w-full mb-2">
             <label className="block font-semibold text-gray-700 mb-2">
               Folio:
             </label>
@@ -239,8 +248,7 @@ function AddApointmentModalRealizada({
                   value={patientData.turno || ""}
                   onChange={handleChange}
                   className="bg-gray-200 p-3 rounded-lg cursor-default w-full"
-                >
-                </input>
+                ></input>
               </div>
             </div>
           </div>
@@ -309,22 +317,10 @@ function AddApointmentModalRealizada({
               </div>
             </div>
           </div>
-
-          <div className="flex justify-center mt-8">
-            <button
-              onClick={handleReprogramar}
-              className="bg-[#001B58] bg-opacity-20 text-[#001B58] text-sm p-4 rounded-lg font-light"
-              style={{ marginBottom: "8px" }}
-            >
-              Reprogramar cita
-            </button>
-          </div>
         </div>
       )}
-
     </Modal>
   );
 }
 
 export default AddApointmentModalRealizada;
-
