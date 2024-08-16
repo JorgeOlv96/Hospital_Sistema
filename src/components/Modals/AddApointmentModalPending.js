@@ -18,7 +18,7 @@ function AddAppointmentModalPending({
   const [loading, setLoading] = useState(true);
   const modalRef = useRef(null);
   const [salasDisponibles, setSalasDisponibles] = useState([]);
-  const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
+  const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
 
   useEffect(() => {
     fetchSalasDisponibles();
@@ -27,10 +27,10 @@ function AddAppointmentModalPending({
   const fetchSalasDisponibles = async () => {
     try {
       const response = await axios.get(`${baseURL}/api/salas/salas`);
-      const disponibles = response.data.filter(sala => sala.estado);
+      const disponibles = response.data.filter((sala) => sala.estado);
       setSalasDisponibles(disponibles);
     } catch (error) {
-      console.error('Error fetching salas:', error);
+      console.error("Error fetching salas:", error);
     }
   };
 
@@ -53,11 +53,19 @@ function AddAppointmentModalPending({
           turno = "Nocturno";
         }
         setPatientData((prevData) => ({ ...prevData, turno }));
-        await fetchAnestesiologo(patientData.fecha_programada, turno, patientData.sala_quirofano);
+        await fetchAnestesiologo(
+          patientData.fecha_programada,
+          turno,
+          patientData.sala_quirofano
+        );
       }
     }
 
-    if (name === "fecha_programada" || name === "sala_quirofano" || name === "turno") {
+    if (
+      name === "fecha_programada" ||
+      name === "sala_quirofano" ||
+      name === "turno"
+    ) {
       await fetchAnestesiologo(
         name === "fecha_programada" ? value : patientData.fecha_programada,
         name === "turno" ? value : patientData.turno,
@@ -66,11 +74,16 @@ function AddAppointmentModalPending({
     }
   };
 
-  const fetchAnestesiologo = async (fecha_programada, turno, sala_quirofano) => {
+  const fetchAnestesiologo = async (
+    fecha_programada,
+    turno,
+    sala_quirofano
+  ) => {
     if (!fecha_programada || !turno || !sala_quirofano) return;
 
     try {
-      const response = await fetch(`${baseURL}/api/anestesio/anestesiologo?fecha_programada=${fecha_programada}&turno=${turno}&sala_quirofano=${sala_quirofano}`
+      const response = await fetch(
+        `${baseURL}/api/anestesio/anestesiologo?fecha_programada=${fecha_programada}&turno=${turno}&sala_quirofano=${sala_quirofano}`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
@@ -89,7 +102,8 @@ function AddAppointmentModalPending({
     if (isOpen && appointmentId) {
       const fetchAppointmentData = async () => {
         try {
-          const response = await fetch(`${baseURL}/api/solicitudes/${appointmentId}`
+          const response = await fetch(
+            `${baseURL}/api/solicitudes/${appointmentId}`
           );
           if (!response.ok) {
             throw new Error("Network response was not ok");
@@ -109,13 +123,10 @@ function AddAppointmentModalPending({
 
   const handleProgramAppointment = async () => {
     try {
-      const {
-        fecha_programada,
-        hora_asignada,
-        turno,
-        nombre_anestesiologo,
-      } = patientData;
-      const response = await fetch(`${baseURL}/api/solicitudes/programar/${appointmentId}`,
+      const { fecha_programada, hora_asignada, turno, nombre_anestesiologo } =
+        patientData;
+      const response = await fetch(
+        `${baseURL}/api/solicitudes/programar/${appointmentId}`,
         {
           method: "PUT",
           body: JSON.stringify({
@@ -151,7 +162,8 @@ function AddAppointmentModalPending({
         sala_quirofano,
       } = patientData;
 
-      const response = await fetch(`${baseURL}/api/solicitudes/actualizar/${appointmentId}`,
+      const response = await fetch(
+        `${baseURL}/api/solicitudes/actualizar/${appointmentId}`,
         {
           method: "PATCH",
           body: JSON.stringify({
@@ -196,6 +208,16 @@ function AddAppointmentModalPending({
         </div>
       ) : (
         <div className="p-4">
+          <div className="flex justify-between">
+            <button
+              onClick={handleProgramAppointment}
+              className="bg-[#001B58] bg-opacity-20 text-[#001B58] text-sm p-4 rounded-lg font-light"
+              style={{ marginBottom: "8px" }}
+            >
+              Programar cita
+            </button>
+          </div>
+
           <div className="mr-4 w-full">
             <label className="block font-semibold text-gray-700 mb-2">
               Folio:
@@ -275,8 +297,6 @@ function AddAppointmentModalPending({
             </div>
           </div>
 
-
-
           <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
             <div className="flex mb-4">
               <div className="mr-4 w-full">
@@ -344,32 +364,32 @@ function AddAppointmentModalPending({
 
           <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
             <div className="flex  mb-4">
-            <div className="mr-4 w-full">
-    <label
-      htmlFor="sala_quirofano"
-      className="block font-semibold text-black mb-1"
-    >
-      Sala asignada:
-    </label>
-    <select
-      id="sala_quirofano"
-      name="sala_quirofano"
-      value={patientData.sala_quirofano || ""}
-      onChange={handleChange}
-      className="bg-white p-3 rounded-lg w-full"
-    >
-      <option value="">Seleccionar</option>
-      {salasDisponibles.map((sala) => (
-        <option key={sala.id} value={sala.nombre_sala}>
-          {sala.nombre_sala}
-        </option>
-      ))}
-    </select>
-  </div>
+              <div className="mr-4 w-full">
+                <label
+                  htmlFor="sala_quirofano"
+                  className="block font-semibold text-black mb-1"
+                >
+                  Sala asignada:
+                </label>
+                <select
+                  id="sala_quirofano"
+                  name="sala_quirofano"
+                  value={patientData.sala_quirofano || ""}
+                  onChange={handleChange}
+                  className="bg-white p-3 rounded-lg w-full"
+                >
+                  <option value="">Seleccionar</option>
+                  {salasDisponibles.map((sala) => (
+                    <option key={sala.id} value={sala.nombre_sala}>
+                      {sala.nombre_sala}
+                    </option>
+                  ))}
+                </select>
+              </div>
 
               <div className="w-full">
                 <label className="block font-semibold text-gray-700 mb-2">
-                Anestesiólogo asignado:
+                  Anestesiólogo asignado:
                 </label>
                 <input
                   type="text"
@@ -425,22 +445,10 @@ function AddAppointmentModalPending({
               </div>
             </div>
           </div>
-
-          <div className="flex justify-between mt-8">   
-            <button
-              onClick={handleProgramAppointment}
-              className="bg-[#001B58] bg-opacity-20 text-[#001B58] text-sm p-4 rounded-lg font-light"
-              style={{ marginBottom: "8px" }}
-            >
-              Programar cita
-            </button>
-          </div>
         </div>
       )}
-
     </Modal>
   );
 }
 
 export default AddAppointmentModalPending;
-

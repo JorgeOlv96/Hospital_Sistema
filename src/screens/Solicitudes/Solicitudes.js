@@ -88,7 +88,7 @@ function Solicitudes() {
     return solicitudes
       .filter((solicitud) => {
         const fieldValue = solicitud[searchField];
-
+  
         if (typeof fieldValue === "string") {
           return fieldValue.toLowerCase().includes(searchTerm.toLowerCase());
         } else if (typeof fieldValue === "number") {
@@ -102,14 +102,15 @@ function Solicitudes() {
         return solicitud.estado_solicitud.toLowerCase() === filterState;
       })
       .filter((solicitud) => {
-        const solicitudDate = new Date(solicitud.fecha_solicitud);
+        const solicitudDate = new Date(solicitud.fecha_solicitada); // Cambia a 'fecha_solicitada'
         const start = startDate ? new Date(startDate) : null;
         const end = endDate ? new Date(endDate) : null;
-
+  
         if (start && solicitudDate < start) return false;
         return !(end && solicitudDate > end);
       });
-  }, [solicitudes, searchTerm, searchField, filterState, startDate, endDate]);
+  }, [solicitudes, searchField, searchTerm, filterState, startDate, endDate]);
+  
 
   const sortedSolicitudes = useMemo(() => {
     let sorted = [...filteredSolicitudes];
@@ -547,7 +548,7 @@ function Solicitudes() {
                       </select>
 
                       <div className="flex items-center space-x-2">
-                        <label> Por fecha De:</label>
+                        <label>Por Fecha Solicitada De:</label>
                         <input
                           type="date"
                           value={startDate}
@@ -789,9 +790,9 @@ function Solicitudes() {
                                 className="px-4 py-3 cursor-pointer"
                                 onClick={() => handleSort("fecha_solicitud")}
                               >
-                                Fecha de solicitud{" "}
+                                Fecha solicitada{" "}
                                 <span>
-                                  {sortBy === "fecha_solicitud" &&
+                                  {sortBy === "fecha_solicitada" &&
                                     (sortOrder === "asc" ? "▲" : "▼")}
                                 </span>
                               </th>
@@ -852,7 +853,7 @@ function Solicitudes() {
                                       {solicitud.nombre_especialidad}
                                     </td>
                                     <td className="border px-4 py-2 text-center">
-                                      {solicitud.fecha_solicitud}
+                                      {solicitud.fecha_solicitada}
                                     </td>
                                     <td className="border px-4 py-2 text-center">
                                       {solicitud.req_insumo}

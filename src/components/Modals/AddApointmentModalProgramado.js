@@ -22,7 +22,7 @@ function AddAppointmentModalProgramado({
   const [salasDisponibles, setSalasDisponibles] = useState([]);
   const [error, setError] = useState("");
   const modalRef = useRef(null);
-  const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
+  const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -49,7 +49,8 @@ function AddAppointmentModalProgramado({
     if (isOpen && appointmentId) {
       const fetchAppointmentData = async () => {
         try {
-          const response = await fetch(`${baseURL}/api/solicitudes/${appointmentId}`
+          const response = await fetch(
+            `${baseURL}/api/solicitudes/${appointmentId}`
           );
           if (!response.ok) {
             throw new Error("Network response was not ok");
@@ -69,14 +70,15 @@ function AddAppointmentModalProgramado({
 
   const fetchSuspendDetailOptions = async (category) => {
     try {
-      const response = await fetch(`${baseURL}/api/solicitudes/motivos-suspension?category=${category}`
+      const response = await fetch(
+        `${baseURL}/api/solicitudes/motivos-suspension?category=${category}`
       );
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
       const data = await response.json();
       // Assuming data is an array of objects with a 'motivo' property
-      const options = data.map(option => option.motivo); // Extracting 'motivo' from each object
+      const options = data.map((option) => option.motivo); // Extracting 'motivo' from each object
       setSuspendDetailOptions(options);
     } catch (error) {
       console.error("Error fetching suspend detail options:", error);
@@ -89,13 +91,12 @@ function AddAppointmentModalProgramado({
   const fetchSalasDisponibles = async () => {
     try {
       const response = await axios.get(`${baseURL}/api/salas/salas`);
-      const disponibles = response.data.filter(sala => sala.estado);
+      const disponibles = response.data.filter((sala) => sala.estado);
       setSalasDisponibles(disponibles);
     } catch (error) {
-      console.error('Error fetching salas:', error);
+      console.error("Error fetching salas:", error);
     }
   };
-  
 
   const handleSuspendReasonChange = (e) => {
     const selectedReason = e.target.value;
@@ -118,7 +119,8 @@ function AddAppointmentModalProgramado({
         sala_quirofano,
       } = patientData;
 
-      const response = await fetch(`${baseURL}/api/solicitudes/actualizar/${appointmentId}`,
+      const response = await fetch(
+        `${baseURL}/api/solicitudes/actualizar/${appointmentId}`,
         {
           method: "PATCH",
           body: JSON.stringify({
@@ -155,7 +157,8 @@ function AddAppointmentModalProgramado({
       return;
     }
     try {
-      const response = await fetch(`${baseURL}/api/solicitudes/suspender/${appointmentId}`,
+      const response = await fetch(
+        `${baseURL}/api/solicitudes/suspender/${appointmentId}`,
         {
           method: "PATCH",
           body: JSON.stringify({
@@ -195,8 +198,34 @@ function AddAppointmentModalProgramado({
         </div>
       ) : (
         <div className="p-4">
-          <div className="mr-4 w-full">
-            <label className="block font-semibold text-gray-700 mb-2">
+          <div className="flex justify-between">
+            <button
+              onClick={handleSuspend}
+              className="bg-red-500 bg-opacity-20 text-red-500 text-sm p-4 rounded-lg font-light"
+              style={{ marginBottom: "8px" }}
+            >
+              Suspender cita
+            </button>
+
+            <button
+              onClick={handleSaveChanges}
+              className="bg-green-500 bg-opacity-20 text-green-500 text-sm p-4 rounded-lg font-light"
+              style={{ marginBottom: "8px" }}
+            >
+              Guardar cambios
+            </button>
+
+            <button
+              onClick={closeModal}
+              className="bg-[#001B58] bg-opacity-20 text-[#001B58] text-sm p-4 rounded-lg font-light"
+              style={{ marginBottom: "8px" }}
+            >
+              Cerrar
+            </button>
+          </div>
+
+          <div className="mr-4 w-full mb-2">
+          <label className="block font-semibold text-gray-700 mb-2">
               Folio:
             </label>
             <p className="bg-gray-200 p-3 rounded-lg">
@@ -289,27 +318,27 @@ function AddAppointmentModalProgramado({
                 />
               </div>
               <div className="mr-4 w-full">
-    <label
-      htmlFor="sala_quirofano"
-      className="block font-semibold text-black mb-1"
-    >
-      Sala asignada:
-    </label>
-    <select
-      id="sala_quirofano"
-      name="sala_quirofano"
-      value={patientData.sala_quirofano || ""}
-      onChange={handleChange}
-      className="bg-white p-3 rounded-lg w-full"
-    >
-      <option value="">Seleccionar</option>
-      {salasDisponibles.map((sala) => (
-        <option key={sala.id} value={sala.nombre_sala}>
-          {sala.nombre_sala}
-        </option>
-      ))}
-    </select>
-  </div>
+                <label
+                  htmlFor="sala_quirofano"
+                  className="block font-semibold text-black mb-1"
+                >
+                  Sala asignada:
+                </label>
+                <select
+                  id="sala_quirofano"
+                  name="sala_quirofano"
+                  value={patientData.sala_quirofano || ""}
+                  onChange={handleChange}
+                  className="bg-white p-3 rounded-lg w-full"
+                >
+                  <option value="">Seleccionar</option>
+                  {salasDisponibles.map((sala) => (
+                    <option key={sala.id} value={sala.nombre_sala}>
+                      {sala.nombre_sala}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           </div>
 
@@ -365,7 +394,7 @@ function AddAppointmentModalProgramado({
               </div>
             </div>
           </div>
-          
+
           <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
             <div className="flex mb-4">
               <div className="mr-4 w-full">
@@ -379,39 +408,13 @@ function AddAppointmentModalProgramado({
 
               <div className="w-full">
                 <label className="block font-semibold text-gray-700 mb-2">
-                  Procedimientos adicionales: 
+                  Procedimientos adicionales:
                 </label>
                 <p className="bg-gray-200 p-3 rounded-lg">
                   {patientData?.procedimientos_extra}
                 </p>
               </div>
             </div>
-          </div>
-
-          <div className="flex justify-between mt-8">
-            <button
-              onClick={handleSuspend}
-              className="bg-red-600 bg-opacity-5 text-red-600 text-sm p-4 rounded-lg font-light mr-4"
-              style={{ marginBottom: "8px" }}
-            >
-              Suspender cita
-            </button>
-            
-            <button
-              onClick={handleSaveChanges}
-              className="bg-[#83e9aa] bg-opacity-20 text-green-500 text-sm p-4 rounded-lg font-light"
-              style={{ marginBottom: "8px" }}
-            >
-              Guardar cambios
-            </button>
-
-            <button
-              onClick={closeModal}
-              className="bg-[#001B58] bg-opacity-20 text-[#001B58] text-sm p-4 rounded-lg font-light"
-              style={{ marginBottom: "8px" }}
-            >
-              Cerrar
-            </button>
           </div>
         </div>
       )}
@@ -424,7 +427,7 @@ function AddAppointmentModalProgramado({
           width={"max-w-lg"}
         >
           <div className="p-4">
-          <div className="flex flex-col">
+            <div className="flex flex-col">
               <label className="block font-semibold text-gray-700 mb-2">
                 Motivo de suspensión:
               </label>
@@ -461,11 +464,7 @@ function AddAppointmentModalProgramado({
                 ))}
               </select>
             </div>
-            {error && (
-              <div className="mt-4 text-red-600">
-                {error}
-              </div>
-            )}
+            {error && <div className="mt-4 text-red-600">{error}</div>}
 
             <div className="flex justify-end mt-4">
               <button
@@ -481,7 +480,6 @@ function AddAppointmentModalProgramado({
                 Suspender
               </button>
             </div>
-
           </div>
         </Modal>
       )}
