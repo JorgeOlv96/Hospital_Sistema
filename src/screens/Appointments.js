@@ -424,9 +424,7 @@ function Appointments() {
                         })()}
                       </td>
                       <td>${appointment.clave_esp || ""}</td>
-                      <td>${moment(appointment.tipo_admision).format(
-                        "DD-MM-YYYY"
-                      )}</td>
+                      <td>${appointment.tipo_admision}</td>
                       <td>${appointment.tiempo_estimado} min</td>
                       <td>
                           ${(() => {
