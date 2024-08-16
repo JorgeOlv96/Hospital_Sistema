@@ -359,7 +359,7 @@ function Appointments() {
                 <th>Sexo</th>
                 <th>Procedimientos</th>
                 <th>Esp.</th>
-                <th>Fecha solicitada</th>
+                <th>Procedencia del paciente</th>
                 <th>Tiempo est.</th>
                 <th>Turno</th>
                 <TH>Anestesiólogo</th>
@@ -424,7 +424,7 @@ function Appointments() {
                         })()}
                       </td>
                       <td>${appointment.clave_esp || ""}</td>
-                      <td>${moment(appointment.fecha_programada).format(
+                      <td>${moment(appointment.tipo_admision).format(
                         "DD-MM-YYYY"
                       )}</td>
                       <td>${appointment.tiempo_estimado} min</td>
