@@ -203,9 +203,9 @@ function CrearSolicitud() {
   useEffect(() => {
     if (formData.fecha_solicitada) {
       const selectedDate = new Date(formData.fecha_solicitada);
-      const dayOfWeek = selectedDate.getDay(); // 0 = Domingo, 6 = Sábado
+      const dayOfWeek = selectedDate.getDay(); // 1 = Lunes, 5 = Viernes
 
-      if (dayOfWeek === 0 || dayOfWeek === 6) {
+      if (dayOfWeek === 5 || dayOfWeek === 6 ) {
         setFormData((prevFormData) => ({
           ...prevFormData,
           turno_solicitado: "Especial",
@@ -235,10 +235,10 @@ function CrearSolicitud() {
   useEffect(() => {
     if (formData.hora_solicitada) {
       const selectedDate = new Date(formData.fecha_solicitada);
-      const dayOfWeek = selectedDate.getDay(); // 0 = Domingo, 6 = Sábado
+      const dayOfWeek = selectedDate.getDay(); // 1 = Lunes, 5 = Viernes
 
       if (
-        dayOfWeek !== 0 &&
+        dayOfWeek !== 5 &&
         dayOfWeek !== 6 &&
         formData.turno_solicitado !== "Especial"
       ) {
