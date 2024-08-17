@@ -5,17 +5,36 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { startOfWeek, endOfWeek, format } from "date-fns"; 
+import { startOfWeek, endOfWeek, format } from "date-fns";
+import Select from 'react-select';
 
 function Programaranestesiologo() {
   const [formData, setFormData] = useState({
     nombre: "",
     dia_anestesio: "",
     turno_anestesio: "",
-    sala_anestesio: "",
+    sala_anestesio: [], // Cambiado a array para manejar múltiples selecciones
     hora_inicio: "",
     hora_fin: "",
   });
+
+  const options = [
+    { value: 'A1', label: 'Sala A1' },
+    { value: 'A2', label: 'Sala A2' },
+    { value: 'T1', label: 'Sala T1' },
+    { value: 'T2', label: 'Sala T2' },
+    { value: '1', label: 'Sala 1' },
+    { value: '2', label: 'Sala 2' },
+    { value: '3', label: 'Sala 3' },
+    { value: '4', label: 'Sala 4' },
+    { value: '5', label: 'Sala 5' },
+    { value: '6', label: 'Sala 6' },
+    { value: 'E', label: 'Sala E' },
+    { value: 'H', label: 'Sala H' },
+    { value: 'RX', label: 'Sala RX' }
+  ];
+
+  const [selectedOptions, setSelectedOptions] = useState([]);
 
   const [anesthesiologists, setAnesthesiologists] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -37,7 +56,6 @@ function Programaranestesiologo() {
   const startOfCurrentWeek = startOfWeek(new Date(), { weekStartsOn: 1 });
   const endOfCurrentWeek = endOfWeek(new Date(), { weekStartsOn: 1 });
 
-
   const fetchActiveAnesthesiologists = async (inputValue) => {
     try {
       const response = await fetch(
@@ -56,15 +74,14 @@ function Programaranestesiologo() {
       return [];
     }
   };
-  
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setFormData((prevFormData) => ({
       ...prevFormData,
-      [name]: value,
+      [name]: value, // Esto actualizará el campo correspondiente
     }));
-  
+
     if (name === "turno_anestesio") {
       switch (value) {
         case "Matutino":
@@ -97,15 +114,6 @@ function Programaranestesiologo() {
       }
     }
   };
-  
-
-  const handleSelectChange = (selectedOption) => {
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      nombre: selectedOption ? selectedOption.value : "",
-    }));
-  };
-  
 
   const handleSaveAnesthesiologist = async () => {
     try {
@@ -116,14 +124,14 @@ function Programaranestesiologo() {
           anesthesiologist.turno_anestesio === formData.turno_anestesio &&
           anesthesiologist.sala_anestesio === formData.sala_anestesio
       );
-  
+
       if (existingAssignment) {
         toast.error(
           "Ya hay un anestesiólogo asignado a esta sala en el mismo día."
         );
         return;
       }
-  
+
       const response = await fetch(`${baseURL}/api/anestesio/anestesiologos`, {
         method: "POST",
         headers: {
@@ -136,10 +144,10 @@ function Programaranestesiologo() {
       }
       const data = await response.json();
       console.log("Anesthesiologist saved successfully:", data);
-  
+
       // Mostrar notificación de éxito
       toast.success("¡Anestesiólogo asignado con éxito!");
-  
+
       // Limpiar el formulario
       setFormData({
         nombre: "",
@@ -149,7 +157,7 @@ function Programaranestesiologo() {
         hora_inicio: "",
         hora_fin: "",
       });
-  
+
       // Actualizar la lista de anestesiólogos después de guardar uno nuevo
       fetchAnesthesiologists();
     } catch (error) {
@@ -158,7 +166,6 @@ function Programaranestesiologo() {
       toast.error("Error al guardar el anestesiólogo");
     }
   };
-
 
   const handleDeleteAnesthesiologist = async (id) => {
     if (
@@ -173,13 +180,13 @@ function Programaranestesiologo() {
             method: "DELETE",
           }
         );
-  
+
         const data = await response.json();
-  
+
         if (!response.ok) {
           throw new Error(data.message || "Network response was not ok");
         }
-  
+
         // Actualizar la lista de anestesiólogos después de eliminar uno
         fetchAnesthesiologists();
         toast.success(data.message || "Anestesiólogo eliminado con éxito");
@@ -189,7 +196,6 @@ function Programaranestesiologo() {
       }
     }
   };
-  
 
   const fetchAnesthesiologists = async () => {
     try {
@@ -203,7 +209,8 @@ function Programaranestesiologo() {
       data = data.filter((anesthesiologist) => {
         const dia_anestesio = new Date(anesthesiologist.dia_anestesio);
         return (
-          dia_anestesio >= startOfCurrentWeek && dia_anestesio <= endOfCurrentWeek
+          dia_anestesio >= startOfCurrentWeek &&
+          dia_anestesio <= endOfCurrentWeek
         );
       });
 
@@ -217,8 +224,6 @@ function Programaranestesiologo() {
   useEffect(() => {
     fetchAnesthesiologists();
   }, []);
-
-  
 
   // Calcular índices para la paginación
   const indexOfLastAnesthesiologist = page * anesthesiologistsPerPage;
@@ -237,33 +242,30 @@ function Programaranestesiologo() {
     fetchSalasDisponibles();
   }, []);
 
-
   const fetchSalasDisponibles = async () => {
-  try {
-    const response = await axios.get(`${baseURL}/api/salas/salas`);
-    const disponibles = response.data.filter((sala) => sala.estado);
-    setSalasDisponibles(disponibles);
-  } catch (error) {
-    console.error("Error fetching salas:", error);
-  }
-};
+    try {
+      const response = await axios.get(`${baseURL}/api/salas/salas`);
+      const disponibles = response.data.filter((sala) => sala.estado);
+      setSalasDisponibles(disponibles);
+    } catch (error) {
+      console.error("Error fetching salas:", error);
+    }
+  };
 
+  const handleSort = (field) => {
+    const newSortOrder =
+      sortBy === field ? (sortOrder === "asc" ? "desc" : "asc") : "asc";
+    setSortBy(field);
+    setSortOrder(newSortOrder);
 
-const handleSort = (field) => {
-  const newSortOrder =
-    sortBy === field ? (sortOrder === "asc" ? "desc" : "asc") : "asc";
-  setSortBy(field);
-  setSortOrder(newSortOrder);
+    const sortedData = [...anesthesiologists].sort((a, b) => {
+      if (a[field] < b[field]) return newSortOrder === "asc" ? -1 : 1;
+      if (a[field] > b[field]) return newSortOrder === "asc" ? 1 : -1;
+      return 0;
+    });
 
-  const sortedData = [...anesthesiologists].sort((a, b) => {
-    if (a[field] < b[field]) return newSortOrder === "asc" ? -1 : 1;
-    if (a[field] > b[field]) return newSortOrder === "asc" ? 1 : -1;
-    return 0;
-  });
-
-  setSortedSolicitudes(sortedData);
-};
-
+    setSortedSolicitudes(sortedData);
+  };
 
   // Función para obtener el color de fondo basado en el turno
   const getTurnColor = (turno_anestesio) => {
@@ -278,7 +280,6 @@ const handleSort = (field) => {
         return "transparent";
     }
   };
-  
 
   const handleSearch = () => {
     setCurrentPage(1);
@@ -303,9 +304,16 @@ const handleSort = (field) => {
     }
   };
 
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
+
+
+  const handleChange = (selected) => {
+    setSelectedOptions(selected);
+  };
+
   return (
     <Layout>
-      
       <ToastContainer position="bottom-right" />
       <div
         data-aos="fade-right"
@@ -405,51 +413,59 @@ const handleSort = (field) => {
 
                 <div className="w-1/4">
                   <label className="block text-sm font-medium text-gray-700">
-                    Asignar sala
+                    Asignar sala (s)
                   </label>
 
-                  <select
-                    name="sala_anestesio"
-                    value={formData.sala_anestesio}
-                    onChange={handleInputChange}
-                    className="mt-1 block w-full px-4 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="">Seleccionar</option>
-                    <option value="A1">Sala A1</option>
-                    <option value="A2">Sala A2</option>
-                    <option value="T1">Sala T1</option>
-                    <option value="T2">Sala T2</option>
-                    <option value="1">Sala 1</option>
-                    <option value="2">Sala 2</option>
-                    <option value="3">Sala 3</option>
-                    <option value="4">Sala 4</option>
-                    <option value="5">Sala 5</option>
-                    <option value="6">Sala 6</option>
-                    <option value="E">Sala E</option>
-                    <option value="H">Sala H</option>
-                    <option value="RX">Sala RX</option>
+                  <div className="relative mt-1">
+                  <Select
+                    isMulti
+                    options={options}
+                    value={selectedOptions}
+                    onChange={handleChange}
+                    className="basic-multi-select"
+                    classNamePrefix="select"
+                  />
+                  </div>
 
-                    <option value="Recup_Matutino" className="font-bold">
-                      Recuperación Matutino
-                    </option>
-                    <option value="Con_Ext_P1_mat" className="font-bold">
-                      Consulta Externa Piso 1
-                    </option>
-                    <option value="Con_Ext_P2_mat" className="font-bold">
-                      Consulta Externa Piso 2
-                    </option>
-                    <option value="Rec_Vespertino" className="font-bold">
-                      Recuperación Vespertino
-                    </option>
-                    <option value="Con_Ext_P1_vesp" className="font-bold">
-                      Consulta Externa Piso 1
-                    </option>
-                    <option value="Con_Ext_P2_vesp" className="font-bold">
-                      Consulta Externa Piso 2
-                    </option>
-                  </select>
+                  <div className="mt-4">
+                    <label className="block text-sm font-medium text-gray-700">
+                      Salas especiales
+                    </label>
+                    <select
+                      name="otras_opciones"
+                      value={formData.otras_opciones}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          otras_opciones: e.target.value,
+                        })
+                      }
+                      className="mt-1 block w-full px-4 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                      <option value="">Seleccionar</option>
+                      <option value="Recup_Matutino" className="font-bold">
+                        Recuperación Matutino
+                      </option>
+                      <option value="Con_Ext_P1_mat" className="font-bold">
+                        Consulta Externa Piso 1
+                      </option>
+                      <option value="Con_Ext_P2_mat" className="font-bold">
+                        Consulta Externa Piso 2
+                      </option>
+                      <option value="Rec_Vespertino" className="font-bold">
+                        Recuperación Vespertino
+                      </option>
+                      <option value="Con_Ext_P1_vesp" className="font-bold">
+                        Consulta Externa Piso 1
+                      </option>
+                      <option value="Con_Ext_P2_vesp" className="font-bold">
+                        Consulta Externa Piso 2
+                      </option>
+                    </select>
+                  </div>
                 </div>
               </div>
+
               <div className="px-2 py-2 text-right">
                 <button
                   onClick={handleSaveAnesthesiologist}
@@ -636,7 +652,6 @@ const handleSort = (field) => {
               &#8594;
             </button>
           </div>
-
         </div>
       </div>
     </Layout>
