@@ -1009,7 +1009,6 @@ function CrearSolicitud() {
                     htmlFor="procedimientos_paciente"
                     className="block font-semibold text-white mb-1"
                   >
-                    Procedimiento (CIE-9)
                     Procedimiento (CIE-9):
                   </label>
                   <ProcedureSelect
