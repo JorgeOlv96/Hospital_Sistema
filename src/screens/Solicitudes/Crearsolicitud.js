@@ -1014,7 +1014,7 @@ function CrearSolicitud() {
                     htmlFor="procedimientos_paciente"
                     className="block font-semibold text-white mb-1"
                   >
-                    Procedimientos del paciente:
+                    Procedimiento (CIE-9):
                   </label>
                   <ProcedureSelect
                     id="procedimientos_paciente" // Añade el id para el campo
@@ -1090,7 +1090,7 @@ function CrearSolicitud() {
                     htmlFor="diagnostico_paciente"
                     className="block font-semibold text-white mb-1"
                   >
-                    Diagnóstico del paciente
+                    Diagnóstico y procedimiento a realizar:
                   </label>
                   <textarea
                     placeholder="Diagnóstico del paciente"
