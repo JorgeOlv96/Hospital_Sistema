@@ -16,6 +16,7 @@ function Solicitudes() {
   const [sortOrder, setSortOrder] = useState("asc");
   const [searchTerm, setSearchTerm] = useState("");
   const [searchField, setSearchField] = useState("nombre_paciente");
+  const [filteredResults, setFilteredResults] = useState([]);
 
   const [totalSolicitudes, setTotalSolicitudes] = useState(0);
   const [totalProgramadas, setTotalProgramadas] = useState(0);
@@ -32,9 +33,7 @@ function Solicitudes() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
 
-
-
-useEffect(() => {
+  useEffect(() => {
     const fetchTotalSolicitudes = async () => {
       try {
         const response = await axios.get(`${baseURL}/api/solicitudes`);
@@ -46,7 +45,9 @@ useEffect(() => {
 
     const fetchTotalProgramadas = async () => {
       try {
-        const response = await axios.get(`${baseURL}/api/solicitudes/programadas`);
+        const response = await axios.get(
+          `${baseURL}/api/solicitudes/programadas`
+        );
         setTotalProgramadas(response.data.length); // Asegúrate de que 'length' sea la propiedad correcta
       } catch (error) {
         console.error("Error fetching programadas:", error);
@@ -55,7 +56,9 @@ useEffect(() => {
 
     const fetchTotalSuspendidas = async () => {
       try {
-        const response = await axios.get(`${baseURL}/api/solicitudes/suspendidas`);
+        const response = await axios.get(
+          `${baseURL}/api/solicitudes/suspendidas`
+        );
         setTotalSuspendidas(response.data.length); // Asegúrate de que 'length' sea la propiedad correcta
       } catch (error) {
         console.error("Error fetching programadas:", error);
@@ -64,7 +67,9 @@ useEffect(() => {
 
     const fetchTotalRealizadas = async () => {
       try {
-        const response = await axios.get(`${baseURL}/api/solicitudes/reailizadas`);
+        const response = await axios.get(
+          `${baseURL}/api/solicitudes/reailizadas`
+        );
         setTotalRealizadas(response.data.length); // Asegúrate de que 'length' sea la propiedad correcta
       } catch (error) {
         console.error("Error fetching programadas:", error);
@@ -73,7 +78,9 @@ useEffect(() => {
 
     const fetchTotalPendientes = async () => {
       try {
-        const response = await axios.get(`${baseURL}/api/solicitudes/pendientes`);
+        const response = await axios.get(
+          `${baseURL}/api/solicitudes/pendientes`
+        );
         setTotalPendientes(response.data.length); // Asegúrate de que 'length' sea la propiedad correcta
       } catch (error) {
         console.error("Error fetching programadas:", error);
@@ -82,7 +89,9 @@ useEffect(() => {
 
     const fetchTotalPreprogramadas = async () => {
       try {
-        const response = await axios.get(`${baseURL}/api/solicitudes/preprogramadas`);
+        const response = await axios.get(
+          `${baseURL}/api/solicitudes/preprogramadas`
+        );
         setTotalPreprogramadas(response.data.length); // Asegúrate de que 'length' sea la propiedad correcta
       } catch (error) {
         console.error("Error fetching programadas:", error);
@@ -91,13 +100,15 @@ useEffect(() => {
 
     const fetchTotalUrgentes = async () => {
       try {
-        const response = await axios.get(`${baseURL}/api/solicitudes/geturgencias`);
+        const response = await axios.get(
+          `${baseURL}/api/solicitudes/geturgencias`
+        );
         setTotalUrgentes(response.data.length); // Asegúrate de que 'length' sea la propiedad correcta
       } catch (error) {
         console.error("Error fetching programadas:", error);
       }
     };
-    
+
     fetchTotalSolicitudes();
     fetchTotalProgramadas();
     fetchTotalSuspendidas();
@@ -106,7 +117,6 @@ useEffect(() => {
     fetchTotalPreprogramadas();
     fetchTotalUrgentes();
   }, []); // Se ejecuta solo una vez al cargar el componente
-  
 
   useEffect(() => {
     const fetchSolicitudes = async () => {
@@ -172,7 +182,12 @@ useEffect(() => {
   const filteredSolicitudes = useMemo(() => {
     return solicitudes
       .filter((solicitud) => {
-        const fieldValue = solicitud[searchField];
+        let fieldValue = solicitud[searchField];
+
+        if (searchField === "nombre_paciente") {
+          // Concatenar nombre, apellido paterno y apellido materno
+          fieldValue = `${solicitud.nombre_paciente} ${solicitud.ap_paterno} ${solicitud.ap_materno}`;
+        }
 
         if (typeof fieldValue === "string") {
           return fieldValue.toLowerCase().includes(searchTerm.toLowerCase());
@@ -673,6 +688,16 @@ useEffect(() => {
                       </div>
                     </div>
                   </div>
+
+                  {/* Renderizado de resultados filtrados */}
+                  <ul>
+                    {filteredResults.map((paciente, index) => (
+                      <li key={index}>
+                        {paciente.nombre_paciente} {paciente.ap_paterno}{" "}
+                        {paciente.ap_materno}
+                      </li>
+                    ))}
+                  </ul>
                 </div>
               </div>
 
@@ -681,17 +706,19 @@ useEffect(() => {
                 <div className="text-left">
                   <div className="flex items-center justify-center">
                     <div className="flex space-x-2">
-                    <button
-                          className={`px-4 py-2 rounded-lg ${estadoButtonClasses("all")}`}
-                          style={
-                            filterState === "all"
-                              ? { backgroundColor: "#4A5568", color: "#fff" }
-                              : { backgroundColor: "#CBD5E0" }
-                          }
-                          onClick={() => setFilterState("all")}
-                        >
-                          Todas las solicitudes ({totalSolicitudes})
-                        </button>
+                      <button
+                        className={`px-4 py-2 rounded-lg ${estadoButtonClasses(
+                          "all"
+                        )}`}
+                        style={
+                          filterState === "all"
+                            ? { backgroundColor: "#4A5568", color: "#fff" }
+                            : { backgroundColor: "#CBD5E0" }
+                        }
+                        onClick={() => setFilterState("all")}
+                      >
+                        Todas las solicitudes ({totalSolicitudes})
+                      </button>
                       <button
                         className={`px-4 py-2 rounded-lg ${estadoButtonClasses(
                           "programada"
