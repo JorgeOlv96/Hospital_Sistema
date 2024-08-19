@@ -1010,6 +1010,7 @@ function CrearSolicitud() {
                     className="block font-semibold text-white mb-1"
                   >
                     Procedimiento (CIE-9)
+                    Procedimiento (CIE-9):
                   </label>
                   <ProcedureSelect
                     id="procedimientos_paciente" // Añade el id para el campo

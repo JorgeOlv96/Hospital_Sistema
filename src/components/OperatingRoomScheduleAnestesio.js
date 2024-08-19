@@ -9,15 +9,10 @@ const OperatingRoomScheduleAnestesio = ({ date, appointments, onEventClick }) =>
     moment(app.start).isSame(date, 'day') || moment(app.end).isSame(date, 'day')
   );
 
-  const getAppointmentClass = (title) => {
-    if (title && (title.endsWith('R1') || title.endsWith('R2') || title.endsWith('R3') || title.endsWith('R4') || title.endsWith('R5'))) {
-      return 'reprogrammed';
-    }
-    if (title && title.endsWith('S')) {
-      return 'suspended';
-    }
-    return '';
+  const getAppointmentClass = () => {
+    return 'default-anesthesiologist';
   };
+  
 
   const generateSchedule = () => {
     const hours = Array.from({ length: 24 }, (_, i) => {
