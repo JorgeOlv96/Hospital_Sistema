@@ -43,6 +43,36 @@ const OperatingRoomScheduleAnestesio = ({ date, appointments, onEventClick }) =>
         );
 
         if (overlappingAppointments.length > 0) {
+          if (hourNum >= 20 && hourNum < 24) { // Para las horas nocturnas
+            return (
+              <div key={hour} className="schedule-slot occupied">
+                {overlappingAppointments.map((appointment, idx) => {
+                  const startMinute = moment(appointment.start).diff(startOfHour, 'minutes');
+                  const durationInMinutes = moment(appointment.end).diff(appointment.start, 'minutes');
+                  const appointmentClass = getAppointmentClass(appointment.title);
+  
+                  return (
+                    <div
+                      key={idx}
+                      className={`appointment-block ${appointmentClass}`}
+                      style={{
+                        top: `${(startMinute / 60) * 100}%`,
+                        height: `${(durationInMinutes / 60) * 100}%`,
+                      }}
+                      onClick={() => onEventClick(appointment)}
+                    >
+                      <div className="appointment-info">
+                        <p>{appointment.title}</p>
+                        <p>{moment(appointment.start).format('HH:mm')} - {moment(appointment.end).format('HH:mm')}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          }
+  
+          // Para los turnos matutino y vespertino
           return (
             <div key={hour} className="schedule-slot occupied">
               {overlappingAppointments.map((appointment, idx) => {
@@ -76,7 +106,7 @@ const OperatingRoomScheduleAnestesio = ({ date, appointments, onEventClick }) =>
 
       return cells;
     });
-
+  
     return hours.map((hour, index) => (
       <div key={hour} className="schedule-row">
         <div className="schedule-time" style={{ backgroundColor: getBackgroundColor(hour) }}>{hour}</div>
