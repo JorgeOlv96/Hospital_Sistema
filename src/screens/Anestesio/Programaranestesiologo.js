@@ -169,14 +169,14 @@ function Programaranestesiologo() {
             formData.sala_anestesio.includes(sala)
           )
       );
-  
+
       if (existingAssignment) {
         toast.error(
           "Ya hay un anestesiólogo asignado a esta sala en el mismo día."
         );
         return;
       }
-  
+
       const response = await fetch(`${baseURL}/api/anestesio/anestesiologos`, {
         method: "POST",
         headers: {
@@ -189,10 +189,10 @@ function Programaranestesiologo() {
       }
       const data = await response.json();
       console.log("Anesthesiologist saved successfully:", data);
-  
+
       // Mostrar notificación de éxito
       toast.success("¡Anestesiólogo asignado con éxito!");
-  
+
       // Limpiar el formulario
       setFormData({
         nombre: "",
@@ -202,10 +202,10 @@ function Programaranestesiologo() {
         hora_inicio: "",
         hora_fin: "",
       });
-  
+
       // Limpiar selectedOptions
       setSelectedOptions([]);
-  
+
       // Actualizar la lista de anestesiólogos después de guardar uno nuevo
       fetchAnesthesiologists();
     } catch (error) {
@@ -214,7 +214,6 @@ function Programaranestesiologo() {
       toast.error("Error al guardar el anestesiólogo");
     }
   };
-  
 
   const handleDeleteAnesthesiologist = async (id) => {
     if (
@@ -253,8 +252,6 @@ function Programaranestesiologo() {
         throw new Error("Network response was not ok");
       }
       let data = await response.json();
-
-
 
       setAnesthesiologists(data);
     } catch (error) {
@@ -356,7 +353,6 @@ function Programaranestesiologo() {
       sala_anestesio: selected ? selected.map((option) => option.value) : [],
     }));
   };
-
 
   return (
     <Layout>
@@ -607,6 +603,16 @@ function Programaranestesiologo() {
                         {anesthesiologist.hora_fin}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <button
+                          className="bg-blue-500 text-white px-4 py-2 rounded mr-2 hover:bg-blue-700"
+                          onClick={(e) => {
+                            e.preventDefault(); // Evita el comportamiento por defecto del clic, si es necesario
+                            // Puedes dejar la función vacía o solo poner un comentario
+                            // return;
+                          }}  
+                        >
+                          Editar
+                        </button>
                         <button
                           onClick={() =>
                             handleDeleteAnesthesiologist(
