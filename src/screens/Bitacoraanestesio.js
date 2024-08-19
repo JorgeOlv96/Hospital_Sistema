@@ -223,8 +223,8 @@ function Bitacoraanestesio() {
                     >
                       <td className="px-4 py-2">{appointment.folio}</td>
                       <td className="px-4 py-2">
-                        {appointment.nombre_paciente} {appointment.ap_paterno}{" "}
-                        {appointment.ap_materno}
+                      {appointment.ap_paterno}{" "}
+                      {appointment.ap_materno}{" "}{appointment.nombre_paciente}
                       </td>
                       <td className="px-4 py-2">
                         {appointment.nombre_especialidad}

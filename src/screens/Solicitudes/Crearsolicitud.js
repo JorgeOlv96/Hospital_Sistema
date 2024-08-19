@@ -476,7 +476,7 @@ function CrearSolicitud() {
                     for="fecha_solicitud"
                     class="block font-semibold text-white mb-1"
                   >
-                    Fecha de solicitud:
+                    Fecha de recibo de solicitud:
                   </label>
                   <input
                     type="date"
@@ -763,7 +763,7 @@ function CrearSolicitud() {
                     htmlFor="nombre_cirujano"
                     className="block font-semibold text-white mb-3"
                   >
-                    Cirujano encargado:
+                    Cirujano responsable:
                   </label>
                   <input
                     placeholder="Nombre del cirujano"

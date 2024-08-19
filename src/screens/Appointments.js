@@ -266,6 +266,22 @@ function Appointments() {
           moment(anesthesiologist.dia_anestesio).format("YYYY-MM-DD") === today
       );
       console.log("Today's Anesthesiologists:", todaysAnesthesiologists);
+      console.log("Today's Anesthesiologists for Recovery:", todaysAnesthesiologists.filter(
+        (anesthesiologist) => anesthesiologist.sala_anestesio === "Recup_Matutino"
+      ));
+
+      const anesthesiologistsFilteredByDate = anesthesiologistsData.filter(
+        (anesthesiologist) =>
+          moment(anesthesiologist.dia_anestesio).format("YYYY-MM-DD") === today
+      );
+      console.log("Filtered by Date:", anesthesiologistsFilteredByDate);
+      
+      const anesthesiologistsFilteredByRoom = anesthesiologistsData.filter(
+        (anesthesiologist) =>
+          anesthesiologist.sala_anestesio === "Recup_Matutino"
+      );
+      console.log("Filtered by Room (Recup_Matutino):", anesthesiologistsFilteredByRoom);
+      
 
       const printableContent = `
       <html>
@@ -514,13 +530,13 @@ function Appointments() {
                   .map(
                     (room) => `
                     <td>
-                      ${todaysAnesthesiologists
-                        .filter(
-                          (anesthesiologist) =>
-                            anesthesiologist.sala_anestesio === room
-                        )
-                        .map((anesthesiologist) => anesthesiologist.nombre)
-                        .join(", ")}
+${todaysAnesthesiologists
+  .filter(
+    (anesthesiologist) =>
+      anesthesiologist.sala_anestesio.includes(room)
+  )
+  .map((anesthesiologist) => anesthesiologist.nombre)
+  .join(", ")}
                     </td>`
                   )
                   .join("")}

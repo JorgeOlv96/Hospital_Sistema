@@ -180,12 +180,6 @@ function Anesthesiologos() {
         data-aos-delay="100"
         data-aos-offset="200"
       >
-      <div
-        data-aos="fade-right"
-        data-aos-duration="1000"
-        data-aos-delay="100"
-        data-aos-offset="200"
-      >
 <CustomToolbar
         date={selectedDate}
         view={view}
@@ -224,7 +218,6 @@ function Anesthesiologos() {
           toolbar={false}
         />
       )}
-      </div>
       </div>
     </Layout>
   );

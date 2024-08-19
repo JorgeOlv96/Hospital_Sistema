@@ -17,8 +17,9 @@ function Programaranestesiologo() {
     hora_inicio: "",
     hora_fin: "",
   });
+  
 
-  const options = [
+/*   const options = [
     { value: 'A1', label: 'Sala A1' },
     { value: 'A2', label: 'Sala A2' },
     { value: 'T1', label: 'Sala T1' },
@@ -32,7 +33,7 @@ function Programaranestesiologo() {
     { value: 'E', label: 'Sala E' },
     { value: 'H', label: 'Sala H' },
     { value: 'RX', label: 'Sala RX' }
-  ];
+  ]; */
 
   const [selectedOptions, setSelectedOptions] = useState([]);
 
@@ -74,6 +75,44 @@ function Programaranestesiologo() {
       return [];
     }
   };
+
+  // Define las opciones de salas
+  const normalRooms = [
+    { value: 'A1', label: 'Sala A1' },
+    { value: 'A2', label: 'Sala A2' },
+    { value: 'T1', label: 'Sala T1' },
+    { value: 'T2', label: 'Sala T2' },
+    { value: '1', label: 'Sala 1' },
+    { value: '2', label: 'Sala 2' },
+    { value: '3', label: 'Sala 3' },
+    { value: '4', label: 'Sala 4' },
+    { value: '5', label: 'Sala 5' },
+    { value: '6', label: 'Sala 6' },
+    { value: 'E', label: 'Sala E' },
+    { value: 'H', label: 'Sala H' },
+    { value: 'RX', label: 'Sala RX' }
+  ];
+
+  const specialRooms = [
+    { value: 'Recup_Matutino', label: 'Recuperación Matutino' },
+    { value: 'Con_Ext_P1_mat', label: 'Consulta Externa Piso 1' },
+    { value: 'Con_Ext_P2_mat', label: 'Consulta Externa Piso 2' },
+    { value: 'Rec_Vespertino', label: 'Recuperación Vespertino' },
+    { value: 'Con_Ext_P1_vesp', label: 'Consulta Externa Piso 1 Vesp.' },
+    { value: 'Con_Ext_P2_vesp', label: 'Consulta Externa Piso 2 Vesp.' }
+  ];
+
+  const allRooms = [
+    ...normalRooms.map(option => ({
+      ...option,
+      isDisabled: selectedOptions.some(opt => specialRooms.map(room => room.value).includes(opt.value))
+    })),
+    ...specialRooms.map(option => ({
+      ...option,
+      isDisabled: selectedOptions.length > 0 && !specialRooms.map(room => room.value).includes(selectedOptions[0]?.value)
+    }))
+  ];
+
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -122,16 +161,18 @@ function Programaranestesiologo() {
         (anesthesiologist) =>
           anesthesiologist.dia_anestesio === formData.dia_anestesio &&
           anesthesiologist.turno_anestesio === formData.turno_anestesio &&
-          anesthesiologist.sala_anestesio === formData.sala_anestesio
+          anesthesiologist.sala_anestesio.some((sala) =>
+            formData.sala_anestesio.includes(sala)
+          )
       );
-
+  
       if (existingAssignment) {
         toast.error(
           "Ya hay un anestesiólogo asignado a esta sala en el mismo día."
         );
         return;
       }
-
+  
       const response = await fetch(`${baseURL}/api/anestesio/anestesiologos`, {
         method: "POST",
         headers: {
@@ -310,8 +351,11 @@ function Programaranestesiologo() {
 
   const handleChange = (selected) => {
     setSelectedOptions(selected);
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      sala_anestesio: selected ? selected.map(option => option.value) : [],
+    }));
   };
-
   return (
     <Layout>
       <ToastContainer position="bottom-right" />
@@ -412,57 +456,15 @@ function Programaranestesiologo() {
                 </div>
 
                 <div className="w-1/4">
-                  <label className="block text-sm font-medium text-gray-700">
-                    Asignar sala (s)
-                  </label>
-
-                  <div className="relative mt-1">
-                  <Select
-                    isMulti
-                    options={options}
-                    value={selectedOptions}
-                    onChange={handleChange}
-                    className="basic-multi-select"
-                    classNamePrefix="select"
-                  />
-                  </div>
-
-                  <div className="mt-4">
-                    <label className="block text-sm font-medium text-gray-700">
-                      Salas especiales
-                    </label>
-                    <select
-                      name="otras_opciones"
-                      value={formData.otras_opciones}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          otras_opciones: e.target.value,
-                        })
-                      }
-                      className="mt-1 block w-full px-4 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    >
-                      <option value="">Seleccionar</option>
-                      <option value="Recup_Matutino" className="font-bold">
-                        Recuperación Matutino
-                      </option>
-                      <option value="Con_Ext_P1_mat" className="font-bold">
-                        Consulta Externa Piso 1
-                      </option>
-                      <option value="Con_Ext_P2_mat" className="font-bold">
-                        Consulta Externa Piso 2
-                      </option>
-                      <option value="Rec_Vespertino" className="font-bold">
-                        Recuperación Vespertino
-                      </option>
-                      <option value="Con_Ext_P1_vesp" className="font-bold">
-                        Consulta Externa Piso 1
-                      </option>
-                      <option value="Con_Ext_P2_vesp" className="font-bold">
-                        Consulta Externa Piso 2
-                      </option>
-                    </select>
-                  </div>
+                <div className="form-group">
+          <label htmlFor="nombre">Asignar sala (s)</label>
+          <Select 
+            options={allRooms} 
+            isMulti 
+            value={selectedOptions} 
+            onChange={handleChange}
+          />
+        </div>
                 </div>
               </div>
 
@@ -593,8 +595,10 @@ function Programaranestesiologo() {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border-r border-gray-300">
-                        {anesthesiologist.sala_anestesio}
-                      </td>
+  {Array.isArray(anesthesiologist.sala_anestesio)
+    ? anesthesiologist.sala_anestesio.join(", ")
+    : anesthesiologist.sala_anestesio}
+</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border-r border-gray-300">
                         {anesthesiologist.hora_inicio}
                       </td>
