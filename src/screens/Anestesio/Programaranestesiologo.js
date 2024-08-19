@@ -169,14 +169,14 @@ function Programaranestesiologo() {
             formData.sala_anestesio.includes(sala)
           )
       );
-
+  
       if (existingAssignment) {
         toast.error(
           "Ya hay un anestesiólogo asignado a esta sala en el mismo día."
         );
         return;
       }
-
+  
       const response = await fetch(`${baseURL}/api/anestesio/anestesiologos`, {
         method: "POST",
         headers: {
@@ -189,20 +189,23 @@ function Programaranestesiologo() {
       }
       const data = await response.json();
       console.log("Anesthesiologist saved successfully:", data);
-
+  
       // Mostrar notificación de éxito
       toast.success("¡Anestesiólogo asignado con éxito!");
-
+  
       // Limpiar el formulario
       setFormData({
         nombre: "",
         dia_anestesio: "",
         turno_anestesio: "",
-        sala_anestesio: "",
+        sala_anestesio: [], // Limpiar el campo de salas
         hora_inicio: "",
         hora_fin: "",
       });
-
+  
+      // Limpiar selectedOptions
+      setSelectedOptions([]);
+  
       // Actualizar la lista de anestesiólogos después de guardar uno nuevo
       fetchAnesthesiologists();
     } catch (error) {
@@ -211,6 +214,7 @@ function Programaranestesiologo() {
       toast.error("Error al guardar el anestesiólogo");
     }
   };
+  
 
   const handleDeleteAnesthesiologist = async (id) => {
     if (
@@ -359,6 +363,8 @@ function Programaranestesiologo() {
       sala_anestesio: selected ? selected.map((option) => option.value) : [],
     }));
   };
+
+
   return (
     <Layout>
       <ToastContainer position="bottom-right" />
