@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { startOfWeek, endOfWeek, format } from "date-fns";
-import Select from 'react-select';
+import Select from "react-select";
 
 function Programaranestesiologo() {
   const [formData, setFormData] = useState({
@@ -17,9 +17,8 @@ function Programaranestesiologo() {
     hora_inicio: "",
     hora_fin: "",
   });
-  
 
-/*   const options = [
+  /*   const options = [
     { value: 'A1', label: 'Sala A1' },
     { value: 'A2', label: 'Sala A2' },
     { value: 'T1', label: 'Sala T1' },
@@ -78,41 +77,46 @@ function Programaranestesiologo() {
 
   // Define las opciones de salas
   const normalRooms = [
-    { value: 'A1', label: 'Sala A1' },
-    { value: 'A2', label: 'Sala A2' },
-    { value: 'T1', label: 'Sala T1' },
-    { value: 'T2', label: 'Sala T2' },
-    { value: '1', label: 'Sala 1' },
-    { value: '2', label: 'Sala 2' },
-    { value: '3', label: 'Sala 3' },
-    { value: '4', label: 'Sala 4' },
-    { value: '5', label: 'Sala 5' },
-    { value: '6', label: 'Sala 6' },
-    { value: 'E', label: 'Sala E' },
-    { value: 'H', label: 'Sala H' },
-    { value: 'RX', label: 'Sala RX' }
+    { value: "A1", label: "Sala A1" },
+    { value: "A2", label: "Sala A2" },
+    { value: "T1", label: "Sala T1" },
+    { value: "T2", label: "Sala T2" },
+    { value: "1", label: "Sala 1" },
+    { value: "2", label: "Sala 2" },
+    { value: "3", label: "Sala 3" },
+    { value: "4", label: "Sala 4" },
+    { value: "5", label: "Sala 5" },
+    { value: "6", label: "Sala 6" },
+    { value: "E", label: "Sala E" },
+    { value: "H", label: "Sala H" },
+    { value: "RX", label: "Sala RX" },
   ];
 
   const specialRooms = [
-    { value: 'Recup_Matutino', label: 'Recuperación Matutino' },
-    { value: 'Con_Ext_P1_mat', label: 'Consulta Externa Piso 1' },
-    { value: 'Con_Ext_P2_mat', label: 'Consulta Externa Piso 2' },
-    { value: 'Rec_Vespertino', label: 'Recuperación Vespertino' },
-    { value: 'Con_Ext_P1_vesp', label: 'Consulta Externa Piso 1 Vesp.' },
-    { value: 'Con_Ext_P2_vesp', label: 'Consulta Externa Piso 2 Vesp.' }
+    { value: "Recup_Matutino", label: "Recuperación Matutino" },
+    { value: "Con_Ext_P1_mat", label: "Consulta Externa Piso 1" },
+    { value: "Con_Ext_P2_mat", label: "Consulta Externa Piso 2" },
+    { value: "Rec_Vespertino", label: "Recuperación Vespertino" },
+    { value: "Con_Ext_P1_vesp", label: "Consulta Externa Piso 1 Vesp." },
+    { value: "Con_Ext_P2_vesp", label: "Consulta Externa Piso 2 Vesp." },
   ];
 
   const allRooms = [
-    ...normalRooms.map(option => ({
+    ...normalRooms.map((option) => ({
       ...option,
-      isDisabled: selectedOptions.some(opt => specialRooms.map(room => room.value).includes(opt.value))
+      isDisabled: selectedOptions.some((opt) =>
+        specialRooms.map((room) => room.value).includes(opt.value)
+      ),
     })),
-    ...specialRooms.map(option => ({
+    ...specialRooms.map((option) => ({
       ...option,
-      isDisabled: selectedOptions.length > 0 && !specialRooms.map(room => room.value).includes(selectedOptions[0]?.value)
-    }))
+      isDisabled:
+        selectedOptions.length > 0 &&
+        !specialRooms
+          .map((room) => room.value)
+          .includes(selectedOptions[0]?.value),
+    })),
   ];
-
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -185,20 +189,23 @@ function Programaranestesiologo() {
       }
       const data = await response.json();
       console.log("Anesthesiologist saved successfully:", data);
-
+  
       // Mostrar notificación de éxito
       toast.success("¡Anestesiólogo asignado con éxito!");
-
+  
       // Limpiar el formulario
       setFormData({
         nombre: "",
         dia_anestesio: "",
         turno_anestesio: "",
-        sala_anestesio: "",
+        sala_anestesio: [], // Limpiar el campo de salas
         hora_inicio: "",
         hora_fin: "",
       });
-
+  
+      // Limpiar selectedOptions
+      setSelectedOptions([]);
+  
       // Actualizar la lista de anestesiólogos después de guardar uno nuevo
       fetchAnesthesiologists();
     } catch (error) {
@@ -207,6 +214,7 @@ function Programaranestesiologo() {
       toast.error("Error al guardar el anestesiólogo");
     }
   };
+  
 
   const handleDeleteAnesthesiologist = async (id) => {
     if (
@@ -348,14 +356,15 @@ function Programaranestesiologo() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const toggleDropdown = () => setIsDropdownOpen(!isDropdownOpen);
 
-
   const handleChange = (selected) => {
     setSelectedOptions(selected);
     setFormData((prevFormData) => ({
       ...prevFormData,
-      sala_anestesio: selected ? selected.map(option => option.value) : [],
+      sala_anestesio: selected ? selected.map((option) => option.value) : [],
     }));
   };
+
+
   return (
     <Layout>
       <ToastContainer position="bottom-right" />
@@ -456,15 +465,15 @@ function Programaranestesiologo() {
                 </div>
 
                 <div className="w-1/4">
-                <div className="form-group">
-          <label htmlFor="nombre">Asignar sala (s)</label>
-          <Select 
-            options={allRooms} 
-            isMulti 
-            value={selectedOptions} 
-            onChange={handleChange}
-          />
-        </div>
+                  <div className="form-group">
+                    <label htmlFor="nombre">Asignar sala (s)</label>
+                    <Select
+                      options={allRooms}
+                      isMulti
+                      value={selectedOptions}
+                      onChange={handleChange}
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -501,7 +510,6 @@ function Programaranestesiologo() {
                       <option value="turno_anestesio">Turno asignado</option>
                       <option value="hora_inicio">Hora inicio</option>
                       <option value="hora_fin">Hora fin</option>
-                      <option value="sala_anestesio">Sala asignada</option>
                     </select>
                   </div>
                 </div>
@@ -595,10 +603,10 @@ function Programaranestesiologo() {
                         </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border-r border-gray-300">
-  {Array.isArray(anesthesiologist.sala_anestesio)
-    ? anesthesiologist.sala_anestesio.join(", ")
-    : anesthesiologist.sala_anestesio}
-</td>
+                        {Array.isArray(anesthesiologist.sala_anestesio)
+                          ? anesthesiologist.sala_anestesio.join(", ")
+                          : anesthesiologist.sala_anestesio}
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border-r border-gray-300">
                         {anesthesiologist.hora_inicio}
                       </td>
