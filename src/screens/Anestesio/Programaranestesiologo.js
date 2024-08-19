@@ -254,14 +254,7 @@ function Programaranestesiologo() {
       }
       let data = await response.json();
 
-      // Filtra los anestesiólogos que están programados dentro de la semana actual
-      data = data.filter((anesthesiologist) => {
-        const dia_anestesio = new Date(anesthesiologist.dia_anestesio);
-        return (
-          dia_anestesio >= startOfCurrentWeek &&
-          dia_anestesio <= endOfCurrentWeek
-        );
-      });
+
 
       setAnesthesiologists(data);
     } catch (error) {
