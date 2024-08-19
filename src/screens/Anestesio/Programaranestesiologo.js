@@ -602,7 +602,7 @@ function Programaranestesiologo() {
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border-r border-gray-300">
                         {anesthesiologist.hora_fin}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="border px-6 py-2 flex justify-center items-center">
                         <button
                           className="bg-blue-500 text-white px-4 py-2 rounded mr-2 hover:bg-blue-700"
                           onClick={(e) => {

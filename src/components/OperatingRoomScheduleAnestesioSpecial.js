@@ -1,10 +1,25 @@
 import React from 'react';
 import moment from 'moment';
-import './OperatingRoomSchedule.css';
+import './OperatingRoomScheduleAnestesioSpecial.css';
 
-const OperatingRoomsSpecial = ['A1', 'A2', 'T1', 'T2', '1', '2', '3', '4', '5', '6', 'E', 'H', 'RX'];
-
-const OperatingRoomScheduleAnestesio = ({ date, appointments, onEventClick }) => {
+const OperatingRoomsSpecial = ['Recup_Matutino', 
+                               'Con_Ext_P1_mat', 
+                               'Con_Ext_P2_mat', 
+                               'Rec_Vespertino', 
+                               'Con_Ext_P1_vesp', 
+                               'Con_Ext_P2_vesp'
+                              ];
+                              
+                              const roomNameMapping = {
+                                'Recup_Matutino': 'Recuperación Matutino',
+                                'Con_Ext_P1_mat': 'Consulta Ext Piso 1',
+                                'Con_Ext_P2_mat': 'Consulta Ext Piso 2',
+                                'Rec_Vespertino': 'Recuperación Vespertino',
+                                'Con_Ext_P1_vesp': 'Consulta Ext Piso 1 Vesp',
+                                'Con_Ext_P2_vesp': 'Consulta Ext Piso 2 Vesp'
+                              };
+                              
+const OperatingRoomScheduleAnestesioSpecial = ({ date, appointments, onEventClick }) => {
   const filteredAppointments = appointments.filter(app =>
     moment(app.start).isSame(date, 'day') || moment(app.end).isSame(date, 'day')
   );
@@ -125,9 +140,9 @@ const OperatingRoomScheduleAnestesio = ({ date, appointments, onEventClick }) =>
   return (
     <div className="operating-room-schedule">
       <div className="schedule-header">
-        <div className="schedule-time-header">Hora</div>
+      <div className="schedule-time-header">Hora</div>
         {OperatingRoomsSpecial.map(room => (
-          <div key={room} className="schedule-room">{`Sala ${room}`}</div>
+          <div key={room} className="schedule-room">{roomNameMapping[room]}</div>
         ))}
       </div>
       <div className="schedule-body">
@@ -137,4 +152,4 @@ const OperatingRoomScheduleAnestesio = ({ date, appointments, onEventClick }) =>
   );
 };
 
-export default OperatingRoomScheduleAnestesio;
+export default OperatingRoomScheduleAnestesioSpecial;

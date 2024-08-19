@@ -8,8 +8,11 @@ import { HiOutlineViewGrid } from "react-icons/hi";
 import { HiOutlineCalendarDays } from "react-icons/hi2";
 import { Link } from "react-router-dom";
 import OperatingRoomScheduleAnestesio from "../components/OperatingRoomScheduleAnestesio";
+import OperatingRoomScheduleAnestesioSpecial from "../components/OperatingRoomScheduleAnestesioSpecial";
 import { FaHospital } from "react-icons/fa";
 import axios from "axios";
+import { FaUsersRectangle } from "react-icons/fa6";
+
 
 moment.locale("es");
 
@@ -43,6 +46,7 @@ const CustomToolbar = ({ date, view, onView, onNavigate }) => {
     { view: "week", label: "Semana", icon: <HiOutlineCalendarDays /> },
     { view: "day", label: "Día", icon: <BiTime /> },
     { view: "operatingRooms", label: "Quirófanos", icon: <FaHospital /> },
+    { view: "OperatingRoomsSpecial", label: "Especiales", icon: <FaUsersRectangle /> },
   ];
 
   const formatDateInputValue = (date) => {
@@ -99,7 +103,7 @@ const CustomToolbar = ({ date, view, onView, onNavigate }) => {
           />
         </div>
 
-        <div className="md:col-span-3 grid grid-cols-3 rounded-md border border-subMain">
+        <div className="md:col-span-3 grid grid-cols-4 rounded-md border border-subMain">
           {viewNamesGroup.map((item, index) => (
             <button
               key={index}
@@ -112,6 +116,10 @@ const CustomToolbar = ({ date, view, onView, onNavigate }) => {
             </button>
           ))}
         </div>
+
+        
+
+
       </div>
     </div>
   );
@@ -123,6 +131,7 @@ function Anesthesiologos() {
   const [selectedEvent, setSelectedEvent] = useState({});
   const [anesthesiologists, setAnesthesiologists] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
+
   const [view, setView] = useState("operatingRooms");
 
   const fetchAnesthesiologists = async () => {
@@ -174,13 +183,47 @@ function Anesthesiologos() {
 
   return (
     <Layout>
-      <div
-        data-aos="fade-right"
-        data-aos-duration="1000"
-        data-aos-delay="100"
-        data-aos-offset="200"
-      >
-<CustomToolbar
+  <div
+    data-aos="fade-right"
+    data-aos-duration="1000"
+    data-aos-delay="100"
+    data-aos-offset="200"
+  >
+    <CustomToolbar
+      date={selectedDate}
+      view={view}
+      onNavigate={(date) => {
+        setSelectedDate(date);
+        handleSelectDate(date);
+      }}
+      onView={handleViewChange}
+    />
+
+    {view === "OperatingRoomsSpecial" ? (
+      <OperatingRoomScheduleAnestesioSpecial
+        date={selectedDate}
+        appointments={anesthesiologists}
+        onEventClick={handleEventClick}
+      />
+    ) : view === "operatingRooms" ? (
+      <OperatingRoomScheduleAnestesio
+        date={selectedDate}
+        appointments={anesthesiologists}
+        onEventClick={handleEventClick}
+      />
+    ) : (
+      <Calendar
+        localizer={localizer}
+        events={anesthesiologists}
+        startAccessor="start"
+        endAccessor="end"
+        style={{ height: 900, marginBottom: 50 }}
+        onSelectEvent={handleEventClick}
+        defaultDate={new Date()}
+        timeslots={1}
+        resizable
+        step={60}
+        selectable
         date={selectedDate}
         view={view}
         onNavigate={(date) => {
@@ -188,38 +231,12 @@ function Anesthesiologos() {
           handleSelectDate(date);
         }}
         onView={handleViewChange}
+        toolbar={false}
       />
-      {view === "operatingRooms" ? (
-        <OperatingRoomScheduleAnestesio
-          date={selectedDate}
-          appointments={anesthesiologists}
-          onEventClick={handleEventClick}
-        />
-      ) : (
-        <Calendar
-          localizer={localizer}
-          events={anesthesiologists}
-          startAccessor="start"
-          endAccessor="end"
-          style={{ height: 900, marginBottom: 50 }}
-          onSelectEvent={handleEventClick}
-          defaultDate={new Date()}
-          timeslots={1}
-          resizable
-          step={60}
-          selectable
-          date={selectedDate}
-          view={view}
-          onNavigate={(date) => {
-            setSelectedDate(date);
-            handleSelectDate(date);
-          }}
-          onView={handleViewChange}
-          toolbar={false}
-        />
-      )}
-      </div>
-    </Layout>
+    )}
+  </div>
+</Layout>
+
   );
 }
 
