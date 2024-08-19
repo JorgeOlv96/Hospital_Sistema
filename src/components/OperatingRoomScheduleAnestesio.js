@@ -24,20 +24,24 @@ const OperatingRoomScheduleAnestesio = ({ date, appointments, onEventClick }) =>
       const hour = (i + 7) % 24; // Inicia desde las 07:00 hasta las 06:00 del día siguiente
       return `${String(hour).padStart(2, '0')}:00`;
     });
-  
+
     const schedule = OperatingRooms.map(room => {
-      const roomAppointments = filteredAppointments.filter(app => app.operatingRoom === room);
-  
+      const roomAppointments = filteredAppointments.filter(app => {
+        if (Array.isArray(app.operatingRoom)) {
+          return app.operatingRoom.includes(room);
+        }
+        return app.operatingRoom === room;
+      });
+
       const cells = hours.map((hour, index) => {
         const hourNum = (index + 7) % 24;
         const startOfHour = moment(date).startOf('day').add(hourNum, 'hours');
         const endOfHour = moment(startOfHour).add(1, 'hour');
-  
+
         const overlappingAppointments = roomAppointments.filter(app =>
           moment(app.start).isBefore(endOfHour) && moment(app.end).isAfter(startOfHour)
         );
-  
-        // Filtrar las citas nocturnas para que solo se muestren entre las 20:00 y las 23:00
+
         if (overlappingAppointments.length > 0) {
           if (hourNum >= 20 && hourNum < 24) { // Para las horas nocturnas
             return (
@@ -75,7 +79,7 @@ const OperatingRoomScheduleAnestesio = ({ date, appointments, onEventClick }) =>
                 const startMinute = moment(appointment.start).diff(startOfHour, 'minutes');
                 const durationInMinutes = moment(appointment.end).diff(appointment.start, 'minutes');
                 const appointmentClass = getAppointmentClass(appointment.title);
-  
+
                 return (
                   <div
                     key={idx}
@@ -96,10 +100,10 @@ const OperatingRoomScheduleAnestesio = ({ date, appointments, onEventClick }) =>
             </div>
           );
         }
-  
+
         return <div key={hour} className="schedule-slot"></div>;
       });
-  
+
       return cells;
     });
   
@@ -114,8 +118,6 @@ const OperatingRoomScheduleAnestesio = ({ date, appointments, onEventClick }) =>
       </div>
     ));
   };
-  
-  
 
   const getBackgroundColor = (hour) => {
     const hourNum = parseInt(hour.split(':')[0]);

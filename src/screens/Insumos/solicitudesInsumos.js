@@ -299,8 +299,8 @@ function SolicitudesInsumos() {
                           {solicitud.folio}
                         </td>
                         <td className="p-2 md:border md:border-gray-300 text-left block md:table-cell">
-                          {solicitud.nombre_paciente} {solicitud.ap_paterno}{" "}
-                          {solicitud.ap_materno}
+                        {solicitud.ap_paterno}{" "}
+                        {solicitud.ap_materno}{" "}{solicitud.nombre_paciente}
                         </td>
                         <td className="p-2 md:border md:border-gray-300 text-left block md:table-cell">
                           {solicitud.nombre_especialidad}

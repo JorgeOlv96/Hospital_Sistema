@@ -16,12 +16,97 @@ function Solicitudes() {
   const [sortOrder, setSortOrder] = useState("asc");
   const [searchTerm, setSearchTerm] = useState("");
   const [searchField, setSearchField] = useState("nombre_paciente");
+
+  const [totalSolicitudes, setTotalSolicitudes] = useState(0);
+  const [totalProgramadas, setTotalProgramadas] = useState(0);
+  const [totalSuspendidas, setTotalSuspendidas] = useState(0);
+  const [totalRealizadas, setTotalRealizadas] = useState(0);
+  const [totalPendientes, setTotalPendientes] = useState(0);
+  const [totalPreprogramadas, setTotalPreprogramadas] = useState(0);
+  const [totalUrgentes, setTotalUrgentes] = useState(0);
+
   const [filterState, setFilterState] = useState("all");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [view, setView] = useState("table"); // State to toggle view
   const [selectedDate, setSelectedDate] = useState(new Date());
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
+
+
+
+useEffect(() => {
+    const fetchTotalSolicitudes = async () => {
+      try {
+        const response = await axios.get(`${baseURL}/api/solicitudes`);
+        setTotalSolicitudes(response.data.length); // Asegúrate de que 'length' sea la propiedad correcta
+      } catch (error) {
+        console.error("Error fetching solicitudes:", error);
+      }
+    };
+
+    const fetchTotalProgramadas = async () => {
+      try {
+        const response = await axios.get(`${baseURL}/api/solicitudes/programadas`);
+        setTotalProgramadas(response.data.length); // Asegúrate de que 'length' sea la propiedad correcta
+      } catch (error) {
+        console.error("Error fetching programadas:", error);
+      }
+    };
+
+    const fetchTotalSuspendidas = async () => {
+      try {
+        const response = await axios.get(`${baseURL}/api/solicitudes/suspendidas`);
+        setTotalSuspendidas(response.data.length); // Asegúrate de que 'length' sea la propiedad correcta
+      } catch (error) {
+        console.error("Error fetching programadas:", error);
+      }
+    };
+
+    const fetchTotalRealizadas = async () => {
+      try {
+        const response = await axios.get(`${baseURL}/api/solicitudes/reailizadas`);
+        setTotalRealizadas(response.data.length); // Asegúrate de que 'length' sea la propiedad correcta
+      } catch (error) {
+        console.error("Error fetching programadas:", error);
+      }
+    };
+
+    const fetchTotalPendientes = async () => {
+      try {
+        const response = await axios.get(`${baseURL}/api/solicitudes/pendientes`);
+        setTotalPendientes(response.data.length); // Asegúrate de que 'length' sea la propiedad correcta
+      } catch (error) {
+        console.error("Error fetching programadas:", error);
+      }
+    };
+
+    const fetchTotalPreprogramadas = async () => {
+      try {
+        const response = await axios.get(`${baseURL}/api/solicitudes/preprogramadas`);
+        setTotalPreprogramadas(response.data.length); // Asegúrate de que 'length' sea la propiedad correcta
+      } catch (error) {
+        console.error("Error fetching programadas:", error);
+      }
+    };
+
+    const fetchTotalUrgentes = async () => {
+      try {
+        const response = await axios.get(`${baseURL}/api/solicitudes/geturgencias`);
+        setTotalUrgentes(response.data.length); // Asegúrate de que 'length' sea la propiedad correcta
+      } catch (error) {
+        console.error("Error fetching programadas:", error);
+      }
+    };
+    
+    fetchTotalSolicitudes();
+    fetchTotalProgramadas();
+    fetchTotalSuspendidas();
+    fetchTotalRealizadas();
+    fetchTotalPendientes();
+    fetchTotalPreprogramadas();
+    fetchTotalUrgentes();
+  }, []); // Se ejecuta solo una vez al cargar el componente
+  
 
   useEffect(() => {
     const fetchSolicitudes = async () => {
@@ -596,19 +681,17 @@ function Solicitudes() {
                 <div className="text-left">
                   <div className="flex items-center justify-center">
                     <div className="flex space-x-2">
-                      <button
-                        className={`px-4 py-2 rounded-lg ${estadoButtonClasses(
-                          "all"
-                        )}`}
-                        style={
-                          filterState === "all"
-                            ? { backgroundColor: "#4A5568", color: "#fff" }
-                            : { backgroundColor: "#CBD5E0" }
-                        }
-                        onClick={() => setFilterState("all")}
-                      >
-                        Todas las solicitudes
-                      </button>
+                    <button
+                          className={`px-4 py-2 rounded-lg ${estadoButtonClasses("all")}`}
+                          style={
+                            filterState === "all"
+                              ? { backgroundColor: "#4A5568", color: "#fff" }
+                              : { backgroundColor: "#CBD5E0" }
+                          }
+                          onClick={() => setFilterState("all")}
+                        >
+                          Todas las solicitudes ({totalSolicitudes})
+                        </button>
                       <button
                         className={`px-4 py-2 rounded-lg ${estadoButtonClasses(
                           "programada"
@@ -626,7 +709,7 @@ function Solicitudes() {
                         }
                         onClick={() => setFilterState("programada")}
                       >
-                        Programada
+                        Programadas ({totalProgramadas})
                       </button>
                       <button
                         className={`px-4 py-2 rounded-lg ${estadoButtonClasses(
@@ -645,7 +728,7 @@ function Solicitudes() {
                         }
                         onClick={() => setFilterState("realizada")}
                       >
-                        Realizada
+                        Realizadas ({totalRealizadas})
                       </button>
                       <button
                         className={`px-4 py-2 rounded-lg ${estadoButtonClasses(
@@ -664,7 +747,7 @@ function Solicitudes() {
                         }
                         onClick={() => setFilterState("suspendida")}
                       >
-                        Suspendida
+                        Suspendidas ({totalSuspendidas})
                       </button>
                       <button
                         className={`px-4 py-2 rounded-lg ${estadoButtonClasses(
@@ -683,7 +766,7 @@ function Solicitudes() {
                         }
                         onClick={() => setFilterState("pendiente")}
                       >
-                        Pendiente
+                        Pendientes ({totalPendientes})
                       </button>
                       <button
                         className={`px-4 py-2 rounded-lg ${estadoButtonClasses(
@@ -702,7 +785,7 @@ function Solicitudes() {
                         }
                         onClick={() => setFilterState("pre-programada")}
                       >
-                        Pre-programadas
+                        Pre-programadas ({totalPreprogramadas})
                       </button>
                       <button
                         className={`px-4 py-2 rounded-lg ${estadoButtonClasses(
@@ -721,7 +804,7 @@ function Solicitudes() {
                         }
                         onClick={() => setFilterState("urgencia")}
                       >
-                        Urgentes
+                        Urgentes ({totalUrgentes})
                       </button>
                     </div>
                   </div>
@@ -868,9 +951,9 @@ function Solicitudes() {
                                       {solicitud.folio}
                                     </td>
                                     <td className="border px-4 py-2">
-                                      {solicitud.nombre_paciente}{" "}
                                       {solicitud.ap_paterno}{" "}
-                                      {solicitud.ap_materno}
+                                      {solicitud.ap_materno}{" "}
+                                      {solicitud.nombre_paciente}
                                     </td>
                                     <td className="border px-4 py-2 text-center">
                                       {solicitud.nombre_especialidad}

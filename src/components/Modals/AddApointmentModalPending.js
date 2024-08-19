@@ -189,6 +189,12 @@ function AddAppointmentModalPending({
       console.error("Error saving changes:", error);
     }
   };
+  const formatFechaSolicitada = (fecha) => {
+    if (!fecha) return "";
+    const [year, month, day] = fecha.split("-");
+    return `${day}-${month}-${year}`;
+  };
+  
 
   return (
     <Modal
@@ -276,7 +282,7 @@ function AddAppointmentModalPending({
                 <input
                   type="text"
                   name="fecha_programada"
-                  value={patientData.fecha_solicitada || ""}
+                  value={formatFechaSolicitada(patientData.fecha_solicitada)}
                   className="bg-gray-200 p-3 rounded-lg w-full"
                   readOnly
                 />
