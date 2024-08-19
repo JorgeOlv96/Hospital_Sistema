@@ -82,7 +82,7 @@ function CrearSolicitud() {
   const [salasDisponibles, setSalasDisponibles] = useState([]);
   const [clave_esp, setClaveEspecialidad] = useState("");
   const [formData, setFormData] = useState({
-    fecha_solicitud: obtenerFechaActual(),
+    fecha_solicitud: "",
     clave_esp: "",
     nombre_especialidad: "",
     curp: "",
@@ -108,14 +108,6 @@ function CrearSolicitud() {
   });
 
   // Función para obtener la fecha actual en el formato adecuado (YYYY-MM-DD)
-  function obtenerFechaActual() {
-    const hoy = new Date();
-    const year = hoy.getFullYear();
-    const month = String(hoy.getMonth() + 1).padStart(2, "0");
-    const day = String(hoy.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-  }
-
   useEffect(() => {
     const fetchSolicitudes = async () => {
       try {
@@ -484,11 +476,14 @@ function CrearSolicitud() {
                     name="fecha_solicitud"
                     value={formData.fecha_solicitud}
                     onChange={handleInputChange}
-                    readOnly
-                    className={`"border-[#A8CBD5]"} rounded-lg px-3 py-2 w-full bg-[#A8CBD5]`}
+                    className={`border rounded-lg px-3 py-2 w-full ${
+                      formData.fecha_solicitud
+                        ? "bg-[#A8CBD5] border-[#A8CBD5]"
+                        : "border-gray-300"
+                    } focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58]`}
                   />
                 </div>
-                <div className="mr-4 w-full">
+                <div className="mr-4" style={{ width: "97.7%" }}>
                   <label
                     htmlFor="curp"
                     className="block font-semibold text-white mb-1"
@@ -634,7 +629,7 @@ function CrearSolicitud() {
                   />
                 </div>
 
-                <div className="mr-4" style={{ width: "41%" }}>
+                <div className="mr-4" style={{ width: "43%" }}>
                   <label
                     htmlFor="sala_quirofano"
                     className="block font-semibold text-white mb-1"
@@ -1014,7 +1009,7 @@ function CrearSolicitud() {
                     htmlFor="procedimientos_paciente"
                     className="block font-semibold text-white mb-1"
                   >
-                    Procedimientos del paciente:
+                    Procedimiento (CIE-9)
                   </label>
                   <ProcedureSelect
                     id="procedimientos_paciente" // Añade el id para el campo
@@ -1090,7 +1085,7 @@ function CrearSolicitud() {
                     htmlFor="diagnostico_paciente"
                     className="block font-semibold text-white mb-1"
                   >
-                    Diagnóstico del paciente
+                    Diagnóstico y procedimiento a realizar
                   </label>
                   <textarea
                     placeholder="Diagnóstico del paciente"
