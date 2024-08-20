@@ -3,6 +3,7 @@ import Layout from "../../Layout";
 import axios from "axios";
 import AddAppointmentModalPending from "../../components/Modals/AddApointmentModalPending";
 import { Link } from "react-router-dom";
+import moment from "moment";
 
 function ProgramarSolicitud() {
   const [pendingAppointments, setPendingAppointments] = useState([]);
@@ -12,6 +13,7 @@ function ProgramarSolicitud() {
   const [sortBy, setSortBy] = useState(null);
   const [sortOrder, setSortOrder] = useState("asc");
   const [page, setPage] = useState(1);
+  const [printDate, setPrintDate] = useState(new Date());
   const itemsPerPage = 10;
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
 
@@ -137,6 +139,355 @@ function ProgramarSolicitud() {
   const startIndex = (page - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
 
+  const onPrint = (date) => {
+    console.log("Printing for date:", date);
+    // Aquí agregarías la lógica para imprimir las solicitudes aprobadas en la fecha seleccionada
+  };
+
+  const formatDateInputValue = (date) => {
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${year}-${month}-${day}`;
+  };
+
+  const handlePrintDateChange = (e) => {
+    const selectedDate = moment(e.target.value).startOf("day").toDate();
+    setPrintDate(selectedDate);
+  };
+    // Llamada a la función de impresión
+    const handlePrintClick = (printDate) => {
+      printDailyAppointments(printDate);
+    };
+
+  const printDailyAppointments = async (printDate) => {
+    const today = moment(printDate).format("YYYY-MM-DD");
+    try {
+      // Fetch de las solicitudes programadas
+      const solicitudesResponse = await fetch(
+        `${baseURL}/api/solicitudes/programadas`
+      );
+      if (!solicitudesResponse.ok) {
+        throw new Error("Network response for solicitudes was not ok");
+      }
+      const solicitudesData = await solicitudesResponse.json();
+      console.log("Solicitudes Data:", solicitudesData);
+
+      // Fetch de los anestesiólogos
+      const anesthesiologistsResponse = await fetch(
+        `${baseURL}/api/anestesio/anestesiologos`
+      );
+      if (!anesthesiologistsResponse.ok) {
+        throw new Error("Network response for anesthesiologists was not ok");
+      }
+      const anesthesiologistsData = await anesthesiologistsResponse.json();
+      console.log("Anesthesiologists Data:", anesthesiologistsData);
+
+      // Filtrar las solicitudes del día seleccionado
+      const todaysRegistrations = solicitudesData.filter(
+        (solicitud) =>
+          moment(solicitud.fecha_solicitada).format("YYYY-MM-DD") === today
+      );
+      console.log("Today's Registrations:", todaysRegistrations);
+
+      // Filtrar los anestesiólogos asignados para el día seleccionado
+      const todaysAnesthesiologists = anesthesiologistsData.filter(
+        (anesthesiologist) =>
+          moment(anesthesiologist.dia_anestesio).format("YYYY-MM-DD") === today
+      );
+      console.log("Today's Anesthesiologists:", todaysAnesthesiologists);
+      console.log("Today's Anesthesiologists for Recovery:", todaysAnesthesiologists.filter(
+        (anesthesiologist) => anesthesiologist.sala_anestesio === "Recup_Matutino"
+      ));
+
+      const anesthesiologistsFilteredByDate = anesthesiologistsData.filter(
+        (anesthesiologist) =>
+          moment(anesthesiologist.dia_anestesio).format("YYYY-MM-DD") === today
+      );
+      console.log("Filtered by Date:", anesthesiologistsFilteredByDate);
+      
+      const anesthesiologistsFilteredByRoom = anesthesiologistsData.filter(
+        (anesthesiologist) =>
+          anesthesiologist.sala_anestesio === "Recup_Matutino"
+      );
+      console.log("Filtered by Room (Recup_Matutino):", anesthesiologistsFilteredByRoom);
+      
+
+      const printableContent = `
+      <html>
+        <head>
+          <style>
+            body {
+              background-color: #ffffff;
+              font-family: Arial, sans-serif;
+              font-size: 10px !important;
+              margin: 10px;
+              padding: 5px;
+            }
+            .header {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              margin-bottom: 10px;
+            }
+            .header img {
+              max-width: 150px;
+              height: auto;
+              margin-right: 5px;
+            }
+            .header .date {
+              font-size: 10px !important;
+              text-align: left;
+              margin-right: 5px;
+            }
+            .header h1 {
+              font-size: 10px !important;
+              margin: 5px;
+              flex-grow: 2;
+              text-align: right;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-top: 10px;
+              font-size: 8px !important;
+            }
+            th, td {
+              border: 1px solid black;
+              padding: 3px !important;
+              text-align: left;
+              white-space: nowrap;
+            }
+            .turno-section {
+              background-color: #d3d3d3;
+              text-align: left;
+              font-weight: bold;
+              padding: 5px;
+              border-top: 2px solid black;
+              border-bottom: 2px solid black;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="header" style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #f4f4f4;
+          ">
+            <h4 style="margin: 0;">Solicitudes Programadas</h4>
+            <div style="
+              display: flex;
+              align-items: center;
+              text-align: right;
+            ">
+              <h1 style="
+                margin: 0;
+                font-size: 1em;
+                line-height: 1;
+              ">APROBADA:</h1>
+              <div class="date" style="
+                margin-left: 10px;
+                font-size: 1em;
+              ">${moment(printDate).format("DD-MM-YYYY")}</div>
+            </div>
+          </div>
+      
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Folio</th>
+                <th>Hra. asign.</th>
+                <th>Sala</th>
+                <th>Nom. completo</th>
+                <th>Sexo</th>
+                <th>Diagnostico</th>
+                <th>Especialidad</th>
+                <th>Procedencia</th>
+                <th>Tiempo est.</th>
+                <TH>Anestesiólogo</th>
+                <th>Cirujano</th>
+                <th>Insumos</th>
+              </tr>
+            </thead>
+           <tbody>
+  ${["Matutino", "Vespertino", "Nocturno"]
+    .map((turno) => {
+      // Filtrar y ordenar las solicitudes por sala y hora
+      const sortedRegistrations = todaysRegistrations
+        .filter((appointment) => {
+          const hour = moment(appointment.hora_solicitada, "HH:mm").hour();
+          if (turno === "Matutino") return hour >= 8 && hour <= 14;
+          if (turno === "Vespertino") return hour >= 14 && hour <= 20;
+          return hour >= 20 || hour < 8;
+        })
+        .sort((a, b) => {
+          // Ordenar primero por sala y luego por hora
+          const salaOrder = [
+            "A1",
+            "A2",
+            "T1",
+            "T2",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "E",
+            "H",
+            "RX",
+          ];
+          const salaA = salaOrder.indexOf(a.sala_quirofano);
+          const salaB = salaOrder.indexOf(b.sala_quirofano);
+          if (salaA !== salaB) return salaA - salaB;
+          return moment(a.hora_asignada, "HH:mm").diff(
+            moment(b.hora_asignada, "HH:mm")
+          );
+        });
+
+      // Generar el HTML para las solicitudes ordenadas
+      return `
+        <tr class="turno-section">
+          <td colspan="13">${turno} (de ${
+        turno === "Matutino"
+          ? "08:00 a 14:00"
+          : turno === "Vespertino"
+          ? "14:00 a 20:00"
+          : "20:00 a 06:00"
+      })</td>
+        </tr>
+        ${sortedRegistrations
+          .map(
+            (appointment, index) => `
+              <tr>
+                <td>${index + 1}</td>
+                <td>${appointment.folio || ""}</td>
+                <td>${moment(appointment.hora_asignada, "HH:mm").format(
+                  "LT"
+                )}</td>
+                <td>Sala: ${appointment.sala_quirofano || ""}</td>
+                <td>${appointment.nombre_paciente} ${appointment.ap_paterno} ${
+              appointment.ap_materno
+            }</td>
+                <td>${
+                  appointment.sexo
+                    ? appointment.sexo === "Femenino"
+                      ? "F"
+                      : "M"
+                    : "No especificado"
+                }</td>
+                <td>
+                  ${(() => {
+                    const procedimientos =
+                      appointment.diagnostico || "";
+                    const [beforeDash, afterDash] = procedimientos.split(
+                      "-",
+                      2
+                    );
+                    const truncatedBeforeDash = beforeDash.slice(0, 45);
+                    return `${truncatedBeforeDash}${
+                      afterDash ? "-" + afterDash : ""
+                    }`;
+                  })()}
+                </td>
+                <td>${appointment.nombre_especialidad || ""}</td>
+                  <td>
+                    ${(() => {
+                      switch (appointment.tipo_admision) {
+                        case "CONSULTA EXTERNA":
+                          return "C.E.";
+                        case "CAMA":
+                          return `Cama - ${appointment.cama}`;
+                        case "URGENCIAS":
+                          return "Urgencias";
+                        default:
+                          return appointment.tipo_admision || "No especificado";
+                      }
+                    })()}
+                  </td>
+                <td>${appointment.tiempo_estimado} min</td>
+                <td>
+                  ${(() => {
+                    const nombreanes = appointment.nombre_anestesiologo || "";
+                    const words = nombreanes.split(" ");
+                    const truncatedName = words.slice(0, 2).join(" ");
+                    return truncatedName;
+                  })()}
+                </td>
+                <td>
+                  ${(() => {
+                    const nombre = appointment.nombre_cirujano || "";
+                    const words = nombre.split(" ");
+                    const truncatedName = words.slice(0, 2).join(" ");
+                    return truncatedName;
+                  })()}
+                </td>
+                <td>${appointment.req_insumo || ""}</td>
+              </tr>
+            `
+          )
+          .join("")}
+      `;
+    })
+    .join("")}
+</tbody>
+          </table>
+      
+          <table>
+            <thead>
+              <tr>
+                <th>Recuperación Matutino</th>
+                <th>Consulta Externa Piso 1</th>
+                <th>Consulta Externa Piso 2</th>
+                <th>Recuperación Vespertino</th>
+                <th>Consulta Externa Piso 1</th>
+                <th>Consulta Externa Piso 2</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                ${[
+                  "Recup_Matutino",
+                  "Con_Ext_P1_mat",
+                  "Con_Ext_P2_mat",
+                  "Rec_Vespertino",
+                  "Con_Ext_P1_vesp",
+                  "Con_Ext_P2_vesp",
+                ]
+                  .map(
+                    (room) => `
+                    <td>
+${todaysAnesthesiologists
+  .filter(
+    (anesthesiologist) =>
+      anesthesiologist.sala_anestesio.includes(room)
+  )
+  .map((anesthesiologist) => anesthesiologist.nombre)
+  .join(", ")}
+                    </td>`
+                  )
+                  .join("")}
+              </tr>
+            </tbody>
+          </table>
+        </body>
+      </html>
+      `;
+
+      // Crear una ventana de impresión y escribir el contenido
+      const printWindow = window.open("", "_blank");
+      printWindow.document.open();
+      printWindow.document.write(printableContent);
+      printWindow.document.close();
+      printWindow.print();
+    } catch (error) {
+      console.error("Error al imprimir las solicitudes:", error);
+    }
+  };
+
   return (
     <Layout>
       <div
@@ -184,6 +535,21 @@ function ProgramarSolicitud() {
                 <span>Ver todas las suspendidas</span>
               </Link>
             </div>
+            <div className="flex ml-auto items-center">
+          <label className="mr-2 font-semibold">Día a imprimir:</label>
+          <input
+            type="date"
+            value={formatDateInputValue(printDate)}
+            onChange={handlePrintDateChange}
+            className="px-4 py-2 border border-main rounded-md text-main"
+          />
+          <button
+            onClick={printDailyAppointments}
+            className="bg-[#5DB259] hover:bg-[#528E4F] text-white py-2 px-4 rounded inline-flex items-center ml-4"
+          >
+            Imprimir Aprobadas
+          </button>
+        </div>
           </div>
 
           {open && selectedAppointment && (
