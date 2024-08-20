@@ -56,6 +56,7 @@ import Gestionusuarios from './screens/Gestorusuarios/Gestionusr';
 import SalaManager from './screens/Salas/SalaManager';
 import SolicitudesInsumos from './screens/Insumos/solicitudesInsumos';
 import GestorManager from './screens/Productividad/Gestorproductividad';
+import TodasSolicitudes from './screens/Solicitudes/Todas';
 
 function App() {
   Aos.init();
@@ -104,6 +105,7 @@ function App() {
             <Route path="/solicitudes/Solicitudesprogramadas" element={<Solicitudesprogramadas />} />
             <Route path="/solicitudes/Solicitudsuspendida" element={<Solicitudessuspendidas />} />
             <Route path="/solicitudes/Solicitudreaizada" element={<Solicitudesrealizadas />} />
+            <Route path="/solicitudes/todas" element={<TodasSolicitudes />} />
             <Route path="/evaluacion" element={<Evaluacionmedica />} />
             {/* Others */}
             <Route path="/appointments" element={<Appointments />} />

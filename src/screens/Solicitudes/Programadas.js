@@ -153,16 +153,26 @@ function Solicitudesprogramadas() {
                 to="/appointments"
                 className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
               >
-                <span>Ver agenda</span>
+                <span>Agenda</span>
               </Link>
             </div>
+
+            <div>
+              <Link
+                to="/solicitudes/todas"
+                className="bg-[#4A5568] hover:bg-[#758195] text-white py-2 px-4 rounded inline-flex items-center"
+              >
+                <span>Todas las solicitudes</span>
+              </Link>
+            </div>
+
 
             <div>
               <Link
                 to="/solicitudes/Programarsolicitud"
                 className="bg-[#06ABC9] hover:bg-[#00C5E8] text-white py-2 px-4 rounded inline-flex items-center"
               >
-                <span>Ver todas las pre-programadas</span>
+                <span>Pre-programadas</span>
               </Link>
             </div>
 
@@ -171,7 +181,7 @@ function Solicitudesprogramadas() {
                 to="/solicitudes/Solicitudreaizada"
                 className="bg-[#63B3ED] hover:bg-[#63B3ED] text-white py-2 px-4 rounded inline-flex items-center"
               >
-                <span>Ver todas las realizadas</span>
+                <span>Realizadas</span>
               </Link>
             </div>
 
@@ -180,7 +190,7 @@ function Solicitudesprogramadas() {
                 to="/solicitudes/Solicitudsuspendida"
                 className="bg-[#D87D09] hover:bg-[#BF6E07] text-white py-2 px-4 rounded inline-flex items-center"
               >
-                <span>Ver todas las suspendidas</span>
+                <span>Suspendidas</span>
               </Link>
             </div>
           </div>
