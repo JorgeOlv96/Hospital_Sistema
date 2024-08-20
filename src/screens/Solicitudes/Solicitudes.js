@@ -343,7 +343,7 @@ function Solicitudes() {
                 margin: 0;
                 font-size: 0.9em;
                 line-height: 1;
-              ">PRELIMINAR:</h1>
+              ">Hoja de impresión PRELIMINAR:</h1>
               <div class="date" style="
                 margin-left: 7px;
                 font-size: 0.9em;
@@ -425,9 +425,9 @@ function Solicitudes() {
                   "LT"
                 )}</td>
                 <td>Sala: ${appointment.sala_quirofano || ""}</td>
-                <td>${appointment.nombre_paciente} ${appointment.ap_paterno} ${
+                <td>${appointment.ap_paterno} ${
               appointment.ap_materno
-            }</td>
+            } ${appointment.nombre_paciente}</td>
                 <td>${
                   appointment.sexo
                     ? appointment.sexo === "Femenino"

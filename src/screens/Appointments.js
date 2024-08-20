@@ -356,7 +356,7 @@ function Appointments() {
                 margin: 0;
                 font-size: 1em;
                 line-height: 1;
-              ">APROBADA:</h1>
+              ">Hoja de impresión APROBADA:</h1>
               <div class="date" style="
                 margin-left: 10px;
                 font-size: 1em;
@@ -439,9 +439,9 @@ function Appointments() {
                   "LT"
                 )}</td>
                 <td>Sala: ${appointment.sala_quirofano || ""}</td>
-                <td>${appointment.nombre_paciente} ${appointment.ap_paterno} ${
+                <td>${appointment.ap_paterno} ${
               appointment.ap_materno
-            }</td>
+            } ${appointment.nombre_paciente}</td>
                 <td>${
                   appointment.sexo
                     ? appointment.sexo === "Femenino"

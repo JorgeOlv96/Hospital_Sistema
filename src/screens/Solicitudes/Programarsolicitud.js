@@ -169,16 +169,16 @@ function ProgramarSolicitud() {
     setPrintDate(selectedDate);
   };
     // Llamada a la función de impresión
-    const handlePrintClick = (printDate) => {
-      printDailyAppointments(printDate);
+    const handlePrintClick = (selectedDate) => {
+      printDailyAppointments(selectedDate);
     };
 
-  const printDailyAppointments = async (printDate) => {
+  const printDailyAppointments = async (selectedDate) => {
     const today = moment(printDate).format("YYYY-MM-DD");
     try {
       // Fetch de las solicitudes programadas
       const solicitudesResponse = await fetch(
-        `${baseURL}/api/solicitudes/programadas`
+        `${baseURL}/api/solicitudes/preprogramadas`
       );
       if (!solicitudesResponse.ok) {
         throw new Error("Network response for solicitudes was not ok");
@@ -299,7 +299,7 @@ function ProgramarSolicitud() {
                 margin: 0;
                 font-size: 1em;
                 line-height: 1;
-              ">APROBADA:</h1>
+              ">Hoja de impresión PRE-APROBADAS:</h1>
               <div class="date" style="
                 margin-left: 10px;
                 font-size: 1em;
@@ -356,8 +356,8 @@ function ProgramarSolicitud() {
           const salaA = salaOrder.indexOf(a.sala_quirofano);
           const salaB = salaOrder.indexOf(b.sala_quirofano);
           if (salaA !== salaB) return salaA - salaB;
-          return moment(a.hora_asignada, "HH:mm").diff(
-            moment(b.hora_asignada, "HH:mm")
+          return moment(a.hora_solicitada, "HH:mm").diff(
+            moment(b.hora_solicitada, "HH:mm")
           );
         });
 
@@ -378,7 +378,7 @@ function ProgramarSolicitud() {
               <tr>
                 <td>${index + 1}</td>
                 <td>${appointment.folio || ""}</td>
-                <td>${moment(appointment.hora_asignada, "HH:mm").format(
+                <td>${moment(appointment.hora_solicitada, "HH:mm").format(
                   "LT"
                 )}</td>
                 <td>Sala: ${appointment.sala_quirofano || ""}</td>
@@ -560,7 +560,7 @@ ${todaysAnesthesiologists
             onClick={printDailyAppointments}
             className="bg-[#5DB259] hover:bg-[#528E4F] text-white py-2 px-4 rounded inline-flex items-center ml-4"
           >
-            Imprimir Aprobadas
+            Imprimir Pre-progrmadas
           </button>
         </div>
           </div>
