@@ -160,19 +160,21 @@ function CrearSolicitud() {
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-
+  
     // Actualizar el estado del formulario
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value,
+      // Si se cambia el tipo de admisión a algo distinto de "Cama", se asigna "NA" a cama
+      cama: name === "tipo_admision" && value !== "Cama" ? "NA" : prevFormData.cama,
     }));
-
+  
     // Marcar el campo como tocado
     setIsFieldTouched((prev) => ({
       ...prev,
       [name]: true,
     }));
-
+  
     // Validación de fecha de nacimiento
     if (name === "fecha_nacimiento") {
       const today = new Date().toISOString().split("T")[0]; // Fecha actual en formato YYYY-MM-DD
@@ -181,10 +183,6 @@ function CrearSolicitud() {
         setFormData((prevFormData) => ({
           ...prevFormData,
           edad: "", // Limpiar edad si la fecha es inválida
-          cama:
-            name === "tipo_admision" && value !== "Cama"
-              ? "NA"
-              : prevFormData.cama,
         }));
       } else {
         setIsFechaNacimientoValid(true);
@@ -196,6 +194,7 @@ function CrearSolicitud() {
       }
     }
   };
+  
 
   useEffect(() => {
     if (formData.fecha_solicitada) {
