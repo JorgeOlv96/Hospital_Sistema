@@ -94,6 +94,7 @@ function CrearSolicitud() {
     sexo: "",
     no_expediente: "",
     tipo_intervencion: "",
+    cama: "NA",
     fecha_solicitada: "",
     hora_solicitada: "",
     tiempo_estimado: "",
@@ -180,6 +181,7 @@ function CrearSolicitud() {
         setFormData((prevFormData) => ({
           ...prevFormData,
           edad: "", // Limpiar edad si la fecha es inválida
+          cama: name === "tipo_admision" && value !== "Cama" ? "NA" : prevFormData.cama
         }));
       } else {
         setIsFechaNacimientoValid(true);
@@ -312,6 +314,12 @@ function CrearSolicitud() {
 
   const validateForm = () => {
     const newErrors = {};
+
+      // Validar cama solo si tipo de admisión es "Cama"
+  if (formData.tipo_admision === "Cama" && !formData.cama) {
+    newErrors.cama = "Este campo es obligatorio cuando se selecciona 'Cama' en tipo de admisión.";
+  }
+
     Object.keys(formData).forEach((key) => {
       if (!formData[key]) {
         newErrors[key] = "Campo requerido";
@@ -780,34 +788,42 @@ function CrearSolicitud() {
               </div>
 
               <div className="flex mb-4">
-                <div className="mr-4 w-full">
-                  <label
-                    htmlFor="tipo_admision"
-                    className="block font-semibold text-white mb-1"
-                  >
-                    Procedencia del paciente:
-                  </label>
-                  <select
-                    id="tipo_admision"
-                    name="tipo_admision"
-                    value={formData.tipo_admision}
-                    onChange={handleInputChange}
-                    className={`border ${
-                      formData.tipo_admision
-                        ? "bg-[#A8CBD5] border-[#A8CBD5]"
-                        : "border-gray-300"
-                    } rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-                  >
-                    <option value="">Seleccionar</option>
-                    <option value="Cama">Cama</option>
-                    <option value="Consulta externa">Consulta externa</option>
-                    <option value="Urgencias">Urgencias</option>
-                  </select>
-                  {errors.tipo_admision && (
-                    <p className="text-red-500">{errors.tipo_admision}</p>
-                  )}
-                </div>
+      <div className="mr-4 w-3/4">
+        <label htmlFor="tipo_admision" className="block font-semibold text-white mb-1">
+          Procedencia del paciente:
+        </label>
+        <select
+          id="tipo_admision"
+          name="tipo_admision"
+          value={formData.tipo_admision}
+          onChange={handleInputChange}
+          className={`border ${formData.tipo_admision ? "bg-[#A8CBD5] border-[#A8CBD5]" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+        >
+          <option value="">Seleccionar</option>
+          <option value="Cama">Cama</option>
+          <option value="Consulta externa">Consulta externa</option>
+          <option value="Urgencias">Urgencias</option>
+        </select>
+        {errors.tipo_admision && <p className="text-red-500">{errors.tipo_admision}</p>}
+      </div>
 
+      {formData.tipo_admision === "Cama" && (
+        <div className="ml-4 w-1/4">
+          <label htmlFor="cama" className="block font-semibold text-white mb-1">
+            Cama:
+          </label>
+          <input
+            type="text"
+            id="cama"
+            name="cama"
+            value={formData.cama}
+            onChange={handleInputChange}
+            className="w-full border rounded-lg px-3 py-2"
+          />
+        </div>
+      )}
+    </div>
+    <div className="flex mb-4">
                 <div className="mr-4 w-full">
                   <label
                     htmlFor="tipo_intervencion"

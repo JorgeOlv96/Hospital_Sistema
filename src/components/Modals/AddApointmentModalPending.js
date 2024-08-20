@@ -7,6 +7,7 @@ function AddAppointmentModalPending({
   isOpen,
   appointmentId,
   onSuspendAppointment,
+  onDeleteAppointment
 }) {
   const [patientData, setPatientData] = useState({
     hora_asignada: "",
@@ -151,6 +152,29 @@ function AddAppointmentModalPending({
     }
   };
 
+  const handleDelete = async () => {
+    const confirmation = window.confirm(
+      "¿Estás seguro de que deseas eliminar esta solicitud?"
+    );
+    if (confirmation) {
+      try {
+        const response = await axios.put(
+          `${baseURL}/api/solicitudes/delete/${appointmentId}`
+        );
+        if (response.status === 200) {
+          onDeleteAppointment(appointmentId); // Notificar al componente padre que la solicitud ha sido eliminada
+          closeModal(); // Cerrar el modal
+          window.location.reload();
+        } else {
+          console.error("Unexpected response:", response);
+        }
+      } catch (error) {
+        console.error("Error deleting appointment:", error.message);
+        // Puedes mostrar una notificación al usuario si es necesario
+      }
+    }
+  };
+
   const handleSaveChanges = async () => {
     try {
       const {
@@ -215,6 +239,12 @@ function AddAppointmentModalPending({
       ) : (
         <div className="p-4">
           <div className="flex justify-between">
+          <button
+                onClick={handleDelete}
+                className="bg-red-500 bg-opacity-20 text-red-500 text-sm p-4 rounded-lg font-light"
+              >
+                Eliminar solicitud
+              </button>
             <button
               onClick={handleProgramAppointment}
               className="bg-[#001B58] bg-opacity-20 text-[#001B58] text-sm p-4 rounded-lg font-light"

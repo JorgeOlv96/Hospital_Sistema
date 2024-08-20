@@ -361,12 +361,11 @@ function Solicitudes() {
                 <th>Nom. completo</th>
                 <th>Sexo</th>
                 <th>Diagnóstico</th>
-                <th>Esp.</th>
-                <th>Procedencia del paciente</th>
+                <th>Especialidad</th>
+                <th>Procedencia</th>
                 <th>Tiempo est.</th>
-                <th>Turno</th>
                 <th>Cirujano</th>
-                <th>Ins.</th>
+                <th>Insumos</th>
               </tr>
             </thead>
             <tbody>
@@ -444,34 +443,30 @@ function Solicitudes() {
                       "-",
                       2
                     );
-                    const truncatedBeforeDash = beforeDash.slice(0, 20);
+                    const truncatedBeforeDash = beforeDash.slice(0, 45);
                     return `${truncatedBeforeDash}${
                       afterDash ? "-" + afterDash : ""
                     }`;
                   })()}
                 </td>
-                <td>${appointment.clave_esp || "N/A"}</td>
-                <td>${appointment.tipo_admision || "N/A"}</td>
+                <td>${appointment.nombre_especialidad || "N/A"}</td>
+                  <td>
+                    ${(() => {
+                      switch (appointment.tipo_admision) {
+                        case "CONSULTA EXTERNA":
+                          return "C.E.";
+                        case "CAMA":
+                          return `Cama - ${appointment.cama}`;
+                        case "URGENCIAS":
+                          return "Urgencias";
+                        default:
+                          return appointment.tipo_admision || "No especificado";
+                      }
+                    })()}
+                  </td>
                 <td>${appointment.tiempo_estimado} min</td>
                 <td>
-                  ${(() => {
-                    const turno = appointment.turno_solicitado || "N/A";
-                    const turnMap = {
-                      Vespertino: "V",
-                      Matutino: "M",
-                      Nocturno: "N",
-                      Especial: "E",
-                    };
-                    return turnMap[turno] || "N/A";
-                  })()}
-                </td>
-                <td>
-                  ${(() => {
-                    const nombre = appointment.nombre_cirujano || "";
-                    const words = nombre.split(" ");
-                    const truncatedName = words.slice(0, 2).join(" ");
-                    return truncatedName;
-                  })()}
+                  ${appointment.nombre_cirujano || ""}
                 </td>
                 <td>${appointment.req_insumo || ""}</td>
               </tr>

@@ -45,7 +45,7 @@ function Programaranestesiologo() {
   const [page, setPage] = useState(1);
   const [endIndex, setEndIndex] = useState(10);
   const [sortedSolicitudes, setSortedSolicitudes] = useState([]);
-
+  const [error, setError] = useState("");
   const [sortBy, setSortBy] = useState(null);
   const [sortOrder, setSortOrder] = useState("asc");
   const [searchTerm, setSearchTerm] = useState("");
@@ -73,7 +73,7 @@ function Programaranestesiologo() {
 
 
       const response = await fetch(
-        `${baseURL}/api/anestesio/anestesiologos/${editingAnesthesiologist.id}`,
+        `${baseURL}/api/anestesio/anestesiologos/${editingAnesthesiologist.id_anestesiologo}`,
         {
           method: "PATCH",
           headers: {
@@ -94,7 +94,7 @@ function Programaranestesiologo() {
 
       // If the response is ok, update the state with the updated user
       const updatedAestesio = await response.json();
-      setUsuarios((prevAnestesio) =>
+      setAnesthesiologists((prevAnestesio) =>
         prevAnestesio.map((anesthesiologist) =>
           anesthesiologist.id_anestesiologo === anesthesiologist.id_anestesiologo ? updatedAestesio : anesthesiologist
         )
@@ -116,8 +116,8 @@ function Programaranestesiologo() {
     // Manejar cambios en los inputs del formulario modal
     const handleEditChange = (event) => {
       const { name, value } = event.target;
-      setUserToEdit((prevUser) => ({
-        ...prevUser,
+      setEditingAnesthesiologist((prevAnestesio) => ({
+        ...prevAnestesio,
         [name]: value,
       }));
     };
@@ -683,6 +683,12 @@ function Programaranestesiologo() {
                         {anesthesiologist.hora_fin}
                       </td>
                       <td className="border px-6 py-2 flex justify-center items-center">
+                      <button
+                          className="bg-blue-500 text-white px-4 py-2 rounded mr-2 hover:bg-blue-700"
+                          onClick={() => handleEdit(anesthesiologist)}
+                        >
+                          Editar
+                        </button>
                         <button
                           onClick={() =>
                             handleDeleteAnesthesiologist(
@@ -735,159 +741,160 @@ function Programaranestesiologo() {
           </div>
         </div>
         {showModal && (
-            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-              <div className="bg-white p-6 rounded shadow-lg w-1/3">
-                <h2 className="text-xl mb-4">Editar Anestesiologo</h2>
-                <form onSubmit={handleSave}>
-                  <div className="mb-4 grid grid-cols-3 gap-4">
-                    <div>
-                      <label
-                        htmlFor="nombre"
-                        className="block text-gray-700 mb-2"
-                      >
-                        Nombre
-                      </label>
-                      <input
-                        type="text"
-                        name="nombre"
-                        value={editingAnesthesiologist?.nombre || ""}
-                        onChange={handleEditChange}
-                        className={`w-full p-3 border ${
-                          errors.nombre ? "border-red-500" : "border-gray-300"
-                        } rounded-lg`}
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="dia_anestesio"
-                        className="block text-gray-700 mb-2"
-                      >
-                        Dia asignado
-                      </label>
-                      <input
-                        type="date"
-                        id="dia_anestesio"
-                        name="dia_anestesio"
-                        value={editingAnesthesiologist.dia_anestesio || ""}
-                        onChange={handleEditChange}
-                        className="w-full p-3 border rounded-lg"
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="turno_anestesio"
-                        className="block text-gray-700 mb-2"
-                      >
-                        Turno asignado
-                      </label>
-                      <input
-                        type="text"
-                        id="turno_anestesio"
-                        name="turno_anestesio"
-                        value={editingAnesthesiologist.turno_anestesio || ""}
-                        onChange={handleEditChange}
-                        className="w-full p-3 border rounded-lg"
-                      />
-                    </div>
-                  </div>
+  <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="bg-white p-6 rounded shadow-lg w-1/3">
+      <h2 className="text-xl mb-4">Editar Anestesiólogo</h2>
+      <form
+        onSubmit={(e) => {
+          handleSave(e);
+          setShowModal(false);
+          window.location.reload();
+        }}
+      >
+        <div className="mb-4">
+          <label htmlFor="nombre" className="block text-gray-700 mb-2">
+            Nombre
+          </label>
+          <input
+            type="text"
+            name="nombre"
+            value={editingAnesthesiologist?.nombre || ""}
+            onChange={handleEditChange}
+            className="w-full p-3 border border-gray-300 rounded-lg"
+          />
+        </div>
 
-                  <div className="mb-4 grid grid-cols-3 gap-4">
-                    <div>
-                      <label
-                        htmlFor="email"
-                        className="block text-gray-700 mb-2"
-                      >
-                        Hora de inicio de turno
-                      </label>
-                      <input
-                        type="time"
-                        id="hora_inicio"
-                        name="hora_inicio"
-                        value={editingAnesthesiologist.hora_inicio}
-                        onChange={handleInputChange || ""}
-                        className="w-full p-3 border rounded-lg"
-                      />
-                    </div>
-                  </div>
+        <div className="mb-4">
+          <label htmlFor="dia_anestesio" className="block text-gray-700 mb-2">
+            Día asignado
+          </label>
+          <input
+            type="date"
+            id="dia_anestesio"
+            name="dia_anestesio"
+            value={editingAnesthesiologist.dia_anestesio || ""}
+            onChange={handleEditChange}
+            className="w-full p-3 border rounded-lg"
+          />
+        </div>
+        <div className="mb-4">
+          <label htmlFor="turno_anestesio" className="block text-gray-700 mb-2">
+            Turno asignado
+          </label>
+          <select
+            id="turno_anestesio"
+            name="turno_anestesio"
+            value={editingAnesthesiologist.turno_anestesio || ""}
+            onChange={(e) => {
+              const turno = e.target.value;
+              let horaInicio = "";
+              let horaFin = "";
 
-{/*                   <div className="mb-4">
-                    <label className="block text-center mb-2">Pantallas Disponibles</label>
+              switch (turno) {
+                case "Matutino":
+                  horaInicio = "08:00";
+                  horaFin = "14:00";
+                  break;
+                case "Vespertino":
+                  horaInicio = "14:00";
+                  horaFin = "20:00";
+                  break;
+                case "Nocturno":
+                  horaInicio = "20:00";
+                  horaFin = "06:00";
+                  break;
+                default:
+                  horaInicio = "";
+                  horaFin = "";
+              }
 
-                    <div className="grid grid-cols-2 gap-4 mt-4">
-                      {[
-                        "Dashboard",
-                        "Solicitudes",
-                        "Evaluación",
-                        "Agenda",
-                        "Anestesiólogos",
-                        "Bitácora enfermería",
-                        "Bitácora anestesiología",
-                        "Gestor de salas",
-                        "Solicitudes insumos",
-                        "Gestor de productividad",
-                        "Gestor de usuarios",
-                      ].map((screen) => (
-                        <div key={screen} className="flex items-center">
-                          <input
-                            type="checkbox"
-                            id={screen}
-                            name="pantallasDisponibles"
-                            value={screen}
-                            checked={
-                              userToEdit?.pantallasDisponibles?.includes(
-                                screen
-                              ) || false
-                            }
-                            onChange={(e) => {
-                              const { checked, value } = e.target;
-                              setUserToEdit((prevUser) => {
-                                const updatedPantallas = Array.isArray(
-                                  prevUser.pantallasDisponibles
-                                )
-                                  ? prevUser.pantallasDisponibles
-                                  : [];
-                                if (checked) {
-                                  updatedPantallas.push(value);
-                                } else {
-                                  const index = updatedPantallas.indexOf(value);
-                                  if (index > -1) {
-                                    updatedPantallas.splice(index, 1);
-                                  }
-                                }
-                                return {
-                                  ...prevUser,
-                                  pantallasDisponibles: updatedPantallas,
-                                };
-                              });
-                            }}
-                          />
-                          <label htmlFor={screen} className="ml-2">
-                            {screen}
-                          </label>
-                        </div>
-                      ))}
-                    </div>
-                  </div> */}
+              // Actualiza el turno y las horas correspondientes
+              setEditingAnesthesiologist((prevState) => ({
+                ...prevState,
+                turno_anestesio: turno,
+                hora_inicio: horaInicio,
+                hora_fin: horaFin,
+              }));
+            }}
+            className="w-full p-3 border rounded-lg"
+          >
+            <option value="">Seleccionar turno</option>
+            <option value="Matutino">Matutino</option>
+            <option value="Vespertino">Vespertino</option>
+            <option value="Nocturno">Nocturno</option>
+          </select>
+        </div>
 
-                  <div className="flex justify-end space-x-4">
-                    <button
-                      type="submit"
-                      className="bg-green-500 bg-opacity-20 text-green-500 text-sm p-4 rounded-lg font-light"
-                    >
-                      Guardar cambios
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setShowModal(false)}
-                      className="bg-red-500 bg-opacity-20 text-red-500 text-sm p-4 rounded-lg font-light"
-                    >
-                      Cancelar
-                    </button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          )}
+        <div className="mb-4">
+          <label htmlFor="hora_inicio" className="block text-gray-700 mb-2">
+            Hora de inicio de turno
+          </label>
+          <input
+            type="time"
+            id="hora_inicio"
+            name="hora_inicio"
+            value={editingAnesthesiologist.hora_inicio || ""}
+            readOnly
+            className="w-full p-3 border rounded-lg bg-gray-100"
+          />
+        </div>
+
+        <div className="mb-4">
+          <label htmlFor="hora_fin" className="block text-gray-700 mb-2">
+            Hora de fin de turno
+          </label>
+          <input
+            type="time"
+            id="hora_fin"
+            name="hora_fin"
+            value={editingAnesthesiologist.hora_fin || ""}
+            readOnly
+            className="w-full p-3 border rounded-lg bg-gray-100"
+          />
+        </div>
+
+        <div className="mb-4">
+          <label htmlFor="sala_anestesio" className="block text-gray-700 mb-2">
+            Salas Asignadas
+          </label>
+          <Select
+            isMulti
+            options={allRooms}
+            value={allRooms.filter((option) =>
+              editingAnesthesiologist.sala_anestesio.includes(option.value)
+            )}
+            onChange={(selectedOptions) => {
+              const selectedValues = selectedOptions.map(option => option.value);
+              setEditingAnesthesiologist({
+                ...editingAnesthesiologist,
+                sala_anestesio: selectedValues,
+              });
+            }}
+            className="basic-multi-select"
+            classNamePrefix="select"
+          />
+        </div>
+
+        <div className="flex justify-end space-x-4">
+          <button
+            type="submit"
+            className="bg-green-500 bg-opacity-20 text-green-500 text-sm p-4 rounded-lg font-light"
+          >
+            Guardar cambios
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowModal(false)}
+            className="bg-red-500 bg-opacity-20 text-red-500 text-sm p-4 rounded-lg font-light"
+          >
+            Cancelar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+)}
+
       </div>
     </Layout>
   );

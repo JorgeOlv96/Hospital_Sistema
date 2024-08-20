@@ -373,14 +373,13 @@ function Appointments() {
                 <th>Sala</th>
                 <th>Nom. completo</th>
                 <th>Sexo</th>
-                <th>Procedimientos</th>
-                <th>Esp.</th>
-                <th>Procedencia del paciente</th>
+                <th>Diagnostico</th>
+                <th>Especialidad</th>
+                <th>Procedencia</th>
                 <th>Tiempo est.</th>
-                <th>Turno</th>
                 <TH>Anestesiólogo</th>
                 <th>Cirujano</th>
-                <th>Ins.</th>
+                <th>Insumos</th>
               </tr>
             </thead>
            <tbody>
@@ -453,32 +452,33 @@ function Appointments() {
                 <td>
                   ${(() => {
                     const procedimientos =
-                      appointment.procedimientos_paciente || "";
+                      appointment.diagnostico || "";
                     const [beforeDash, afterDash] = procedimientos.split(
                       "-",
                       2
                     );
-                    const truncatedBeforeDash = beforeDash.slice(0, 20);
+                    const truncatedBeforeDash = beforeDash.slice(0, 45);
                     return `${truncatedBeforeDash}${
                       afterDash ? "-" + afterDash : ""
                     }`;
                   })()}
                 </td>
-                <td>${appointment.clave_esp || ""}</td>
-                <td>${appointment.tipo_admision}</td>
+                <td>${appointment.nombre_especialidad || ""}</td>
+                  <td>
+                    ${(() => {
+                      switch (appointment.tipo_admision) {
+                        case "CONSULTA EXTERNA":
+                          return "C.E.";
+                        case "CAMA":
+                          return `Cama - ${appointment.cama}`;
+                        case "URGENCIAS":
+                          return "Urgencias";
+                        default:
+                          return appointment.tipo_admision || "No especificado";
+                      }
+                    })()}
+                  </td>
                 <td>${appointment.tiempo_estimado} min</td>
-                <td>
-                  ${(() => {
-                    const turno = appointment.turno || "";
-                    const turnMap = {
-                      Vespertino: "V",
-                      Matutino: "M",
-                      Nocturno: "N",
-                      Especial: "E",
-                    };
-                    return turnMap[turno] || "";
-                  })()}
-                </td>
                 <td>
                   ${(() => {
                     const nombreanes = appointment.nombre_anestesiologo || "";
