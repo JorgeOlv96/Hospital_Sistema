@@ -93,10 +93,23 @@ function ProgramarSolicitud() {
   const getEstadoColorStyle = (estado) => {
     switch (estado.toLowerCase()) {
       case "pre-programada":
-        return { backgroundColor: "#06ABC9", color: "black" }; // Color de fondo rojo y texto negro
+        return { backgroundColor: "#06ABC9", color: "black" }; // Color de fondo y texto
+      case "duplicada":
+        return { backgroundColor: "red", color: "white", fontWeight: "bold" }; // Color de fondo amarillo y texto rojo
       default:
         return {};
     }
+  };
+
+  const isDuplicated = (appointment) => {
+    return (
+      pendingAppointments.filter(
+        (a) =>
+          a.nombre_paciente === appointment.nombre_paciente &&
+          a.fecha_solicitada === appointment.fecha_solicitada &&
+          a.id_solicitud !== appointment.id_solicitud
+      ).length > 0
+    );
   };
 
   const handleSort = (column) => {
@@ -602,6 +615,17 @@ ${todaysAnesthesiologists
                   ...getEstadoColorStyle(appointment.estado_solicitud),
                 }}
               />
+              {isDuplicated(appointment) && (
+                <span
+                  style={{
+                    textDecoration: "underline",
+                    color: "red",
+                    marginLeft: "10px",
+                  }}
+                >
+                  Duplicada
+                </span>
+              )}
             </div>
           </div>
 
@@ -674,6 +698,7 @@ ${todaysAnesthesiologists
                           (sortOrder === "asc" ? "▲" : "▼")}
                       </span>
                     </th>
+                    <th className="px-4 py-3 cursor-pointer">Duplicada</th>
                     <th className="px-4 py-3">Acciones</th>
                   </tr>
                 </thead>
@@ -687,8 +712,7 @@ ${todaysAnesthesiologists
                       >
                         <td className="px-4 py-2">{appointment.folio}</td>
                         <td className="px-4 py-2">
-                          {appointment.ap_paterno}{" "}
-                          {appointment.ap_materno}{" "}
+                          {appointment.ap_paterno} {appointment.ap_materno}{" "}
                           {appointment.nombre_paciente}
                         </td>
                         <td className="px-4 py-2">
@@ -720,6 +744,23 @@ ${todaysAnesthesiologists
                             {appointment.estado_solicitud}
                           </div>
                         </td>
+                        <td className="px-4 py-2">
+                          {isDuplicated(appointment) && (
+                            <div
+                              style={{
+                                ...getEstadoColorStyle("duplicada"),
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                borderRadius: "8px", // Ajusta el valor para redondear más o menos
+                                padding: "1px 0px", // Ajusta el padding para que el texto no esté tan pegado al borde
+                              }}
+                            >
+                              Duplicada
+                            </div>
+                          )}
+                        </td>
+
                         <td className="px-4 py-2">
                           <button
                             onClick={() => handleViewModal(appointment)}
