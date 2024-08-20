@@ -360,7 +360,7 @@ function Solicitudes() {
                 <th>Sala</th>
                 <th>Nom. completo</th>
                 <th>Sexo</th>
-                <th>Procedimientos</th>
+                <th>Diagnóstico</th>
                 <th>Esp.</th>
                 <th>Procedencia del paciente</th>
                 <th>Tiempo est.</th>
@@ -439,7 +439,7 @@ function Solicitudes() {
                 <td>
                   ${(() => {
                     const procedimientos =
-                      appointment.procedimientos_paciente || "";
+                      appointment.diagnostico || "";
                     const [beforeDash, afterDash] = procedimientos.split(
                       "-",
                       2

@@ -682,7 +682,7 @@ function Programaranestesiologo() {
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border-r border-gray-300">
                         {anesthesiologist.hora_fin}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="border px-6 py-2 flex justify-center items-center">
                         <button
                           onClick={() =>
                             handleDeleteAnesthesiologist(
