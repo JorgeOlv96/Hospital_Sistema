@@ -439,9 +439,11 @@ function Appointments() {
                   "LT"
                 )}</td>
                 <td>Sala: ${appointment.sala_quirofano || ""}</td>
-                <td>${appointment.ap_paterno} ${
-              appointment.ap_materno
-            } ${appointment.nombre_paciente}</td>
+                <td>
+                  ${appointment.ap_paterno}  
+                  ${appointment.ap_materno} 
+                  ${appointment.nombre_paciente} 
+                </td>
                 <td>${
                   appointment.sexo
                     ? appointment.sexo === "Femenino"

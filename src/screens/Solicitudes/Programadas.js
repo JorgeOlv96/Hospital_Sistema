@@ -91,7 +91,7 @@ function Solicitudesprogramadas() {
   const getEstadoColorStyle = (estado) => {
     switch (estado.toLowerCase()) {
       case "programada":
-        return { backgroundColor: "#68D391" }; // Color de fondo verde y texto negro
+        return { backgroundColor: "#68D391", color: "white"  }; // Color de fondo verde y texto negro
       default:
         return {};
     }
