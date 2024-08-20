@@ -160,19 +160,21 @@ function CrearSolicitud() {
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-
+  
     // Actualizar el estado del formulario
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value,
+      // Si se cambia el tipo de admisión a algo distinto de "Cama", se asigna "NA" a cama
+      cama: name === "tipo_admision" && value !== "Cama" ? "NA" : prevFormData.cama,
     }));
-
+  
     // Marcar el campo como tocado
     setIsFieldTouched((prev) => ({
       ...prev,
       [name]: true,
     }));
-
+  
     // Validación de fecha de nacimiento
     if (name === "fecha_nacimiento") {
       const today = new Date().toISOString().split("T")[0]; // Fecha actual en formato YYYY-MM-DD
@@ -181,7 +183,6 @@ function CrearSolicitud() {
         setFormData((prevFormData) => ({
           ...prevFormData,
           edad: "", // Limpiar edad si la fecha es inválida
-          cama: name === "tipo_admision" && value !== "Cama" ? "NA" : prevFormData.cama
         }));
       } else {
         setIsFechaNacimientoValid(true);
@@ -193,13 +194,14 @@ function CrearSolicitud() {
       }
     }
   };
+  
 
   useEffect(() => {
     if (formData.fecha_solicitada) {
       const selectedDate = new Date(formData.fecha_solicitada);
       const dayOfWeek = selectedDate.getDay(); // 1 = Lunes, 5 = Viernes
 
-      if (dayOfWeek === 5 || dayOfWeek === 6 ) {
+      if (dayOfWeek === 5 || dayOfWeek === 6) {
         setFormData((prevFormData) => ({
           ...prevFormData,
           turno_solicitado: "Especial",
@@ -315,10 +317,11 @@ function CrearSolicitud() {
   const validateForm = () => {
     const newErrors = {};
 
-      // Validar cama solo si tipo de admisión es "Cama"
-  if (formData.tipo_admision === "Cama" && !formData.cama) {
-    newErrors.cama = "Este campo es obligatorio cuando se selecciona 'Cama' en tipo de admisión.";
-  }
+    // Validar cama solo si tipo de admisión es "Cama"
+    if (formData.tipo_admision === "Cama" && !formData.cama) {
+      newErrors.cama =
+        "Este campo es obligatorio cuando se selecciona 'Cama' en tipo de admisión.";
+    }
 
     Object.keys(formData).forEach((key) => {
       if (!formData[key]) {
@@ -761,7 +764,7 @@ function CrearSolicitud() {
                   {errors.sexo && <p className="text-red-500">{errors.sexo}</p>}
                 </div>
 
-                <div className="w-full" style={{ width: "100%" }}>
+                <div className="mr-4" style={{ width: "96.5%" }}>
                   <label
                     htmlFor="nombre_cirujano"
                     className="block font-semibold text-white mb-3"
@@ -788,48 +791,72 @@ function CrearSolicitud() {
               </div>
 
               <div className="flex mb-4">
-      <div className="mr-4 w-3/4">
-        <label htmlFor="tipo_admision" className="block font-semibold text-white mb-1">
-          Procedencia del paciente:
-        </label>
-        <select
-          id="tipo_admision"
-          name="tipo_admision"
-          value={formData.tipo_admision}
-          onChange={handleInputChange}
-          className={`border ${formData.tipo_admision ? "bg-[#A8CBD5] border-[#A8CBD5]" : "border-gray-300"} rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-        >
-          <option value="">Seleccionar</option>
-          <option value="Cama">Cama</option>
-          <option value="Consulta externa">Consulta externa</option>
-          <option value="Urgencias">Urgencias</option>
-        </select>
-        {errors.tipo_admision && <p className="text-red-500">{errors.tipo_admision}</p>}
-      </div>
+                <div className="w-full mr-4">
+                  <label
+                    htmlFor="tipo_admision"
+                    className="block font-semibold text-white mb-1"
+                  >
+                    Procedencia del paciente:
+                  </label>
+                  <select
+                    id="tipo_admision"
+                    name="tipo_admision"
+                    value={formData.tipo_admision}
+                    onChange={handleInputChange}
+                    className={`border ${
+                      formData.tipo_admision
+                        ? "bg-[#A8CBD5] border-[#A8CBD5]"
+                        : "border-gray-300"
+                    } rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+                  >
+                    <option value="">Seleccionar</option>
+                    <option value="Cama">Cama</option>
+                    <option value="Consulta externa">Consulta externa</option>
+                    <option value="Urgencias">Urgencias</option>
+                  </select>
+                  {errors.tipo_admision && (
+                    <p className="text-red-500">{errors.tipo_admision}</p>
+                  )}
+                </div>
 
-      {formData.tipo_admision === "Cama" && (
-        <div className="ml-4 w-1/4">
-          <label htmlFor="cama" className="block font-semibold text-white mb-1">
-            Cama:
-          </label>
-          <input
-            type="text"
-            id="cama"
-            name="cama"
-            value={formData.cama}
-            onChange={handleInputChange}
-            className="w-full border rounded-lg px-3 py-2"
-          />
-        </div>
-      )}
-    </div>
-    <div className="flex mb-4">
                 <div className="mr-4 w-full">
+                  {formData.tipo_admision === "Cama" ? (
+                    <div className="w-full">
+                      <label
+                        htmlFor="cama"
+                        className="block font-semibold text-white mb-1"
+                      >
+                        Cama:
+                      </label>
+                      <input
+                        type="text"
+                        id="cama"
+                        name="cama"
+                        value={formData.cama}
+                        onChange={handleInputChange}
+                        className={`border ${
+                          formData.cama
+                            ? "bg-[#A8CBD5] border-[#A8CBD5]"
+                            : "border-gray-300"
+                        } rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+                      />
+                    </div>
+                  ) : (
+                    <div className="block font-semibold text-white mb-1">
+                      <label className="block font-semibold text-white mb-1">
+                        Cama:
+                      </label>
+                      <div className="w-full h-[40px] bg-[#4c687e] rounded-lg"></div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="w-full mr-4">
                   <label
                     htmlFor="tipo_intervencion"
                     className="block font-semibold text-white mb-1"
                   >
-                    Tipo de intervención quirúrgica planeada:
+                    Tipo de interv. quirúrgica planeada:
                   </label>
                   <select
                     id="tipo_intervencion"
@@ -854,7 +881,7 @@ function CrearSolicitud() {
                   )}
                 </div>
 
-                <div className="mr-4 w-full">
+                <div className="mr-4" style={{ width: "49%" }}>
                   <label
                     htmlFor="nombre_especialidad"
                     className="block font-semibold text-white mb-1"
@@ -884,12 +911,12 @@ function CrearSolicitud() {
                   )}
                 </div>
 
-                <div className="w-full">
+                <div className="mr-4" style={{ width: "43%" }}>
                   <label
                     htmlFor="clave_esp"
                     className="block font-semibold text-white mb-1"
                   >
-                    Clave de especialidad:
+                    Cve. de esp.:
                   </label>
                   <select
                     id="clave_esp"
@@ -986,7 +1013,7 @@ function CrearSolicitud() {
                   )}
                 </div>
 
-                <div className="w-full">
+                <div className="mr-4" style={{ width: "96.5%" }}>
                   <label
                     htmlFor="turno_solicitado"
                     className="block font-semibold text-white mb-1"
@@ -1067,7 +1094,7 @@ function CrearSolicitud() {
                   </select>
                 </div>
 
-                <div className="mr-4" style={{ width: "14%" }}>
+                <div className="mr-4" style={{ width: "14.7%" }}>
                   <label
                     htmlFor="req_insumo"
                     className="block font-semibold text-white mb-1"
