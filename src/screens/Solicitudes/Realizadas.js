@@ -12,6 +12,7 @@ function Solicitudesrealizadas() {
     especialidad: "",
     estado: "Realizada",
   });
+
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [open, setOpen] = useState(false);
   const [sortBy, setSortBy] = useState(null);
@@ -100,7 +101,7 @@ function Solicitudesrealizadas() {
   const getEstadoColorStyle = (estado) => {
     switch (estado.toLowerCase()) {
       case "realizada":
-        return { backgroundColor: "#63B3ED", color: "black" }; // Color de fondo rojo y texto negro
+        return { backgroundColor: "#63B3ED", color: "white"  }; // Color de fondo rojo y texto negro
       default:
         return {};
     }
@@ -249,7 +250,7 @@ function Solicitudesrealizadas() {
 
           {filteredAppointments.length === 0 ? (
             <div className="text-center text-gray-500 mt-4">
-              No hay realizadas :)
+              No hay pendientes :)
             </div>
           ) : (
             <div className="overflow-x-auto">

@@ -91,9 +91,9 @@ function ProgramarSolicitud() {
   const getEstadoColorStyle = (estado) => {
     switch (estado.toLowerCase()) {
       case "pre-programada":
-        return { backgroundColor: "#06ABC9", color: "black" }; // Color de fondo y texto
+        return { backgroundColor: "#06ABC9", color: "white" }; // Color de fondo y texto
       case "duplicada":
-        return { backgroundColor: "red", color: "white", fontWeight: "bold" }; // Color de fondo amarillo y texto rojo
+        return { backgroundColor: "red", color: "white" }; // Color de fondo amarillo y texto rojo
       default:
         return {};
     }
@@ -346,7 +346,7 @@ function ProgramarSolicitud() {
                       >
                         <td className="px-4 py-2">{appointment.folio}</td>
                         <td className="px-4 py-2">
-                          {appointment.ap_paterno} {appointment.ap_materno}{" "}
+                          {appointment.ap_paterno}{"  "} {appointment.ap_materno}{"  "}
                           {appointment.nombre_paciente}
                         </td>
                         <td className="px-4 py-2">
@@ -386,8 +386,11 @@ function ProgramarSolicitud() {
                                 display: "flex",
                                 justifyContent: "center",
                                 alignItems: "center",
-                                borderRadius: "8px", // Ajusta el valor para redondear más o menos
-                                padding: "1px 0px", // Ajusta el padding para que el texto no esté tan pegado al borde
+                                height: "100%",
+                                width: "100%",
+                                textAlign: "center",
+                                borderRadius: "8px",
+                                padding: "2px 1px",
                               }}
                             >
                               Duplicada

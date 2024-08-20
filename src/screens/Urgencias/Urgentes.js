@@ -1,16 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, navigate } from "react";
 import Layout from "../../Layout";
 import axios from "axios";
 import AddAppointmentModalProgramado from "../../components/Modals/AddApointmentModalProgramado";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 function Solicitudesurgentes() {
   const [pendingAppointments, setPendingAppointments] = useState([]);
+  const navigate = useNavigate();
   const [filter, setFilter] = useState({
     fecha: "",
     especialidad: "",
     estado: "Urgencia",
   });
+
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [open, setOpen] = useState(false);
   const [sortBy, setSortBy] = useState(null);
@@ -18,6 +20,16 @@ function Solicitudesurgentes() {
   const [page, setPage] = useState(1);
   const itemsPerPage = 10;
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
+
+  // Estados para los filtros
+  const [nameFilter, setNameFilter] = useState("");
+  const [specialtyFilter, setSpecialtyFilter] = useState("");
+  const [dateFilter, setDateFilter] = useState("");
+
+  const appointment = {
+    estado_solicitud: "Urgencia", // o cualquier otro estado que tengas
+    // otros datos aquí
+  };
 
   useEffect(() => {
     fetchPendingAppointments();
@@ -42,7 +54,6 @@ function Solicitudesurgentes() {
       ...filter,
       [name]: value,
     });
-    setPage(1); // Reset to first page on filter change
   };
 
   const handleViewModal = (appointment) => {
@@ -81,7 +92,7 @@ function Solicitudesurgentes() {
   const getEstadoColorStyle = (estado) => {
     switch (estado.toLowerCase()) {
       case "urgencia":
-        return { backgroundColor: "#FC8181" }; // Rosa claro
+        return { backgroundColor: "#FC8181", color: "white" }; // Rosa claro
       default:
         return {};
     }
@@ -107,15 +118,21 @@ function Solicitudesurgentes() {
     return 0;
   });
 
+  // Método de filtrado
   const filteredAppointments = sortedAppointments.filter((appointment) => {
-    return (
-      (filter.fecha === "" ||
-        appointment.fecha_solicitud.includes(filter.fecha)) &&
-      (filter.especialidad === "" ||
-        appointment.nombre_especialidad.includes(filter.especialidad)) &&
-      (filter.estado === "" ||
-        appointment.estado_solicitud.includes(filter.estado))
-    );
+    const matchesName =
+      `${appointment.nombre_paciente} ${appointment.ap_paterno} ${appointment.ap_materno}`
+        .toLowerCase()
+        .includes(nameFilter.toLowerCase());
+    const matchesSpecialty = appointment.nombre_especialidad
+      .toLowerCase()
+      .includes(specialtyFilter.toLowerCase());
+    const matchesDate = dateFilter
+      ? new Date(appointment.fecha_solicitada).toISOString().slice(0, 10) ===
+        dateFilter
+      : true;
+
+    return matchesName && matchesSpecialty && matchesDate;
   });
 
   const startIndex = (page - 1) * itemsPerPage;
@@ -155,42 +172,45 @@ function Solicitudesurgentes() {
             />
           )}
 
-          <div className="flex mb-4 space-x-4">
-            <div className="flex-1">
-              <label className="block font-semibold">Filtrar por Fecha:</label>
+          {/* Contenedor de filtros centrado */}
+          <div className="flex justify-center">
+            {/* Filtros */}
+            <div className="flex gap-4 mb-4 items-center">
+              <input
+                type="text"
+                placeholder="Filtrar por nombre"
+                value={nameFilter}
+                onChange={(e) => setNameFilter(e.target.value)}
+                className="border rounded-lg px-4 py-2"
+              />
+              <input
+                type="text"
+                placeholder="Filtrar por especialidad"
+                value={specialtyFilter}
+                onChange={(e) => setSpecialtyFilter(e.target.value)}
+                className="border rounded-lg px-4 py-2"
+              />
               <input
                 type="date"
-                name="fecha"
-                value={filter.fecha}
-                onChange={handleFilterChange}
-                className="border border-gray-300 rounded-lg px-2 py-1 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]"
+                value={dateFilter}
+                onChange={(e) => setDateFilter(e.target.value)}
+                className="border rounded-lg px-4 py-2"
               />
-            </div>
-
-            <div className="flex-1">
-              <label className="block font-semibold">
-                Filtrar por Especialidad:
-              </label>
               <input
                 type="text"
-                name="especialidad"
-                value={filter.especialidad}
-                onChange={handleFilterChange}
-                className="border border-gray-300 rounded-lg px-2 py-1 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]"
-              />
-            </div>
-
-            <div className="flex-1">
-              <label className="block font-semibold">
-                Estado de Solicitud:
-              </label>
-              <input
-                type="text"
+                placeholder="Filtrar por estado"
                 name="estado"
-                value={filter.estado}
+                value={
+                  filter.estado ||
+                  appointment?.estado_solicitud ||
+                  "No disponible"
+                }
                 onChange={handleFilterChange}
                 readOnly
-                className="border border-gray-300 rounded-lg px-2 py-1 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-[#001B58] focus:border-[#001B58]"
+                className="border rounded-lg px-4 py-2"
+                style={{
+                  ...getEstadoColorStyle(appointment.estado_solicitud),
+                }}
               />
             </div>
           </div>
@@ -283,8 +303,8 @@ function Solicitudesurgentes() {
                       >
                         <td className="px-4 py-2">{appointment.folio}</td>
                         <td className="px-4 py-2">
-                        {appointment.ap_paterno}{" "}
-                        {appointment.ap_materno}{" "}{appointment.nombre_paciente} 
+                          {appointment.ap_paterno} {appointment.ap_materno}{" "}
+                          {appointment.nombre_paciente}
                         </td>
                         <td className="px-4 py-2">
                           {appointment.nombre_especialidad}
@@ -358,7 +378,6 @@ function Solicitudesurgentes() {
               &#8594;
             </button>
           </div>
-          
         </div>
       </div>
     </Layout>
