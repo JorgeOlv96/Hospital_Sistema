@@ -811,7 +811,7 @@ function Programaranestesiologo() {
               // Actualiza el turno y las horas correspondientes
               setEditingAnesthesiologist((prevState) => ({
                 ...prevState,
-                turno_anestesio: turno,
+                turno_anestesio: e.target.value,
                 hora_inicio: horaInicio,
                 hora_fin: horaFin,
               }));
