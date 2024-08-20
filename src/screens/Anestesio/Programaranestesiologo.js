@@ -17,6 +17,7 @@ function Programaranestesiologo() {
     hora_inicio: "",
     hora_fin: "",
   });
+  
 
   /*   const options = [
     { value: 'A1', label: 'Sala A1' },
@@ -52,6 +53,81 @@ function Programaranestesiologo() {
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
+  const [showModal, setShowModal] = useState(false);
+  const [editingAnesthesiologist, setEditingAnesthesiologist] = useState({
+    nombre: "",
+    dia_anestesio: "",
+    turno_anestesio: "",
+    sala_anestesio: [],
+    hora_inicio: "",
+    hora_fin: ""
+  });
+
+  const handleSave = async (e) => {
+    e.preventDefault();
+
+    if (!editingAnesthesiologist) return;
+
+    try {
+      toast.dismiss();
+
+
+      const response = await fetch(
+        `${baseURL}/api/anestesio/anestesiologos/${editingAnesthesiologist.id}`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ...editingAnesthesiologist,
+            sala_anestesio: editingAnesthesiologist.sala_anestesio.join(","), // Debe coincidir con el nombre que esperas en el backend
+          }),
+        }
+      );
+
+      // Check if the response is ok, otherwise handle the error
+      if (!response.ok) {
+        const { message } = await response.json();
+        throw new Error(message);
+      }
+
+      // If the response is ok, update the state with the updated user
+      const updatedAestesio = await response.json();
+      setUsuarios((prevAnestesio) =>
+        prevAnestesio.map((anesthesiologist) =>
+          anesthesiologist.id_anestesiologo === anesthesiologist.id_anestesiologo ? updatedAestesio : anesthesiologist
+        )
+      );
+
+      // Close the modal and show a success message
+      setShowModal(false);
+      toast.success("Anestesiologo actualizado correctamente");
+    } catch (err) {
+      // Handle any errors from the try block or fetch
+      console.error("Error updating anesthesiologist:", err);
+      setError(err.message || "Error updating anesthesiologist. Please try again later.");
+      toast.error(
+        err.message || "Error updating anesthesiologist. Please try again later."
+      );
+    }
+  };
+
+    // Manejar cambios en los inputs del formulario modal
+    const handleEditChange = (event) => {
+      const { name, value } = event.target;
+      setUserToEdit((prevUser) => ({
+        ...prevUser,
+        [name]: value,
+      }));
+    };
+
+      // Edit user and open modal
+  const handleEdit = (anesthesiologist) => {
+    setEditingAnesthesiologist(anesthesiologist);
+    setShowModal(true);
+  };
+
 
   const startOfCurrentWeek = startOfWeek(new Date(), { weekStartsOn: 1 });
   const endOfCurrentWeek = endOfWeek(new Date(), { weekStartsOn: 1 });
@@ -169,14 +245,14 @@ function Programaranestesiologo() {
             formData.sala_anestesio.includes(sala)
           )
       );
-
+  
       if (existingAssignment) {
         toast.error(
           "Ya hay un anestesiólogo asignado a esta sala en el mismo día."
         );
         return;
       }
-
+  
       const response = await fetch(`${baseURL}/api/anestesio/anestesiologos`, {
         method: "POST",
         headers: {
@@ -189,10 +265,10 @@ function Programaranestesiologo() {
       }
       const data = await response.json();
       console.log("Anesthesiologist saved successfully:", data);
-
+  
       // Mostrar notificación de éxito
       toast.success("¡Anestesiólogo asignado con éxito!");
-
+  
       // Limpiar el formulario
       setFormData({
         nombre: "",
@@ -202,10 +278,10 @@ function Programaranestesiologo() {
         hora_inicio: "",
         hora_fin: "",
       });
-
+  
       // Limpiar selectedOptions
       setSelectedOptions([]);
-
+  
       // Actualizar la lista de anestesiólogos después de guardar uno nuevo
       fetchAnesthesiologists();
     } catch (error) {
@@ -214,6 +290,7 @@ function Programaranestesiologo() {
       toast.error("Error al guardar el anestesiólogo");
     }
   };
+  
 
   const handleDeleteAnesthesiologist = async (id) => {
     if (
@@ -252,6 +329,8 @@ function Programaranestesiologo() {
         throw new Error("Network response was not ok");
       }
       let data = await response.json();
+
+
 
       setAnesthesiologists(data);
     } catch (error) {
@@ -353,6 +432,7 @@ function Programaranestesiologo() {
       sala_anestesio: selected ? selected.map((option) => option.value) : [],
     }));
   };
+
 
   return (
     <Layout>
@@ -604,16 +684,6 @@ function Programaranestesiologo() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         <button
-                          className="bg-blue-500 text-white px-4 py-2 rounded mr-2 hover:bg-blue-700"
-                          onClick={(e) => {
-                            e.preventDefault(); // Evita el comportamiento por defecto del clic, si es necesario
-                            // Puedes dejar la función vacía o solo poner un comentario
-                            // return;
-                          }}  
-                        >
-                          Editar
-                        </button>
-                        <button
                           onClick={() =>
                             handleDeleteAnesthesiologist(
                               anesthesiologist.id_anestesiologo
@@ -664,6 +734,160 @@ function Programaranestesiologo() {
             </button>
           </div>
         </div>
+        {showModal && (
+            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+              <div className="bg-white p-6 rounded shadow-lg w-1/3">
+                <h2 className="text-xl mb-4">Editar Anestesiologo</h2>
+                <form onSubmit={handleSave}>
+                  <div className="mb-4 grid grid-cols-3 gap-4">
+                    <div>
+                      <label
+                        htmlFor="nombre"
+                        className="block text-gray-700 mb-2"
+                      >
+                        Nombre
+                      </label>
+                      <input
+                        type="text"
+                        name="nombre"
+                        value={editingAnesthesiologist?.nombre || ""}
+                        onChange={handleEditChange}
+                        className={`w-full p-3 border ${
+                          errors.nombre ? "border-red-500" : "border-gray-300"
+                        } rounded-lg`}
+                      />
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="dia_anestesio"
+                        className="block text-gray-700 mb-2"
+                      >
+                        Dia asignado
+                      </label>
+                      <input
+                        type="date"
+                        id="dia_anestesio"
+                        name="dia_anestesio"
+                        value={editingAnesthesiologist.dia_anestesio || ""}
+                        onChange={handleEditChange}
+                        className="w-full p-3 border rounded-lg"
+                      />
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="turno_anestesio"
+                        className="block text-gray-700 mb-2"
+                      >
+                        Turno asignado
+                      </label>
+                      <input
+                        type="text"
+                        id="turno_anestesio"
+                        name="turno_anestesio"
+                        value={editingAnesthesiologist.turno_anestesio || ""}
+                        onChange={handleEditChange}
+                        className="w-full p-3 border rounded-lg"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mb-4 grid grid-cols-3 gap-4">
+                    <div>
+                      <label
+                        htmlFor="email"
+                        className="block text-gray-700 mb-2"
+                      >
+                        Hora de inicio de turno
+                      </label>
+                      <input
+                        type="time"
+                        id="hora_inicio"
+                        name="hora_inicio"
+                        value={editingAnesthesiologist.hora_inicio}
+                        onChange={handleInputChange || ""}
+                        className="w-full p-3 border rounded-lg"
+                      />
+                    </div>
+                  </div>
+
+{/*                   <div className="mb-4">
+                    <label className="block text-center mb-2">Pantallas Disponibles</label>
+
+                    <div className="grid grid-cols-2 gap-4 mt-4">
+                      {[
+                        "Dashboard",
+                        "Solicitudes",
+                        "Evaluación",
+                        "Agenda",
+                        "Anestesiólogos",
+                        "Bitácora enfermería",
+                        "Bitácora anestesiología",
+                        "Gestor de salas",
+                        "Solicitudes insumos",
+                        "Gestor de productividad",
+                        "Gestor de usuarios",
+                      ].map((screen) => (
+                        <div key={screen} className="flex items-center">
+                          <input
+                            type="checkbox"
+                            id={screen}
+                            name="pantallasDisponibles"
+                            value={screen}
+                            checked={
+                              userToEdit?.pantallasDisponibles?.includes(
+                                screen
+                              ) || false
+                            }
+                            onChange={(e) => {
+                              const { checked, value } = e.target;
+                              setUserToEdit((prevUser) => {
+                                const updatedPantallas = Array.isArray(
+                                  prevUser.pantallasDisponibles
+                                )
+                                  ? prevUser.pantallasDisponibles
+                                  : [];
+                                if (checked) {
+                                  updatedPantallas.push(value);
+                                } else {
+                                  const index = updatedPantallas.indexOf(value);
+                                  if (index > -1) {
+                                    updatedPantallas.splice(index, 1);
+                                  }
+                                }
+                                return {
+                                  ...prevUser,
+                                  pantallasDisponibles: updatedPantallas,
+                                };
+                              });
+                            }}
+                          />
+                          <label htmlFor={screen} className="ml-2">
+                            {screen}
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </div> */}
+
+                  <div className="flex justify-end space-x-4">
+                    <button
+                      type="submit"
+                      className="bg-green-500 bg-opacity-20 text-green-500 text-sm p-4 rounded-lg font-light"
+                    >
+                      Guardar cambios
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowModal(false)}
+                      className="bg-red-500 bg-opacity-20 text-red-500 text-sm p-4 rounded-lg font-light"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
       </div>
     </Layout>
   );
