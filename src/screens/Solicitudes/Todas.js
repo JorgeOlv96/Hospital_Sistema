@@ -283,7 +283,7 @@ function TodasSolicitudes() {
         data-aos-delay="100"
         data-aos-offset="200"
       >
-        <div className="flex flex-col gap-2 mb-4">
+        <div className="flex flex-col gap-2">
           <h1 className="text-xl font-semibold">Todas las solicitudes</h1>
           <div className="flex my-4 space-x-4">
             <div>
@@ -293,6 +293,138 @@ function TodasSolicitudes() {
               >
                 <span>Agenda</span>
               </Link>
+            </div>
+
+            <div className="flex items-center justify-center">
+              <div className="flex space-x-2">
+                <button
+                  className={`px-4 py-2 rounded-lg ${estadoButtonClasses(
+                    "all"
+                  )}`}
+                  style={
+                    filterState === "all"
+                      ? { backgroundColor: "#4A5568", color: "#fff" }
+                      : { backgroundColor: "#CBD5E0" }
+                  }
+                  onClick={() => setFilterState("all")}
+                >
+                  Todas las solicitudes ({totalSolicitudes})
+                </button>
+                <button
+                  className={`px-4 py-2 rounded-lg ${estadoButtonClasses(
+                    "programada"
+                  )}`}
+                  style={
+                    filterState === "programada"
+                      ? {
+                          ...getEstadoColorStyle("programada"),
+                          opacity: 0.9,
+                        }
+                      : {
+                          ...getEstadoColorStyle("programada"),
+                          opacity: 0.7,
+                        }
+                  }
+                  onClick={() => setFilterState("programada")}
+                >
+                  Programadas ({totalProgramadas})
+                </button>
+                <button
+                  className={`px-4 py-2 rounded-lg ${estadoButtonClasses(
+                    "realizada"
+                  )}`}
+                  style={
+                    filterState === "realizada"
+                      ? {
+                          ...getEstadoColorStyle("realizada"),
+                          opacity: 0.9,
+                        }
+                      : {
+                          ...getEstadoColorStyle("realizada"),
+                          opacity: 0.7,
+                        }
+                  }
+                  onClick={() => setFilterState("realizada")}
+                >
+                  Realizadas ({totalRealizadas})
+                </button>
+                <button
+                  className={`px-4 py-2 rounded-lg ${estadoButtonClasses(
+                    "suspendida"
+                  )}`}
+                  style={
+                    filterState === "suspendida"
+                      ? {
+                          ...getEstadoColorStyle("suspendida"),
+                          opacity: 0.9,
+                        }
+                      : {
+                          ...getEstadoColorStyle("suspendida"),
+                          opacity: 0.7,
+                        }
+                  }
+                  onClick={() => setFilterState("suspendida")}
+                >
+                  Suspendidas ({totalSuspendidas})
+                </button>
+                <button
+                  className={`px-4 py-2 rounded-lg ${estadoButtonClasses(
+                    "pendiente"
+                  )}`}
+                  style={
+                    filterState === "pendiente"
+                      ? {
+                          ...getEstadoColorStyle("pendiente"),
+                          opacity: 0.9,
+                        }
+                      : {
+                          ...getEstadoColorStyle("pendiente"),
+                          opacity: 0.7,
+                        }
+                  }
+                  onClick={() => setFilterState("pendiente")}
+                >
+                  Pendientes ({totalPendientes})
+                </button>
+                <button
+                  className={`px-4 py-2 rounded-lg ${estadoButtonClasses(
+                    "pre-programada"
+                  )}`}
+                  style={
+                    filterState === "pre-programada"
+                      ? {
+                          ...getEstadoColorStyle("pre-programada"),
+                          opacity: 0.9,
+                        }
+                      : {
+                          ...getEstadoColorStyle("pre-programada"),
+                          opacity: 0.7,
+                        }
+                  }
+                  onClick={() => setFilterState("pre-programada")}
+                >
+                  Pre-programadas ({totalPreprogramadas})
+                </button>
+                <button
+                  className={`px-4 py-2 rounded-lg ${estadoButtonClasses(
+                    "urgencia"
+                  )}`}
+                  style={
+                    filterState === "urgencia"
+                      ? {
+                          ...getEstadoColorStyle("urgencia"),
+                          opacity: 0.9,
+                        }
+                      : {
+                          ...getEstadoColorStyle("urgencia"),
+                          opacity: 0.7,
+                        }
+                  }
+                  onClick={() => setFilterState("urgencia")}
+                >
+                  Urgentes ({totalUrgentes})
+                </button>
+              </div>
             </div>
           </div>
 
@@ -306,7 +438,7 @@ function TodasSolicitudes() {
             />
           )}
 
-          <div className="flex flex-col space-y-4 mt-4">
+          <div className="flex flex-col space-y-4">
             {/* Filtros de búsqueda */}
             <div className="mt-8">
               <div className="text-left">
@@ -365,141 +497,9 @@ function TodasSolicitudes() {
             </div>
 
             {/* Lista de Solicitudes */}
-            <div className="mt-8">
+            <div className="mt-0">
               <div className="text-left">
                 <div className="flex items-center justify-center">
-                  <div className="flex space-x-2">
-                    <button
-                      className={`px-4 py-2 rounded-lg ${estadoButtonClasses(
-                        "all"
-                      )}`}
-                      style={
-                        filterState === "all"
-                          ? { backgroundColor: "#4A5568", color: "#fff" }
-                          : { backgroundColor: "#CBD5E0" }
-                      }
-                      onClick={() => setFilterState("all")}
-                    >
-                      Todas las solicitudes ({totalSolicitudes})
-                    </button>
-                    <button
-                      className={`px-4 py-2 rounded-lg ${estadoButtonClasses(
-                        "programada"
-                      )}`}
-                      style={
-                        filterState === "programada"
-                          ? {
-                              ...getEstadoColorStyle("programada"),
-                              opacity: 0.9,
-                            }
-                          : {
-                              ...getEstadoColorStyle("programada"),
-                              opacity: 0.7,
-                            }
-                      }
-                      onClick={() => setFilterState("programada")}
-                    >
-                      Programadas ({totalProgramadas})
-                    </button>
-                    <button
-                      className={`px-4 py-2 rounded-lg ${estadoButtonClasses(
-                        "realizada"
-                      )}`}
-                      style={
-                        filterState === "realizada"
-                          ? {
-                              ...getEstadoColorStyle("realizada"),
-                              opacity: 0.9,
-                            }
-                          : {
-                              ...getEstadoColorStyle("realizada"),
-                              opacity: 0.7,
-                            }
-                      }
-                      onClick={() => setFilterState("realizada")}
-                    >
-                      Realizadas ({totalRealizadas})
-                    </button>
-                    <button
-                      className={`px-4 py-2 rounded-lg ${estadoButtonClasses(
-                        "suspendida"
-                      )}`}
-                      style={
-                        filterState === "suspendida"
-                          ? {
-                              ...getEstadoColorStyle("suspendida"),
-                              opacity: 0.9,
-                            }
-                          : {
-                              ...getEstadoColorStyle("suspendida"),
-                              opacity: 0.7,
-                            }
-                      }
-                      onClick={() => setFilterState("suspendida")}
-                    >
-                      Suspendidas ({totalSuspendidas})
-                    </button>
-                    <button
-                      className={`px-4 py-2 rounded-lg ${estadoButtonClasses(
-                        "pendiente"
-                      )}`}
-                      style={
-                        filterState === "pendiente"
-                          ? {
-                              ...getEstadoColorStyle("pendiente"),
-                              opacity: 0.9,
-                            }
-                          : {
-                              ...getEstadoColorStyle("pendiente"),
-                              opacity: 0.7,
-                            }
-                      }
-                      onClick={() => setFilterState("pendiente")}
-                    >
-                      Pendientes ({totalPendientes})
-                    </button>
-                    <button
-                      className={`px-4 py-2 rounded-lg ${estadoButtonClasses(
-                        "pre-programada"
-                      )}`}
-                      style={
-                        filterState === "pre-programada"
-                          ? {
-                              ...getEstadoColorStyle("pre-programada"),
-                              opacity: 0.9,
-                            }
-                          : {
-                              ...getEstadoColorStyle("pre-programada"),
-                              opacity: 0.7,
-                            }
-                      }
-                      onClick={() => setFilterState("pre-programada")}
-                    >
-                      Pre-programadas ({totalPreprogramadas})
-                    </button>
-                    <button
-                      className={`px-4 py-2 rounded-lg ${estadoButtonClasses(
-                        "urgencia"
-                      )}`}
-                      style={
-                        filterState === "urgencia"
-                          ? {
-                              ...getEstadoColorStyle("urgencia"),
-                              opacity: 0.9,
-                            }
-                          : {
-                              ...getEstadoColorStyle("urgencia"),
-                              opacity: 0.7,
-                            }
-                      }
-                      onClick={() => setFilterState("urgencia")}
-                    >
-                      Urgentes ({totalUrgentes})
-                    </button>
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-center mt-4 mb-4">
                   <p className="text-lg font-semibold">Lista de Solicitudes</p>
                 </div>
               </div>
