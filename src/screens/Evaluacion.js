@@ -50,6 +50,7 @@ function Evaluacion() {
         throw new Error("Network response was not ok");
       }
       const data = await response.json();
+      const sortedData = data.sort((a, b) => b.id_solicitud - a.id_solicitud);
       setPendingAppointments(data);
     } catch (error) {
       console.error("Error fetching pending appointments:", error);

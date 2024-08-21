@@ -126,17 +126,18 @@ function TodasSolicitudes() {
           throw new Error("Network response was not ok");
         }
         const data = response.data;
-        const filteredData = data.filter(
-          (solicitud) => solicitud.estado_solicitud !== "Eliminada"
-        );
+        const filteredData = data
+          .filter((solicitud) => solicitud.estado_solicitud !== "Eliminada")
+          .sort((a, b) => b.id_solicitud - a.id_solicitud); // Ordenar por id_solicitud de mayor a menor
         setSolicitudes(filteredData);
       } catch (error) {
         console.error("Error fetching solicitudes:", error);
       }
     };
-
+  
     fetchSolicitudes();
   }, []);
+  
 
   const handleModal = () => {
     setOpen(!open);

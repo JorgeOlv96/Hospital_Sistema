@@ -40,11 +40,16 @@ function Solicitudesprogramadas() {
         throw new Error("Network response was not ok");
       }
       const data = await response.json();
-      setPendingAppointments(data);
+      
+      // Ordenar por id_solicitud de forma descendente
+      const sortedData = data.sort((a, b) => b.id_solicitud - a.id_solicitud);
+      
+      setPendingAppointments(sortedData);
     } catch (error) {
       console.error("Error fetching pending appointments:", error);
     }
   };
+  
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;

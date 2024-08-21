@@ -329,19 +329,18 @@ function Programaranestesiologo() {
         throw new Error("Network response was not ok");
       }
       let data = await response.json();
-
-
-
-      setAnesthesiologists(data);
+      const sortedData = data.sort((a, b) => b.id_anestesiologo - a.id_anestesiologo); // Ordenar por id_solicitud de mayor a menor
+      setAnesthesiologists(sortedData);
     } catch (error) {
       console.error("Error fetching anesthesiologists:", error);
       toast.error("Error al obtener los anestesiólogos");
     }
   };
-
+  
   useEffect(() => {
     fetchAnesthesiologists();
   }, []);
+  
 
   // Calcular índices para la paginación
   const indexOfLastAnesthesiologist = page * anesthesiologistsPerPage;

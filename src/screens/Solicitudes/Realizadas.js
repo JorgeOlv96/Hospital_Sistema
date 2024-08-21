@@ -34,19 +34,21 @@ function Solicitudesrealizadas() {
   useEffect(() => {
     fetchPendingAppointments();
   }, []);
-
+  
   const fetchPendingAppointments = async () => {
     try {
-      const response = await fetch(`${baseURL}/api/solicitudes/reailizadas`);
+      const response = await fetch(`${baseURL}/api/solicitudes/realizadas`);
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
       const data = await response.json();
-      setPendingAppointments(data);
+      const sortedData = data.sort((a, b) => b.id_solicitud - a.id_solicitud); // Ordenar por id_solicitud de mayor a menor
+      setPendingAppointments(sortedData);
     } catch (error) {
       console.error("Error fetching pending appointments:", error);
     }
   };
+  
 
   const handleViewClick = (appointment) => {
     if (appointment.id_solicitud) {

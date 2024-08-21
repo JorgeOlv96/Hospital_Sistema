@@ -9,11 +9,11 @@ const OperatingRoomSchedule = ({ date, appointments, onEventClick }) => {
     moment(app.start).isSame(date, 'day') || moment(app.end).isSame(date, 'day')
   );
 
-  const getAppointmentClass = (title) => {
-    if (title && (title.endsWith('R1') || title.endsWith('R2') || title.endsWith('R3') || title.endsWith('R4') || title.endsWith('R5'))) {
+  const getAppointmentClass = (folio) => {
+    if (folio && (folio.endsWith('R1') || folio.endsWith('R2') || folio.endsWith('R3') || folio.endsWith('R4') || folio.endsWith('R5'))) {
       return 'reprogrammed';
     }
-    if (title && title.endsWith('S')) {
+    if (folio && folio.endsWith('S')) {
       return 'suspended';
     }
     return '';
@@ -42,7 +42,7 @@ const OperatingRoomSchedule = ({ date, appointments, onEventClick }) => {
               {overlappingAppointments.map((appointment, idx) => {
                 const startMinute = moment(appointment.start).diff(startOfHour, 'minutes');
                 const durationInMinutes = moment(appointment.end).diff(appointment.start, 'minutes');
-                const appointmentClass = getAppointmentClass(appointment.title);
+                const appointmentClass = getAppointmentClass(appointment.folio);
 
                 return (
                   <div
