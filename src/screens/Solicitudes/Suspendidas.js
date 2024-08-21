@@ -335,21 +335,21 @@ function Solicitudessuspendidas() {
                         key={appointment.id}
                         className="bg-blue-50 hover:bg-blue-300"
                       >
-                        <td className="px-4 py-2">{appointment.folio}</td>
-                        <td className="px-4 py-2">
+                        <td className="border px-4 py-2">{appointment.folio}</td>
+                        <td className="border px-4 py-2">
                         {appointment.ap_paterno}{" "}
                         {appointment.ap_materno}{" "}{appointment.nombre_paciente} 
                         </td>
-                        <td className="px-4 py-2">
+                        <td className="border px-4 py-2">
                           {appointment.nombre_especialidad}
                         </td>
-                        <td className="px-4 py-2">
+                        <td className="border px-4 py-2">
                           {appointment.fecha_programada}
                         </td>
-                        <td className="px-4 py-2 flex justify-center">
-                          {appointment.sala_quirofano}
+                        <td className="border px-4 py-2 justify-center">
+                          {"Sala: " + appointment.sala_quirofano}
                         </td>
-                        <td className="border px-4 py-2">
+                        <td className="border border px-4 py-2">
                           <div
                             className={`inline-block px-1 py-1 rounded-lg ${getEstadoColor(
                               appointment.estado_solicitud
@@ -369,7 +369,7 @@ function Solicitudessuspendidas() {
                             {appointment.estado_solicitud}
                           </div>
                         </td>
-                        <td className="px-4 py-2 flex justify-center">
+                        <td className="border px-4 py-2 flex justify-center">
                           <button
                             onClick={() => handleViewModal(appointment)}
                             className="bg-[#365b77] text-white px-5 py-2 rounded-md hover:bg-[#7498b6]"

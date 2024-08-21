@@ -42,7 +42,7 @@ function ProgramarSolicitud() {
   useEffect(() => {
     fetchPendingAppointments();
   }, []);
-  
+
   const fetchPendingAppointments = async () => {
     try {
       const response = await fetch(`${baseURL}/api/solicitudes/preprogramadas`);
@@ -56,7 +56,7 @@ function ProgramarSolicitud() {
       console.error("Error fetching pending appointments:", error);
     }
   };
-  
+
   const handleViewModal = (appointment) => {
     setSelectedAppointment(appointment);
     setOpen(true);
@@ -344,22 +344,34 @@ function ProgramarSolicitud() {
         })
         .sort((a, b) => {
           const salaOrder = [
-            "A1", "A2", "T1", "T2", "1", "2", "3", "4", "5", "6", "E", "H", "RX"
+            "A1",
+            "A2",
+            "T1",
+            "T2",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "E",
+            "H",
+            "RX",
           ];
           const salaA = salaOrder.indexOf(a.sala_quirofano);
           const salaB = salaOrder.indexOf(b.sala_quirofano);
           return salaA - salaB;
         });
 
-          return `
+      return `
             <tr class="turno-section">
               <td colspan="13">${turno} (de ${
-            turno === "Matutino"
-              ? "08:00 a 14:00"
-              : turno === "Vespertino"
-              ? "14:00 a 20:00"
-              : "20:00 a 06:00"
-          })</td>
+        turno === "Matutino"
+          ? "08:00 a 14:00"
+          : turno === "Vespertino"
+          ? "14:00 a 20:00"
+          : "20:00 a 06:00"
+      })</td>
             </tr>
             ${sortedRegistrations
               .map((appointment, index) => {
@@ -443,8 +455,8 @@ function ProgramarSolicitud() {
               })
               .join("")}
           `;
-        })
-        .join("")}
+    })
+    .join("")}
     </tbody>
   </table>
 
@@ -647,6 +659,16 @@ function ProgramarSolicitud() {
                   <tr>
                     <th
                       className="px-4 py-3 cursor-pointer"
+                      onClick={() => handleSort("id_solicitud")}
+                    >
+                      ID{" "}
+                      <span>
+                        {sortBy === "id_solicitud" &&
+                          (sortOrder === "asc" ? "▲" : "▼")}
+                      </span>
+                    </th>
+                    <th
+                      className="px-4 py-3 cursor-pointer"
                       onClick={() => handleSort("folio")}
                     >
                       Folio{" "}
@@ -717,21 +739,24 @@ function ProgramarSolicitud() {
                         key={appointment.id}
                         className="bg-blue-50 hover:bg-blue-300"
                       >
-                        <td className="px-4 py-2">{appointment.folio}</td>
-                        <td className="px-4 py-2">
+                        <td className="border px-4 py-2">
+                          {appointment.id_solicitud}
+                        </td>
+                        <td className="border px-4 py-2">{appointment.folio}</td>
+                        <td className="border px-4 py-2">
                           {appointment.ap_paterno}
                           {"  "} {appointment.ap_materno}
                           {"  "}
                           {appointment.nombre_paciente}
                         </td>
-                        <td className="px-4 py-2">
+                        <td className="border px-4 py-2">
                           {appointment.nombre_especialidad}
                         </td>
-                        <td className="px-4 py-2">
+                        <td className="border px-4 py-2">
                           {appointment.fecha_solicitud}
                         </td>
-                        <td className="px-4 py-2">
-                          {appointment.sala_quirofano}
+                        <td className="border px-4 py-2 justify-center">
+                          {"Sala: " + appointment.sala_quirofano}
                         </td>
                         <td className="border px-4 py-2">
                           <div
@@ -753,7 +778,7 @@ function ProgramarSolicitud() {
                             {appointment.estado_solicitud}
                           </div>
                         </td>
-                        <td className="px-4 py-2">
+                        <td className="border px-4 py-2">
                           {isDuplicated(appointment) && (
                             <div
                               style={{
@@ -773,7 +798,7 @@ function ProgramarSolicitud() {
                           )}
                         </td>
 
-                        <td className="px-4 py-2">
+                        <td className="border px-4 py-2">
                           <button
                             onClick={() => handleViewModal(appointment)}
                             className="bg-[#365b77] text-white px-5 py-2 rounded-md hover:bg-[#7498b6]"

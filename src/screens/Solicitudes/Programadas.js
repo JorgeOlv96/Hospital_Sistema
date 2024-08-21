@@ -40,16 +40,15 @@ function Solicitudesprogramadas() {
         throw new Error("Network response was not ok");
       }
       const data = await response.json();
-      
+
       // Ordenar por id_solicitud de forma descendente
       const sortedData = data.sort((a, b) => b.id_solicitud - a.id_solicitud);
-      
+
       setPendingAppointments(sortedData);
     } catch (error) {
       console.error("Error fetching pending appointments:", error);
     }
   };
-  
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -96,7 +95,7 @@ function Solicitudesprogramadas() {
   const getEstadoColorStyle = (estado) => {
     switch (estado.toLowerCase()) {
       case "programada":
-        return { backgroundColor: "#68D391", color: "white"  }; // Color de fondo verde y texto negro
+        return { backgroundColor: "#68D391", color: "white" }; // Color de fondo verde y texto negro
       default:
         return {};
     }
@@ -170,7 +169,6 @@ function Solicitudesprogramadas() {
                 <span>Todas las solicitudes</span>
               </Link>
             </div>
-
 
             <div>
               <Link
@@ -339,19 +337,21 @@ function Solicitudesprogramadas() {
                         key={appointment.id}
                         className="bg-blue-50 hover:bg-blue-300"
                       >
-                        <td className="px-4 py-2">{appointment.folio}</td>
-                        <td className="px-4 py-2">
-                        {appointment.ap_paterno}{" "}
-                        {appointment.ap_materno}{" "}{appointment.nombre_paciente} 
+                        <td className="border px-4 py-2">
+                          {appointment.folio}
                         </td>
-                        <td className="px-4 py-2">
+                        <td className="border px-4 py-2">
+                          {appointment.ap_paterno} {appointment.ap_materno}{" "}
+                          {appointment.nombre_paciente}
+                        </td>
+                        <td className="border px-4 py-2">
                           {appointment.nombre_especialidad}
                         </td>
-                        <td className="px-4 py-2">
+                        <td className="border px-4 py-2">
                           {appointment.fecha_programada}
                         </td>
-                        <td className="px-4 py-2 flex justify-center">
-                          {appointment.sala_quirofano}
+                        <td className="border px-4 py-2 justify-center">
+                          {"Sala: " + appointment.sala_quirofano}
                         </td>
                         <td className="border px-4 py-2">
                           <div

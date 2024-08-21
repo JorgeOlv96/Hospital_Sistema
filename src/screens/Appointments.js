@@ -168,11 +168,15 @@ function Appointments() {
           .add(appointment.tiempo_estimado, "minutes")
           .toDate();
 
+          const patientFullName = `${appointment.ap_paterno} ${appointment.ap_materno} ${appointment.nombre_paciente}`;
+          const isRSeries = /R[1-9]/i.test(appointment.folio);
+
         return {
           id: appointment.id_solicitud,
           start: startDateTime,
           end: endDateTime,
-          title: appointment.folio,
+          title: patientFullName,
+          folio: appointment.folio,
           ap_paterno: appointment.ap_paterno,
           ap_materno: appointment.ap_materno,
           nombre_paciente: appointment.nombre_paciente,
@@ -371,7 +375,7 @@ function Appointments() {
                 <th>Folio</th>
                 <th>Hra. asign.</th>
                 <th>Sala</th>
-                <th>Nombre completo</th>
+                <th>Nom. completo</th>
                 <th>Sexo</th>
                 <th>Diagnostico</th>
                 <th>Especialidad</th>
