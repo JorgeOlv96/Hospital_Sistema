@@ -332,63 +332,82 @@ function ProgramarSolicitud() {
       </tr>
     </thead>
     <tbody>
-      ${["Matutino", "Vespertino", "Nocturno"]
-        .map((turno) => {
-          const sortedRegistrations = todaysRegistrations
-            .filter((appointment) => {
-              const hour = moment(appointment.hora_solicitada, "HH:mm").hour();
-              if (turno === "Matutino") return hour >= 8 && hour <= 14;
-              if (turno === "Vespertino") return hour >= 14 && hour <= 20;
-              return hour >= 20 || hour < 8;
-            })
-            .sort((a, b) => {
-              const salaOrder = [
-                "A1", "A2", "T1", "T2", "1", "2", "3", "4", "5", "6", "E", "H", "RX",
-              ];
-              const salaA = salaOrder.indexOf(a.sala_quirofano);
-              const salaB = salaOrder.indexOf(b.sala_quirofano);
-              if (salaA !== salaB) return salaA - salaB;
-              return moment(a.hora_solicitada, "HH:mm").diff(moment(b.hora_solicitada, "HH:mm"));
-            });
+    <tbody>
+  ${["Matutino", "Vespertino", "Nocturno"]
+    .map((turno) => {
+      const sortedRegistrations = todaysRegistrations
+        .filter((appointment) => {
+          const hour = moment(appointment.hora_solicitada, "HH:mm").hour();
+          if (turno === "Matutino") return hour >= 8 && hour < 14;
+          if (turno === "Vespertino") return hour >= 14 && hour < 20;
+          return hour >= 20 || hour < 8;
+        })
+        .sort((a, b) => {
+          const salaOrder = [
+            "A1", "A2", "T1", "T2", "1", "2", "3", "4", "5", "6", "E", "H", "RX"
+          ];
+          const salaA = salaOrder.indexOf(a.sala_quirofano);
+          const salaB = salaOrder.indexOf(b.sala_quirofano);
+          return salaA - salaB;
+        });
 
           return `
             <tr class="turno-section">
               <td colspan="13">${turno} (de ${
-              turno === "Matutino"
-                ? "08:00 a 14:00"
-                : turno === "Vespertino"
-                ? "14:00 a 20:00"
-                : "20:00 a 06:00"
-            })</td>
+            turno === "Matutino"
+              ? "08:00 a 14:00"
+              : turno === "Vespertino"
+              ? "14:00 a 20:00"
+              : "20:00 a 06:00"
+          })</td>
             </tr>
             ${sortedRegistrations
-              .map(
-                (appointment, index) => {
-                  // Obtener el anestesiólogo asignado para la solicitud actual
-                  const assignedAnesthesiologist = todaysAnesthesiologists.find(
-                    (anesthesiologist) =>
-                      anesthesiologist.sala_anestesio.includes(appointment.sala_quirofano) &&
-                      moment(anesthesiologist.dia_anestesio).isSame(moment(appointment.fecha_solicitada), 'day')
-                  );
-                  
-                  const anesthesiologistName = assignedAnesthesiologist
-                    ? assignedAnesthesiologist.nombre
-                    : "No asignado";
-                  
-                  return `
+              .map((appointment, index) => {
+                // Obtener el anestesiólogo asignado para la solicitud actual
+                const assignedAnesthesiologist = todaysAnesthesiologists.find(
+                  (anesthesiologist) =>
+                    anesthesiologist.sala_anestesio.includes(
+                      appointment.sala_quirofano
+                    ) &&
+                    moment(anesthesiologist.dia_anestesio).isSame(
+                      moment(appointment.fecha_solicitada),
+                      "day"
+                    )
+                );
+
+                const anesthesiologistName = assignedAnesthesiologist
+                  ? assignedAnesthesiologist.nombre
+                  : "No asignado";
+
+                return `
                     <tr>
                       <td>${index + 1}</td>
                       <td>${appointment.folio || ""}</td>
-                      <td>${moment(appointment.hora_solicitada, "HH:mm").format("LT")}</td>
+                      <td>${moment(appointment.hora_solicitada, "HH:mm").format(
+                        "LT"
+                      )}</td>
                       <td>Sala: ${appointment.sala_quirofano || ""}</td>
-                      <td>${appointment.nombre_paciente} ${appointment.ap_paterno} ${appointment.ap_materno}</td>
-                      <td>${appointment.sexo ? (appointment.sexo === "Femenino" ? "F" : "M") : "No especificado"}</td>
+                      <td>${appointment.nombre_paciente} ${
+                  appointment.ap_paterno
+                } ${appointment.ap_materno}</td>
+                      <td>${
+                        appointment.sexo
+                          ? appointment.sexo === "Femenino"
+                            ? "F"
+                            : "M"
+                          : "No especificado"
+                      }</td>
                       <td>
                         ${(() => {
                           const procedimientos = appointment.diagnostico || "";
-                          const [beforeDash, afterDash] = procedimientos.split("-", 2);
+                          const [beforeDash, afterDash] = procedimientos.split(
+                            "-",
+                            2
+                          );
                           const truncatedBeforeDash = beforeDash.slice(0, 45);
-                          return `${truncatedBeforeDash}${afterDash ? "-" + afterDash : ""}`;
+                          return `${truncatedBeforeDash}${
+                            afterDash ? "-" + afterDash : ""
+                          }`;
                         })()}
                       </td>
                       <td>${appointment.nombre_especialidad || ""}</td>
@@ -402,7 +421,9 @@ function ProgramarSolicitud() {
                             case "URGENCIAS":
                               return "Urgencias";
                             default:
-                              return appointment.tipo_admision || "No especificado";
+                              return (
+                                appointment.tipo_admision || "No especificado"
+                              );
                           }
                         })()}
                       </td>
@@ -419,8 +440,7 @@ function ProgramarSolicitud() {
                       <td>${appointment.req_insumo || ""}</td>
                     </tr>
                   `;
-                }
-              )
+              })
               .join("")}
           `;
         })
@@ -453,9 +473,8 @@ function ProgramarSolicitud() {
             (room) => `
             <td>
               ${todaysAnesthesiologists
-                .filter(
-                  (anesthesiologist) =>
-                    anesthesiologist.sala_anestesio.includes(room)
+                .filter((anesthesiologist) =>
+                  anesthesiologist.sala_anestesio.includes(room)
                 )
                 .map((anesthesiologist) => anesthesiologist.nombre)
                 .join(", ")}
@@ -492,64 +511,63 @@ function ProgramarSolicitud() {
         <div className="flex flex-col gap-2 mb-4">
           <h1 className="text-xl font-semibold">Solicitudes pre-programadas</h1>
 
-          <div className="flex my-4 space-x-4">
-            <div>
-              <Link
-                to="/appointments"
-                className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
-              >
-                <span>Agenda</span>
-              </Link>
+          <div className="flex justify-between my-4">
+            <div className="flex space-x-4">
+              <div>
+                <Link
+                  to="/appointments"
+                  className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
+                >
+                  <span>Agenda</span>
+                </Link>
+              </div>
+              <div>
+                <Link
+                  to="/solicitudes/todas"
+                  className="bg-[#4A5568] hover:bg-[#758195] text-white py-2 px-4 rounded inline-flex items-center"
+                >
+                  <span>Todas las solicitudes</span>
+                </Link>
+              </div>
+              <div>
+                <Link
+                  to="/solicitudes/Solicitudesprogramadas"
+                  className="bg-[#5DB259] hover:bg-[#528E4F] text-white py-2 px-4 rounded inline-flex items-center"
+                >
+                  <span>Programadas</span>
+                </Link>
+              </div>
+              <div>
+                <Link
+                  to="/solicitudes/Solicitudreaizada"
+                  className="bg-[#63B3ED] hover:bg-[#63B3ED] text-white py-2 px-4 rounded inline-flex items-center"
+                >
+                  <span>Realizadas</span>
+                </Link>
+              </div>
+              <div>
+                <Link
+                  to="/solicitudes/Solicitudsuspendida"
+                  className="bg-[#D87D09] hover:bg-[#BF6E07] text-white py-2 px-4 rounded inline-flex items-center"
+                >
+                  <span>Suspendidas</span>
+                </Link>
+              </div>
             </div>
 
-            <div>
-              <Link
-                to="/solicitudes/todas"
-                className="bg-[#4A5568] hover:bg-[#758195] text-white py-2 px-4 rounded inline-flex items-center"
-              >
-                <span>Todas las solicitudes</span>
-              </Link>
-            </div>
-
-            <div>
-              <Link
-                to="/solicitudes/Solicitudesprogramadas"
-                className="bg-[#5DB259] hover:bg-[#528E4F] text-white py-2 px-4 rounded inline-flex items-center"
-              >
-                <span>Programadas</span>
-              </Link>
-            </div>
-
-            <div>
-              <Link
-                to="/solicitudes/Solicitudreaizada"
-                className="bg-[#63B3ED] hover:bg-[#63B3ED] text-white py-2 px-4 rounded inline-flex items-center"
-              >
-                <span>Realizadas</span>
-              </Link>
-            </div>
-
-            <div>
-              <Link
-                to="/solicitudes/Solicitudsuspendida"
-                className="bg-[#D87D09] hover:bg-[#BF6E07] text-white py-2 px-4 rounded inline-flex items-center"
-              >
-                <span>Suspendidas</span>
-              </Link>
-            </div>
-            <div className="flex ml-auto items-center">
-              <label className="mr-2 font-semibold">Día a imprimir:</label>
+            <div className="flex items-center space-x-2">
+              <label className="font-semibold">Día a imprimir:</label>
               <input
                 type="date"
                 value={formatDateInputValue(printDate)}
                 onChange={handlePrintDateChange}
-                className="px-4 py-2 border border-main rounded-md text-main"
+                className="px-1 py-1 border border-main rounded-md text-main"
               />
               <button
                 onClick={printDailyAppointments}
-                className="bg-[#5DB259] hover:bg-[#528E4F] text-white py-2 px-4 rounded inline-flex items-center ml-4"
+                className="bg-[#5DB259] hover:bg-[#528E4F] text-white py-1 px-1 rounded inline-flex items-center"
               >
-                Imprimir Pre-progrmadas
+                Imprimir Pre-programadas
               </button>
             </div>
           </div>
