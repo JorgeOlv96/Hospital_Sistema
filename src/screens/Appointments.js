@@ -168,15 +168,11 @@ function Appointments() {
           .add(appointment.tiempo_estimado, "minutes")
           .toDate();
 
-          const patientFullName = `${appointment.ap_paterno} ${appointment.ap_materno} ${appointment.nombre_paciente}`;
-          const isRSeries = /R[1-9]/i.test(appointment.folio);
-
         return {
           id: appointment.id_solicitud,
           start: startDateTime,
           end: endDateTime,
-          title: patientFullName,
-          folio: appointment.folio,
+          title: appointment.folio,
           ap_paterno: appointment.ap_paterno,
           ap_materno: appointment.ap_materno,
           nombre_paciente: appointment.nombre_paciente,
@@ -270,28 +266,22 @@ function Appointments() {
           moment(anesthesiologist.dia_anestesio).format("YYYY-MM-DD") === today
       );
       console.log("Today's Anesthesiologists:", todaysAnesthesiologists);
-      console.log(
-        "Today's Anesthesiologists for Recovery:",
-        todaysAnesthesiologists.filter(
-          (anesthesiologist) =>
-            anesthesiologist.sala_anestesio === "Recup_Matutino"
-        )
-      );
+      console.log("Today's Anesthesiologists for Recovery:", todaysAnesthesiologists.filter(
+        (anesthesiologist) => anesthesiologist.sala_anestesio === "Recup_Matutino"
+      ));
 
       const anesthesiologistsFilteredByDate = anesthesiologistsData.filter(
         (anesthesiologist) =>
           moment(anesthesiologist.dia_anestesio).format("YYYY-MM-DD") === today
       );
       console.log("Filtered by Date:", anesthesiologistsFilteredByDate);
-
+      
       const anesthesiologistsFilteredByRoom = anesthesiologistsData.filter(
         (anesthesiologist) =>
           anesthesiologist.sala_anestesio === "Recup_Matutino"
       );
-      console.log(
-        "Filtered by Room (Recup_Matutino):",
-        anesthesiologistsFilteredByRoom
-      );
+      console.log("Filtered by Room (Recup_Matutino):", anesthesiologistsFilteredByRoom);
+      
 
       const printableContent = `
       <html>
@@ -392,85 +382,130 @@ function Appointments() {
                 <th>Insumos</th>
               </tr>
             </thead>
-<tbody>
-            ${["Matutino", "Vespertino", "Nocturno"]
-                .map((turno) => {
-                    const sortedRegistrations = todaysRegistrations
-                        .filter((appointment) => {
-                            const hour = moment(appointment.hora_solicitada, "HH:mm").hour();
-                            if (turno === "Matutino") return hour >= 8 && hour < 14;
-                            if (turno === "Vespertino") return hour >= 14 && hour < 20;
-                            return hour >= 20 || hour < 8;  // Nota: Esto cubre el turno Nocturno correctamente
-                        })
-                        .sort((a, b) => {
-                            const salaOrder = [
-                                "A1", "A2", "T1", "T2", "1", "2", "3", "4", "5", "6", "E", "H", "RX"
-                            ];
-                            const salaA = salaOrder.indexOf(a.sala_quirofano);
-                            const salaB = salaOrder.indexOf(b.sala_quirofano);
-                            return salaA - salaB;
-                        });
-                    
-                    // Generar el HTML para las solicitudes ordenadas
-                    return `
-                        <tr class="turno-section ${turno.toLowerCase()}">
-                            <td colspan="13">${turno} (de ${
-                                turno === "Matutino"
-                                    ? "08:00 a 14:00"
-                                    : turno === "Vespertino"
-                                    ? "14:00 a 20:00"
-                                    : "20:00 a 08:00"  // Ajustado para mostrar el rango nocturno correctamente
-                            })</td>
-                        </tr>
-                        ${sortedRegistrations
-                            .map(
-                                (appointment, index) => `
-                                    <tr>
-                                        <td>${index + 1}</td>
-                                        <td>${appointment.folio || ""}</td>
-                                        <td>${moment(appointment.hora_asignada, "HH:mm").format("LT")}</td>
-                                        <td>Sala: ${appointment.sala_quirofano || ""}</td>
-                                        <td>${appointment.ap_paterno} ${appointment.ap_materno} ${appointment.nombre_paciente}</td>
-                                        <td>${appointment.sexo ? (appointment.sexo === "Femenino" ? "F" : "M") : "No especificado"}</td>
-                                        <td>${(() => {
-                                            const procedimientos = appointment.diagnostico || "";
-                                            const [beforeDash, afterDash] = procedimientos.split("-", 2);
-                                            const truncatedBeforeDash = beforeDash.slice(0, 45);
-                                            return `${truncatedBeforeDash}${afterDash ? "-" + afterDash : ""}`;
-                                        })()}</td>
-                                        <td>${appointment.nombre_especialidad || ""}</td>
-                                        <td>${(() => {
-                                            switch (appointment.tipo_admision) {
-                                                case "CONSULTA EXTERNA": return "C.E.";
-                                                case "CAMA": return `Cama - ${appointment.cama}`;
-                                                case "URGENCIAS": return "Urgencias";
-                                                default: return appointment.tipo_admision || "No especificado";
-                                            }
-                                        })()}</td>
-                                        <td>${appointment.tiempo_estimado} min</td>
-                                        <td>${(() => {
-                                            const nombreanes = appointment.nombre_anestesiologo || "";
-                                            const words = nombreanes.split(" ");
-                                            const truncatedName = words.slice(0, 2).join(" ");
-                                            return truncatedName;
-                                        })()}</td>
-                                        <td>${(() => {
-                                            const nombre = appointment.nombre_cirujano || "";
-                                            const words = nombre.split(" ");
-                                            const truncatedName = words.slice(0, 2).join(" ");
-                                            return truncatedName;
-                                        })()}</td>
-                                        <td>${appointment.req_insumo || ""}</td>
-                                    </tr>
-                                `
-                            )
-                            .join("")}
-                    `;
-                })
-                .join("")}
+           <tbody>
+  ${["Matutino", "Vespertino", "Nocturno"]
+    .map((turno) => {
+      // Filtrar y ordenar las solicitudes por sala y hora
+      const sortedRegistrations = todaysRegistrations
+        .filter((appointment) => {
+          const hour = moment(appointment.hora_solicitada, "HH:mm").hour();
+          if (turno === "Matutino") return hour >= 8 && hour <= 14;
+          if (turno === "Vespertino") return hour >= 14 && hour <= 20;
+          return hour >= 20 || hour < 8;
+        })
+        .sort((a, b) => {
+          // Ordenar primero por sala y luego por hora
+          const salaOrder = [
+            "A1",
+            "A2",
+            "T1",
+            "T2",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "E",
+            "H",
+            "RX",
+          ];
+          const salaA = salaOrder.indexOf(a.sala_quirofano);
+          const salaB = salaOrder.indexOf(b.sala_quirofano);
+          if (salaA !== salaB) return salaA - salaB;
+          return moment(a.hora_asignada, "HH:mm").diff(
+            moment(b.hora_asignada, "HH:mm")
+          );
+        });
+
+      // Generar el HTML para las solicitudes ordenadas
+      return `
+        <tr class="turno-section">
+          <td colspan="13">${turno} (de ${
+        turno === "Matutino"
+          ? "08:00 a 14:00"
+          : turno === "Vespertino"
+          ? "14:00 a 20:00"
+          : "20:00 a 06:00"
+      })</td>
+        </tr>
+        ${sortedRegistrations
+          .map(
+            (appointment, index) => `
+              <tr>
+                <td>${index + 1}</td>
+                <td>${appointment.folio || ""}</td>
+                <td>${moment(appointment.hora_asignada, "HH:mm").format(
+                  "LT"
+                )}</td>
+                <td>Sala: ${appointment.sala_quirofano || ""}</td>
+                <td>
+                  ${appointment.ap_paterno}  
+                  ${appointment.ap_materno} 
+                  ${appointment.nombre_paciente} 
+                </td>
+                <td>${
+                  appointment.sexo
+                    ? appointment.sexo === "Femenino"
+                      ? "F"
+                      : "M"
+                    : "No especificado"
+                }</td>
+                <td>
+                  ${(() => {
+                    const procedimientos =
+                      appointment.diagnostico || "";
+                    const [beforeDash, afterDash] = procedimientos.split(
+                      "-",
+                      2
+                    );
+                    const truncatedBeforeDash = beforeDash.slice(0, 45);
+                    return `${truncatedBeforeDash}${
+                      afterDash ? "-" + afterDash : ""
+                    }`;
+                  })()}
+                </td>
+                <td>${appointment.nombre_especialidad || ""}</td>
+                  <td>
+                    ${(() => {
+                      switch (appointment.tipo_admision) {
+                        case "CONSULTA EXTERNA":
+                          return "C.E.";
+                        case "CAMA":
+                          return `Cama - ${appointment.cama}`;
+                        case "URGENCIAS":
+                          return "Urgencias";
+                        default:
+                          return appointment.tipo_admision || "No especificado";
+                      }
+                    })()}
+                  </td>
+                <td>${appointment.tiempo_estimado} min</td>
+                <td>
+                  ${(() => {
+                    const nombreanes = appointment.nombre_anestesiologo || "";
+                    const words = nombreanes.split(" ");
+                    const truncatedName = words.slice(0, 2).join(" ");
+                    return truncatedName;
+                  })()}
+                </td>
+                <td>
+                  ${(() => {
+                    const nombre = appointment.nombre_cirujano || "";
+                    const words = nombre.split(" ");
+                    const truncatedName = words.slice(0, 2).join(" ");
+                    return truncatedName;
+                  })()}
+                </td>
+                <td>${appointment.req_insumo || ""}</td>
+              </tr>
+            `
+          )
+          .join("")}
+      `;
+    })
+    .join("")}
 </tbody>
-
-
           </table>
       
           <table>
@@ -498,7 +533,10 @@ function Appointments() {
                     (room) => `
                     <td>
 ${todaysAnesthesiologists
-  .filter((anesthesiologist) => anesthesiologist.sala_anestesio.includes(room))
+  .filter(
+    (anesthesiologist) =>
+      anesthesiologist.sala_anestesio.includes(room)
+  )
   .map((anesthesiologist) => anesthesiologist.nombre)
   .join(", ")}
                     </td>`
