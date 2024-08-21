@@ -260,6 +260,16 @@ function Solicitudesprogramadas() {
               <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
                 <thead className="bg-[#365b77] text-white">
                   <tr>
+                  <th
+                      className="px-4 py-3 cursor-pointer"
+                      onClick={() => handleSort("id_solicitud")}
+                    >
+                      ID{" "}
+                      <span>
+                        {sortBy === "id_solicitud" &&
+                          (sortOrder === "asc" ? "▲" : "▼")}
+                      </span>
+                    </th>
                     <th
                       className="px-4 py-2 cursor-pointer"
                       onClick={() => handleSort("folio")}
@@ -337,6 +347,9 @@ function Solicitudesprogramadas() {
                         key={appointment.id}
                         className="bg-blue-50 hover:bg-blue-300"
                       >
+                        <td className="border px-4 py-2">
+                          {appointment.id_solicitud}
+                        </td>
                         <td className="border px-4 py-2">
                           {appointment.folio}
                         </td>
