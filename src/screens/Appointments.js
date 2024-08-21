@@ -371,7 +371,7 @@ function Appointments() {
                 <th>Folio</th>
                 <th>Hra. asign.</th>
                 <th>Sala</th>
-                <th>Nom. completo</th>
+                <th>Nombre completo</th>
                 <th>Sexo</th>
                 <th>Diagnostico</th>
                 <th>Especialidad</th>
