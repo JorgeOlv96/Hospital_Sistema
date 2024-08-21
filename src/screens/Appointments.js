@@ -387,6 +387,7 @@ function Appointments() {
                 <th>Especialidad</th>
                 <th>Procedencia</th>
                 <th>Tiempo est.</th>
+                <TH>Turno</th>
                 <TH>Anestesiólogo</th>
                 <th>Cirujano</th>
                 <th>Insumos</th>
@@ -397,7 +398,7 @@ function Appointments() {
                 .map((turno) => {
                     const sortedRegistrations = todaysRegistrations
                         .filter((appointment) => {
-                            const hour = moment(appointment.hora_solicitada, "HH:mm").hour();
+                            const hour = moment(appointment.hora_asignada, "HH:mm").hour();
                             if (turno === "Matutino") return hour >= 8 && hour < 14;
                             if (turno === "Vespertino") return hour >= 14 && hour < 20;
                             return hour >= 20 || hour < 8;  // Nota: Esto cubre el turno Nocturno correctamente
@@ -448,6 +449,7 @@ function Appointments() {
                                             }
                                         })()}</td>
                                         <td>${appointment.tiempo_estimado} min</td>
+                                        <td>${appointment.turno}</td>
                                         <td>${(() => {
                                             const nombreanes = appointment.nombre_anestesiologo || "";
                                             const words = nombreanes.split(" ");
