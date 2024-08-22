@@ -973,11 +973,13 @@ function Solicitudes() {
                                     <td className="border px-4 py-2">
                                       {solicitud.folio}
                                     </td>
-                                    <td className="border px-4 py-2">
-                                      {solicitud.ap_paterno}{" "}
-                                      {solicitud.ap_materno}{" "}
-                                      {solicitud.nombre_paciente}
-                                    </td>
+                                    <td className="border px-4 py-2 uppercase">
+                                        {[
+                                          solicitud.ap_paterno,
+                                          solicitud.ap_materno,
+                                          solicitud.nombre_paciente
+                                        ].filter(Boolean).join(' ')}
+                                      </td>
                                     <td className="border px-4 py-2 text-center">
                                       {solicitud.nombre_especialidad}
                                     </td>
