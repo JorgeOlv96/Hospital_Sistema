@@ -328,10 +328,13 @@ function Evaluacion() {
                           <td className="border px-4 py-2">
                             {appointment.folio}
                           </td>
-                          <td className="border px-4 py-2">
-                            {appointment.ap_paterno} {appointment.ap_materno}{" "}
-                            {appointment.nombre_paciente}
-                          </td>
+                          <td className="border px-4 py-2 uppercase">
+                              {[
+                                appointment.ap_paterno,
+                                appointment.ap_materno,
+                                appointment.nombre_paciente
+                              ].filter(Boolean).join(' ')}
+                            </td>
                           <td className="border px-4 py-2 text-center align-middle">
                             {appointment.clave_esp}
                           </td>
