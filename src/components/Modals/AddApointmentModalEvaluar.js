@@ -455,9 +455,19 @@ function AddAppointmentModalEvaluar({
                 <label className="block font-semibold text-gray-700 mb-2">
                   Procedimientos paciente:
                 </label>
+                {isEditing ? (
+                <input
+                    type="text"
+                    name="req_insumo"
+                    value={patientData.procedimientos_paciente}
+                    onChange={handleChange}
+                    className="bg-white p-3 rounded-lg"
+                  />
+                ) : (
                 <p className="bg-gray-200 p-3 rounded-lg">
                   {patientData?.procedimientos_paciente || "N/A"}
                 </p>
+                )}
               </div>
 
               <div className="mr-4 w-full">
