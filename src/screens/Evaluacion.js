@@ -12,7 +12,7 @@ function Evaluacion() {
   const [sortBy, setSortBy] = useState(null);
   const [sortOrder, setSortOrder] = useState("asc");
   const [page, setPage] = useState(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 9;
   const { user } = useContext(AuthContext);
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
 
@@ -92,7 +92,7 @@ function Evaluacion() {
   const getEstadoColorStyle = (estado) => {
     switch (estado.toLowerCase()) {
       case "pendiente":
-        return { backgroundColor: "#E9972F", color: "black" };
+        return { backgroundColor: "#E9972F", color: "white" };
       default:
         return {};
     }
@@ -209,28 +209,29 @@ function Evaluacion() {
             </div>
 
             {filteredAppointments.length === 0 ? (
-              <div className="text-center text-gray-500 mt-4">
-                No hay solicitudes pendientes :)
-              </div>
+            <div className="text-center text-white font-extrabold bg-gradient-to-r from-blue-500 to-green-400 p-4 rounded-lg shadow-lg mt-6 text-xl animate-pulse">
+            <span role="img" aria-label="confetti" className="mr-2">🎉</span>
+            ¡No hay solicitudes pendientes!
+            <span role="img" aria-label="confetti" className="ml-2">🎉</span>
+          </div>          
             ) : (
               <div className="overflow-x-auto">
                 <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
                   <thead className="bg-[#365b77] text-white">
                     <tr>
-                    <th
-                      scope="col"
-                      className="px-6 py-3 text-left text-xs font-medium text-white-500 uppercase tracking-wider"
+                      <th
+                      className="px-4 py-3 cursor-pointer"
                       onClick={() => handleSort("id_solicitud")}
-                    >
-                      ID {" "}
-                      <span>
+                      >
+                        ID{" "}
+                        <span>
                           {sortBy === "id_solicitud"
                             ? sortOrder === "asc"
                               ? "▲"
                               : "▼"
                             : ""}
                         </span>
-                    </th>
+                      </th>
                       <th
                         className="px-4 py-2 cursor-pointer"
                         onClick={() => handleSort("folio")}
@@ -259,11 +260,11 @@ function Evaluacion() {
                       </th>
                       <th
                         className="px-4 py-2 cursor-pointer"
-                        onClick={() => handleSort("nombre_especialidad")}
+                        onClick={() => handleSort("clave_esp")}
                       >
                         Especialidad{" "}
                         <span>
-                          {sortBy === "nombre_especialidad"
+                          {sortBy === "clave_esp"
                             ? sortOrder === "asc"
                               ? "▲"
                               : "▼"
@@ -274,7 +275,7 @@ function Evaluacion() {
                         className="px-4 py-2 cursor-pointer"
                         onClick={() => handleSort("fecha_solicitada")}
                       >
-                        Fecha solicitada{" "}
+                        Fecha solic.{" "}
                         <span>
                           {sortBy === "fecha_solicitada"
                             ? sortOrder === "asc"
@@ -285,9 +286,22 @@ function Evaluacion() {
                       </th>
                       <th
                         className="px-4 py-2 cursor-pointer"
+                        onClick={() => handleSort("turno_solicitado")}
+                      >
+                        Turno solic.{" "}
+                        <span>
+                          {sortBy === "turno_solicitado"
+                            ? sortOrder === "asc"
+                              ? "▲"
+                              : "▼"
+                            : ""}
+                        </span>
+                      </th>
+                      <th
+                        className="px-4 py-2 cursor-pointer"
                         onClick={() => handleSort("sala_quirofano")}
                       >
-                        Sala solicitada{" "}
+                        Sala solic.{" "}
                         <span>
                           {sortBy === "sala_quirofano"
                             ? sortOrder === "asc"
@@ -302,24 +316,33 @@ function Evaluacion() {
                   </thead>
                   <tbody>
                     {filteredAppointments
-                    .slice(startIndex, endIndex)
-                    .map((appointment, index) => (
-                      <tr key={appointment.id} className="bg-blue-50 hover:bg-blue-300">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 border-r border-gray-300">
-                          {appointment.id_solicitud}
-                        </td>
-                          <td className="px-4 py-2">{appointment.folio}</td>
-                          <td className="px-4 py-2">
-                          {appointment.ap_paterno}{" "}
-                          {appointment.ap_materno}{" "}{appointment.nombre_paciente} 
+                      .slice(startIndex, endIndex)
+                      .map((appointment, index) => (
+                        <tr
+                          key={appointment.id}
+                          className="bg-blue-50 hover:bg-blue-300"
+                        >
+                          <td className="border px-6 py-4">
+                            {appointment.id_solicitud}
                           </td>
-                          <td className="px-4 py-2">
-                            {appointment.nombre_especialidad}
+                          <td className="border px-4 py-2">
+                            {appointment.folio}
                           </td>
-                          <td className="px-4 py-2">
+                          <td className="border px-4 py-2">
+                            {appointment.ap_paterno} {appointment.ap_materno}{" "}
+                            {appointment.nombre_paciente}
+                          </td>
+                          <td className="border px-4 py-2 text-center align-middle">
+                            {appointment.clave_esp}
+                          </td>
+                          <td className="border px-4 py-2">
                             {appointment.fecha_solicitada}
                           </td>
-                          <td className="px-4 py-2 flex justify-center">
+                          <td className="border px-4 py-2 text-center align-middle">
+                            {appointment.turno_solicitado.charAt(0)}
+                          </td>
+
+                          <td className="border px-4 py-2 text-center align-middle">
                             {appointment.sala_quirofano}
                           </td>
                           <td className="border px-4 py-2">
@@ -342,7 +365,7 @@ function Evaluacion() {
                               {appointment.estado_solicitud}
                             </div>
                           </td>
-                          <td className="px-4 py-2 flex justify-center">
+                          <td className="border px-4 py-2 flex justify-center">
                             <button
                               onClick={() => handleViewModal(appointment)}
                               className="bg-[#365b77] text-white px-5 py-2 rounded-md hover:bg-blue-800"

@@ -11,7 +11,7 @@ function Solicitudes() {
   const [open, setOpen] = useState(false);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [page, setPage] = useState(1);
-  const [perPage] = useState(9);
+  const [perPage] = useState(6);
   const [sortBy, setSortBy] = useState(null);
   const [sortOrder, setSortOrder] = useState("asc");
   const [searchTerm, setSearchTerm] = useState("");
@@ -637,7 +637,7 @@ function Solicitudes() {
               />
             )}
 
-            <div className="flex flex-col space-y-4 mt-4">
+            <div className="flex flex-col space-y-1">
               {/* Filtros de búsqueda */}
               <div className="mt-8">
                 <div className="text-left">
@@ -832,7 +832,7 @@ function Solicitudes() {
                     </div>
                   </div>
 
-                  <div className="flex items-center justify-center mt-4 mb-4">
+                  <div className="flex items-center justify-center mt-4 mb-2">
                     <p className="text-lg font-semibold">
                       Lista de Solicitudes
                     </p>
@@ -840,8 +840,8 @@ function Solicitudes() {
                 </div>
 
                 <div className="overflow-x-auto">
-                  <div className="flex flex-col space-y-4 mt-4">
-                    <div className="flex justify-between mb-4">
+                  <div className="flex flex-col space-y-4">
+                    <div className="flex justify-between">
                       <div className="flex space-x-2">
                         <button
                           onClick={() => setView("table")}

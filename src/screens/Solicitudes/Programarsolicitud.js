@@ -14,7 +14,7 @@ function ProgramarSolicitud() {
   const [sortOrder, setSortOrder] = useState("asc");
   const [page, setPage] = useState(1);
   const [printDate, setPrintDate] = useState(new Date());
-  const itemsPerPage = 10;
+  const itemsPerPage = 7;
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
 
   // Estados para los filtros
@@ -756,7 +756,7 @@ function ProgramarSolicitud() {
                           {appointment.fecha_solicitud}
                         </td>
                         <td className="border px-4 py-2 justify-center">
-                          {"Sala: " + appointment.sala_quirofano}
+                          {appointment.sala_quirofano}
                         </td>
                         <td className="border px-4 py-2">
                           <div

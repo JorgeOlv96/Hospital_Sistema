@@ -49,7 +49,7 @@ function Login() {
                 }
             } catch (err) {
                 console.error('Error en el inicio de sesión:', err);
-                setError('Error en el inicio de sesión. Inténtalo de nuevo más tarde.');
+                setError('Inténtalo de nuevo más tarde o revisa tu conexion a internet');
             }
         } else {
             console.log('Datos inválidos');

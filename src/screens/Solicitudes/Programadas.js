@@ -364,7 +364,7 @@ function Solicitudesprogramadas() {
                           {appointment.fecha_programada}
                         </td>
                         <td className="border px-4 py-2 justify-center">
-                          {"Sala: " + appointment.sala_quirofano}
+                          {appointment.sala_quirofano}
                         </td>
                         <td className="border px-4 py-2">
                           <div
