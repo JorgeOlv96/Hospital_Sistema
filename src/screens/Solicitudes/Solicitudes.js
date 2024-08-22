@@ -410,10 +410,10 @@ function Solicitudes() {
         <tr class="turno-section">
           <td colspan="13">${turno} (de ${
         turno === "Matutino"
-          ? "08:00 a 14:00"
+          ? "08:00 a 15:00"
           : turno === "Vespertino"
-          ? "14:00 a 20:00"
-          : "20:00 a 06:00"
+          ? "15:00 a 21:00"
+          : "21:00 a 06:00"
       })</td>
         </tr>
         ${sortedRegistrations

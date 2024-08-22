@@ -183,11 +183,11 @@ function Bitacoraenfermeria() {
                     </th>
                     <th
                       className="px-4 py-2 cursor-pointer"
-                      onClick={() => handleSort("fecha_solicitada")}
+                      onClick={() => handleSort("fecha_programada")}
                     >
-                      Fecha solicitada{" "}
+                      Fecha asignada{" "}
                       <span>
-                        {sortBy === "fecha_solicitada"
+                        {sortBy === "fecha_programada"
                           ? sortOrder === "asc"
                             ? "▲"
                             : "▼"
@@ -198,7 +198,7 @@ function Bitacoraenfermeria() {
                       className="px-4 py-2 cursor-pointer"
                       onClick={() => handleSort("sala_quirofano")}
                     >
-                      Sala solicitada{" "}
+                      Sala programada{" "}
                       <span>
                         {sortBy === "sala_quirofano"
                           ? sortOrder === "asc"

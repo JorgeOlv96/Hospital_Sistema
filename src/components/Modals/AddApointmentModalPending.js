@@ -12,6 +12,7 @@ function AddAppointmentModalPending({
   const [patientData, setPatientData] = useState({
     hora_asignada: "",
     turno: "",
+    tiempo_estimado: "",
     fecha_programada: "",
     sala_quirofano: "",
     nombre_anestesiologo: "",

@@ -116,9 +116,9 @@ const OperatingRoomScheduleAnestesio = ({ date, appointments, onEventClick }) =>
 
   const getBackgroundColor = (hour) => {
     const hourNum = parseInt(hour.split(':')[0]);
-    if (hourNum >= 7 && hourNum < 14) return 'rgba(129, 164, 255, 0.43)'; // Turno de la mañana
-    if (hourNum >= 14 && hourNum < 20) return 'rgba(109, 255, 19, 0.43)'; // Turno de la tarde
-    if (hourNum >= 20 || hourNum < 7) return 'rgba(255, 169, 89, 0.43)'; // Turno de la noche
+    if (hourNum >= 7 && hourNum < 15) return 'rgba(129, 164, 255, 0.43)'; // Turno de la mañana
+    if (hourNum >= 15 && hourNum < 21) return 'rgba(109, 255, 19, 0.43)'; // Turno de la tarde
+    if (hourNum >= 21 || hourNum < 7) return 'rgba(255, 169, 89, 0.43)'; // Turno de la noche
     return 'transparent';
   };
 
