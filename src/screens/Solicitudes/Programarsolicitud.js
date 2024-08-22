@@ -96,10 +96,14 @@ function ProgramarSolicitud() {
         return { backgroundColor: "#06ABC9", color: "white" }; // Color de fondo y texto
       case "duplicada":
         return { backgroundColor: "red", color: "white" }; // Color de fondo amarillo y texto rojo
+      case "no":
+        return { backgroundColor: "#68D391", color: "white" }; // Fondo blanco y texto verde
       default:
         return {};
     }
   };
+
+  
 
   const isDuplicated = (appointment) => {
     return (
@@ -642,7 +646,7 @@ function ProgramarSolicitud() {
                     marginLeft: "10px",
                   }}
                 >
-                  Duplicada
+                  Si
                 </span>
               )}
             </div>
@@ -727,7 +731,15 @@ function ProgramarSolicitud() {
                           (sortOrder === "asc" ? "▲" : "▼")}
                       </span>
                     </th>
-                    <th className="px-4 py-3 cursor-pointer">Duplicada</th>
+                    <th
+                      className="px-4 py-3 cursor-pointer"
+                      onClick={() => handleSort("duplicada")}
+                    >
+                      Duplicada{" "}
+                      <span>
+                        {sortBy === "duplicada" && (sortOrder === "asc" ? "▲" : "▼")}
+                      </span>
+                    </th>
                     <th className="px-4 py-3">Acciones</th>
                   </tr>
                 </thead>
@@ -742,13 +754,16 @@ function ProgramarSolicitud() {
                         <td className="border px-4 py-2">
                           {appointment.id_solicitud}
                         </td>
-                        <td className="border px-4 py-2">{appointment.folio}</td>
                         <td className="border px-4 py-2">
-                          {appointment.ap_paterno}
-                          {"  "} {appointment.ap_materno}
-                          {"  "}
-                          {appointment.nombre_paciente}
+                          {appointment.folio}
                         </td>
+                        <td className="border px-4 py-2 uppercase">
+                              {[
+                                appointment.ap_paterno,
+                                appointment.ap_materno,
+                                appointment.nombre_paciente
+                              ].filter(Boolean).join(' ')}
+                            </td>
                         <td className="border px-4 py-2">
                           {appointment.nombre_especialidad}
                         </td>
@@ -779,23 +794,22 @@ function ProgramarSolicitud() {
                           </div>
                         </td>
                         <td className="border px-4 py-2">
-                          {isDuplicated(appointment) && (
-                            <div
-                              style={{
-                                ...getEstadoColorStyle("duplicada"),
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                height: "100%",
-                                width: "100%",
-                                textAlign: "center",
-                                borderRadius: "8px",
-                                padding: "2px 1px",
-                              }}
-                            >
-                              Duplicada
-                            </div>
-                          )}
+                          <div
+                            style={{
+                              ...getEstadoColorStyle(
+                                isDuplicated(appointment) ? "duplicada" : "no"
+                              ), // Aplica el estilo adecuado
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              height: "80%",
+                              width: "80%",
+                              textAlign: "center",
+                              borderRadius: "8px",
+                            }}
+                          >
+                            {isDuplicated(appointment) ? "SI" : "NO"}
+                          </div>
                         </td>
 
                         <td className="border px-4 py-2">
