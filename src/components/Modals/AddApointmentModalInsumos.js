@@ -73,7 +73,10 @@ function AddAppointmentModalInsumos({ closeModal, isOpen, appointmentId, onDelet
 
       {loading ? (
         <div className="p-4">
-          <img src="images/cargando.gif" alt="Cargando..." className="h-8 w-8 mx-auto" />
+          <img 
+            src="images/cargando.gif" 
+            alt="Cargando..." 
+            className="h-8 w-8 mx-auto" />
         </div>
       ) : (
         <div className="p-4">

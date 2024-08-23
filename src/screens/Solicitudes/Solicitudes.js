@@ -973,7 +973,7 @@ function Solicitudes() {
                                     <td className="border px-4 py-2">
                                       {solicitud.folio}
                                     </td>
-                                    <td className="border px-4 py-2 uppercase">
+                                    <td className="border px-4 py-2">
                                         {[
                                           solicitud.ap_paterno,
                                           solicitud.ap_materno,

@@ -110,7 +110,8 @@ function ProgramarSolicitud() {
       pendingAppointments.filter(
         (a) =>
           a.nombre_paciente === appointment.nombre_paciente &&
-          a.fecha_solicitada === appointment.fecha_solicitada &&
+          a.ap_paterno === appointment.ap_paterno &&
+          a.ap_materno === appointment.ap_materno &&
           a.id_solicitud !== appointment.id_solicitud
       ).length > 0
     );
@@ -757,12 +758,12 @@ function ProgramarSolicitud() {
                         <td className="border px-4 py-2">
                           {appointment.folio}
                         </td>
-                        <td className="border px-4 py-2 uppercase">
+                        <td className="border px-4 py-2">
                               {[
                                 appointment.ap_paterno,
                                 appointment.ap_materno,
                                 appointment.nombre_paciente
-                              ].filter(Boolean).join(' ')}
+                              ].filter(Boolean).join('')}
                             </td>
                         <td className="border px-4 py-2">
                           {appointment.nombre_especialidad}

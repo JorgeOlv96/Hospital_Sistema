@@ -82,7 +82,6 @@ function AddAppointmentModalEvaluar({
     });
   };
 
-
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -198,7 +197,7 @@ function AddAppointmentModalEvaluar({
           <div className="flex justify-between">
             <button
               onClick={handlePreprogramar}
-              className="bg-[#06ABC9] bg-opacity-20 text-[#001B58] text-sm p-4 rounded-lg font-light"
+              className="bg-[#06ABC9] bg-opacity-20 text-[#001B58] text-sm p-3 rounded-lg font-light"
               style={{ marginBottom: "8px" }}
             >
               Pre-programar
@@ -208,13 +207,13 @@ function AddAppointmentModalEvaluar({
               {isEditing ? (
                 <>
                   <button
-                    className="bg-red-500 bg-opacity-20 text-red-500 text-sm p-4 rounded-lg font-light"
+                    className="bg-red-500 bg-opacity-20 text-red-500 text-sm p-3 rounded-lg font-light"
                     onClick={handleCancelChanges}
                   >
                     Cancelar
                   </button>
                   <button
-                    className="bg-green-500 bg-opacity-20 text-green-500 text-sm p-4 rounded-lg font-light"
+                    className="bg-green-500 bg-opacity-20 text-green-500 text-sm p-3 rounded-lg font-light"
                     onClick={handleSaveChanges}
                   >
                     Guardar Cambios
@@ -222,7 +221,7 @@ function AddAppointmentModalEvaluar({
                 </>
               ) : (
                 <button
-                  className="bg-blue-500 bg-opacity-20 text-blue-500 text-sm p-4 rounded-lg font-light"
+                  className="bg-blue-500 bg-opacity-20 text-blue-500 text-sm p-3 rounded-lg font-light"
                   onClick={() => setIsEditing(true)}
                 >
                   Editar
@@ -308,20 +307,20 @@ function AddAppointmentModalEvaluar({
                 </label>
                 {isEditing ? (
                   <select
-                  name="sexo"
-                  value={patientData.sexo}
-                  onChange={handleChange}
-                  className="bg-white p-3 rounded-lg"
-                >
-                  <option value="">-Seleccionar-</option>
-                  <option value="Masculino">Masculino</option>
-                  <option value="Femenino">Femenino</option>
-                  <option value="Otro">Otro</option>
-                </select>
-              ) : (
-                <p className="bg-gray-200 p-3 rounded-lg">
-                  {patientData?.sexo}
-                </p>
+                    name="sexo"
+                    value={patientData.sexo}
+                    onChange={handleChange}
+                    className="bg-white p-3 rounded-lg"
+                  >
+                    <option value="">-Seleccionar-</option>
+                    <option value="Masculino">Masculino</option>
+                    <option value="Femenino">Femenino</option>
+                    <option value="Otro">Otro</option>
+                  </select>
+                ) : (
+                  <p className="bg-gray-200 p-3 rounded-lg">
+                    {patientData?.sexo}
+                  </p>
                 )}
               </div>
             </div>
@@ -338,12 +337,13 @@ function AddAppointmentModalEvaluar({
                     name="tipo_admision"
                     value={patientData.tipo_admision}
                     onChange={handleChange}
-                    className="bg-white p-3 rounded-lg"
+                    className="bg-white p-3 rounded-lg w-full"
+                    style={{ maxWidth: "100%", boxSizing: "border-box" }}
                   >
-                    <option value="">-Seleccionar-</option>
+                    <option value="">Seleccionar</option>
                     <option value="Cama">Cama</option>
                     <option value="Consulta externa">Consulta externa</option>
-                    <option value="UrgenciaS">Urgencia</option>
+                    <option value="Urgencia">Urgencia</option>
                   </select>
                 ) : (
                   <p className="bg-gray-200 p-3 rounded-lg">
@@ -358,17 +358,17 @@ function AddAppointmentModalEvaluar({
                 </label>
                 {isEditing ? (
                   <select
-                    type="text"
                     name="tipo_intervencion"
                     value={patientData.tipo_intervencion}
                     onChange={handleChange}
                     className="bg-white p-3 rounded-lg w-full"
+                    style={{ maxWidth: "100%", boxSizing: "border-box" }}
                   >
-                    <option value="">-Seleccionar-</option>
-                    <option value="Cirugía">Cirugia</option>
+                    <option value="">Seleccionar</option>
+                    <option value="Cirugía">Cirugía</option>
                     <option value="Procedimiento">Procedimiento</option>
                     <option value="Cirugía ambulatoria">
-                      Cirugia ambulatoria
+                      Cirugía ambulatoria
                     </option>
                   </select>
                 ) : (
@@ -378,20 +378,21 @@ function AddAppointmentModalEvaluar({
                 )}
               </div>
 
-              <div className="w-full">
+              <div className="mr-4 w-full">
                 <label className="block font-semibold text-gray-700 mb-2">
                   Especialidad:
                 </label>
                 {isEditing ? (
                   <select
-                  name="nombre_especialidad"
-                  value={patientData.nombre_especialidad}
-                  onChange={handleNombreEspecialidadChange}
+                    name="nombre_especialidad"
+                    value={patientData.nombre_especialidad}
+                    onChange={handleNombreEspecialidadChange}
                     className={`border ${
                       patientData.nombre_especialidad
                         ? "bg-[#A8CBD5] border-[#A8CBD5]"
                         : "border-gray-300"
                     } bg-white p-3 rounded-lg w-full`}
+                    style={{ maxWidth: "100%", boxSizing: "border-box" }}
                   >
                     <option value="">Seleccionar</option>
                     {Object.keys(especialidadToClave).map((especialidad) => (
@@ -406,38 +407,40 @@ function AddAppointmentModalEvaluar({
                   </p>
                 )}
               </div>
-              <div className="mr-4" style={{ width: "43%" }}>
-                  <label
-                    htmlFor="clave_esp"
-                    className="block font-semibold text-black mb-1"
-                  >
-                    Cve.:
-                  </label>
-                  {isEditing ? (
-                  <select
-                  id="clave_esp"
-                  name="clave_esp"
-                  value={patientData.clave_esp}
-                  onChange={handleClaveEspecialidadChange}
-                  className={`border ${
-                    patientData.clave_esp
-                      ? "bg-[#A8CBD5] border-[#A8CBD5]"
-                      : "border-gray-300"
-                  } bg-white p-3 rounded-lg w-full`}
+
+              <div className="w-full">
+                <label
+                  htmlFor="clave_esp"
+                  className="block font-semibold text-gray-700 mb-2"
                 >
-                  <option value="">Seleccionar</option>
-                  {Object.values(especialidadToClave).map((clave) => (
-                    <option key={clave} value={clave}>
-                      {clave}
-                    </option>
-                  ))}
+                  Cve.:
+                </label>
+                {isEditing ? (
+                  <select
+                    id="clave_esp"
+                    name="clave_esp"
+                    value={patientData.clave_esp}
+                    onChange={handleClaveEspecialidadChange}
+                    className={`border ${
+                      patientData.clave_esp
+                        ? "bg-[#A8CBD5] border-[#A8CBD5]"
+                        : "border-gray-300"
+                    } bg-white p-3 rounded-lg w-full`}
+                    style={{ maxWidth: "100%", boxSizing: "border-box" }}
+                  >
+                    <option value="">Seleccionar</option>
+                    {Object.values(especialidadToClave).map((clave) => (
+                      <option key={clave} value={clave}>
+                        {clave}
+                      </option>
+                    ))}
                   </select>
                 ) : (
                   <p className="bg-gray-200 p-3 rounded-lg">
                     {patientData?.clave_esp}
                   </p>
                 )}
-                </div>
+              </div>
             </div>
           </div>
 
@@ -453,7 +456,8 @@ function AddAppointmentModalEvaluar({
                     name="fecha_solicitada"
                     value={patientData.fecha_solicitada}
                     onChange={handleChange}
-                    className="bg-white p-3 rounded-lg"
+                    className="bg-white p-3 rounded-lg w-full"
+                    style={{ maxWidth: "100%", boxSizing: "border-box" }}
                   />
                 ) : (
                   <p className="bg-gray-200 p-3 rounded-lg">
@@ -472,7 +476,8 @@ function AddAppointmentModalEvaluar({
                     name="hora_solicitada"
                     value={patientData.hora_solicitada}
                     onChange={handleChange}
-                    className="bg-white p-3 rounded-lg"
+                    className="bg-white p-3 rounded-lg w-full"
+                    style={{ maxWidth: "100%", boxSizing: "border-box" }}
                   />
                 ) : (
                   <p className="bg-gray-200 p-3 rounded-lg">
@@ -481,28 +486,53 @@ function AddAppointmentModalEvaluar({
                 )}
               </div>
 
-              <div className="w-full">
+              <div className="mr-4 w-full">
                 <label className="block font-semibold text-gray-700 mb-2">
                   Turno solicitado:
                 </label>
                 {isEditing ? (
                   <select
-                  type="text"
-                  name="turno_solicitado"
-                  value={patientData.turno_solicitado}
-                  onChange={handleChange}
-                  className="bg-white p-3 rounded-lg"
-                >
-                  <option value="">-Seleccionar-</option>
-                  <option value="Matutino">Matutino</option>
-                  <option value="Vespertino">Vespertino</option>
-                  <option value="Nocturno">
-                    Nocturno
-                  </option>
-                </select>
+                    name="turno_solicitado"
+                    value={patientData.turno_solicitado}
+                    onChange={handleChange}
+                    className="bg-white p-3 rounded-lg w-full"
+                    style={{ maxWidth: "100%", boxSizing: "border-box" }}
+                  >
+                    <option value="">-Seleccionar-</option>
+                    <option value="Matutino">Matutino</option>
+                    <option value="Vespertino">Vespertino</option>
+                    <option value="Nocturno">Nocturno</option>
+                  </select>
                 ) : (
                   <p className="bg-gray-200 p-3 rounded-lg">
                     {patientData?.turno_solicitado}
+                  </p>
+                )}
+              </div>
+
+              <div className="w-full">
+                <label className="block font-semibold text-gray-700 mb-2">
+                  Sala solicitada:
+                </label>
+                {isEditing ? (
+                  <select
+                    id="sala_quirofano"
+                    name="sala_quirofano"
+                    value={patientData.sala_quirofano || ""}
+                    onChange={handleChange}
+                    className={`border rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+                    style={{ maxWidth: "100%", boxSizing: "border-box" }}
+                  >
+                    <option value="">Seleccionar</option>
+                    {salasDisponibles.map((sala) => (
+                      <option key={sala.id} value={sala.nombre_sala}>
+                      Sala: {sala.nombre_sala}
+                    </option>
+                    ))}
+                  </select>
+                ) : (
+                  <p className="bg-gray-200 p-3 rounded-lg">
+                    {patientData?.sala_quirofano || "N/A"}
                   </p>
                 )}
               </div>
@@ -532,32 +562,6 @@ function AddAppointmentModalEvaluar({
 
               <div className="mr-4 w-full">
                 <label className="block font-semibold text-gray-700 mb-2">
-                  Sala:
-                </label>
-                {isEditing ? (
-                  <select
-                    id="sala_quirofano"
-                    name="sala_quirofano"
-                    value={patientData.sala_quirofano || ""}
-                    onChange={handleChange}
-                    className={`border rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-                  >
-                    <option value="">Seleccionar</option>
-                    {salasDisponibles.map((sala) => (
-                      <option key={sala.id} value={sala.nombre_sala}>
-                        {sala.nombre_sala}
-                      </option>
-                    ))}
-                  </select>
-                ) : (
-                  <p className="bg-gray-200 p-3 rounded-lg">
-                    {patientData?.sala_quirofano || "N/A"}
-                  </p>
-                )}
-              </div>
-
-              <div className="mr-4 w-full">
-                <label className="block font-semibold text-gray-700 mb-2">
                   Requiere insumos:
                 </label>
                 {isEditing ? (
@@ -574,6 +578,7 @@ function AddAppointmentModalEvaluar({
                   </p>
                 )}
               </div>
+
               <div className="w-full">
                 <label className="block font-semibold text-gray-700 mb-2">
                   Proc. adicionales:
@@ -592,26 +597,30 @@ function AddAppointmentModalEvaluar({
                   </p>
                 )}
               </div>
+
+
+
             </div>
           </div>
 
           <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
             <div className="flex mb-4">
+              
               <div className="mr-4 w-full">
                 <label className="block font-semibold text-gray-700 mb-2">
                   Procedimientos paciente:
                 </label>
                 {isEditing ? (
-                <textarea
+                  <textarea
                     name="procedimientos_paciente"
                     value={patientData.procedimientos_paciente}
                     onChange={handleChange}
                     className="bg-white p-3 rounded-lg w-full"
                   />
                 ) : (
-                <p className="bg-gray-200 p-3 rounded-lg">
-                  {patientData?.procedimientos_paciente || "N/A"}
-                </p>
+                  <p className="bg-gray-200 p-3 rounded-lg">
+                    {patientData?.procedimientos_paciente || "N/A"}
+                  </p>
                 )}
               </div>
 
@@ -634,6 +643,7 @@ function AddAppointmentModalEvaluar({
               </div>
             </div>
           </div>
+
         </div>
       )}
     </Modal>
