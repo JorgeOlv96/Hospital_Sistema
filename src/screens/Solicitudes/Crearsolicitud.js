@@ -103,7 +103,7 @@ function CrearSolicitud() {
     nombre_cirujano: "",
     req_insumo: "",
     estado_solicitud: "Pendiente",
-    procedimientos_paciente: "",
+    procedimientos_paciente: null, // Inicializa con null o un valor por defecto
     procedimientos_extra: "",
     diagnostico: "",
   });
@@ -1056,15 +1056,13 @@ function CrearSolicitud() {
                     Procedimiento (CIE-9):
                   </label>
                   <ProcedureSelect
-                    id="procedimientos_paciente" // Añade el id para el campo
-                    name="procedimientos_paciente" // Añade el name para el campo
-                    value={formData.procedimientos_paciente} // Pasa el valor desde formData
-                    onChange={handleProcedureChange} // Maneja el cambio del campo
+                    id="procedimientos_paciente"
+                    name="procedimientos_paciente"
+                    value={formData.procedimientos_paciente}
+                    onChange={handleProcedureChange}
                   />
                   {errors.procedimientos_paciente && (
-                    <p className="text-red-500">
-                      {errors.procedimientos_paciente}
-                    </p>
+                    <p className="text-red-500">{errors.procedimientos_paciente}</p>
                   )}
                 </div>
 

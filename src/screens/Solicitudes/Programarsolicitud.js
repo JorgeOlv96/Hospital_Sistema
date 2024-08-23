@@ -763,7 +763,7 @@ function ProgramarSolicitud() {
                                 appointment.ap_paterno,
                                 appointment.ap_materno,
                                 appointment.nombre_paciente
-                              ].filter(Boolean).join('')}
+                              ].filter(Boolean).join(' ')}
                             </td>
                         <td className="border px-4 py-2">
                           {appointment.nombre_especialidad}

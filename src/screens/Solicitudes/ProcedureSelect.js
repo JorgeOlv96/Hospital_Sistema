@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import AsyncCreatableSelect from "react-select/async-creatable";
 import { FixedSizeList } from "react-window";
-import axios from "axios";
 
 const ProcedureSelect = ({ onChange, value }) => {
+  const [inputValue, setInputValue] = useState('');  // Para manejar el texto en el input
   const [selectedOption, setSelectedOption] = useState(value);
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
 
@@ -17,6 +17,10 @@ const ProcedureSelect = ({ onChange, value }) => {
         }));
         callback(options);
       });
+  };
+
+  const handleInputChange = (newValue) => {
+    setInputValue(newValue);  // Actualiza el valor del input
   };
 
   const handleChange = (option) => {
@@ -43,6 +47,8 @@ const ProcedureSelect = ({ onChange, value }) => {
       cacheOptions
       loadOptions={loadOptions}
       defaultOptions
+      onInputChange={handleInputChange} // Actualiza inputValue mientras escribes
+      inputValue={inputValue}  // Asocia el estado inputValue con el input
       onChange={handleChange}
       value={selectedOption}
       components={{ MenuList: VirtualizedSelect }}
@@ -51,7 +57,7 @@ const ProcedureSelect = ({ onChange, value }) => {
       styles={{
         control: (provided, state) => ({
           ...provided,
-          backgroundColor: state.selectProps.value ? '#A8CBD5' : '#FFFFFF', // Blanco por defecto
+          backgroundColor: state.selectProps.value ? '#A8CBD5' : '#FFFFFF',
           borderColor: state.isFocused ? '#4F638F' : provided.borderColor,
           boxShadow: state.isFocused ? '0 0 0 1px #4F638F' : provided.boxShadow,
           '&:hover': {
@@ -60,7 +66,7 @@ const ProcedureSelect = ({ onChange, value }) => {
         }),
         menu: (provided) => ({
           ...provided,
-          zIndex: 9999, // Asegúrate de que el menú se muestre sobre otros elementos
+          zIndex: 9999,
         }),
       }}
     />
