@@ -178,6 +178,12 @@ function ProgramarSolicitud() {
     printDailyAppointments(selectedDate);
   };
 
+  const formatFechaSolicitada = (fecha) => {
+    if (!fecha) return "";
+    const [year, month, day] = fecha.split("-");
+    return `${day}-${month}-${year}`;
+  };
+
   const printDailyAppointments = async (selectedDate) => {
     const today = moment(printDate).format("YYYY-MM-DD");
     try {
@@ -326,7 +332,9 @@ function ProgramarSolicitud() {
         <th>Hra. asign.</th>
         <th>Sala</th>
         <th>Nom. completo</th>
+        <th>Edad</th>
         <th>Sexo</th>
+        <th>Procedimiento CIE-9</th>
         <th>Diagnostico</th>
         <th>Especialidad</th>
         <th>Procedencia</th>
@@ -407,6 +415,7 @@ function ProgramarSolicitud() {
                       <td>${appointment.nombre_paciente} ${
                   appointment.ap_paterno
                 } ${appointment.ap_materno}</td>
+                    <td>${appointment.edad || ""}</td>
                       <td>${
                         appointment.sexo
                           ? appointment.sexo === "Femenino"
@@ -416,12 +425,25 @@ function ProgramarSolicitud() {
                       }</td>
                       <td>
                         ${(() => {
+                          const procedimientos = appointment.procedimientos_paciente || "";
+                          const [beforeDash, afterDash] = procedimientos.split(
+                            "-",
+                            2
+                          );
+                          const truncatedBeforeDash = beforeDash.slice(0, 60);
+                          return `${truncatedBeforeDash}${
+                            afterDash ? "-" + afterDash : ""
+                          }`;
+                        })()}
+                      </td>
+                      <td>
+                        ${(() => {
                           const procedimientos = appointment.diagnostico || "";
                           const [beforeDash, afterDash] = procedimientos.split(
                             "-",
                             2
                           );
-                          const truncatedBeforeDash = beforeDash.slice(0, 45);
+                          const truncatedBeforeDash = beforeDash.slice(0, 60);
                           return `${truncatedBeforeDash}${
                             afterDash ? "-" + afterDash : ""
                           }`;
@@ -785,7 +807,7 @@ function ProgramarSolicitud() {
                           {appointment.nombre_especialidad}
                         </td>
                         <td className="border px-4 py-2">
-                          {appointment.fecha_solicitada}
+                        {formatFechaSolicitada(appointment.fecha_solicitada)}
                         </td>
                         <td className="border px-4 py-2">
                           <div

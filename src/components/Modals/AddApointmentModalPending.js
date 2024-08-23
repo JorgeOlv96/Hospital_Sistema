@@ -481,7 +481,7 @@ function AddAppointmentModalPending({
                   />
                 ) : (
                   <p className="bg-gray-200 p-3 rounded-lg">
-                    {patientData?.fecha_solicitada}
+                    {formatFechaSolicitada(patientData?.fecha_solicitada)}
                   </p>
                 )}
               </div>
