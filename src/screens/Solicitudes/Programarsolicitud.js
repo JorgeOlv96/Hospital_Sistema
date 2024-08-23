@@ -419,7 +419,8 @@ function ProgramarSolicitud() {
                       }</td>
                       <td>
                         ${(() => {
-                          const procedimientos = appointment.procedimientos_paciente || "";
+                          const procedimientos =
+                            appointment.procedimientos_paciente || "";
                           const [beforeDash, afterDash] = procedimientos.split(
                             "-",
                             2
@@ -880,17 +881,14 @@ function ProgramarSolicitud() {
                         </div>
                       </td>
 
-
-                        <td className="border px-4 py-2">
-                          <button
-                            onClick={() => handleViewModal(appointment)}
-                            className="bg-[#365b77] text-white px-5 py-2 rounded-md hover:bg-[#7498b6]"
-                          >
-                            Gestionar
-                          </button>
-                        </td>
-
-
+                      <td className="border px-4 py-2">
+                        <button
+                          onClick={() => handleViewModal(appointment)}
+                          className="bg-[#365b77] text-white px-5 py-2 rounded-md hover:bg-[#7498b6]"
+                        >
+                          Gestionar
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
