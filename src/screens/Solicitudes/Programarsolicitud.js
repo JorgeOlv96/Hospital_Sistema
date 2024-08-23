@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Layout from "../../Layout";
 import axios from "axios";
 import AddAppointmentModalPending from "../../components/Modals/AddApointmentModalPending";
@@ -14,7 +14,6 @@ function ProgramarSolicitud() {
   const [sortOrder, setSortOrder] = useState("asc");
   const [page, setPage] = useState(1);
   const [printDate, setPrintDate] = useState(new Date());
-  const itemsPerPage = 7;
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
 
   // Estados para los filtros
@@ -103,8 +102,6 @@ function ProgramarSolicitud() {
     }
   };
 
-  
-
   const isDuplicated = (appointment) => {
     return (
       pendingAppointments.filter(
@@ -153,9 +150,6 @@ function ProgramarSolicitud() {
 
     return matchesName && matchesSpecialty && matchesDate;
   });
-
-  const startIndex = (page - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
 
   const onPrint = (date) => {
     console.log("Printing for date:", date);
@@ -517,6 +511,44 @@ function ProgramarSolicitud() {
     }
   };
 
+  const orderedAppointments = useMemo(() => {
+    return filteredAppointments.sort((a, b) => {
+      const salaOrder = [
+        "A1",
+        "A2",
+        "T1",
+        "T2",
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "E",
+        "H",
+        "RX",
+      ];
+      return (
+        salaOrder.indexOf(a.sala_quirofano) -
+          salaOrder.indexOf(b.sala_quirofano) ||
+        new Date(a.fecha_solicitada) - new Date(b.fecha_solicitada) ||
+        a.hora_solicitada.localeCompare(b.hora_solicitada)
+      );
+    });
+  }, [filteredAppointments]);
+
+  // Calcular índices de paginación
+
+  const itemsPerPage = 10;
+  const startIndex = (page - 1) * itemsPerPage;
+  const endIndex = Math.min(
+    startIndex + itemsPerPage,
+    orderedAppointments.length
+  );
+  const paginatedAppointments = orderedAppointments.slice(startIndex, endIndex);
+
+  const totalPages = Math.ceil(orderedAppointments.length / itemsPerPage);
+
   return (
     <Layout>
       <div
@@ -748,83 +780,84 @@ function ProgramarSolicitud() {
                     >
                       Duplicada{" "}
                       <span>
-                        {sortBy === "duplicada" && (sortOrder === "asc" ? "▲" : "▼")}
+                        {sortBy === "duplicada" &&
+                          (sortOrder === "asc" ? "▲" : "▼")}
                       </span>
                     </th>
                     <th className="px-4 py-3">Acciones</th>
                   </tr>
                 </thead>
+
                 <tbody>
-                  {filteredAppointments
-                    .slice(startIndex, endIndex)
-                    .map((appointment) => (
-                      <tr
-                        key={appointment.id}
-                        className="bg-blue-50 hover:bg-blue-300"
-                      >
-                        <td className="border px-4 py-2">
-                          {appointment.id_solicitud}
-                        </td>
-                        <td className="border px-4 py-2">
-                          {appointment.folio}
-                        </td>
-                        <td className="border px-4 py-2 justify-center">
-                          {appointment.sala_quirofano}
-                        </td>
-                        <td className="border px-4 py-2">
-                          {appointment.hora_solicitada}
-                        </td>
-                        <td className="border px-4 py-2">
+                  {paginatedAppointments.map((appointment) => (
+                    <tr
+                      key={appointment.id}
+                      className="bg-blue-50 hover:bg-blue-300"
+                    >
+                      <td className="border px-4 py-2">
+                        {appointment.id_solicitud}
+                      </td>
+                      <td className="border px-4 py-2">{appointment.folio}</td>
+                      <td className="border px-4 py-2 justify-center">
+                        {appointment.sala_quirofano}
+                      </td>
+                      <td className="border px-4 py-2">
+                        {appointment.hora_solicitada}
+                      </td>
+                      <td className="border px-4 py-2">
                         {[
-                                          appointment.ap_paterno,
-                                          appointment.ap_materno,
-                                          appointment.nombre_paciente
-                                        ].filter(Boolean).join(' ')}
-                            </td>
-                        <td className="border px-4 py-2">
-                          {appointment.nombre_especialidad}
-                        </td>
-                        <td className="border px-4 py-2">
-                          {appointment.fecha_solicitada}
-                        </td>
-                        <td className="border px-4 py-2">
-                          <div
-                            className={`inline-block px-1 py-1 rounded-lg ${getEstadoColor(
+                          appointment.ap_paterno,
+                          appointment.ap_materno,
+                          appointment.nombre_paciente,
+                        ]
+                          .filter(Boolean)
+                          .join(" ")}
+                      </td>
+                      <td className="border px-4 py-2">
+                        {appointment.nombre_especialidad}
+                      </td>
+                      <td className="border px-4 py-2">
+                        {appointment.fecha_solicitada}
+                      </td>
+                      <td className="border px-4 py-2">
+                        <div
+                          className={`inline-block px-1 py-1 rounded-lg ${getEstadoColor(
+                            appointment.estado_solicitud
+                          )}`}
+                          style={{
+                            ...getEstadoColorStyle(
                               appointment.estado_solicitud
-                            )}`}
-                            style={{
-                              ...getEstadoColorStyle(
-                                appointment.estado_solicitud
-                              ),
-                              display: "flex",
-                              justifyContent: "center",
-                              alignItems: "center",
-                              height: "100%",
-                              width: "100%",
-                              textAlign: "center",
-                            }}
-                          >
-                            {appointment.estado_solicitud}
-                          </div>
-                        </td>
-                        <td className="border px-4 py-2">
-                          <div
-                            style={{
-                              ...getEstadoColorStyle(
-                                isDuplicated(appointment) ? "duplicada" : "no"
-                              ), // Aplica el estilo adecuado
-                              display: "flex",
-                              justifyContent: "center",
-                              alignItems: "center",
-                              height: "80%",
-                              width: "80%",
-                              textAlign: "center",
-                              borderRadius: "8px",
-                            }}
-                          >
-                            {isDuplicated(appointment) ? "SI" : "NO"}
-                          </div>
-                        </td>
+                            ),
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            height: "100%",
+                            width: "100%",
+                            textAlign: "center",
+                          }}
+                        >
+                          {appointment.estado_solicitud}
+                        </div>
+                      </td>
+                      <td className="border px-4 py-2">
+                        <div
+                          style={{
+                            ...getEstadoColorStyle(
+                              isDuplicated(appointment) ? "duplicada" : "no"
+                            ),
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            height: "80%",
+                            width: "80%",
+                            textAlign: "center",
+                            borderRadius: "8px",
+                          }}
+                        >
+                          {isDuplicated(appointment) ? "SI" : "NO"}
+                        </div>
+                      </td>
+
 
                         <td className="border px-4 py-2">
                           <button
@@ -834,8 +867,10 @@ function ProgramarSolicitud() {
                             Gestionar
                           </button>
                         </td>
-                      </tr>
-                    ))}
+
+
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -859,9 +894,9 @@ function ProgramarSolicitud() {
             </span>
             <button
               onClick={() => setPage(page + 1)}
-              disabled={endIndex >= filteredAppointments.length}
+              disabled={page === totalPages}
               className={`${
-                endIndex >= filteredAppointments.length
+                page === totalPages
                   ? "bg-gray-300 cursor-not-allowed"
                   : "bg-[#365b77] hover:bg-[#7498b6]"
               } text-white font-semibold py-2 px-6 rounded-full shadow-md transition-all duration-300 ease-in-out transform hover:scale-105`}
