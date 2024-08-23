@@ -843,6 +843,7 @@ function Solicitudes() {
 
                 <div className="overflow-x-auto">
                   <div className="flex flex-col space-y-4">
+                    
                     <div className="flex justify-between">
                       <div className="flex space-x-2">
                         <button

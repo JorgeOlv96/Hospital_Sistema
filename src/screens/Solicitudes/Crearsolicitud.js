@@ -106,7 +106,6 @@ function CrearSolicitud() {
     procedimientos_paciente: null, // Inicializa con null o un valor por defecto
     procedimientos_extra: "",
     diagnostico: "",
-    elaborado_por: "",
   });
 
   // Función para obtener la fecha actual en el formato adecuado (YYYY-MM-DD)

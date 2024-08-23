@@ -4,6 +4,8 @@ import AddAppointmentModalEvaluar from "../components/Modals/AddApointmentModalE
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { AuthContext } from "../AuthContext";
+import { FaTable, FaThLarge } from "react-icons/fa"; // Asegúrate de tener esta biblioteca instalada
+
 
 function Evaluacion() {
   const [pendingAppointments, setPendingAppointments] = useState([]);
@@ -20,6 +22,7 @@ function Evaluacion() {
   const [nameFilter, setNameFilter] = useState("");
   const [specialtyFilter, setSpecialtyFilter] = useState("");
   const [dateFilter, setDateFilter] = useState("");
+  const [view, setView] = useState("table"); // State to toggle view
 
   const [filter, setFilter] = useState({
     estado: "", // valor inicial para el estado de la solicitud
@@ -208,180 +211,275 @@ function Evaluacion() {
               </div>
             </div>
 
-            {filteredAppointments.length === 0 ? (
-            <div className="text-center text-white font-extrabold bg-gradient-to-r from-blue-500 to-green-400 p-4 rounded-lg shadow-lg mt-6 text-xl animate-pulse">
-            <span role="img" aria-label="confetti" className="mr-2">🎉</span>
-            ¡No hay solicitudes pendientes!
-            <span role="img" aria-label="confetti" className="ml-2">🎉</span>
-          </div>          
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
-                  <thead className="bg-[#365b77] text-white">
-                    <tr>
-                      <th
-                      className="px-4 py-3 cursor-pointer"
-                      onClick={() => handleSort("id_solicitud")}
-                      >
-                        ID{" "}
-                        <span>
-                          {sortBy === "id_solicitud"
-                            ? sortOrder === "asc"
-                              ? "▲"
-                              : "▼"
-                            : ""}
-                        </span>
-                      </th>
-                      <th
-                        className="px-4 py-2 cursor-pointer"
-                        onClick={() => handleSort("folio")}
-                      >
-                        Folio{" "}
-                        <span>
-                          {sortBy === "folio"
-                            ? sortOrder === "asc"
-                              ? "▲"
-                              : "▼"
-                            : ""}
-                        </span>
-                      </th>
-                      <th
-                        className="px-4 py-2 cursor-pointer"
-                        onClick={() => handleSort("nombre_paciente")}
-                      >
-                        Nombre del paciente{" "}
-                        <span>
-                          {sortBy === "nombre_paciente"
-                            ? sortOrder === "asc"
-                              ? "▲"
-                              : "▼"
-                            : ""}
-                        </span>
-                      </th>
-                      <th
-                        className="px-4 py-2 cursor-pointer"
-                        onClick={() => handleSort("clave_esp")}
-                      >
-                        Especialidad{" "}
-                        <span>
-                          {sortBy === "clave_esp"
-                            ? sortOrder === "asc"
-                              ? "▲"
-                              : "▼"
-                            : ""}
-                        </span>
-                      </th>
-                      <th
-                        className="px-4 py-2 cursor-pointer"
-                        onClick={() => handleSort("fecha_solicitada")}
-                      >
-                        Fecha solic.{" "}
-                        <span>
-                          {sortBy === "fecha_solicitada"
-                            ? sortOrder === "asc"
-                              ? "▲"
-                              : "▼"
-                            : ""}
-                        </span>
-                      </th>
-                      <th
-                        className="px-4 py-2 cursor-pointer"
-                        onClick={() => handleSort("turno_solicitado")}
-                      >
-                        Turno solic.{" "}
-                        <span>
-                          {sortBy === "turno_solicitado"
-                            ? sortOrder === "asc"
-                              ? "▲"
-                              : "▼"
-                            : ""}
-                        </span>
-                      </th>
-                      <th
-                        className="px-4 py-2 cursor-pointer"
-                        onClick={() => handleSort("sala_quirofano")}
-                      >
-                        Sala solic.{" "}
-                        <span>
-                          {sortBy === "sala_quirofano"
-                            ? sortOrder === "asc"
-                              ? "▲"
-                              : "▼"
-                            : ""}
-                        </span>
-                      </th>
-                      <th className="px-4 py-2 cursor-pointer">Estado</th>
-                      <th className="px-4 py-3">Acciones</th>
-                    </tr>
-                  </thead>
-                  <tbody>
+            <div className="overflow-x-auto">
+              <div className="flex flex-col space-y-4">
+                <div className="flex justify-between">
+                  <div className="flex space-x-2">
+                    <button
+                      onClick={() => setView("table")}
+                      className={`p-2 rounded-md ${
+                        view === "table"
+                          ? "bg-[#365b77] text-white"
+                          : "text-[#365b77]"
+                      }`}
+                      aria-label="Vista en tabla"
+                    >
+                      <FaTable size={24} />
+                    </button>
+                    <button
+                      onClick={() => setView("cards")}
+                      className={`p-2 rounded-md ${
+                        view === "cards"
+                          ? "bg-[#365b77] text-white"
+                          : "text-[#365b77]"
+                      }`}
+                      aria-label="Vista en tarjetas"
+                    >
+                      <FaThLarge size={24} />
+                    </button>
+                  </div>
+                </div>
+
+                {filteredAppointments.length === 0 ? (
+                  <div className="text-center text-white font-extrabold bg-gradient-to-r from-blue-500 to-green-400 p-4 rounded-lg shadow-lg mt-6 text-xl animate-pulse">
+                    <span role="img" aria-label="confetti" className="mr-2">
+                      🎉
+                    </span>
+                    ¡No hay solicitudes pendientes!
+                    <span role="img" aria-label="confetti" className="ml-2">
+                      🎉
+                    </span>
+                  </div>
+                ) : view === "table" ? (
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full bg-white shadow-md rounded-lg overflow-hidden">
+                      <thead className="bg-[#365b77] text-white">
+                        <tr>
+                          <th
+                            className="px-4 py-3 cursor-pointer"
+                            onClick={() => handleSort("id_solicitud")}
+                          >
+                            ID{" "}
+                            <span>
+                              {sortBy === "id_solicitud"
+                                ? sortOrder === "asc"
+                                  ? "▲"
+                                  : "▼"
+                                : ""}
+                            </span>
+                          </th>
+                          <th
+                            className="px-4 py-2 cursor-pointer"
+                            onClick={() => handleSort("folio")}
+                          >
+                            Folio{" "}
+                            <span>
+                              {sortBy === "folio"
+                                ? sortOrder === "asc"
+                                  ? "▲"
+                                  : "▼"
+                                : ""}
+                            </span>
+                          </th>
+                          <th
+                            className="px-4 py-2 cursor-pointer"
+                            onClick={() => handleSort("nombre_paciente")}
+                          >
+                            Nombre del paciente{" "}
+                            <span>
+                              {sortBy === "nombre_paciente"
+                                ? sortOrder === "asc"
+                                  ? "▲"
+                                  : "▼"
+                                : ""}
+                            </span>
+                          </th>
+                          <th
+                            className="px-4 py-2 cursor-pointer"
+                            onClick={() => handleSort("clave_esp")}
+                          >
+                            Especialidad{" "}
+                            <span>
+                              {sortBy === "clave_esp"
+                                ? sortOrder === "asc"
+                                  ? "▲"
+                                  : "▼"
+                                : ""}
+                            </span>
+                          </th>
+                          <th
+                            className="px-4 py-2 cursor-pointer"
+                            onClick={() => handleSort("fecha_solicitada")}
+                          >
+                            Fecha solic.{" "}
+                            <span>
+                              {sortBy === "fecha_solicitada"
+                                ? sortOrder === "asc"
+                                  ? "▲"
+                                  : "▼"
+                                : ""}
+                            </span>
+                          </th>
+                          <th
+                            className="px-4 py-2 cursor-pointer"
+                            onClick={() => handleSort("turno_solicitado")}
+                          >
+                            Turno solic.{" "}
+                            <span>
+                              {sortBy === "turno_solicitado"
+                                ? sortOrder === "asc"
+                                  ? "▲"
+                                  : "▼"
+                                : ""}
+                            </span>
+                          </th>
+                          <th
+                            className="px-4 py-2 cursor-pointer"
+                            onClick={() => handleSort("sala_quirofano")}
+                          >
+                            Sala solic.{" "}
+                            <span>
+                              {sortBy === "sala_quirofano"
+                                ? sortOrder === "asc"
+                                  ? "▲"
+                                  : "▼"
+                                : ""}
+                            </span>
+                          </th>
+                          <th className="px-4 py-2 cursor-pointer">Estado</th>
+                          <th className="px-4 py-3">Acciones</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {filteredAppointments
+                          .slice(startIndex, endIndex)
+                          .map((appointment) => (
+                            <tr
+                              key={appointment.id}
+                              className="bg-blue-50 hover:bg-blue-300"
+                            >
+                              <td className="border px-6 py-4">
+                                {appointment.id_solicitud}
+                              </td>
+                              <td className="border px-4 py-2">
+                                {appointment.folio}
+                              </td>
+                              <td className="border px-4 py-2 uppercase">
+                                {[
+                                  appointment.ap_paterno,
+                                  appointment.ap_materno,
+                                  appointment.nombre_paciente,
+                                ]
+                                  .filter(Boolean)
+                                  .join(" ")}
+                              </td>
+                              <td className="border px-4 py-2 text-center align-middle">
+                                {appointment.clave_esp}
+                              </td>
+                              <td className="border px-4 py-2">
+                                {appointment.fecha_solicitada}
+                              </td>
+                              <td className="border px-4 py-2 text-center align-middle">
+                                {appointment.turno_solicitado.charAt(0)}
+                              </td>
+                              <td className="border px-4 py-2 text-center align-middle">
+                                {appointment.sala_quirofano}
+                              </td>
+                              <td className="border px-4 py-2">
+                                <div
+                                  className={`inline-block px-1 py-1 rounded-lg ${getEstadoColor(
+                                    appointment.estado_solicitud
+                                  )}`}
+                                  style={{
+                                    ...getEstadoColorStyle(
+                                      appointment.estado_solicitud
+                                    ),
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    height: "100%",
+                                    width: "100%",
+                                    textAlign: "center",
+                                  }}
+                                >
+                                  {appointment.estado_solicitud}
+                                </div>
+                              </td>
+                              <td className="border px-4 py-2 flex justify-center">
+                                <button
+                                  onClick={() => handleViewModal(appointment)}
+                                  className="bg-[#365b77] text-white px-5 py-2 rounded-md hover:bg-blue-800"
+                                >
+                                  Ver
+                                </button>
+                              </td>
+                            </tr>
+                          ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                     {filteredAppointments
                       .slice(startIndex, endIndex)
-                      .map((appointment, index) => (
-                        <tr
+                      .map((appointment) => (
+                        <div
                           key={appointment.id}
-                          className="bg-blue-50 hover:bg-blue-300"
+                          className="relative p-4 border border-gray-200 rounded-lg shadow-md transition-transform transform hover:scale-105 hover:shadow-xl"
+                          style={{ borderRadius: "10px" }}
+                          onClick={() => handleViewModal(appointment)}
                         >
-                          <td className="border px-6 py-4">
-                            {appointment.id_solicitud}
-                          </td>
-                          <td className="border px-4 py-2">
-                            {appointment.folio}
-                          </td>
-                          <td className="border px-4 py-2 uppercase">
-                              {[
-                                appointment.ap_paterno,
-                                appointment.ap_materno,
-                                appointment.nombre_paciente
-                              ].filter(Boolean).join(' ')}
-                            </td>
-                          <td className="border px-4 py-2 text-center align-middle">
-                            {appointment.clave_esp}
-                          </td>
-                          <td className="border px-4 py-2">
-                            {appointment.fecha_solicitada}
-                          </td>
-                          <td className="border px-4 py-2 text-center align-middle">
-                            {appointment.turno_solicitado.charAt(0)}
-                          </td>
-
-                          <td className="border px-4 py-2 text-center align-middle">
-                            {appointment.sala_quirofano}
-                          </td>
-                          <td className="border px-4 py-2">
+                          <div className="flex flex-col h-full">
                             <div
-                              className={`inline-block px-1 py-1 rounded-lg ${getEstadoColor(
-                                appointment.estado_solicitud
-                              )}`}
+                              className="absolute top-0 left-0 h-full"
                               style={{
+                                width: "10px",
+                                borderTopLeftRadius: "10px",
+                                borderBottomLeftRadius: "10px",
                                 ...getEstadoColorStyle(
                                   appointment.estado_solicitud
                                 ),
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                height: "100%",
-                                width: "100%",
-                                textAlign: "center",
                               }}
-                            >
-                              {appointment.estado_solicitud}
+                            ></div>
+                            <div className="mb-2 pl-3">
+                              <div className="flex justify-between">
+                                <p className="text-lg font-semibold">
+                                  {appointment.nombre_paciente}{" "}
+                                  {appointment.ap_paterno}{" "}
+                                  {appointment.ap_materno}
+                                </p>
+                                <p className="text-sm">
+                                  {appointment.sala_quirofano}
+                                </p>
+                              </div>
+                              <p className="text-sm text-gray-600">
+                                {appointment.folio}
+                              </p>
+                              <p className="text-sm text-gray-600">
+                                {appointment.clave_esp}
+                              </p>
+                              <div className="flex justify-between">
+                                <p className="text-sm text-gray-600">
+                                  {appointment.turno_solicitado}
+                                </p>
+                              </div>
+                              <p className="text-sm text-gray-600">
+                                {appointment.nombre_cirujano}
+                              </p>
+                              <p className="text-sm text-gray-600">
+                                {appointment.insumos}
+                              </p>
+                              <p className="text-sm text-gray-600">
+                                Estatus: {appointment.estado_solicitud}
+                              </p>
                             </div>
-                          </td>
-                          <td className="border px-4 py-2 flex justify-center">
-                            <button
-                              onClick={() => handleViewModal(appointment)}
-                              className="bg-[#365b77] text-white px-5 py-2 rounded-md hover:bg-blue-800"
-                            >
-                              Ver
-                            </button>
-                          </td>
-                        </tr>
+                          </div>
+                        </div>
                       ))}
-                  </tbody>
-                </table>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
 
             {/* Paginación */}
             <div className="flex justify-center items-center mt-6 space-x-4">
