@@ -17,10 +17,79 @@ function AddAppointmentModalPending({
     sala_quirofano: "",
     nombre_anestesiologo: "",
   });
+  const [isEditing, setIsEditing] = useState(false);
+  const [originalData, setOriginalData] = useState({});
   const [loading, setLoading] = useState(true);
   const modalRef = useRef(null);
+  const [nombre_especialidad, setNombreEspecialidad] = useState("");
+  const [clave_esp, setClaveEspecialidad] = useState("");
   const [salasDisponibles, setSalasDisponibles] = useState([]);
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
+
+  const especialidadToClave = {
+    Algología: "ALG",
+    Angiología: "ANG",
+    "C.Plástica y Reconstructiva": "CPR",
+    Cardiología: "CAR",
+    "Cirigía de Torax": "CTO",
+    "Cirugía Bariatrica": "CBR",
+    "Cirugía Cardiaca": "CCA",
+    "Cirugía General": "CIG",
+    "Cirugía Hepatobiliar": "CHE",
+    Coloproctología: "CLP",
+    Columna: "COL",
+    Endoscopia: "END",
+    Gastroenterología: "GAS",
+    Hemodinamía: "HEM",
+    Imagenología: "IMG",
+    Maxilofacial: "MAX",
+    Neurocirugía: "NEU",
+    Oftalmología: "OFT",
+    Oncología: "ONC",
+    Orbitología: "OBT",
+    Otorrino: "ONG",
+    Proctología: "PRC",
+    Procuración: "PCU",
+    "T. de córnea": "TCO",
+    "T. Hepático": "THE",
+    "T. Renal": "TRN",
+    Transplantes: "TRA",
+    "Trauma y Ortopedia": "TYO",
+    Urología: "URO",
+  };
+
+  const claveToEspecialidad = Object.fromEntries(
+    Object.entries(especialidadToClave).map(([key, value]) => [value, key])
+  );
+
+  const handleNombreEspecialidadChange = (e) => {
+    const selectedNombreEspecialidad = e.target.value;
+    setNombreEspecialidad(selectedNombreEspecialidad);
+    const correspondingClave =
+      especialidadToClave[selectedNombreEspecialidad] ||
+      "Seleccionar clave de especialidad";
+    setClaveEspecialidad(correspondingClave);
+    setPatientData({
+      ...patientData,
+      nombre_especialidad: selectedNombreEspecialidad,
+      clave_esp: correspondingClave,
+    });
+  };
+
+  const handleClaveEspecialidadChange = (e) => {
+    const selectedClaveEspecialidad = e.target.value;
+    setClaveEspecialidad(selectedClaveEspecialidad);
+    const correspondingNombre =
+      claveToEspecialidad[selectedClaveEspecialidad] || "";
+    setNombreEspecialidad(correspondingNombre);
+    setPatientData({
+      ...patientData,
+      nombre_especialidad: correspondingNombre,
+      clave_esp: selectedClaveEspecialidad,
+    });
+  };
+
+
 
   useEffect(() => {
     fetchSalasDisponibles();
@@ -34,6 +103,35 @@ function AddAppointmentModalPending({
     } catch (error) {
       console.error("Error fetching salas:", error);
     }
+  };
+
+  const handleSaveEdit = async () => {
+    try {
+      console.log("Datos a enviar:", patientData); // Verifica los datos aquí
+      const response = await fetch(
+        `${baseURL}/api/solicitudes/actualizarevaluacion/${appointmentId}`,
+        {
+          method: "PATCH",
+          body: JSON.stringify(patientData),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      closeModal();
+      window.location.reload();
+    } catch (error) {
+      console.error("Error saving changes:", error);
+    }
+  };
+
+  const handleCancelChanges = () => {
+    setPatientData(originalData); // Deshacer cambios
+    setIsEditing(false);
   };
 
   const handleChange = async (e) => {
@@ -246,6 +344,25 @@ function AddAppointmentModalPending({
               >
                 Eliminar solicitud
               </button>
+              <div className="flex space-x-2">
+              {isEditing ? (
+                <>
+                  <button
+                    className="bg-green-500 bg-opacity-20 text-green-500 text-sm p-4 rounded-lg font-light"
+                    onClick={handleSaveEdit}
+                  >
+                    Guardar Cambios
+                  </button>
+                </>
+              ) : (
+                <button
+                  className="bg-blue-500 bg-opacity-20 text-blue-500 text-sm p-4 rounded-lg font-light"
+                  onClick={() => setIsEditing(true)}
+                >
+                  Editar
+                </button>
+              )}
+            </div>
             <button
               onClick={handleProgramAppointment}
               className="bg-[#001B58] bg-opacity-20 text-[#001B58] text-sm p-4 rounded-lg font-light"
@@ -270,36 +387,83 @@ function AddAppointmentModalPending({
                 <label className="block font-semibold text-gray-700 mb-2">
                   Apellido paterno:
                 </label>
-                <p className="bg-gray-200 p-3 rounded-lg">
-                  {patientData?.ap_paterno || "N/A"}
-                </p>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    name="ap_paterno"
+                    value={patientData.ap_paterno}
+                    onChange={handleChange}
+                    className="bg-white p-3 rounded-lg w-full"
+                    style={{ maxWidth: "100%", boxSizing: "border-box" }}
+                  />
+                ) : (
+                  <p className="bg-gray-200 p-3 rounded-lg">
+                    {patientData?.ap_paterno || "N/A"}
+                  </p>
+                )}
               </div>
 
               <div className="mr-4 w-full">
                 <label className="block font-semibold text-gray-700 mb-2">
                   Apellido materno:
                 </label>
-                <p className="bg-gray-200 p-3 rounded-lg">
-                  {patientData?.ap_materno || "N/A"}
-                </p>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    name="ap_materno"
+                    value={patientData.ap_materno}
+                    onChange={handleChange}
+                    className="bg-white p-3 rounded-lg w-full"
+                    style={{ maxWidth: "100%", boxSizing: "border-box" }}
+                  />
+                ) : (
+                  <p className="bg-gray-200 p-3 rounded-lg">
+                    {patientData?.ap_materno || "N/A"}
+                  </p>
+                )}
               </div>
 
               <div className="mr-4 w-full">
                 <label className="block font-semibold text-gray-700 mb-2">
                   Nombre:
                 </label>
-                <p className="bg-gray-200 p-3 rounded-lg">
-                  {patientData?.nombre_paciente || "N/A"}
-                </p>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    name="nombre_paciente"
+                    value={patientData.nombre_paciente}
+                    onChange={handleChange}
+                    className="bg-white p-3 rounded-lg w-full"
+                    style={{ maxWidth: "100%", boxSizing: "border-box" }}
+                  />
+                ) : (
+                  <p className="bg-gray-200 p-3 rounded-lg">
+                    {patientData?.nombre_paciente || "N/A"}
+                  </p>
+                )}
               </div>
 
               <div className="w-full">
                 <label className="block font-semibold text-gray-700 mb-2">
                   Sexo:
                 </label>
+                {isEditing ? (
+                  <select
+                  name="sexo"
+                  value={patientData.sexo}
+                  onChange={handleChange}
+                  className="bg-white p-3 rounded-lg"
+                >
+                  <option value="">-Seleccionar-</option>
+                  <option value="Masculino">Masculino</option>
+                  <option value="Femenino">Femenino</option>
+                  <option value="Otro">Otro</option>
+                </select>
+              ) : (
                 <p className="bg-gray-200 p-3 rounded-lg">
-                  {patientData?.sexo || "N/A"}
+                  {patientData?.sexo}
                 </p>
+                )}
               </div>
             </div>
           </div>
@@ -331,6 +495,71 @@ function AddAppointmentModalPending({
                   readOnly
                 />
               </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
+            <div className="flex mb-4">
+            <div className="w-full">
+                <label className="block font-semibold text-gray-700 mb-2">
+                  Especialidad:
+                </label>
+                {isEditing ? (
+                  <select
+                  name="nombre_especialidad"
+                  value={patientData.nombre_especialidad}
+                  onChange={handleNombreEspecialidadChange}
+                    className={`border ${
+                      patientData.nombre_especialidad
+                        ? "bg-[#A8CBD5] border-[#A8CBD5]"
+                        : "border-gray-300"
+                    } bg-white p-3 rounded-lg w-full`}
+                  >
+                    <option value="">Seleccionar</option>
+                    {Object.keys(especialidadToClave).map((especialidad) => (
+                      <option key={especialidad} value={especialidad}>
+                        {especialidad}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <p className="bg-gray-200 p-3 rounded-lg">
+                    {patientData?.nombre_especialidad}
+                  </p>
+                )}
+              </div>
+              <div className="w-full">
+              <label
+                    htmlFor="clave_esp"
+                    className="block font-semibold text-black mb-1"
+                  >
+                    Cve.:
+                  </label>
+                  {isEditing ? (
+                  <select
+                  id="clave_esp"
+                  name="clave_esp"
+                  value={patientData.clave_esp}
+                  onChange={handleClaveEspecialidadChange}
+                  className={`border ${
+                    patientData.clave_esp
+                      ? "bg-[#A8CBD5] border-[#A8CBD5]"
+                      : "border-gray-300"
+                  } bg-white p-3 rounded-lg w-full`}
+                >
+                  <option value="">Seleccionar</option>
+                  {Object.values(especialidadToClave).map((clave) => (
+                    <option key={clave} value={clave}>
+                      {clave}
+                    </option>
+                  ))}
+                  </select>
+                ) : (
+                  <p className="bg-gray-200 p-3 rounded-lg">
+                    {patientData?.clave_esp}
+                  </p>
+                )}
+                </div>
             </div>
           </div>
 
@@ -445,18 +674,56 @@ function AddAppointmentModalPending({
                 <label className="block font-semibold text-gray-700 mb-2">
                   Cirujano encargado:
                 </label>
-                <p className="bg-gray-200 p-3 rounded-lg">
-                  {patientData?.nombre_cirujano || "N/A"}
-                </p>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    name="nombre_cirujano"
+                    value={patientData.nombre_cirujano}
+                    onChange={handleChange}
+                    className="bg-white p-3 rounded-lg w-full"
+                  />
+                ) : (
+                  <p className="bg-gray-200 p-3 rounded-lg">
+                    {patientData?.nombre_cirujano || "N/A"}
+                  </p>
+                )}
               </div>
 
-              <div className="w-full">
+              <div className="w-1/3">
                 <label className="block font-semibold text-gray-700 mb-2">
                   Requiere insumos:
                 </label>
-                <p className="bg-gray-200 p-3 rounded-lg">
-                  {patientData?.req_insumo}
-                </p>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    name="req_insumo"
+                    value={patientData.req_insumo}
+                    onChange={handleChange}
+                    className="bg-white p-3 rounded-lg"
+                  />
+                ) : (
+                  <p className="bg-gray-200 p-3 rounded-lg">
+                    {patientData?.req_insumo || "N/A"}
+                  </p>
+                )}
+              </div>
+              <div className="w-1/3">
+                <label className="block font-semibold text-gray-700 mb-2">
+                  Proc. adicionales
+                </label>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    name="procedimientos_extra"
+                    value={patientData.procedimientos_extra}
+                    onChange={handleChange}
+                    className="bg-white p-3 rounded-lg w-full"
+                  />
+                ) : (
+                  <p className="bg-gray-200 p-3 rounded-lg">
+                    {patientData?.procedimientos_extra}
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -467,18 +734,36 @@ function AddAppointmentModalPending({
                 <label className="block font-semibold text-gray-700 mb-2">
                   Procedimiento principal contemplado:
                 </label>
+                {isEditing ? (
+                <textarea
+                    name="procedimientos_paciente"
+                    value={patientData.procedimientos_paciente}
+                    onChange={handleChange}
+                    className="bg-white p-3 rounded-lg w-full"
+                  />
+                ) : (
                 <p className="bg-gray-200 p-3 rounded-lg">
                   {patientData?.procedimientos_paciente || "N/A"}
                 </p>
+                )}
               </div>
 
-              <div className="w-full">
+              <div className="mr-4 w-full">
                 <label className="block font-semibold text-gray-700 mb-2">
-                  Cantidad de procedimietos adicionales
+                  Diagnóstico:
                 </label>
-                <p className="bg-gray-200 p-3 rounded-lg">
-                  {patientData?.procedimientos_extra}
-                </p>
+                {isEditing ? (
+                  <textarea
+                    name="diagnostico"
+                    value={patientData.diagnostico || ""}
+                    onChange={handleChange}
+                    className="bg-white p-3 rounded-lg w-full"
+                  />
+                ) : (
+                  <p className="bg-gray-200 p-3 rounded-lg">
+                    {patientData?.diagnostico || "N/A"}
+                  </p>
+                )}
               </div>
             </div>
           </div>
