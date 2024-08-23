@@ -684,6 +684,26 @@ function ProgramarSolicitud() {
                     </th>
                     <th
                       className="px-4 py-3 cursor-pointer"
+                      onClick={() => handleSort("sala_quirofano")}
+                    >
+                      Sala{" "}
+                      <span>
+                        {sortBy === "sala_quirofano" &&
+                          (sortOrder === "asc" ? "▲" : "▼")}
+                      </span>
+                    </th>
+                    <th
+                      className="px-4 py-3 cursor-pointer"
+                      onClick={() => handleSort("hora_solicitada")}
+                    >
+                      Hora solicitada{" "}
+                      <span>
+                        {sortBy === "hora_solicitada" &&
+                          (sortOrder === "asc" ? "▲" : "▼")}
+                      </span>
+                    </th>
+                    <th
+                      className="px-4 py-3 cursor-pointer"
                       onClick={() => handleSort("nombre_paciente")}
                     >
                       Nombre{" "}
@@ -709,16 +729,6 @@ function ProgramarSolicitud() {
                       Fecha solicitada{" "}
                       <span>
                         {sortBy === "fecha_solicitada" &&
-                          (sortOrder === "asc" ? "▲" : "▼")}
-                      </span>
-                    </th>
-                    <th
-                      className="px-4 py-3 cursor-pointer"
-                      onClick={() => handleSort("sala_quirofano")}
-                    >
-                      Sala{" "}
-                      <span>
-                        {sortBy === "sala_quirofano" &&
                           (sortOrder === "asc" ? "▲" : "▼")}
                       </span>
                     </th>
@@ -758,21 +768,24 @@ function ProgramarSolicitud() {
                         <td className="border px-4 py-2">
                           {appointment.folio}
                         </td>
+                        <td className="border px-4 py-2 justify-center">
+                          {appointment.sala_quirofano}
+                        </td>
                         <td className="border px-4 py-2">
-                              {[
-                                appointment.ap_paterno,
-                                appointment.ap_materno,
-                                appointment.nombre_paciente
-                              ].filter(Boolean).join('')}
+                          {appointment.hora_solicitada}
+                        </td>
+                        <td className="border px-4 py-2">
+                        {[
+                                          appointment.ap_paterno,
+                                          appointment.ap_materno,
+                                          appointment.nombre_paciente
+                                        ].filter(Boolean).join(' ')}
                             </td>
                         <td className="border px-4 py-2">
                           {appointment.nombre_especialidad}
                         </td>
                         <td className="border px-4 py-2">
                           {appointment.fecha_solicitada}
-                        </td>
-                        <td className="border px-4 py-2 justify-center">
-                          {appointment.sala_quirofano}
                         </td>
                         <td className="border px-4 py-2">
                           <div
