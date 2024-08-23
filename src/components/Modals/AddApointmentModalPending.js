@@ -121,7 +121,6 @@ function AddAppointmentModalPending({
         throw new Error("Network response was not ok");
       }
       closeModal();
-      window.location.reload();
     } catch (error) {
       console.error("Error saving changes:", error);
     }
@@ -351,12 +350,6 @@ function AddAppointmentModalPending({
               {isEditing ? (
                 <>
                   <button
-                    className="bg-red-500 bg-opacity-20 text-red-500 text-sm p-3 rounded-lg font-light"
-                    onClick={handleCancelChanges}
-                  >
-                    Cancelar
-                  </button>
-                  <button
                     className="bg-green-500 bg-opacity-20 text-green-500 text-sm p-4 rounded-lg font-light"
                     onClick={handleSaveEdit}
                   >
@@ -476,26 +469,40 @@ function AddAppointmentModalPending({
                 <label className="block font-semibold text-gray-700 mb-2">
                   Fecha solicitada:
                 </label>
-                <input
-                  type="text"
-                  name="fecha_programada"
-                  value={formatFechaSolicitada(patientData.fecha_solicitada)}
-                  className="bg-gray-200 p-3 rounded-lg w-full"
-                  readOnly
-                />
+                {isEditing ? (
+                  <input
+                    type="date"
+                    name="fecha_solicitada"
+                    value={patientData.fecha_solicitada}
+                    onChange={handleChange}
+                    className="bg-white p-3 rounded-lg w-full"
+                    style={{ maxWidth: "100%", boxSizing: "border-box" }}
+                  />
+                ) : (
+                  <p className="bg-gray-200 p-3 rounded-lg">
+                    {patientData?.fecha_solicitada}
+                  </p>
+                )}
               </div>
 
               <div className="mr-4 w-full">
                 <label className="block font-semibold text-gray-700 mb-2">
                   Hora solicitada:
                 </label>
-                <input
-                  type="text"
-                  name="hora_asignada"
-                  value={patientData.hora_solicitada || ""}
-                  className="bg-gray-200 p-3 rounded-lg w-full"
-                  readOnly
-                />
+                {isEditing ? (
+                  <input
+                    type="time"
+                    name="hora_solicitada"
+                    value={patientData.hora_solicitada}
+                    onChange={handleChange}
+                    className="bg-white p-3 rounded-lg w-full"
+                    style={{ maxWidth: "100%", boxSizing: "border-box" }}
+                  />
+                ) : (
+                  <p className="bg-gray-200 p-3 rounded-lg">
+                    {patientData?.hora_solicitada}
+                  </p>
+                )}
               </div>
 
               <div className="mr-4 w-full">
