@@ -367,6 +367,7 @@ function Solicitudes() {
                 <th>Tiempo est.</th>
                 <th>Cirujano</th>
                 <th>Insumos</th>
+                <th>Proc. prev</th>
               </tr>
             </thead>
             <tbody>
@@ -470,6 +471,7 @@ function Solicitudes() {
                   ${appointment.nombre_cirujano || ""}
                 </td>
                 <td>${appointment.req_insumo || ""}</td>
+                <th>${appointment.procedimientos_extra || ""}</td>
               </tr>
             `
           )
