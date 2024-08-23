@@ -840,7 +840,7 @@ function ProgramarSolicitud() {
                         {appointment.nombre_especialidad}
                       </td>
                       <td className="border px-4 py-2">
-                        {appointment.fecha_solicitada}
+                        {formatFechaSolicitada(appointment.fecha_solicitada)}
                       </td>
                       <td className="border px-4 py-2">
                         <div
