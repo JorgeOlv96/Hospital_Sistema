@@ -1,0 +1,90 @@
+.operating-room-schedule {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #ccc;
+  overflow-x: auto;
+}
+
+.schedule-header {
+  display: flex;
+  align-items: center;
+  background-color: #f4f4f4;
+}
+
+.schedule-time-header {
+  width: 100px; /* Ajusta el ancho de la celda "Hora" en el encabezado */
+  text-align: center;
+}
+
+.schedule-room {
+  flex: 1;
+  text-align: center;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+  padding: 10px;
+}
+
+.schedule-body {
+  display: flex;
+  flex-direction: column;
+}
+
+.schedule-row {
+  display: flex;
+  align-items: stretch;
+  height: 60px;
+}
+
+.schedule-time {
+  width: 100px; /* Asegura que las celdas de tiempo tengan el mismo ancho */
+  text-align: center;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+.schedule-cell {
+  flex: 1;
+  position: relative;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+.schedule-slot {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  border: 1px solid #e0e0e0;
+}
+
+.schedule-slot.occupied {
+  background-color: #d9e8fb;
+  border: none;
+}
+
+.appointment-block {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background-color: #304678;
+  border: 1px solid #748dc7; /* Asegúrate de especificar 'solid' para el tipo de borde */
+  color: white;
+  padding: 8px;
+  box-sizing: border-box;
+  cursor: pointer;
+  border-radius: 2px; /* Agrega un borde más redondeado */
+  border-color: #a5b8d2; /* Cambia el color del borde a un tono más claro de azul */
+}
+
+
+.appointment-info {
+  font-size: 12px;
+}
+/* OperatingRoomSchedule.css */
+.appointment-block.reprogrammed {
+  background-color: orange;
+}
+
+.appointment-block.suspended {
+  background-color: red;
+}
+

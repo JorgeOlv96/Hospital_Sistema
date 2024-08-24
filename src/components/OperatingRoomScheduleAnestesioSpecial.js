@@ -2,7 +2,8 @@ import React from 'react';
 import moment from 'moment';
 import './OperatingRoomScheduleAnestesioSpecial.css';
 
-const OperatingRoomsSpecial = ['Recup_Matutino', 
+const OperatingRoomsSpecial = [
+                              'Recup_Matutino', 
                                'Con_Ext_P1_mat', 
                                'Con_Ext_P2_mat', 
                                'Rec_Vespertino', 

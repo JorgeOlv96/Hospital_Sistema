@@ -5,7 +5,7 @@ import AddAppointmentModalPending from "../../components/Modals/AddApointmentMod
 import { Link } from "react-router-dom";
 import moment from "moment";
 import { FaTable, FaThLarge, FaInfoCircle } from "react-icons/fa";
-import OperatingRoomSchedule from "../../components/OperatingRoomSchedule";
+import OperatingRoomSchedulePrepro from "../../components/OperatingRoomSchedulePrepro";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 
 function ProgramarSolicitud() {
@@ -24,14 +24,13 @@ function ProgramarSolicitud() {
   const [specialtyFilter, setSpecialtyFilter] = useState("");
   const [dateFilter, setDateFilter] = useState("");
   const [viewMode, setViewMode] = useState("list"); // Agregamos un estado para la vista
-  const [view, setView] = useState("operatingRooms");
-  
+  const [view, setView] = useState("OperatingRoomSchedulePre");
+
   const localizer = momentLocalizer(moment);
   const [openModal, setOpenModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState({});
   const [appointments, setAppointments] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
-
 
   const [filter, setFilter] = useState({
     estado: "", // valor inicial para el estado de la solicitud
@@ -179,7 +178,6 @@ function ProgramarSolicitud() {
     const selectedDate = moment(e.target.value).startOf("day").toDate();
     setPrintDate(selectedDate);
   };
-
 
   const handleEventClick = (event) => {
     setSelectedEvent(event);
@@ -605,8 +603,6 @@ function ProgramarSolicitud() {
 
   const totalPages = Math.ceil(orderedAppointments.length / itemsPerPage);
 
-  
-
   return (
     <Layout>
       <div
@@ -755,7 +751,7 @@ function ProgramarSolicitud() {
                         : "bg-gray-200"
                     }`}
                   >
-                    <FaTable className="mr-2" />
+                     <FaTable size={24} />
                   </button>
                   <button
                     onClick={() => setViewMode("cards")}
@@ -765,17 +761,17 @@ function ProgramarSolicitud() {
                         : "bg-gray-200"
                     }`}
                   >
-                    <FaThLarge className="mr-2" />
+                    <FaThLarge size={24} />
                   </button>
                   <button
-                    onClick={() => setViewMode("details")}
+                    onClick={() => setViewMode("OperatingRoomSchedulePre")}
                     className={`flex items-center px-4 py-2 rounded-md ${
-                      viewMode === "details"
+                      viewMode === "OperatingRoomSchedulePre"
                         ? "bg-[#365b77] text-white"
                         : "bg-gray-200"
                     }`}
                   >
-                    <FaInfoCircle className="mr-2" />
+                    <FaInfoCircle size={24} />
                   </button>
                 </div>
               </div>
@@ -1028,67 +1024,32 @@ function ProgramarSolicitud() {
                               appointment.fecha_solicitada
                             )}
                           </p>
+                          
                           <p className="text-sm text-gray-600">
-                            Estatus:{" "}
-                            <span
-                              className={`inline-block px-1 py-1 rounded-lg ${getEstadoColor(
-                                appointment.estado_solicitud
-                              )}`}
-                              style={{
-                                ...getEstadoColorStyle(
-                                  appointment.estado_solicitud
-                                ),
-                              }}
-                            >
-                              {appointment.estado_solicitud}
-                            </span>
+                            Estatus: {appointment.estado_solicitud}
+                        
+                                  
+                          
                           </p>
+
                           <p className="text-sm text-gray-600">
                             Duplicada: {isDuplicated(appointment) ? "SI" : "NO"}
                           </p>
-                          <button
-                            onClick={() => handleViewModal(appointment)}
-                            className="bg-[#365b77] text-white px-5 py-2 rounded-md hover:bg-[#7498b6]"
-                          >
-                            Gestionar
-                          </button>
+            
                         </div>
                       </div>
                     </div>
                   ))}
                 </div>
               )}
-
-              {view === "operatingRooms" ? (
-                <OperatingRoomSchedule
+              
+              {viewMode === "OperatingRoomSchedulePre" && (
+                <OperatingRoomSchedulePrepro
                   date={selectedDate}
-                  appointments={appointments}
+                  appointments={pendingAppointments}
                   onEventClick={handleEventClick}
                 />
-              ) : (
-                <Calendar
-                  localizer={localizer}
-                  events={appointments}
-                  startAccessor="start"
-                  endAccessor="end"
-                  style={{ height: 900, marginBottom: 50 }}
-                  onSelectEvent={handleEventClick}
-                  defaultDate={selectedDate}
-                  timeslots={1}
-                  resizable
-                  step={60}
-                  selectable
-                  date={selectedDate}
-                  view={view}
-                  onNavigate={(date) => {
-                    setSelectedDate(date);
-                    handleSelectDate(date);
-                  }}
-                  onView={handleViewChange}
-                  toolbar={false}
-                />
               )}
-
             </div>
           </div>
 
