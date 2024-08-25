@@ -2,7 +2,21 @@ import React from 'react';
 import moment from 'moment';
 import './OperatingRoomSchedule.css';
 
-const OperatingRooms = ['A1', 'A2', 'T1', 'T2', '1', '2', '3', '4', '5', '6', 'E', 'H', 'RX'];
+const OperatingRooms = [
+                        'A1', 
+                        'A2', 
+                        'T1', 
+                        'T2', 
+                        '1', 
+                        '2', 
+                        '3', 
+                        '4', 
+                        '5', 
+                        '6', 
+                        'E', 
+                        'H', 
+                        'RX'
+                      ];
 
 const OperatingRoomSchedule = ({ date, appointments, onEventClick }) => {
   const filteredAppointments = appointments.filter(app =>
