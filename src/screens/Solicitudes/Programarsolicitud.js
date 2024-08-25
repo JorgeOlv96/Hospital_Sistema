@@ -997,29 +997,35 @@ function ProgramarSolicitud() {
                               appointment.fecha_solicitada
                             )}
                           </p>
-                          
                           <p className="text-sm text-gray-600">
-                            Estatus: {appointment.estado_solicitud}
-                        
-                                  
-                          
+                            Estatus:{" "}
+                            <span
+                              className={`inline-block px-1 py-1 rounded-lg ${getEstadoColor(
+                                appointment.estado_solicitud
+                              )}`}
+                              style={{
+                                ...getEstadoColorStyle(
+                                  appointment.estado_solicitud
+                                ),
+                              }}
+                            >
+                              {appointment.estado_solicitud}
+                            </span>
                           </p>
-
                           <p className="text-sm text-gray-600">
                             Duplicada: {isDuplicated(appointment) ? "SI" : "NO"}
                           </p>
-            
                         </div>
                       </div>
                     </div>
                   ))}
                 </div>
               )}
-              
+
               {viewMode === "OperatingRoomSchedulePre" && (
                 <OperatingRoomSchedulePrepro
                   date={selectedDate}
-                  appointments={pendingAppointments}
+                  appointments={appointments}
                   onEventClick={handleEventClick}
                 />
               )}
@@ -1054,6 +1060,7 @@ function ProgramarSolicitud() {
               &#8594;
             </button>
           </div>
+          
         </div>
       </div>
     </Layout>
