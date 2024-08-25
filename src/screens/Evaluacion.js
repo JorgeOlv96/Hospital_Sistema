@@ -23,7 +23,8 @@ function Evaluacion() {
   const [specialtyFilter, setSpecialtyFilter] = useState("");
   const [dateFilter, setDateFilter] = useState("");
   const [view, setView] = useState("table"); // State to toggle view
-
+  // Extrae la especialidad del usuario
+  const userSpecialty = user?.especialidad || "";
   const [filter, setFilter] = useState({
     estado: "", // valor inicial para el estado de la solicitud
     // otros filtros aquí
@@ -53,13 +54,20 @@ function Evaluacion() {
         throw new Error("Network response was not ok");
       }
       const data = await response.json();
-      const sortedData = data.sort((a, b) => b.id_solicitud - a.id_solicitud);
-      setPendingAppointments(data);
+      
+      // Filtrar por especialidad
+      const filteredData = data.filter(solicitud => 
+        userSpecialty === "" || solicitud.nombre_especialidad === userSpecialty
+      );
+
+      // Ordenar los datos por ID de solicitud de manera descendente
+      const sortedData = filteredData.sort((a, b) => b.id_solicitud - a.id_solicitud);
+
+      setPendingAppointments(sortedData);
     } catch (error) {
       console.error("Error fetching pending appointments:", error);
     }
   };
-
   const handleViewModal = (appointment) => {
     setSelectedAppointment(appointment);
     setOpen(true);

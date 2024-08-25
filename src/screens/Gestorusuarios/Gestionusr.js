@@ -44,6 +44,7 @@ function Gestionusuarios() {
     email: "",
     nivel_usuario: "",
     cedula: "",
+    especialidad: "",
     pantallasDisponibles: [], // Agregar este campo
   });
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
@@ -434,6 +435,7 @@ function Gestionusuarios() {
                   <th className="px-4 py-2">Apellido Materno</th>
                   <th className="px-4 py-2">Email</th>
                   <th className="px-4 py-2">Rol de usuario</th>
+                  <th className="px-4 py-2">Especialidad</th>
                   <th className="px-4 py-2">Acciones</th>
                 </tr>
               </thead>
@@ -449,6 +451,7 @@ function Gestionusuarios() {
                       <td className="border px-4 py-2">{user.ap_materno}</td>
                       <td className="border px-4 py-2">{user.email}</td>
                       <td className="border px-4 py-2">{nivelUsuarioMap[user.nivel_usuario] || "Desconocido"}</td>
+                      <td className="border px-4 py-2">{user.especialidad || ""}</td>
                       <td className="border px-6 py-2 flex justify-center items-center">
                         <button
                           className="bg-blue-500 text-white px-4 py-2 rounded mr-2 hover:bg-blue-700"
@@ -590,6 +593,52 @@ function Gestionusuarios() {
                         className="w-full p-3 border rounded-lg"
                       />
                     </div>
+                    <div className="mb-4 w-full">
+                  <label
+                    htmlFor="especialidad"
+                    className="block text-sm font-medium text-gray-700"
+                  >
+                    Especialidad
+                  </label>
+                  <select
+                    id="especialidad"
+                    name="especialidad"
+                    value={userToEdit.especialidad}
+                    onChange={handleInputChange}
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+                  >
+                    <option value="">Selecciona una especialidad</option>
+                    <option value="Algología">Algología</option>
+                    <option value="Angiología">Angiología</option>
+                    <option value="C.Plástica y Reconstructiva">C.Plástica y Reconstructiva</option>
+                    <option value="Cardiología">Cardiología</option>
+                    <option value="Cirigía de Torax">Cirugía de Torax</option>
+                    <option value="Cirugía Bariatrica">Cirugía Bariatrica</option>
+                    <option value="Cirugía Cardiaca">Cirugía Cardiaca</option>
+                    <option value="Cirugía General">Cirugía General</option>
+                    <option value="Cirugía Hepatobiliar">Cirugía Hepatobiliar</option>
+                    <option value="Coloproctología">Coloproctología</option>
+                    <option value="Columna">Columna</option>
+                    <option value="Endoscopia">Endoscopia</option>
+                    <option value="Gastroenterología">Gastroenterología</option>
+                    <option value="Hemodinamía">Hemodinamía</option>
+                    <option value="Imagenología">Imagenología</option>
+                    <option value="Maxilofacial">Maxilofacial</option>
+                    <option value="Neurocirugía">Neurocirugía</option>
+                    <option value="Oftalmología">Oftalmología</option>
+                    <option value="Oncología">Oncología</option>
+                    <option value="Orbitología">Orbitología</option>
+                    <option value="Otorrinolaringología">Otorrinolaringología</option>
+                    <option value="Proctología">Proctología</option>
+                    <option value="Procuración">Procuración</option>
+                    <option value="T. de córnea">T. de córnea</option>
+                    <option value="T. Hepático">T. Hepático</option>
+                    <option value="T. Renal">T. Renal</option>
+                    <option value="Transplantes">Transplantes</option>
+                    <option value="Trauma y Ortopedia">Trauma y Ortopedia</option>
+                    <option value="Urología">Urología</option>
+                  </select>
+                </div>
                   </div>
 
                   <div className="mb-4">

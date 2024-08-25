@@ -1,14 +1,17 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import Layout from "../../Layout";
 import { useNavigate } from "react-router-dom";
 import ProcedureSelect from "./ProcedureSelect";
+import { AuthContext } from "../../AuthContext";
 import AsyncSelect from "react-select/async";
 
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function CrearSolicitud() {
+  const { user } = useContext(AuthContext);
+
   const [selectedSolicitud] = useState(null);
   const [isFechaNacimientoValid, setIsFechaNacimientoValid] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
@@ -123,6 +126,24 @@ function CrearSolicitud() {
 
     fetchSolicitudes();
   }, []);
+
+    // Verificar si el usuario tiene una especialidad asignada
+    useEffect(() => {
+      if (user && user.especialidad) {
+        const userEspecialidad = user.especialidad;
+        const correspondingClave = especialidadToClave[userEspecialidad];
+  
+        // Autocompletar los campos de especialidad y clave especialidad
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+          nombre_especialidad: userEspecialidad,
+          clave_esp: correspondingClave,
+        }));
+  
+        setNombreEspecialidad(userEspecialidad);
+        setClaveEspecialidad(correspondingClave);
+      }
+    }, [user]);
 
   const fetchActiveSurgeons = async (inputValue) => {
     try {

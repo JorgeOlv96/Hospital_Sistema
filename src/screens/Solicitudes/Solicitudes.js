@@ -1,9 +1,10 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useContext } from "react";
 import Layout from "../../Layout";
 import moment from "moment";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import AddAppointmentModal from "../../components/Modals/AddApointmentModal";
+import { AuthContext } from "../../AuthContext";
 import { FaTable, FaThLarge } from "react-icons/fa"; // Asegúrate de tener esta biblioteca instalada
 
 function Solicitudes() {
@@ -31,7 +32,11 @@ function Solicitudes() {
   const [endDate, setEndDate] = useState("");
   const [view, setView] = useState("table"); // State to toggle view
   const [selectedDate, setSelectedDate] = useState(new Date());
+  const { user } = useContext(AuthContext);
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
+
+    // Extrae la especialidad del usuario
+  const userSpecialty = user?.especialidad || "";
 
   useEffect(() => {
     const fetchTotalSolicitudes = async () => {
@@ -126,17 +131,24 @@ function Solicitudes() {
           throw new Error("Network response was not ok");
         }
         const data = response.data;
+        
+        // Filtra las solicitudes según la especialidad del usuario
         const filteredData = data
-          .filter((solicitud) => solicitud.estado_solicitud !== "Eliminada")
+          .filter((solicitud) => {
+            return solicitud.estado_solicitud !== "Eliminada" && 
+                   (userSpecialty === "" || 
+                    solicitud.nombre_especialidad === userSpecialty);
+          })
           .sort((a, b) => b.id_solicitud - a.id_solicitud); // Ordenar por id_solicitud de mayor a menor
+        
         setSolicitudes(filteredData);
       } catch (error) {
         console.error("Error fetching solicitudes:", error);
       }
     };
-  
+
     fetchSolicitudes();
-  }, []);
+  }, [userSpecialty]);
   
 
   const handleModal = () => {
