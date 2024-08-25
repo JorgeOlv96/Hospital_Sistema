@@ -220,7 +220,7 @@ function AddAppointmentModalPending({
 
   const handleProgramAppointment = async () => {
     try {
-      const { fecha_programada, hora_asignada, turno, nombre_anestesiologo } =
+      const { fecha_programada, hora_asignada, turno, sala_quirofano, nombre_anestesiologo } =
         patientData;
       const response = await fetch(
         `${baseURL}/api/solicitudes/programar/${appointmentId}`,
@@ -230,6 +230,7 @@ function AddAppointmentModalPending({
             fecha_programada,
             hora_asignada,
             turno,
+            sala_quirofano,
             nombre_anestesiologo,
           }),
           headers: {
