@@ -334,6 +334,7 @@ function Evaluacion() {
                                 : ""}
                             </span>
                           </th>
+                          
                           <th
                             className="px-4 py-2 cursor-pointer"
                             onClick={() => handleSort("turno_solicitado")}
@@ -366,7 +367,7 @@ function Evaluacion() {
                           >
                             Cama{" "}
                             <span>
-                              {sortBy === "sala_quirofano"
+                              {sortBy === "cama"
                                 ? sortOrder === "asc"
                                   ? "▲"
                                   : "▼"

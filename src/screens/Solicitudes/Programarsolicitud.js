@@ -3,10 +3,26 @@ import Layout from "../../Layout";
 import axios from "axios";
 import AddAppointmentModalPending from "../../components/Modals/AddApointmentModalPending";
 import { Link } from "react-router-dom";
-import moment from "moment";
 import { FaTable, FaThLarge, FaInfoCircle } from "react-icons/fa";
-import OperatingRoomSchedulePrepro from "../../components/OperatingRoomSchedulePrepro";
-import { Calendar, momentLocalizer } from "react-big-calendar";
+
+import { Calendar, momentLocalizer } from 'react-big-calendar';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+import moment from 'moment';
+import 'moment/locale/es'; // Importa el idioma de moment.js
+
+const localizer = momentLocalizer(moment);
+
+const messages = {
+  today: 'Hoy',
+  previous: 'Anterior',
+  next: 'Siguiente',
+  month: 'Mes',
+  week: 'Semana',
+  day: 'Día',
+  agenda: 'Agenda',
+  // Puedes añadir más traducciones si es necesario
+};
+
 
 function ProgramarSolicitud() {
   const [pendingAppointments, setPendingAppointments] = useState([]);
@@ -24,9 +40,8 @@ function ProgramarSolicitud() {
   const [specialtyFilter, setSpecialtyFilter] = useState("");
   const [dateFilter, setDateFilter] = useState("");
   const [viewMode, setViewMode] = useState("list"); // Agregamos un estado para la vista
-  const [view, setView] = useState("OperatingRoomSchedulePre");
+  const [view, setView] = useState(""); // Agregamos un estado para la vista
 
-  const localizer = momentLocalizer(moment);
   const [openModal, setOpenModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState({});
   const [appointments, setAppointments] = useState([]);
@@ -60,7 +75,9 @@ function ProgramarSolicitud() {
         throw new Error("Network response was not ok");
       }
       const data = await response.json();
-      const sortedData = data.sort((a, b) => b.id_solicitud - a.id_solicitud); // Ordenar por id_solicitud de mayor a menor
+      // Ordenar los datos por ID de solicitud de manera descendente
+      const sortedData = data.sort((a, b) => b.id_solicitud - a.id_solicitud);
+
       setPendingAppointments(sortedData);
     } catch (error) {
       console.error("Error fetching pending appointments:", error);
@@ -180,8 +197,8 @@ function ProgramarSolicitud() {
   };
 
   const handleEventClick = (event) => {
-    setSelectedEvent(event);
-    setOpenModal(true);
+    setSelectedAppointment(event);
+    setOpen(true);
   };
 
   const handleCloseModal = () => {
@@ -437,9 +454,9 @@ function ProgramarSolicitud() {
                         "LT"
                       )}</td>
                       <td>Sala: ${appointment.sala_quirofano || ""}</td>
-                      <td>${
-                  appointment.ap_paterno
-                } ${appointment.ap_materno} ${appointment.nombre_paciente}</td>
+                      <td>${appointment.ap_paterno} ${appointment.ap_materno} ${
+                  appointment.nombre_paciente
+                }</td>
                     <td>${appointment.edad || ""}</td>
                       <td>${
                         appointment.sexo
@@ -565,7 +582,6 @@ function ProgramarSolicitud() {
     }
   };
 
-
   const orderedAppointments = useMemo(() => {
     return filteredAppointments.sort((a, b) => {
       const salaOrder = [
@@ -591,6 +607,13 @@ function ProgramarSolicitud() {
       );
     });
   }, [filteredAppointments]);
+
+  const events = pendingAppointments.map((app) => ({
+    title: `${app.nombre_paciente} - ${app.nombre_especialidad}`,
+    start: new Date(app.fecha_solicitada + "T" + app.hora_solicitada),
+    end: new Date(app.fecha_solicitada + "T" + app.hora_solicitada),
+    resource: app,
+  }));
 
   // Calcular índices de paginación
 
@@ -752,7 +775,7 @@ function ProgramarSolicitud() {
                         : "bg-gray-200"
                     }`}
                   >
-                     <FaTable size={24} />
+                    <FaTable size={24} />
                   </button>
                   <button
                     onClick={() => setViewMode("cards")}
@@ -765,9 +788,9 @@ function ProgramarSolicitud() {
                     <FaThLarge size={24} />
                   </button>
                   <button
-                    onClick={() => setViewMode("OperatingRoomSchedulePre")}
+                    onClick={() => setViewMode("calendar")}
                     className={`flex items-center px-4 py-2 rounded-md ${
-                      viewMode === "OperatingRoomSchedulePre"
+                      viewMode === "calendar"
                         ? "bg-[#365b77] text-white"
                         : "bg-gray-200"
                     }`}
@@ -776,6 +799,39 @@ function ProgramarSolicitud() {
                   </button>
                 </div>
               </div>
+
+              {viewMode === "calendar" && (
+                <div className="bg-white p-4 shadow-md rounded-lg">
+                <Calendar
+                  localizer={localizer}
+                  events={events}
+                  startAccessor="start"
+                  endAccessor="end"
+                  style={{ height: 500 }}
+                  onSelectEvent={handleEventClick} // Maneja el clic en la cita
+                  messages={{
+                    today: 'Hoy',
+                    previous: 'Anterior',
+                    next: 'Siguiente',
+                    month: 'Mes',
+                    week: 'Semana',
+                    day: 'Día',
+                    agenda: 'Agenda',
+                  }} // Traducción al español
+                />
+          
+                {open && selectedAppointment && (
+                  <AddAppointmentModalPending
+                    datas={pendingAppointments} // Datos de citas pendientes
+                    isOpen={open} // Estado del modal
+                    closeModal={handleModal} // Función para cerrar el modal
+                    onDeleteAppointment={handleDeleteAppointment} // Función para eliminar una cita
+                    appointmentId={selectedAppointment.id_solicitud} // ID de la cita seleccionada
+                    appointmentData={selectedAppointment} // Pasa los datos de la cita seleccionada al modal
+                  />
+                )}
+              </div>
+              )}
 
               {viewMode === "list" && (
                 <>
@@ -794,8 +850,11 @@ function ProgramarSolicitud() {
                             >
                               ID{" "}
                               <span>
-                                {sortBy === "id_solicitud" &&
-                                  (sortOrder === "asc" ? "▲" : "▼")}
+                                {sortBy === "id_solicitud"
+                                  ? sortOrder === "asc"
+                                    ? "▲"
+                                    : "▼"
+                                  : ""}
                               </span>
                             </th>
                             <th
@@ -829,18 +888,18 @@ function ProgramarSolicitud() {
                               </span>
                             </th>
                             <th
-                            className="px-4 py-2 cursor-pointer"
-                            onClick={() => handleSort("turno_solicitado")}
-                          >
-                            Turno solic.{" "}
-                            <span>
-                              {sortBy === "turno_solicitado"
-                                ? sortOrder === "asc"
-                                  ? "▲"
-                                  : "▼"
-                                : ""}
-                            </span>
-                          </th>
+                              className="px-4 py-2 cursor-pointer"
+                              onClick={() => handleSort("turno_solicitado")}
+                            >
+                              Turno solic.{" "}
+                              <span>
+                                {sortBy === "turno_solicitado"
+                                  ? sortOrder === "asc"
+                                    ? "▲"
+                                    : "▼"
+                                  : ""}
+                              </span>
+                            </th>
                             <th
                               className="px-4 py-3 cursor-pointer"
                               onClick={() => handleSort("nombre_paciente")}
@@ -1065,46 +1124,40 @@ function ProgramarSolicitud() {
                   ))}
                 </div>
               )}
-
-              {viewMode === "OperatingRoomSchedulePre" && (
-                <OperatingRoomSchedulePrepro
-                  date={selectedDate}
-                  appointments={appointments}
-                  onEventClick={handleEventClick}
-                />
-              )}
             </div>
           </div>
 
           {/* Paginación */}
-          <div className="flex justify-center items-center mt-6 space-x-4">
-            <button
-              onClick={() => setPage(page - 1)}
-              disabled={page === 1}
-              className={`${
-                page === 1
-                  ? "bg-gray-300 cursor-not-allowed"
-                  : "bg-[#365b77] hover:bg-[#7498b6]"
-              } text-white font-semibold py-2 px-6 rounded-full shadow-md transition-all duration-300 ease-in-out transform hover:scale-105`}
-            >
-              &#8592;
-            </button>
-            <span className="text-lg font-semibold text-gray-800">
-              Página {page}
-            </span>
-            <button
-              onClick={() => setPage(page + 1)}
-              disabled={page === totalPages}
-              className={`${
-                page === totalPages
-                  ? "bg-gray-300 cursor-not-allowed"
-                  : "bg-[#365b77] hover:bg-[#7498b6]"
-              } text-white font-semibold py-2 px-6 rounded-full shadow-md transition-all duration-300 ease-in-out transform hover:scale-105`}
-            >
-              &#8594;
-            </button>
-          </div>
-          
+          {viewMode === "list" ||
+            (viewMode === "cards" && (
+              <div className="flex justify-center items-center mt-6 space-x-4">
+                <button
+                  onClick={() => setPage(page - 1)}
+                  disabled={page === 1}
+                  className={`${
+                    page === 1
+                      ? "bg-gray-300 cursor-not-allowed"
+                      : "bg-[#365b77] hover:bg-[#7498b6]"
+                  } text-white font-semibold py-2 px-6 rounded-full shadow-md transition-all duration-300 ease-in-out transform hover:scale-105`}
+                >
+                  &#8592;
+                </button>
+                <span className="text-lg font-semibold text-gray-800">
+                  Página {page}
+                </span>
+                <button
+                  onClick={() => setPage(page + 1)}
+                  disabled={page === totalPages}
+                  className={`${
+                    page === totalPages
+                      ? "bg-gray-300 cursor-not-allowed"
+                      : "bg-[#365b77] hover:bg-[#7498b6]"
+                  } text-white font-semibold py-2 px-6 rounded-full shadow-md transition-all duration-300 ease-in-out transform hover:scale-105`}
+                >
+                  &#8594;
+                </button>
+              </div>
+            ))}
         </div>
       </div>
     </Layout>
