@@ -801,16 +801,35 @@ function ProgramarSolicitud() {
               </div>
 
               {viewMode === "calendar" && (
-               <div className="bg-white p-4 shadow-md rounded-lg">
-               <Calendar
-                 localizer={localizer}
-                 events={events}
-                 startAccessor="start"
-                 endAccessor="end"
-                 style={{ height: 500 }}
-                 onSelectEvent={handleEventClick}
-               />
-             </div>
+                <div className="bg-white p-4 shadow-md rounded-lg">
+      <Calendar
+        localizer={localizer}
+        events={events}
+        startAccessor="start"
+        endAccessor="end"
+        style={{ height: 500 }}
+        onSelectEvent={handleEventClick}
+        messages={{
+          today: 'Hoy',
+          previous: 'Anterior',
+          next: 'Siguiente',
+          month: 'Mes',
+          week: 'Semana',
+          day: 'Día',
+          agenda: 'Agenda',
+        }} // Traducción al español
+      />
+
+      {open && selectedAppointment && (
+        <AddAppointmentModalPending
+          datas={pendingAppointments}
+          isOpen={open}
+          closeModal={handleModal}
+          onDeleteAppointment={handleDeleteAppointment}
+          appointmentId={selectedAppointment.id_solicitud}
+        />
+      )}
+    </div>
               )}
 
               {viewMode === "list" && (
