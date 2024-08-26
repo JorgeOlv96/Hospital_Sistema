@@ -3,26 +3,25 @@ import Layout from "../../Layout";
 import axios from "axios";
 import AddAppointmentModalPending from "../../components/Modals/AddApointmentModalPending";
 import { Link } from "react-router-dom";
-import { FaTable, FaThLarge, FaInfoCircle } from "react-icons/fa";
+import { FaTable, FaThLarge, FaInfoCircle, FaClock } from "react-icons/fa";
 
-import { Calendar, momentLocalizer } from 'react-big-calendar';
-import 'react-big-calendar/lib/css/react-big-calendar.css';
-import moment from 'moment';
-import 'moment/locale/es'; // Importa el idioma de moment.js
+import { Calendar, momentLocalizer } from "react-big-calendar";
+import "react-big-calendar/lib/css/react-big-calendar.css";
+import moment from "moment";
+import "moment/locale/es"; // Importa el idioma de moment.js
 
 const localizer = momentLocalizer(moment);
 
 const messages = {
-  today: 'Hoy',
-  previous: 'Anterior',
-  next: 'Siguiente',
-  month: 'Mes',
-  week: 'Semana',
-  day: 'Día',
-  agenda: 'Agenda',
+  today: "Hoy",
+  previous: "Anterior",
+  next: "Siguiente",
+  month: "Mes",
+  week: "Semana",
+  day: "Día",
+  agenda: "Agenda",
   // Puedes añadir más traducciones si es necesario
 };
-
 
 function ProgramarSolicitud() {
   const [pendingAppointments, setPendingAppointments] = useState([]);
@@ -615,6 +614,22 @@ function ProgramarSolicitud() {
     resource: app,
   }));
 
+  const salas = [
+    "A1",
+    "A2",
+    "T1",
+    "T2",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "E",
+    "H",
+    "RX",
+  ];
+
   // Calcular índices de paginación
 
   const itemsPerPage = 9;
@@ -797,39 +812,111 @@ function ProgramarSolicitud() {
                   >
                     <FaInfoCircle size={24} />
                   </button>
+                  <button
+                    onClick={() => setViewMode("schedule")}
+                    className={`flex items-center px-4 py-2 rounded-md ${
+                      viewMode === "schedule"
+                        ? "bg-[#365b77] text-white"
+                        : "bg-gray-200"
+                    }`}
+                  >
+                    <FaClock size={24} />
+                  </button>
                 </div>
               </div>
 
+              {viewMode === "schedule" && (
+  <div className="bg-white p-4 shadow-md rounded-lg overflow-x-auto">
+    <table className="min-w-full table-fixed">
+      <thead>
+        <tr>
+          <th className="w-1/12 px-4 py-2"></th> {/* Espacio para las horas */}
+          {salas.map((sala, index) => (
+            <th
+              key={index}
+              className="w-1/6 px-4 py-2 text-center"
+            >
+              Sala {sala}
+            </th>
+          ))}
+        </tr>
+      </thead>
+      <tbody>
+        {Array.from({ length: 24 }, (_, index) => {
+          const hour = 7 + Math.floor(index / 2); // Horas de 7:00 AM a 6:00 AM
+          const minutes = index % 2 === 0 ? "00" : "30";
+          const timeLabel = `${hour}:${minutes}`;
+
+          return (
+            <tr key={index}>
+              <td className="border px-4 py-2 text-center">
+                {timeLabel}
+              </td>
+              {salas.map((sala, salaIndex) => {
+                const appointmentForThisTimeAndSala =
+                  appointments.find(
+                    (appointment) =>
+                      appointment.sala_quirofano === sala &&
+                      appointment.hora_solicitada === `${timeLabel}:00`
+                  );
+
+                console.log(`Sala: ${sala}, Hora: ${timeLabel}:00, Cita:`, appointmentForThisTimeAndSala);
+
+                return (
+                  <td
+                    key={salaIndex}
+                    className="border px-4 py-2 text-center"
+                  >
+                    {appointment ? (
+                      <div>
+                        <div>{appointment.nombre_paciente}</div>
+                        <div>{appointment.nombre_especialidad}</div>
+                      </div>
+                    ) : (
+                      <div>No hay citas</div>
+                    )}
+                  </td>
+                );
+              })}
+            </tr>
+          );
+        })}
+      </tbody>
+    </table>
+  </div>
+)}
+
+
               {viewMode === "calendar" && (
                 <div className="bg-white p-4 shadow-md rounded-lg">
-      <Calendar
-        localizer={localizer}
-        events={events}
-        startAccessor="start"
-        endAccessor="end"
-        style={{ height: 500 }}
-        onSelectEvent={handleEventClick}
-        messages={{
-          today: 'Hoy',
-          previous: 'Anterior',
-          next: 'Siguiente',
-          month: 'Mes',
-          week: 'Semana',
-          day: 'Día',
-          agenda: 'Agenda',
-        }} // Traducción al español
-      />
+                  <Calendar
+                    localizer={localizer}
+                    events={events}
+                    startAccessor="start"
+                    endAccessor="end"
+                    style={{ height: 500 }}
+                    onSelectEvent={handleEventClick}
+                    messages={{
+                      today: "Hoy",
+                      previous: "Anterior",
+                      next: "Siguiente",
+                      month: "Mes",
+                      week: "Semana",
+                      day: "Día",
+                      agenda: "Agenda",
+                    }} // Traducción al español
+                  />
 
-      {open && selectedAppointment && (
-        <AddAppointmentModalPending
-          datas={pendingAppointments}
-          isOpen={open}
-          closeModal={handleModal}
-          onDeleteAppointment={handleDeleteAppointment}
-          appointmentId={selectedAppointment.id_solicitud}
-        />
-      )}
-    </div>
+                  {open && selectedAppointment && (
+                    <AddAppointmentModalPending
+                      datas={pendingAppointments}
+                      isOpen={open}
+                      closeModal={handleModal}
+                      onDeleteAppointment={handleDeleteAppointment}
+                      appointmentId={selectedAppointment.id_solicitud}
+                    />
+                  )}
+                </div>
               )}
 
               {viewMode === "list" && (
@@ -1047,7 +1134,6 @@ function ProgramarSolicitud() {
                   )}
                 </>
               )}
-
               {viewMode === "cards" && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                   {paginatedAppointments.map((appointment) => (
