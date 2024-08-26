@@ -416,7 +416,7 @@ function Appointments() {
                                     ? "08:00 a 15:00"
                                     : turno === "Vespertino"
                                     ? "15:00 a 21:00"
-                                    : "21:00 a 08:00"  // Ajustado para mostrar el rango nocturno correctamente
+                                    : "21:00 a 08:00" 
                             })</td>
                         </tr>
                         ${sortedRegistrations
