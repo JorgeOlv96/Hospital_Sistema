@@ -239,6 +239,12 @@ function Solicitudes() {
     return sorted;
   }, [filteredSolicitudes, sortBy, sortOrder]);
 
+  const formatFechaSolicitada = (fecha) => {
+    if (!fecha) return "";
+    const [year, month, day] = fecha.split("-");
+    return `${day}-${month}-${year}`;
+  };
+
   const printRequestedAppointments = async () => {
     const today = moment(selectedDate).format("YYYY-MM-DD"); // Usa la fecha seleccionada
 
@@ -999,7 +1005,9 @@ function Solicitudes() {
                                       {solicitud.nombre_especialidad}
                                     </td>
                                     <td className="border px-4 py-2 text-center">
-                                      {solicitud.fecha_solicitada}
+                                    {formatFechaSolicitada(
+                                  solicitud.fecha_solicitada
+                                )}
                                     </td>
                                     <td className="border px-4 py-2 text-center">
                                       {solicitud.req_insumo}

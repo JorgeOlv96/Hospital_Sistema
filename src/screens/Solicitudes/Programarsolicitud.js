@@ -378,7 +378,7 @@ function ProgramarSolicitud() {
           const hour = moment(appointment.hora_solicitada, "HH:mm").hour();
           if (turno === "Matutino") return hour >= 8 && hour < 15;
           if (turno === "Vespertino") return hour >= 15 && hour < 21;
-          return hour >= 21 || hour < 8;
+          return hour >= 21 || hour < 6;
         })
         .sort((a, b) => {
           const salaOrder = [
@@ -829,6 +829,19 @@ function ProgramarSolicitud() {
                               </span>
                             </th>
                             <th
+                            className="px-4 py-2 cursor-pointer"
+                            onClick={() => handleSort("turno_solicitado")}
+                          >
+                            Turno solic.{" "}
+                            <span>
+                              {sortBy === "turno_solicitado"
+                                ? sortOrder === "asc"
+                                  ? "▲"
+                                  : "▼"
+                                : ""}
+                            </span>
+                          </th>
+                            <th
                               className="px-4 py-3 cursor-pointer"
                               onClick={() => handleSort("nombre_paciente")}
                             >
@@ -899,6 +912,9 @@ function ProgramarSolicitud() {
                               </td>
                               <td className="border px-4 py-2">
                                 {appointment.hora_solicitada}
+                              </td>
+                              <td className="border px-4 py-2 text-center align-middle">
+                                {appointment.turno_solicitado.charAt(0)}
                               </td>
                               <td className="border px-4 py-2">
                                 {[

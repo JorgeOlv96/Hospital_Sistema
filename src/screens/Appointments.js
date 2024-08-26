@@ -376,7 +376,9 @@ function Appointments() {
                 <th>Hra. asign.</th>
                 <th>Sala</th>
                 <th>Nom. completo</th>
+                <th>Edad</th>
                 <th>Sexo</th>
+                <th>Procedimiento CIE-9</th>
                 <th>Diagnostico</th>
                 <th>Especialidad</th>
                 <th>Procedencia</th>
@@ -426,7 +428,14 @@ function Appointments() {
                                         <td>${moment(appointment.hora_asignada, "HH:mm").format("LT")}</td>
                                         <td>Sala: ${appointment.sala_quirofano || ""}</td>
                                         <td>${appointment.ap_paterno} ${appointment.ap_materno} ${appointment.nombre_paciente}</td>
+                                        <td>${appointment.edad || ""}</td>
                                         <td>${appointment.sexo ? (appointment.sexo === "Femenino" ? "F" : "M") : "No especificado"}</td>
+                                        <td>${(() => {
+                                            const procedimientos = appointment.procedimientos_paciente || "";
+                                            const [beforeDash, afterDash] = procedimientos.split("-", 2);
+                                            const truncatedBeforeDash = beforeDash.slice(0, 45);
+                                            return `${truncatedBeforeDash}${afterDash ? "-" + afterDash : ""}`;
+                                        })()}</td>
                                         <td>${(() => {
                                             const procedimientos = appointment.diagnostico || "";
                                             const [beforeDash, afterDash] = procedimientos.split("-", 2);

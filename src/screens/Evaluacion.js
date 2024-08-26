@@ -109,6 +109,12 @@ function Evaluacion() {
     }
   };
 
+  const formatFechaSolicitada = (fecha) => {
+    if (!fecha) return "";
+    const [year, month, day] = fecha.split("-");
+    return `${day}-${month}-${year}`;
+  };
+
   const handleSort = (column) => {
     if (sortBy === column) {
       setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -385,7 +391,9 @@ function Evaluacion() {
                                 {appointment.clave_esp}
                               </td>
                               <td className="border px-4 py-2">
-                                {appointment.fecha_solicitada}
+                              {formatFechaSolicitada(
+                                  appointment.fecha_solicitada
+                                )}
                               </td>
                               <td className="border px-4 py-2 text-center align-middle">
                                 {appointment.turno_solicitado.charAt(0)}
