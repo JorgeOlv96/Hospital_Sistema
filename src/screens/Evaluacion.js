@@ -354,6 +354,19 @@ function Evaluacion() {
                                 : ""}
                             </span>
                           </th>
+                          <th
+                            className="px-4 py-2 cursor-pointer"
+                            onClick={() => handleSort("cama")}
+                          >
+                            Cama{" "}
+                            <span>
+                              {sortBy === "sala_quirofano"
+                                ? sortOrder === "asc"
+                                  ? "▲"
+                                  : "▼"
+                                : ""}
+                            </span>
+                          </th>
                           <th className="px-4 py-2 cursor-pointer">Estado</th>
                           <th className="px-4 py-3">Acciones</th>
                         </tr>
@@ -392,6 +405,9 @@ function Evaluacion() {
                               </td>
                               <td className="border px-4 py-2 text-center align-middle">
                                 {appointment.sala_quirofano}
+                              </td>
+                              <td className="border px-4 py-2 text-center align-middle">
+                                {appointment.cama}
                               </td>
                               <td className="border px-4 py-2">
                                 <div

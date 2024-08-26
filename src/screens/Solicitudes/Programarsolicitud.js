@@ -361,9 +361,9 @@ function ProgramarSolicitud() {
       const sortedRegistrations = todaysRegistrations
         .filter((appointment) => {
           const hour = moment(appointment.hora_solicitada, "HH:mm").hour();
-          if (turno === "Matutino") return hour >= 8 && hour <= 15;
-          if (turno === "Vespertino") return hour >= 14 && hour <= 21;
-          return hour >= 21 || hour < 6;
+          if (turno === "Matutino") return hour >= 8 && hour <= 14;
+          if (turno === "Vespertino") return hour >= 14 && hour <= 20;
+          return hour >= 20 || hour < 8;
         })
         .sort((a, b) => {
           // Ordenar primero por sala y luego por hora
