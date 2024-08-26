@@ -197,8 +197,8 @@ function ProgramarSolicitud() {
   };
 
   const handleEventClick = (event) => {
-    setSelectedAppointment(event);
-    setOpen(true);
+    setSelectedEvent(event);
+    setOpenModal(true);
   };
 
   const handleCloseModal = () => {
@@ -801,36 +801,16 @@ function ProgramarSolicitud() {
               </div>
 
               {viewMode === "calendar" && (
-                <div className="bg-white p-4 shadow-md rounded-lg">
-                <Calendar
-                  localizer={localizer}
-                  events={events}
-                  startAccessor="start"
-                  endAccessor="end"
-                  style={{ height: 500 }}
-                  onSelectEvent={handleEventClick} // Maneja el clic en la cita
-                  messages={{
-                    today: 'Hoy',
-                    previous: 'Anterior',
-                    next: 'Siguiente',
-                    month: 'Mes',
-                    week: 'Semana',
-                    day: 'Día',
-                    agenda: 'Agenda',
-                  }} // Traducción al español
-                />
-          
-                {open && selectedAppointment && (
-                  <AddAppointmentModalPending
-                    datas={pendingAppointments} // Datos de citas pendientes
-                    isOpen={open} // Estado del modal
-                    closeModal={handleModal} // Función para cerrar el modal
-                    onDeleteAppointment={handleDeleteAppointment} // Función para eliminar una cita
-                    appointmentId={selectedAppointment.id_solicitud} // ID de la cita seleccionada
-                    appointmentData={selectedAppointment} // Pasa los datos de la cita seleccionada al modal
-                  />
-                )}
-              </div>
+               <div className="bg-white p-4 shadow-md rounded-lg">
+               <Calendar
+                 localizer={localizer}
+                 events={events}
+                 startAccessor="start"
+                 endAccessor="end"
+                 style={{ height: 500 }}
+                 onSelectEvent={handleEventClick}
+               />
+             </div>
               )}
 
               {viewMode === "list" && (
