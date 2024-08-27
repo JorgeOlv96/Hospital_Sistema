@@ -202,7 +202,6 @@ function ProgramarSolicitud() {
     });
     setOpen(true);
   };
-  
 
   const handleCloseModal = () => {
     setOpenModal(false);
@@ -720,14 +719,13 @@ function ProgramarSolicitud() {
 
           {open && selectedAppointment && (
             <AddAppointmentModalPending
-            datas={pendingAppointments}
-            isOpen={open}
-            closeModal={handleModal}
-            onDeleteAppointment={handleDeleteAppointment}
-            appointmentId={selectedAppointment.id_solicitud}
-          />
-        )}
-
+              datas={pendingAppointments}
+              isOpen={open}
+              closeModal={handleModal}
+              onDeleteAppointment={handleDeleteAppointment}
+              appointmentId={selectedAppointment.id_solicitud}
+            />
+          )}
 
           {/* Contenedor de filtros centrado */}
           <div className="flex justify-center">
@@ -820,8 +818,6 @@ function ProgramarSolicitud() {
                 </div>
               </div>
 
-              
-
               {viewMode === "calendar" && (
                 <div className="bg-white p-4 shadow-md rounded-lg">
                   <Calendar
@@ -840,22 +836,22 @@ function ProgramarSolicitud() {
                       day: "Día",
                       agenda: "Agenda",
                       date: "Fecha", // Traducción de "Date"
-                      time: "Hora",  // Traducción de "Time"
+                      time: "Hora", // Traducción de "Time"
                       event: "Paciente", // Traducción de "Event"
                       noEventsInRange: "No hay eventos en este rango",
-                      showMore: total => `+ Ver más (${total})` // Personaliza el mensaje de "show more"
+                      showMore: (total) => `+ Ver más (${total})`, // Personaliza el mensaje de "show more"
                     }} // Traducción al español
                   />
 
                   {open && selectedAppointment && (
                     <AddAppointmentModalPending
-                    datas={pendingAppointments}
-                    isOpen={open}
-                    closeModal={handleModal}
-                    onDeleteAppointment={handleDeleteAppointment}
-                    appointmentId={selectedAppointment.id_solicitud}
-                  />
-                )}
+                      datas={pendingAppointments}
+                      isOpen={open}
+                      closeModal={handleModal}
+                      onDeleteAppointment={handleDeleteAppointment}
+                      appointmentId={selectedAppointment.id_solicitud}
+                    />
+                  )}
                 </div>
               )}
 
