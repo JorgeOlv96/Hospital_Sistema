@@ -440,7 +440,7 @@ function ProgramarSolicitud() {
             </tr>
             ${sortedRegistrations
               .map((appointment, index) => {
-                // Obtener el anestesiólogo asignado para la solicitud actual
+                // Obtener el anestesiólogo asignado
                 const assignedAnesthesiologist = todaysAnesthesiologists.find(
                   (anesthesiologist) =>
                     anesthesiologist.sala_anestesio.includes(
