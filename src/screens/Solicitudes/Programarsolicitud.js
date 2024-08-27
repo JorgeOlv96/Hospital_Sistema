@@ -885,16 +885,6 @@ function ProgramarSolicitud() {
                             </th>
                             <th
                               className="px-4 py-3 cursor-pointer"
-                              onClick={() => handleSort("folio")}
-                            >
-                              Folio{" "}
-                              <span>
-                                {sortBy === "folio" &&
-                                  (sortOrder === "asc" ? "▲" : "▼")}
-                              </span>
-                            </th>
-                            <th
-                              className="px-4 py-3 cursor-pointer"
                               onClick={() => handleSort("sala_quirofano")}
                             >
                               Sala{" "}
@@ -958,6 +948,16 @@ function ProgramarSolicitud() {
                             </th>
                             <th
                               className="px-4 py-3 cursor-pointer"
+                              onClick={() => handleSort("nombre_cirujano")}
+                            >
+                              Cirujano responsable{" "}
+                              <span>
+                                {sortBy === "nombre_cirujano" &&
+                                  (sortOrder === "asc" ? "▲" : "▼")}
+                              </span>
+                            </th>
+                            <th
+                              className="px-4 py-3 cursor-pointer"
                               onClick={() => handleSort("estado_solicitud")}
                             >
                               Estado{" "}
@@ -990,9 +990,6 @@ function ProgramarSolicitud() {
                                 {appointment.id_solicitud}
                               </td>
                               <td className="border px-4 py-2">
-                                {appointment.folio}
-                              </td>
-                              <td className="border px-4 py-2">
                                 {appointment.sala_quirofano}
                               </td>
                               <td className="border px-4 py-2">
@@ -1017,6 +1014,9 @@ function ProgramarSolicitud() {
                                 {formatFechaSolicitada(
                                   appointment.fecha_solicitada
                                 )}
+                              </td>
+                              <td className="border px-4 py-2">
+                                {appointment.nombre_cirujano}
                               </td>
                               <td className="border px-4 py-2">
                                 <div
