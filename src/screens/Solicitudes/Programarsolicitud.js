@@ -417,7 +417,15 @@ function ProgramarSolicitud() {
           ];
           const salaA = salaOrder.indexOf(a.sala_quirofano);
           const salaB = salaOrder.indexOf(b.sala_quirofano);
-          return salaA - salaB;
+          if (salaA !== salaB) {
+            // Si las salas son diferentes, ordenar por sala
+            return salaA - salaB;
+          }
+      
+          // Si las salas son iguales, ordenar por hora_solicitada
+          const horaA = moment(a.hora_solicitada, "HH:mm");
+          const horaB = moment(b.hora_solicitada, "HH:mm");
+          return horaA - horaB;
         });
 
       return `
