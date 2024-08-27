@@ -4,6 +4,7 @@ import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "moment/locale/es";
 import DatePicker from "react-datepicker";
+import { es } from "date-fns/locale"; // Importa el local en español
 import "react-datepicker/dist/react-datepicker.css";
 import axios from "axios";
 import { BiChevronLeft, BiChevronRight, BiTime } from "react-icons/bi";
@@ -64,6 +65,7 @@ const CustomToolbar = ({ date, view, onView, onNavigate, onPrint, selectedDate, 
     const selectedDate = moment(e.target.value).startOf("day").toDate();
     setPrintDate(selectedDate);
   };
+  
 
   return (
     <div className="flex flex-col gap-4 mb-6">
@@ -116,20 +118,21 @@ const CustomToolbar = ({ date, view, onView, onNavigate, onPrint, selectedDate, 
         </div>
 
         <div className="md:col-span-2 flex items-center justify-center">
-        <div className="relative">
+          <div className="relative">
           <DatePicker
-            selected={selectedDate}
-            onChange={handleDateChange}
-            dateFormat="dd-MM-yyyy"
-            className="px-4 py-2 border border-subMain rounded-md text-subMain w-40" // Ajusta el ancho aquí
-          />
-          <FaCalendarAlt
-            className="absolute top-1/2 right-2 transform -translate-y-1/2 text-subMain cursor-pointer"
-            size={20}
-            onClick={() => document.querySelector('.react-datepicker__input-container input').focus()} // Focaliza el DatePicker al hacer clic en el ícono
-          />
+              selected={selectedDate}
+              onChange={handleDateChange}
+              dateFormat="dd-MM-yyyy"
+              locale={es} // Configura el local en español
+              className="px-4 py-2 border border-subMain rounded-md text-subMain w-40" // Ajusta el ancho aquí
+            />
+            <FaCalendarAlt
+              className="absolute top-1/2 right-2 transform -translate-y-1/2 text-subMain cursor-pointer"
+              size={20}
+              onClick={() => document.querySelector('.react-datepicker__input-container input').focus()} // Focaliza el DatePicker al hacer clic en el ícono
+            />
+          </div>
         </div>
-      </div>
 
         <div className="md:col-span-3 grid grid-cols-4 rounded-md border border-subMain">
           {viewNamesGroup.map((item, index) => (
