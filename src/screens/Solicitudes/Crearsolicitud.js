@@ -358,73 +358,47 @@ function CrearSolicitud() {
     e.preventDefault();
 
     if (validateForm()) {
-      // Verificar si la sala seleccionada está activa
-      const selectedSala = salasDisponibles.find(
-        (sala) => sala.nombre_sala === formData.sala_quirofano
-      );
-      if (!selectedSala || !selectedSala.estado) {
-        setErrors((prevErrors) => ({
-          ...prevErrors,
-          sala_quirofano: "La sala seleccionada no está activa.",
-        }));
-        return;
-      }
-
-      try {
-        setIsLoading(true); // Iniciar el estado de carga
-
-        // Verificar si ya existe una solicitud con la misma fecha, hora, sala y tiempo estimado
-        const checkResponse = await fetch(`${baseURL}/api/solicitudes/check`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            
-          }),
-        });
-
-        if (!checkResponse.ok) {
-          throw new Error("Network response was not ok");
+        // Verificar si la sala seleccionada está activa
+        const selectedSala = salasDisponibles.find(
+            (sala) => sala.nombre_sala === formData.sala_quirofano
+        );
+        if (!selectedSala || !selectedSala.estado) {
+            setErrors((prevErrors) => ({
+                ...prevErrors,
+                sala_quirofano: "La sala seleccionada no está activa.",
+            }));
+            return;
         }
 
-        const checkData = await checkResponse.json();
+        try {
+            setIsLoading(true); // Iniciar el estado de carga
 
-        if (checkData.exists) {
-          setErrors((prevErrors) => ({
-            ...prevErrors,
-            solicitud_conflicto:
-              "Ya existe una solicitud para la misma fecha, hora y sala!.",
-          }));
-          setIsLoading(false); // Detener el estado de carga en caso de conflicto
-          return;
+            // Enviar la solicitud a la API
+            const response = await fetch(`${baseURL}/api/solicitudes`, {
+                method: selectedSolicitud ? "PUT" : "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(formData),
+            });
+
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+
+            const data = await response.json();
+            console.log("Formulario válido y enviado:", formData);
+            setIsLoading(false); // Detener el estado de carga después de enviar la solicitud
+            navigate("/solicitudes");
+        } catch (error) {
+            console.error("Error en la solicitud:", error);
+            setIsLoading(false); // Detener el estado de carga en caso de error
         }
-
-        // Enviar la solicitud a la API si no existe conflicto
-        const response = await fetch(`${baseURL}/api/solicitudes`, {
-          method: selectedSolicitud ? "PUT" : "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(formData),
-        });
-
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-
-        const data = await response.json();
-        console.log("Formulario válido y enviado:", formData);
-        setIsLoading(false); // Detener el estado de carga después de enviar la solicitud
-        navigate("/solicitudes");
-      } catch (error) {
-        console.error("Error en la solicitud:", error);
-        setIsLoading(false); // Detener el estado de carga en caso de error
-      }
     } else {
-      console.log("Formulario inválido");
+        console.log("Formulario inválido");
     }
-  };
+};
+
 
   const getTurnColor = (turno_anestesio) => {
     switch (turno_anestesio) {
