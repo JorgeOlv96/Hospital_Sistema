@@ -90,6 +90,7 @@ function ProgramarSolicitud() {
 
   const handleModal = () => {
     setOpen(false);
+    setSelectedAppointment(null); // Limpia la selección cuando se cierra la modal
   };
 
   const handleDeleteAppointment = (appointmentId) => {
@@ -196,9 +197,12 @@ const sortedAppointments = [...pendingAppointments].sort((a, b) => {
   };
 
   const handleEventClick = (event) => {
-    setSelectedEvent(event);
-    setOpenModal(true);
+    setSelectedAppointment({
+      id_solicitud: event.resource.id_solicitud,
+    });
+    setOpen(true);
   };
+  
 
   const handleCloseModal = () => {
     setOpenModal(false);
@@ -726,13 +730,14 @@ const sortedAppointments = [...pendingAppointments].sort((a, b) => {
 
           {open && selectedAppointment && (
             <AddAppointmentModalPending
-              datas={pendingAppointments}
-              isOpen={open}
-              closeModal={handleModal}
-              onDeleteAppointment={handleDeleteAppointment}
-              appointmentId={selectedAppointment.id_solicitud}
-            />
-          )}
+            datas={pendingAppointments}
+            isOpen={open}
+            closeModal={handleModal}
+            onDeleteAppointment={handleDeleteAppointment}
+            appointmentId={selectedAppointment.id_solicitud}
+          />
+        )}
+
 
           {/* Contenedor de filtros centrado */}
           <div className="flex justify-center">
@@ -836,66 +841,72 @@ const sortedAppointments = [...pendingAppointments].sort((a, b) => {
               </div>
 
               {viewMode === "schedule" && (
-  <div className="bg-white p-4 shadow-md rounded-lg overflow-x-auto">
-    <table className="min-w-full table-fixed">
-      <thead>
-        <tr>
-          <th className="w-1/12 px-4 py-2"></th> {/* Espacio para las horas */}
-          {salas.map((sala, index) => (
-            <th
-              key={index}
-              className="w-1/6 px-4 py-2 text-center"
-            >
-              Sala {sala}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {Array.from({ length: 24 }, (_, index) => {
-          const hour = 7 + Math.floor(index / 2); // Horas de 7:00 AM a 6:00 AM
-          const minutes = index % 2 === 0 ? "00" : "30";
-          const timeLabel = `${hour}:${minutes}`;
+                <div className="bg-white p-4 shadow-md rounded-lg overflow-x-auto">
+                  <table className="min-w-full table-fixed">
+                    <thead>
+                      <tr>
+                        <th className="w-1/12 px-4 py-2"></th>{" "}
+                        {/* Espacio para las horas */}
+                        {salas.map((sala, index) => (
+                          <th
+                            key={index}
+                            className="w-1/6 px-4 py-2 text-center"
+                          >
+                            Sala {sala}
+                          </th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {Array.from({ length: 24 }, (_, index) => {
+                        const hour = 7 + Math.floor(index / 2); // Horas de 7:00 AM a 6:00 AM
+                        const minutes = index % 2 === 0 ? "00" : "30";
+                        const timeLabel = `${hour}:${minutes}`;
 
-          return (
-            <tr key={index}>
-              <td className="border px-4 py-2 text-center">
-                {timeLabel}
-              </td>
-              {salas.map((sala, salaIndex) => {
-                const appointmentForThisTimeAndSala =
-                  appointments.find(
-                    (appointment) =>
-                      appointment.sala_quirofano === sala &&
-                      appointment.hora_solicitada === `${timeLabel}:00`
-                  );
+                        return (
+                          <tr key={index}>
+                            <td className="border px-4 py-2 text-center">
+                              {timeLabel}
+                            </td>
+                            {salas.map((sala, salaIndex) => {
+                              const appointmentForThisTimeAndSala =
+                                appointments.find(
+                                  (appointment) =>
+                                    appointment.sala_quirofano === sala &&
+                                    appointment.hora_solicitada ===
+                                      `${timeLabel}:00`
+                                );
 
-                console.log(`Sala: ${sala}, Hora: ${timeLabel}:00, Cita:`, appointmentForThisTimeAndSala);
+                              console.log(
+                                `Sala: ${sala}, Hora: ${timeLabel}:00, Cita:`,
+                                appointmentForThisTimeAndSala
+                              );
 
-                return (
-                  <td
-                    key={salaIndex}
-                    className="border px-4 py-2 text-center"
-                  >
-                    {appointment ? (
-                      <div>
-                        <div>{appointment.nombre_paciente}</div>
-                        <div>{appointment.nombre_especialidad}</div>
-                      </div>
-                    ) : (
-                      <div>No hay citas</div>
-                    )}
-                  </td>
-                );
-              })}
-            </tr>
-          );
-        })}
-      </tbody>
-    </table>
-  </div>
-)}
-
+                              return (
+                                <td
+                                  key={salaIndex}
+                                  className="border px-4 py-2 text-center"
+                                >
+                                  {appointment ? (
+                                    <div>
+                                      <div>{appointment.nombre_paciente}</div>
+                                      <div>
+                                        {appointment.nombre_especialidad}
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <div>No hay citas</div>
+                                  )}
+                                </td>
+                              );
+                            })}
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
 
               {viewMode === "calendar" && (
                 <div className="bg-white p-4 shadow-md rounded-lg">
@@ -904,7 +915,7 @@ const sortedAppointments = [...pendingAppointments].sort((a, b) => {
                     events={events}
                     startAccessor="start"
                     endAccessor="end"
-                    style={{ height: 500 }}
+                    style={{ height: 800, marginBottom: 60 }}
                     onSelectEvent={handleEventClick}
                     messages={{
                       today: "Hoy",
@@ -914,18 +925,23 @@ const sortedAppointments = [...pendingAppointments].sort((a, b) => {
                       week: "Semana",
                       day: "Día",
                       agenda: "Agenda",
+                      date: "Fecha", // Traducción de "Date"
+                      time: "Hora",  // Traducción de "Time"
+                      event: "Paciente", // Traducción de "Event"
+                      noEventsInRange: "No hay eventos en este rango",
+                      showMore: total => `+ Ver más (${total})` // Personaliza el mensaje de "show more"
                     }} // Traducción al español
                   />
 
                   {open && selectedAppointment && (
                     <AddAppointmentModalPending
-                      datas={pendingAppointments}
-                      isOpen={open}
-                      closeModal={handleModal}
-                      onDeleteAppointment={handleDeleteAppointment}
-                      appointmentId={selectedAppointment.id_solicitud}
-                    />
-                  )}
+                    datas={pendingAppointments}
+                    isOpen={open}
+                    closeModal={handleModal}
+                    onDeleteAppointment={handleDeleteAppointment}
+                    appointmentId={selectedAppointment.id_solicitud}
+                  />
+                )}
                 </div>
               )}
 
