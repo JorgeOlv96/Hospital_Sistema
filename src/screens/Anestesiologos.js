@@ -3,6 +3,8 @@ import Layout from "../Layout";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "moment/locale/es";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import { BiChevronLeft, BiChevronRight, BiTime } from "react-icons/bi";
 import { HiOutlineViewGrid } from "react-icons/hi";
 import { HiOutlineCalendarDays } from "react-icons/hi2";
@@ -90,15 +92,14 @@ const CustomToolbar = ({ date, view, onView, onNavigate }) => {
           </button>
         </div>
 
-        <div className="md:col-span-2 flex justify-center">
-          <input
-            type="date"
-            value={formatDateInputValue(date)}
-            onChange={(e) => {
-              const selectedDate = new Date(e.target.value);
-              onNavigate(selectedDate);
-              onView("day");
+        <div className="md:col-span-2 flex justify-center items-center">
+          <DatePicker
+            selected={date}
+            onChange={(date) => {
+              onNavigate(date);
+              onView("operatingRooms");
             }}
+            dateFormat="dd-MM-yyyy"
             className="px-4 py-2 border border-subMain rounded-md text-subMain"
           />
         </div>

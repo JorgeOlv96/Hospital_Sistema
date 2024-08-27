@@ -3,6 +3,8 @@ import Layout from "../Layout";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "moment/locale/es";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import axios from "axios";
 import { BiChevronLeft, BiChevronRight, BiTime } from "react-icons/bi";
 import { HiOutlineViewGrid } from "react-icons/hi";
@@ -16,7 +18,7 @@ moment.locale("es");
 
 const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
 
-const CustomToolbar = ({ date, view, onView, onNavigate, onPrint }) => {
+const CustomToolbar = ({ date, view, onView, onNavigate, onPrint, selectedDate, handleDateChange }) => {
   const [printDate, setPrintDate] = useState(new Date());
 
   const goToBack = () => {
@@ -112,17 +114,13 @@ const CustomToolbar = ({ date, view, onView, onNavigate, onPrint }) => {
         </div>
 
         <div className="md:col-span-2 flex justify-center">
-          <input
-            type="date"
-            value={formatDateInputValue(date)}
-            onChange={(e) => {
-              const selectedDate = new Date(e.target.value);
-              onNavigate(selectedDate);
-              onView("operatingRooms");
-            }}
-            className="px-4 py-2 border border-subMain rounded-md text-subMain"
-          />
-        </div>
+      <DatePicker
+        selected={selectedDate}
+        onChange={handleDateChange}
+        dateFormat="dd-MM-yyyy"
+        className="px-4 py-2 border border-subMain rounded-md text-subMain"
+      />
+    </div>
 
         <div className="md:col-span-3 grid grid-cols-4 rounded-md border border-subMain">
           {viewNamesGroup.map((item, index) => (
@@ -150,6 +148,9 @@ function Appointments() {
   const [appointments, setAppointments] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [view, setView] = useState("operatingRooms");
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+  };
 
   const fetchAppointments = async () => {
     try {
@@ -383,7 +384,6 @@ function Appointments() {
                 <th>Especialidad</th>
                 <th>Procedencia</th>
                 <th>Tiempo est.</th>
-                <TH>Turno</th>
                 <TH>Anestesiólogo</th>
                 <th>Cirujano</th>
                 <th>Insumos</th>
@@ -452,7 +452,6 @@ function Appointments() {
                                             }
                                         })()}</td>
                                         <td>${appointment.tiempo_estimado} min</td>
-                                        <td>${appointment.turno}</td>
                                         <td>${(() => {
                                             const nombreanes = appointment.nombre_anestesiologo || "";
                                             const words = nombreanes.split(" ");
@@ -483,8 +482,8 @@ function Appointments() {
                 <th>Consulta Externa Piso 1 Mat</th>
                 <th>Consulta Externa Piso 2 Mat</th>
                 <th>Recuperación Vespertino</th>
-                <th>Consulta Externa Piso 1 Vesp</th>
-                <th>Consulta Externa Piso 2 Vesp</th>
+                <th>Consulta Externa Piso 2 Vespertino</th>
+                <th>Recuperación Nocturno</th>
               </tr>
             </thead>
             <tbody>
@@ -494,8 +493,8 @@ function Appointments() {
                   "Con_Ext_P1_mat",
                   "Con_Ext_P2_mat",
                   "Rec_Vespertino",
-                  "Con_Ext_P1_vesp",
                   "Con_Ext_P2_vesp",
+                  "Rec_Nocturno"
                 ]
                   .map(
                     (room) => `
@@ -550,16 +549,15 @@ ${todaysAnesthesiologists
               fetchAppointments();
             }}
           />
-          <CustomToolbar
-            date={selectedDate}
-            view={view}
-            onNavigate={(date) => {
-              setSelectedDate(date);
-              handleSelectDate(date);
-            }}
-            onView={handleViewChange}
-            onPrint={printDailyAppointments}
-          />
+    <CustomToolbar
+      date={selectedDate}
+      view={view}
+      onView={handleViewChange}
+      onNavigate={handleViewChange}
+      onPrint={handlePrintClick}
+      selectedDate={selectedDate}
+      handleDateChange={handleDateChange}
+    />
           {view === "operatingRooms" ? (
             <OperatingRoomSchedule
               date={selectedDate}

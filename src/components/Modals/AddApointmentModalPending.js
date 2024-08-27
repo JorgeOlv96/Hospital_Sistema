@@ -31,7 +31,7 @@ function AddAppointmentModalPending({
     Angiología: "ANG",
     "C.Plástica y Reconstructiva": "CPR",
     Cardiología: "CAR",
-    "Cirigía de Torax": "CTO",
+    "Cirugía de Torax": "CTO",
     "Cirugía Bariatrica": "CBR",
     "Cirugía Cardiaca": "CCA",
     "Cirugía General": "CIG",
