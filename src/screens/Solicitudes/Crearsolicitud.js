@@ -380,10 +380,7 @@ function CrearSolicitud() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            fecha_solicitada: formData.fecha_solicitada,
-            hora_solicitada: formData.hora_solicitada,
-            sala_quirofano: formData.sala_quirofano,
-            tiempo_estimado: formData.tiempo_estimado,
+            
           }),
         });
 

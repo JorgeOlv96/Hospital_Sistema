@@ -15,7 +15,7 @@ function AddAppointmentModal({
   const modalRef = useRef(null);
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
 
-  const [reload, setReload] = useState(1);
+  const [reload] = useState(1);
 
   useEffect(() => {
     if (isOpen && appointmentId) {
