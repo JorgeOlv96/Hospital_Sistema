@@ -1036,7 +1036,7 @@ const sortedAppointments = [...pendingAppointments].sort((a, b) => {
                               className="px-4 py-3 cursor-pointer"
                               onClick={() => handleSort("nombre_anestesiologo")}
                             >
-                              Anestesiólogo{" "}
+                              Cirujano responsable{" "}
                               <span>
                                 {sortBy === "nombre_anestesiologo" &&
                                   (sortOrder === "asc" ? "▲" : "▼")}
@@ -1102,7 +1102,7 @@ const sortedAppointments = [...pendingAppointments].sort((a, b) => {
                                 )}
                               </td>
                               <td className="border px-4 py-2">
-                                {appointment.nombre_anestesiologo || "No asignado" }
+                                {appointment.nombre_cirujano || "No asignado" }
                               </td>
                               <td className="border px-4 py-2">
                                 <div
