@@ -3,7 +3,7 @@ import Layout from "../../Layout";
 import axios from "axios";
 import AddAppointmentModalPending from "../../components/Modals/AddApointmentModalPending";
 import { Link } from "react-router-dom";
-import { FaTable, FaThLarge, FaInfoCircle, FaClock } from "react-icons/fa";
+import { FaTable, FaThLarge, FaInfoCircle, FaColumns } from "react-icons/fa";
 
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
@@ -44,6 +44,7 @@ function ProgramarSolicitud() {
   const [openModal, setOpenModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState({});
   const [appointments, setAppointments] = useState([]);
+  const [GroupedAppointments, setGroupedAppointments] = useState([]);
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   const [filter, setFilter] = useState({
@@ -74,14 +75,56 @@ function ProgramarSolicitud() {
         throw new Error("Network response was not ok");
       }
       const data = await response.json();
-      // Ordenar los datos por ID de solicitud de manera descendente
       const sortedData = data.sort((a, b) => b.id_solicitud - a.id_solicitud);
 
-      setPendingAppointments(sortedData);
+      // Agrupar por sala_quirofano
+      const grouped = sortedData.reduce((acc, appointment) => {
+        const { sala_quirofano } = appointment;
+        if (!acc[sala_quirofano]) {
+          acc[sala_quirofano] = [];
+        }
+        acc[sala_quirofano].push(appointment);
+        return acc;
+      }, {});
+
+      console.log("Grouped Appointments:", grouped); // Verifica aquí
+      setGroupedAppointments(grouped);
     } catch (error) {
       console.error("Error fetching pending appointments:", error);
     }
   };
+
+  useEffect(() => {
+    const fetchAndGroupAppointments = async () => {
+      try {
+        const response = await fetch(
+          `${baseURL}/api/solicitudes/preprogramadas`
+        );
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        const data = await response.json();
+        const sortedData = data.sort((a, b) => b.id_solicitud - a.id_solicitud);
+
+        // Agrupar por sala_quirofano
+        const grouped = sortedData.reduce((acc, appointment) => {
+          const { sala_quirofano } = appointment;
+          if (!acc[sala_quirofano]) {
+            acc[sala_quirofano] = [];
+          }
+          acc[sala_quirofano].push(appointment);
+          return acc;
+        }, {});
+
+        console.log("Grouped Appointments:", grouped); // Verifica aquí
+        setGroupedAppointments(grouped);
+      } catch (error) {
+        console.error("Error fetching and grouping appointments:", error);
+      }
+    };
+
+    fetchAndGroupAppointments();
+  }, []);
 
   const handleViewModal = (appointment) => {
     setSelectedAppointment(appointment);
@@ -202,7 +245,6 @@ function ProgramarSolicitud() {
     });
     setOpen(true);
   };
-  
 
   const handleCloseModal = () => {
     setOpenModal(false);
@@ -634,6 +676,15 @@ function ProgramarSolicitud() {
     "RX",
   ];
 
+  const groupedAppointments = appointments.reduce((groups, appointment) => {
+    const { sala_quirofano } = appointment;
+    if (!groups[sala_quirofano]) {
+      groups[sala_quirofano] = [];
+    }
+    groups[sala_quirofano].push(appointment);
+    return groups;
+  }, {});
+
   // Calcular índices de paginación
 
   const itemsPerPage = 9;
@@ -720,14 +771,13 @@ function ProgramarSolicitud() {
 
           {open && selectedAppointment && (
             <AddAppointmentModalPending
-            datas={pendingAppointments}
-            isOpen={open}
-            closeModal={handleModal}
-            onDeleteAppointment={handleDeleteAppointment}
-            appointmentId={selectedAppointment.id_solicitud}
-          />
-        )}
-
+              datas={pendingAppointments}
+              isOpen={open}
+              closeModal={handleModal}
+              onDeleteAppointment={handleDeleteAppointment}
+              appointmentId={selectedAppointment.id_solicitud}
+            />
+          )}
 
           {/* Contenedor de filtros centrado */}
           <div className="flex justify-center">
@@ -818,83 +868,116 @@ function ProgramarSolicitud() {
                     <FaInfoCircle size={24} />
                   </button>
                   <button
-                    onClick={() => setViewMode("schedule")}
+                    onClick={() => {
+                      console.log(
+                        "Button clicked, setting viewMode to 'byRoom'"
+                      );
+                      setViewMode("byRoom");
+                    }}
                     className={`flex items-center px-4 py-2 rounded-md ${
-                      viewMode === "schedule"
+                      viewMode === "byRoom"
                         ? "bg-[#365b77] text-white"
                         : "bg-gray-200"
                     }`}
                   >
-                    <FaClock size={24} />
+                    <FaColumns size={24} />
                   </button>
                 </div>
               </div>
 
-              {viewMode === "schedule" && (
-                <div className="bg-white p-4 shadow-md rounded-lg overflow-x-auto">
-                  <table className="min-w-full table-fixed">
-                    <thead>
-                      <tr>
-                        <th className="w-1/12 px-4 py-2"></th>{" "}
-                        {/* Espacio para las horas */}
-                        {salas.map((sala, index) => (
-                          <th
-                            key={index}
-                            className="w-1/6 px-4 py-2 text-center"
-                          >
-                            Sala {sala}
-                          </th>
-                        ))}
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {Array.from({ length: 24 }, (_, index) => {
-                        const hour = 7 + Math.floor(index / 2); // Horas de 7:00 AM a 6:00 AM
-                        const minutes = index % 2 === 0 ? "00" : "30";
-                        const timeLabel = `${hour}:${minutes}`;
-
-                        return (
-                          <tr key={index}>
-                            <td className="border px-4 py-2 text-center">
-                              {timeLabel}
-                            </td>
-                            {salas.map((sala, salaIndex) => {
-                              const appointmentForThisTimeAndSala =
-                                appointments.find(
-                                  (appointment) =>
-                                    appointment.sala_quirofano === sala &&
-                                    appointment.hora_solicitada ===
-                                      `${timeLabel}:00`
-                                );
-
-                              console.log(
-                                `Sala: ${sala}, Hora: ${timeLabel}:00, Cita:`,
-                                appointmentForThisTimeAndSala
-                              );
-
-                              return (
-                                <td
-                                  key={salaIndex}
-                                  className="border px-4 py-2 text-center"
-                                >
-                                  {appointment ? (
-                                    <div>
-                                      <div>{appointment.nombre_paciente}</div>
-                                      <div>
-                                        {appointment.nombre_especialidad}
-                                      </div>
+              {viewMode === "byRoom" && (
+                <div className="bg-white p-4 shadow-md rounded-lg">
+                  {console.log(
+                    "Rendering Grouped Appointments:",
+                    filteredAppointments
+                  )}{" "}
+                  {/* Verifica aquí */}
+                  {Object.entries(filteredAppointments).length === 0 ? (
+                    <p>No hay citas para mostrar</p>
+                  ) : (
+                    Object.entries(groupedAppointments).map(
+                      ([sala_quirofano, appointments]) => (
+                        <div key={sala_quirofano} className="mb-6">
+                          <h3 className="text-lg font-bold mb-4">
+                            Sala {sala_quirofano}
+                          </h3>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                            {appointments.map((appointment) => (
+                              <div
+                                key={appointment.id_solicitud}
+                                className="relative p-4 border border-gray-200 rounded-lg shadow-md transition-transform transform hover:scale-105 hover:shadow-xl"
+                                style={{ borderRadius: "10px" }}
+                                onClick={() => handleViewModal(appointment)}
+                              >
+                                <div className="flex flex-col h-full">
+                                  <div
+                                    className="absolute top-0 left-0 h-full"
+                                    style={{
+                                      width: "10px",
+                                      borderTopLeftRadius: "10px",
+                                      borderBottomLeftRadius: "10px",
+                                      ...getEstadoColorStyle(
+                                        appointment.estado_solicitud
+                                      ),
+                                    }}
+                                  ></div>
+                                  <div className="mb-2 pl-3">
+                                    <div className="flex justify-between">
+                                      <p className="text-lg font-semibold">
+                                        {[
+                                          appointment.nombre_paciente,
+                                          appointment.ap_paterno,
+                                          appointment.ap_materno,
+                                        ]
+                                          .filter(Boolean)
+                                          .join(" ")}
+                                      </p>
+                                      <p className="text-sm">
+                                        Folio: {appointment.folio}
+                                      </p>
                                     </div>
-                                  ) : (
-                                    <div>No hay citas</div>
-                                  )}
-                                </td>
-                              );
-                            })}
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+                                    <p className="text-sm text-gray-600">
+                                      Especialidad:{" "}
+                                      {appointment.nombre_especialidad}
+                                    </p>
+                                    <p className="text-sm text-gray-600">
+                                      Hora solicitada:{" "}
+                                      {appointment.hora_solicitada}
+                                    </p>
+                                    <p className="text-sm text-gray-600">
+                                      Fecha solicitada:{" "}
+                                      {formatFechaSolicitada(
+                                        appointment.fecha_solicitada
+                                      )}
+                                    </p>
+                                    <p className="text-sm text-gray-600">
+                                      Estatus:{" "}
+                                      <span
+                                        className={`inline-block px-1 py-1 rounded-lg ${getEstadoColor(
+                                          appointment.estado_solicitud
+                                        )}`}
+                                        style={{
+                                          ...getEstadoColorStyle(
+                                            appointment.estado_solicitud
+                                          ),
+                                        }}
+                                      >
+                                        {appointment.estado_solicitud}
+                                      </span>
+                                    </p>
+                                    <p className="text-sm text-gray-600">
+                                      Duplicada:{" "}
+                                      {isDuplicated(appointment) ? "SI" : "NO"}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )
+                    )
+                  )}
                 </div>
               )}
 
@@ -916,22 +999,22 @@ function ProgramarSolicitud() {
                       day: "Día",
                       agenda: "Agenda",
                       date: "Fecha", // Traducción de "Date"
-                      time: "Hora",  // Traducción de "Time"
+                      time: "Hora", // Traducción de "Time"
                       event: "Paciente", // Traducción de "Event"
                       noEventsInRange: "No hay eventos en este rango",
-                      showMore: total => `+ Ver más (${total})` // Personaliza el mensaje de "show more"
+                      showMore: (total) => `+ Ver más (${total})`, // Personaliza el mensaje de "show more"
                     }} // Traducción al español
                   />
 
                   {open && selectedAppointment && (
                     <AddAppointmentModalPending
-                    datas={pendingAppointments}
-                    isOpen={open}
-                    closeModal={handleModal}
-                    onDeleteAppointment={handleDeleteAppointment}
-                    appointmentId={selectedAppointment.id_solicitud}
-                  />
-                )}
+                      datas={pendingAppointments}
+                      isOpen={open}
+                      closeModal={handleModal}
+                      onDeleteAppointment={handleDeleteAppointment}
+                      appointmentId={selectedAppointment.id_solicitud}
+                    />
+                  )}
                 </div>
               )}
 

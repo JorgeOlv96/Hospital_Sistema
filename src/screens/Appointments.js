@@ -572,7 +572,7 @@ ${todaysAnesthesiologists
               events={appointments}
               startAccessor="start"
               endAccessor="end"
-              style={{ height: 0, marginBottom: 0 }}
+              style={{ height: 900, marginBottom: 50 }}
               onSelectEvent={handleEventClick}
               defaultDate={selectedDate}
               timeslots={1}
