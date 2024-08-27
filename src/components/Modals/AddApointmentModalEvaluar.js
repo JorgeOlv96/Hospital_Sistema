@@ -7,7 +7,6 @@ function AddAppointmentModalEvaluar({
   closeModal,
   isOpen,
   appointmentId,
-  onSuspendAppointment,
 }) {
   const [patientData, setPatientData] = useState({});
   const [salasDisponibles, setSalasDisponibles] = useState([]);
