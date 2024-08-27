@@ -383,7 +383,6 @@ function Appointments() {
                 <th>Especialidad</th>
                 <th>Procedencia</th>
                 <th>Tiempo est.</th>
-                <TH>Turno</th>
                 <TH>Anestesiólogo</th>
                 <th>Cirujano</th>
                 <th>Insumos</th>
@@ -452,7 +451,6 @@ function Appointments() {
                                             }
                                         })()}</td>
                                         <td>${appointment.tiempo_estimado} min</td>
-                                        <td>${appointment.turno}</td>
                                         <td>${(() => {
                                             const nombreanes = appointment.nombre_anestesiologo || "";
                                             const words = nombreanes.split(" ");
@@ -483,8 +481,8 @@ function Appointments() {
                 <th>Consulta Externa Piso 1</th>
                 <th>Consulta Externa Piso 2</th>
                 <th>Recuperación Vespertino</th>
-                <th>Consulta Externa Piso 1</th>
-                <th>Consulta Externa Piso 2</th>
+                <th>Consulta Externa Piso 2 Vespertino</th>
+                <th>Recuperación Nocturno</th>
               </tr>
             </thead>
             <tbody>
@@ -494,8 +492,8 @@ function Appointments() {
                   "Con_Ext_P1_mat",
                   "Con_Ext_P2_mat",
                   "Rec_Vespertino",
-                  "Con_Ext_P1_vesp",
                   "Con_Ext_P2_vesp",
+                  "Rec_Nocturno"
                 ]
                   .map(
                     (room) => `

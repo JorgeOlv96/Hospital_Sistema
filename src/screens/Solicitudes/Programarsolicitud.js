@@ -143,23 +143,23 @@ function ProgramarSolicitud() {
 
   const handleSort = (column) => {
     if (sortBy === column) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+        setSortOrder(sortOrder === "asc" ? "desc" : "asc");
     } else {
-      setSortBy(column);
-      setSortOrder("asc");
+        setSortBy(column);
+        setSortOrder("asc");
     }
-  };
+};
 
-  const sortedAppointments = [...pendingAppointments].sort((a, b) => {
+const sortedAppointments = [...pendingAppointments].sort((a, b) => {
     if (!sortBy) return 0;
 
-    const aValue = a[sortBy];
-    const bValue = b[sortBy];
+    const aValue = a[sortBy] !== undefined && a[sortBy] !== null ? a[sortBy].toString() : '';
+    const bValue = b[sortBy] !== undefined && b[sortBy] !== null ? b[sortBy].toString() : '';
 
     if (aValue < bValue) return sortOrder === "asc" ? -1 : 1;
     if (aValue > bValue) return sortOrder === "asc" ? 1 : -1;
     return 0;
-  });
+});
 
   // Método de filtrado
   const filteredAppointments = sortedAppointments.filter((appointment) => {
@@ -397,6 +397,7 @@ function ProgramarSolicitud() {
           return hour >= 21 || hour < 6;
         })
         .sort((a, b) => {
+          
           const salaOrder = [
             "A1",
             "A2",
@@ -414,7 +415,16 @@ function ProgramarSolicitud() {
           ];
           const salaA = salaOrder.indexOf(a.sala_quirofano);
           const salaB = salaOrder.indexOf(b.sala_quirofano);
-          return salaA - salaB;
+          if (salaA !== salaB) {
+            // Si las salas son diferentes, ordenar por sala
+            return salaA - salaB;
+          }
+      
+          // Si las salas son iguales, ordenar por hora_solicitada
+          const horaA = moment(a.hora_solicitada, "HH:mm");
+          const horaB = moment(b.hora_solicitada, "HH:mm");
+          return horaA - horaB;
+      
         });
 
       return `
@@ -536,8 +546,8 @@ function ProgramarSolicitud() {
         <th>Consulta Externa Piso 1</th>
         <th>Consulta Externa Piso 2</th>
         <th>Recuperación Vespertino</th>
-        <th>Consulta Externa Piso 1</th>
-        <th>Consulta Externa Piso 2</th>
+        <th>Consulta Externa Piso 2 Vespertino</th>
+        <th>Recuperación Nocturno</th>
       </tr>
     </thead>
     <tbody>
@@ -547,8 +557,8 @@ function ProgramarSolicitud() {
           "Con_Ext_P1_mat",
           "Con_Ext_P2_mat",
           "Rec_Vespertino",
-          "Con_Ext_P1_vesp",
           "Con_Ext_P2_vesp",
+          "Rec_Nocturno"
         ]
           .map(
             (room) => `
@@ -945,16 +955,6 @@ function ProgramarSolicitud() {
                             </th>
                             <th
                               className="px-4 py-3 cursor-pointer"
-                              onClick={() => handleSort("folio")}
-                            >
-                              Folio{" "}
-                              <span>
-                                {sortBy === "folio" &&
-                                  (sortOrder === "asc" ? "▲" : "▼")}
-                              </span>
-                            </th>
-                            <th
-                              className="px-4 py-3 cursor-pointer"
                               onClick={() => handleSort("sala_quirofano")}
                             >
                               Sala{" "}
@@ -1018,6 +1018,16 @@ function ProgramarSolicitud() {
                             </th>
                             <th
                               className="px-4 py-3 cursor-pointer"
+                              onClick={() => handleSort("nombre_anestesiologo")}
+                            >
+                              Anestesiólogo{" "}
+                              <span>
+                                {sortBy === "nombre_anestesiologo" &&
+                                  (sortOrder === "asc" ? "▲" : "▼")}
+                              </span>
+                            </th>
+                            <th
+                              className="px-4 py-3 cursor-pointer"
                               onClick={() => handleSort("estado_solicitud")}
                             >
                               Estado{" "}
@@ -1050,9 +1060,6 @@ function ProgramarSolicitud() {
                                 {appointment.id_solicitud}
                               </td>
                               <td className="border px-4 py-2">
-                                {appointment.folio}
-                              </td>
-                              <td className="border px-4 py-2">
                                 {appointment.sala_quirofano}
                               </td>
                               <td className="border px-4 py-2">
@@ -1077,6 +1084,9 @@ function ProgramarSolicitud() {
                                 {formatFechaSolicitada(
                                   appointment.fecha_solicitada
                                 )}
+                              </td>
+                              <td className="border px-4 py-2">
+                                {appointment.nombre_anestesiologo || "No asignado" }
                               </td>
                               <td className="border px-4 py-2">
                                 <div
@@ -1212,37 +1222,34 @@ function ProgramarSolicitud() {
             </div>
           </div>
 
-          {/* Paginación */}
-          {viewMode === "list" ||
-            (viewMode === "cards" && (
-              <div className="flex justify-center items-center mt-6 space-x-4">
-                <button
-                  onClick={() => setPage(page - 1)}
-                  disabled={page === 1}
-                  className={`${
-                    page === 1
-                      ? "bg-gray-300 cursor-not-allowed"
-                      : "bg-[#365b77] hover:bg-[#7498b6]"
-                  } text-white font-semibold py-2 px-6 rounded-full shadow-md transition-all duration-300 ease-in-out transform hover:scale-105`}
-                >
-                  &#8592;
-                </button>
-                <span className="text-lg font-semibold text-gray-800">
-                  Página {page}
-                </span>
-                <button
-                  onClick={() => setPage(page + 1)}
-                  disabled={page === totalPages}
-                  className={`${
-                    page === totalPages
-                      ? "bg-gray-300 cursor-not-allowed"
-                      : "bg-[#365b77] hover:bg-[#7498b6]"
-                  } text-white font-semibold py-2 px-6 rounded-full shadow-md transition-all duration-300 ease-in-out transform hover:scale-105`}
-                >
-                  &#8594;
-                </button>
-              </div>
-            ))}
+{/* Paginación */}
+<div className="flex justify-center items-center mt-6 space-x-4">
+            <button
+              onClick={() => setPage(page - 1)}
+              disabled={page === 1}
+              className={`${
+                page === 1
+                  ? "bg-gray-300 cursor-not-allowed"
+                  : "bg-[#365b77] hover:bg-[#7498b6]"
+              } text-white font-semibold py-2 px-6 rounded-full shadow-md transition-all duration-300 ease-in-out transform hover:scale-105`}
+            >
+              &#8592;
+            </button>
+            <span className="text-lg font-semibold text-gray-800">
+              Página {page}
+            </span>
+            <button
+              onClick={() => setPage(page + 1)}
+              disabled={page === totalPages}
+              className={`${
+                page === totalPages
+                  ? "bg-gray-300 cursor-not-allowed"
+                  : "bg-[#365b77] hover:bg-[#7498b6]"
+              } text-white font-semibold py-2 px-6 rounded-full shadow-md transition-all duration-300 ease-in-out transform hover:scale-105`}
+            >
+              &#8594;
+            </button>
+          </div>
         </div>
       </div>
     </Layout>

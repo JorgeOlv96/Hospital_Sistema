@@ -173,8 +173,8 @@ function Programaranestesiologo() {
     { value: "Con_Ext_P1_mat", label: "Consulta Externa Piso 1" },
     { value: "Con_Ext_P2_mat", label: "Consulta Externa Piso 2" },
     { value: "Rec_Vespertino", label: "Recuperación Vespertino" },
-    { value: "Con_Ext_P1_vesp", label: "Consulta Externa Piso 1 Vesp." },
     { value: "Con_Ext_P2_vesp", label: "Consulta Externa Piso 2 Vesp." },
+    { value: "Rec_Nocturno", label: "Recuperación Nocturno" }
   ];
 
   const allRooms = [

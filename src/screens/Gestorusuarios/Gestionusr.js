@@ -555,7 +555,7 @@ function Gestionusuarios() {
                           C.Plástica y Reconstructiva
                         </option>
                         <option value="Cardiología">Cardiología</option>
-                        <option value="Cirigía de Torax">
+                        <option value="Cirugía de Torax">
                           Cirugía de Torax
                         </option>
                         <option value="Cirugía Bariatrica">

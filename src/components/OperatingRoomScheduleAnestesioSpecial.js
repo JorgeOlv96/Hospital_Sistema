@@ -7,8 +7,8 @@ const OperatingRoomsSpecial = [
                                'Con_Ext_P1_mat', 
                                'Con_Ext_P2_mat', 
                                'Rec_Vespertino', 
-                               'Con_Ext_P1_vesp', 
-                               'Con_Ext_P2_vesp'
+                               'Con_Ext_P2_vesp',
+                               'Rec_Nocturno'
                               ];
                               
                               const roomNameMapping = {
@@ -16,8 +16,8 @@ const OperatingRoomsSpecial = [
                                 'Con_Ext_P1_mat': 'Consulta Ext Piso 1',
                                 'Con_Ext_P2_mat': 'Consulta Ext Piso 2',
                                 'Rec_Vespertino': 'Recuperación Vespertino',
-                                'Con_Ext_P1_vesp': 'Consulta Ext Piso 1 Vesp',
-                                'Con_Ext_P2_vesp': 'Consulta Ext Piso 2 Vesp'
+                                'Con_Ext_P2_vesp': 'Consulta Ext Piso 2 Vesp',
+                                'Rec_Nocturno': 'Recuperación Nocturno'
                               };
                               
 const OperatingRoomScheduleAnestesioSpecial = ({ date, appointments, onEventClick }) => {
