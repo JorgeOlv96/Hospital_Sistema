@@ -102,15 +102,10 @@ const CustomToolbar = ({ date, view, onView, onNavigate, onPrint, selectedDate, 
         </div>
 
         <div className="md:col-span-6 flex items-center justify-center">
-          <button onClick={goToBack} className=" text-2xl text-subMain">
-            <BiChevronLeft />
-          </button>
           <span className="text-xl font-semibold mx-4">
-            {moment(date).format("MMMM YYYY")}
+            {moment(date).format("DD MMMM YYYY")}
           </span>
-          <button onClick={goToNext} className="text-2xl text-subMain">
-            <BiChevronRight />
-          </button>
+
         </div>
 
         <div className="md:col-span-2 flex justify-center">

@@ -1152,9 +1152,6 @@ function ProgramarSolicitud() {
             </div>
           </div>
 
-          {/* Paginación */}
-          {viewMode === "list" ||
-            (viewMode === "cards" && (
               <div className="flex justify-center items-center mt-6 space-x-4">
                 <button
                   onClick={() => setPage(page - 1)}
@@ -1182,7 +1179,6 @@ function ProgramarSolicitud() {
                   &#8594;
                 </button>
               </div>
-            ))}
         </div>
       </div>
     </Layout>
