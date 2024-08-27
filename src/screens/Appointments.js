@@ -13,6 +13,8 @@ import AddAppointmentModalProgramado from "../components/Modals/AddApointmentMod
 import { Link } from "react-router-dom";
 import OperatingRoomSchedule from "../components/OperatingRoomSchedule";
 import { FaHospital } from "react-icons/fa";
+import { FaCalendarAlt } from 'react-icons/fa'; // Asegúrate de instalar react-icons si aún no lo has hecho
+
 
 moment.locale("es");
 
@@ -113,14 +115,21 @@ const CustomToolbar = ({ date, view, onView, onNavigate, onPrint, selectedDate, 
           </button>
         </div>
 
-        <div className="md:col-span-2 flex justify-center">
-      <DatePicker
-        selected={selectedDate}
-        onChange={handleDateChange}
-        dateFormat="dd-MM-yyyy"
-        className="px-4 py-2 border border-subMain rounded-md text-subMain"
-      />
-    </div>
+        <div className="md:col-span-2 flex items-center justify-center">
+        <div className="relative">
+          <DatePicker
+            selected={selectedDate}
+            onChange={handleDateChange}
+            dateFormat="dd-MM-yyyy"
+            className="px-4 py-2 border border-subMain rounded-md text-subMain w-40" // Ajusta el ancho aquí
+          />
+          <FaCalendarAlt
+            className="absolute top-1/2 right-2 transform -translate-y-1/2 text-subMain cursor-pointer"
+            size={20}
+            onClick={() => document.querySelector('.react-datepicker__input-container input').focus()} // Focaliza el DatePicker al hacer clic en el ícono
+          />
+        </div>
+      </div>
 
         <div className="md:col-span-3 grid grid-cols-4 rounded-md border border-subMain">
           {viewNamesGroup.map((item, index) => (
