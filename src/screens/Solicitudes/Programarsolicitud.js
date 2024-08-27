@@ -541,39 +541,40 @@ function ProgramarSolicitud() {
   </table>
 
   <table>
-    <thead>
-      <tr>
-        <th>Recuperación Matutino</th>
-        <th>Consulta Externa Piso 1</th>
-        <th>Consulta Externa Piso 2</th>
-        <th>Recuperación Vespertino</th>
-        <th>Consulta Externa Piso 1</th>
-        <th>Consulta Externa Piso 2</th>
-      </tr>
-    </thead>
+            <thead>
+              <tr>
+                <th>Recuperación Matutino</th>
+                <th>Consulta Externa Piso 1 Mat</th>
+                <th>Consulta Externa Piso 2 Mat</th>
+                <th>Recuperación Vespertino</th>
+                <th>Consulta Externa Piso 2 Vespertino</th>
+                <th>Recuperación Nocturno</th>
+              </tr>
+            </thead>
     <tbody>
-      <tr>
-        ${[
-          "Recup_Matutino",
-          "Con_Ext_P1_mat",
-          "Con_Ext_P2_mat",
-          "Rec_Vespertino",
-          "Con_Ext_P1_vesp",
-          "Con_Ext_P2_vesp",
-        ]
-          .map(
-            (room) => `
-            <td>
-              ${todaysAnesthesiologists
-                .filter((anesthesiologist) =>
-                  anesthesiologist.sala_anestesio.includes(room)
-                )
-                .map((anesthesiologist) => anesthesiologist.nombre)
-                .join(", ")}
-            </td>`
-          )
-          .join("")}
-      </tr>
+<tr>
+                ${[
+                  "Recup_Matutino",
+                  "Con_Ext_P1_mat",
+                  "Con_Ext_P2_mat",
+                  "Rec_Vespertino",
+                  "Con_Ext_P2_vesp",
+                  "Rec_Nocturno"
+                ]
+                  .map(
+                    (room) => `
+                    <td>
+${todaysAnesthesiologists
+  .filter(
+    (anesthesiologist) =>
+      anesthesiologist.sala_anestesio.includes(room)
+  )
+  .map((anesthesiologist) => anesthesiologist.nombre)
+  .join(", ")}
+                    </td>`
+                  )
+                  .join("")}
+              </tr>
     </tbody>
   </table>
 </body>

@@ -207,20 +207,20 @@ function Programaranestesiologo() {
           setFormData((prevFormData) => ({
             ...prevFormData,
             hora_inicio: "08:00",
-            hora_fin: "14:00",
+            hora_fin: "15:00",
           }));
           break;
         case "Vespertino":
           setFormData((prevFormData) => ({
             ...prevFormData,
-            hora_inicio: "14:00",
-            hora_fin: "20:00",
+            hora_inicio: "15:00",
+            hora_fin: "21:00",
           }));
           break;
         case "Nocturno":
           setFormData((prevFormData) => ({
             ...prevFormData,
-            hora_inicio: "20:00",
+            hora_inicio: "21:00",
             hora_fin: "06:00",
           }));
           break;
