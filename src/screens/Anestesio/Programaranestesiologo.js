@@ -170,8 +170,8 @@ function Programaranestesiologo() {
 
   const specialRooms = [
     { value: "Recup_Matutino", label: "Recuperación Matutino" },
-    { value: "Con_Ext_P1_mat", label: "Consulta Externa Piso 1" },
-    { value: "Con_Ext_P2_mat", label: "Consulta Externa Piso 2" },
+    { value: "Con_Ext_P1_mat", label: "Consulta Externa Piso 1 Mat" },
+    { value: "Con_Ext_P2_mat", label: "Consulta Externa Piso 2 Mat" },
     { value: "Rec_Vespertino", label: "Recuperación Vespertino" },
     { value: "Con_Ext_P1_vesp", label: "Consulta Externa Piso 1 Vesp." },
     { value: "Con_Ext_P2_vesp", label: "Consulta Externa Piso 2 Vesp." },

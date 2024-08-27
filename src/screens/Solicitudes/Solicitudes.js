@@ -509,11 +509,11 @@ function Solicitudes() {
             <thead>
               <tr>
                 <th>Recuperación Matutino</th>
-                <th>Consulta Externa Piso 1</th>
-                <th>Consulta Externa Piso 2</th>
+                <th>Consulta Externa Piso 1 Mat</th>
+                <th>Consulta Externa Piso 2 Mat</th>
                 <th>Recuperación Vespertino</th>
-                <th>Consulta Externa Piso 1</th>
-                <th>Consulta Externa Piso 2</th>
+                <th>Consulta Externa Piso 1 Vesp</th>
+                <th>Consulta Externa Piso 2 Vesp</th>
               </tr>
             </thead>
             <tbody>
