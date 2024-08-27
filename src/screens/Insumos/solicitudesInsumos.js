@@ -388,7 +388,7 @@ function SolicitudesInsumos() {
                             </span>
                           </th>
                           <th className="px-4 py-2 cursor-pointer">Estado</th>
-                          <th className="px-4 py-3">Acciones</th>
+                        
                         </tr>
                       </thead>
                       <tbody>
@@ -451,14 +451,7 @@ function SolicitudesInsumos() {
                                   {appointment.estado_solicitud}
                                 </div>
                               </td>
-                              <td className="border px-4 py-2 flex justify-center">
-                                <button
-                                  onClick={() => handleViewModal(appointment)}
-                                  className="bg-[#365b77] text-white px-5 py-2 rounded-md hover:bg-blue-800"
-                                >
-                                  Ver
-                                </button>
-                              </td>
+                      
                             </tr>
                           ))}
                       </tbody>
