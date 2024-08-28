@@ -156,6 +156,7 @@ function AddApointmentModalSuspendida({
           </div>
 
           <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md">
+            
             <div className="flex mt-4">
               <div className="mr-4 w-full">
                 <label className="block font-semibold text-gray-700 mb-2">
@@ -193,9 +194,11 @@ function AddApointmentModalSuspendida({
                 </p>
               </div>
             </div>
+
           </div>
 
           <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
+           
             <div className="flex mb-4">
               <div className="mr-4 w-full">
                 <label className="block font-semibold text-gray-700 mb-2">
@@ -210,7 +213,7 @@ function AddApointmentModalSuspendida({
                 />
               </div>
 
-              <div className="w-full">
+              <div className="mr-4 w-full">
                 <label className="block font-semibold text-gray-700 mb-2">
                   Hora asignada:
                 </label>
@@ -222,19 +225,15 @@ function AddApointmentModalSuspendida({
                   readOnly
                 />
               </div>
-            </div>
-          </div>
 
-          <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
-            <div className="flex mb-4">
               <div className="mr-4 w-full">
                 <label className="block font-semibold text-gray-700 mb-2">
-                  Tiempo estimado de cirugía:
+                  T. est. de cirugía:
                 </label>
                 <input
                   type="text"
                   name="tiempo_estimado"
-                  value={patientData.tiempo_estimado || ""}
+                  value={patientData.tiempo_estimado + " Minutos" || ""}
                   onChange={handleChange}
                   className="bg-gray-200 p-3 rounded-lg cursor-default w-full"
                 />
@@ -254,6 +253,7 @@ function AddApointmentModalSuspendida({
             </div>
           </div>
 
+
           <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
             <div className="flex  mb-4">
               <div className="mr-4 w-full">
@@ -269,9 +269,9 @@ function AddApointmentModalSuspendida({
                 />
               </div>
 
-              <div className="w-full">
+              <div className="mr-4 w-full">
                 <label className="block font-semibold text-gray-700mb-2">
-                  Anestesiólogo asignado:
+                  Anest. asignado:
                 </label>
                 <input
                   type="text"
@@ -281,11 +281,7 @@ function AddApointmentModalSuspendida({
                   className="bg-gray-200 p-3 rounded-lg cursor-default w-full"
                 />
               </div>
-            </div>
-          </div>
 
-          <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
-            <div className="flex mb-4">
               <div className="mr-4 w-full">
                 <label className="block font-semibold text-gray-700 mb-2">
                   Cirujano encargado:
@@ -295,7 +291,7 @@ function AddApointmentModalSuspendida({
                 </p>
               </div>
 
-              <div className="w-full">
+              <div className="mr-4 w-full">
                 <label className="block font-semibold text-gray-700 mb-2">
                   Requiere insumos:
                 </label>
@@ -303,8 +299,10 @@ function AddApointmentModalSuspendida({
                   {patientData?.req_insumo}
                 </p>
               </div>
+
             </div>
           </div>
+
 
           <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
             <div className="flex mb-4">
