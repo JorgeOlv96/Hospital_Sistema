@@ -400,7 +400,14 @@ function ProgramarSolicitud() {
                                     <td>${appointment.procedimientos_paciente ? appointment.procedimientos_paciente.slice(0, 60) : ""}</td>
                                     <td>${appointment.diagnostico ? appointment.diagnostico.slice(0, 60) : ""}</td>
                                     <td>${appointment.nombre_especialidad || ""}</td>
-                                    <td>${appointment.tipo_admision || "No especificado"}</td>
+                                                                            <td>${(() => {
+                                            switch (appointment.tipo_admision) {
+                                                case "CONSULTA EXTERNA": return "C.E.";
+                                                case "CAMA": return `Cama - ${appointment.cama}`;
+                                                case "URGENCIAS": return "Urgencias";
+                                                default: return appointment.tipo_admision || "No especificado";
+                                            }
+                                        })()}</td>
                                     <td>${appointment.tiempo_estimado} min</td>
                                     <td>${anesthesiologistName}</td>
                                     <td>${appointment.nombre_cirujano ? appointment.nombre_cirujano.split(" ").slice(0, 2).join(" ") : ""}</td>
