@@ -231,367 +231,223 @@ function ProgramarSolicitud() {
   const printDailyAppointments = async (selectedDate) => {
     const today = moment(printDate).format("YYYY-MM-DD");
     try {
-      // Fetch de las solicitudes programadas
-      const solicitudesResponse = await fetch(
-        `${baseURL}/api/solicitudes/preprogramadas`
-      );
-      if (!solicitudesResponse.ok) {
-        throw new Error("Network response for solicitudes was not ok");
-      }
-      const solicitudesData = await solicitudesResponse.json();
-      console.log("Solicitudes Data:", solicitudesData);
+        // Fetch de las solicitudes programadas
+        const solicitudesResponse = await fetch(`${baseURL}/api/solicitudes/preprogramadas`);
+        if (!solicitudesResponse.ok) {
+            throw new Error("Network response for solicitudes was not ok");
+        }
+        const solicitudesData = await solicitudesResponse.json();
 
-      // Fetch de los anestesiólogos
-      const anesthesiologistsResponse = await fetch(
-        `${baseURL}/api/anestesio/anestesiologos`
-      );
-      if (!anesthesiologistsResponse.ok) {
-        throw new Error("Network response for anesthesiologists was not ok");
-      }
-      const anesthesiologistsData = await anesthesiologistsResponse.json();
-      console.log("Anesthesiologists Data:", anesthesiologistsData);
+        // Fetch de los anestesiólogos
+        const anesthesiologistsResponse = await fetch(`${baseURL}/api/anestesio/anestesiologos`);
+        if (!anesthesiologistsResponse.ok) {
+            throw new Error("Network response for anesthesiologists was not ok");
+        }
+        const anesthesiologistsData = await anesthesiologistsResponse.json();
 
-      // Filtrar las solicitudes del día seleccionado
-      const todaysRegistrations = solicitudesData.filter(
-        (solicitud) =>
-          moment(solicitud.fecha_solicitada).format("YYYY-MM-DD") === today
-      );
-      console.log("Today's Registrations:", todaysRegistrations);
+        // Filtrar las solicitudes del día seleccionado
+        const todaysRegistrations = solicitudesData.filter(
+            (solicitud) => moment(solicitud.fecha_solicitada).format("YYYY-MM-DD") === today
+        );
 
-      // Filtrar los anestesiólogos asignados para el día seleccionado
-      const todaysAnesthesiologists = anesthesiologistsData.filter(
-        (anesthesiologist) =>
-          moment(anesthesiologist.dia_anestesio).format("YYYY-MM-DD") === today
-      );
-      console.log("Today's Anesthesiologists:", todaysAnesthesiologists);
-      console.log(
-        "Today's Anesthesiologists for Recovery:",
-        todaysAnesthesiologists.filter(
-          (anesthesiologist) =>
-            anesthesiologist.sala_anestesio === "Recup_Matutino"
-        )
-      );
+        // Filtrar los anestesiólogos asignados para el día seleccionado
+        const todaysAnesthesiologists = anesthesiologistsData.filter(
+            (anesthesiologist) => moment(anesthesiologist.dia_anestesio).format("YYYY-MM-DD") === today
+        );
 
-      const anesthesiologistsFilteredByDate = anesthesiologistsData.filter(
-        (anesthesiologist) =>
-          moment(anesthesiologist.dia_anestesio).format("YYYY-MM-DD") === today
-      );
-      console.log("Filtered by Date:", anesthesiologistsFilteredByDate);
+        const printableContent = `
+        <html>
+        <head>
+            <style>
+                body {
+                    background-color: #ffffff;
+                    font-family: Arial, sans-serif;
+                    font-size: 10px !important;
+                    margin: 10px;
+                    padding: 5px;
+                }
+                .header {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    margin-bottom: 10px;
+                }
+                .header img {
+                    max-width: 150px;
+                    height: auto;
+                    margin-right: 5px;
+                }
+                .header .date {
+                    font-size: 10px !important;
+                    text-align: left;
+                    margin-right: 5px;
+                }
+                .header h1 {
+                    font-size: 10px !important;
+                    margin: 5px;
+                    flex-grow: 2;
+                    text-align: right;
+                }
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-top: 10px;
+                    font-size: 8px !important;
+                }
+                th, td {
+                    border: 1px solid black;
+                    padding: 3px !important;
+                    text-align: left;
+                    white-space: nowrap;
+                }
+                .turno-section {
+                    background-color: #d3d3d3;
+                    text-align: left;
+                    font-weight: bold;
+                    padding: 5px;
+                    border-top: 2px solid black;
+                    border-bottom: 2px solid black;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="header" style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px;
+                background-color: #f4f4f4;
+            ">
+                <h4 style="margin: 0;">Solicitudes Programadas</h4>
+                <div style="
+                    display: flex;
+                    align-items: center;
+                    text-align: right;
+                ">
+                    <h1 style="
+                        margin: 0;
+                        font-size: 1em;
+                        line-height: 1;
+                    ">Hoja de impresión PRE-APROBADAS:</h1>
+                    <div class="date" style="
+                        margin-left: 10px;
+                        font-size: 1em;
+                    ">${moment(printDate).format("DD-MM-YYYY")}</div>
+                </div>
+            </div>
 
-      const anesthesiologistsFilteredByRoom = anesthesiologistsData.filter(
-        (anesthesiologist) =>
-          anesthesiologist.sala_anestesio === "Recup_Matutino"
-      );
-      console.log(
-        "Filtered by Room (Recup_Matutino):",
-        anesthesiologistsFilteredByRoom
-      );
-
-      const printableContent = `
-     <html>
-<head>
-  <style>
-    body {
-      background-color: #ffffff;
-      font-family: Arial, sans-serif;
-      font-size: 10px !important;
-      margin: 10px;
-      padding: 5px;
-    }
-    .header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 10px;
-    }
-    .header img {
-      max-width: 150px;
-      height: auto;
-      margin-right: 5px;
-    }
-    .header .date {
-      font-size: 10px !important;
-      text-align: left;
-      margin-right: 5px;
-    }
-    .header h1 {
-      font-size: 10px !important;
-      margin: 5px;
-      flex-grow: 2;
-      text-align: right;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-      font-size: 8px !important;
-    }
-    th, td {
-      border: 1px solid black;
-      padding: 3px !important;
-      text-align: left;
-      white-space: nowrap;
-    }
-    .turno-section {
-      background-color: #d3d3d3;
-      text-align: left;
-      font-weight: bold;
-      padding: 5px;
-      border-top: 2px solid black;
-      border-bottom: 2px solid black;
-    }
-  </style>
-</head>
-<body>
-  <div class="header" style="
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    background-color: #f4f4f4;
-  ">
-    <h4 style="margin: 0;">Solicitudes Programadas</h4>
-    <div style="
-      display: flex;
-      align-items: center;
-      text-align: right;
-    ">
-      <h1 style="
-        margin: 0;
-        font-size: 1em;
-        line-height: 1;
-      ">Hoja de impresión PRE-APROBADAS:</h1>
-      <div class="date" style="
-        margin-left: 10px;
-        font-size: 1em;
-      ">${moment(printDate).format("DD-MM-YYYY")}</div>
-    </div>
-  </div>
-
-  <table>
-    <thead>
-      <tr>
-        <th>#</th>
-        <th>Folio</th>
-        <th>Hra. asign.</th>
-        <th>Sala</th>
-        <th>Nom. completo</th>
-        <th>Edad</th>
-        <th>Sexo</th>
-        <th>Procedimiento CIE-9</th>
-        <th>Diagnostico</th>
-        <th>Especialidad</th>
-        <th>Procedencia</th>
-        <th>Tiempo est.</th>
-        <th>Anestesiólogo</th>
-        <th>Cirujano</th>
-        <th>Insumos</th>
-      </tr>
-    </thead>
-    <tbody>
-    <tbody>
-  ${["Matutino", "Vespertino", "Nocturno"]
-    .map((turno) => {
-      const sortedRegistrations = todaysRegistrations
-        .filter((appointment) => {
-          const hour = moment(appointment.hora_solicitada, "HH:mm").hour();
-          if (turno === "Matutino") return hour >= 8 && hour < 15;
-          if (turno === "Vespertino") return hour >= 15 && hour < 21;
-          return hour >= 21 || hour < 6;
-        })
-        .sort((a, b) => {
-          const salaOrder = [
-            "A1",
-            "A2",
-            "T1",
-            "T2",
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "6",
-            "E",
-            "H",
-            "RX",
-          ];
-          const salaA = salaOrder.indexOf(a.sala_quirofano);
-          const salaB = salaOrder.indexOf(b.sala_quirofano);
-          if (salaA !== salaB) {
-            // Si las salas son diferentes, ordenar por sala
-            return salaA - salaB;
-          }
-      
-          // Si las salas son iguales, ordenar por hora_solicitada
-          const horaA = moment(a.hora_solicitada, "HH:mm");
-          const horaB = moment(b.hora_solicitada, "HH:mm");
-          return horaA - horaB;
-        });
-
-      return `
-            <tr class="turno-section">
-              <td colspan="13">${turno} (de ${
-        turno === "Matutino"
-          ? "08:00 a 14:00"
-          : turno === "Vespertino"
-          ? "14:00 a 20:00"
-          : "20:00 a 06:00"
-      })</td>
-            </tr>
-            ${sortedRegistrations
-              .map((appointment, index) => {
-                // Obtener el anestesiólogo asignado
-                const assignedAnesthesiologist = todaysAnesthesiologists.find(
-                  (anesthesiologist) =>
-                    anesthesiologist.sala_anestesio.includes(
-                      appointment.sala_quirofano
-                    ) &&
-                    moment(anesthesiologist.dia_anestesio).isSame(
-                      moment(appointment.fecha_solicitada),
-                      "day"
-                    )
-                );
-
-                const anesthesiologistName = assignedAnesthesiologist
-                  ? assignedAnesthesiologist.nombre
-                  : "No asignado";
-
-                return `
+            <table>
+                <thead>
                     <tr>
-                      <td>${index + 1}</td>
-                      <td>${appointment.folio || ""}</td>
-                      <td>${moment(appointment.hora_solicitada, "HH:mm").format(
-                        "LT"
-                      )}</td>
-                      <td>Sala: ${appointment.sala_quirofano || ""}</td>
-                      <td>${appointment.ap_paterno} ${appointment.ap_materno} ${
-                  appointment.nombre_paciente
-                }</td>
-                    <td>${appointment.edad || ""}</td>
-                      <td>${
-                        appointment.sexo
-                          ? appointment.sexo === "Femenino"
-                            ? "F"
-                            : "M"
-                          : "No especificado"
-                      }</td>
-                      <td>
-                        ${(() => {
-                          const procedimientos =
-                            appointment.procedimientos_paciente || "";
-                          const [beforeDash, afterDash] = procedimientos.split(
-                            "-",
-                            2
-                          );
-                          const truncatedBeforeDash = beforeDash.slice(0, 60);
-                          return `${truncatedBeforeDash}${
-                            afterDash ? "-" + afterDash : ""
-                          }`;
-                        })()}
-                      </td>
-                      <td>
-                        ${(() => {
-                          const procedimientos = appointment.diagnostico || "";
-                          const [beforeDash, afterDash] = procedimientos.split(
-                            "-",
-                            2
-                          );
-                          const truncatedBeforeDash = beforeDash.slice(0, 60);
-                          return `${truncatedBeforeDash}${
-                            afterDash ? "-" + afterDash : ""
-                          }`;
-                        })()}
-                      </td>
-                      <td>${appointment.nombre_especialidad || ""}</td>
-                      <td>
-                        ${(() => {
-                          switch (appointment.tipo_admision) {
-                            case "CONSULTA EXTERNA":
-                              return "C.E.";
-                            case "CAMA":
-                              return `Cama - ${appointment.cama}`;
-                            case "URGENCIAS":
-                              return "Urgencias";
-                            default:
-                              return (
-                                appointment.tipo_admision || "No especificado"
-                              );
-                          }
-                        })()}
-                      </td>
-                      <td>${appointment.tiempo_estimado} min</td>
-                      <td>${anesthesiologistName}</td>
-                      <td>
-                        ${(() => {
-                          const nombre = appointment.nombre_cirujano || "";
-                          const words = nombre.split(" ");
-                          const truncatedName = words.slice(0, 2).join(" ");
-                          return truncatedName;
-                        })()}
-                      </td>
-                      <td>${appointment.req_insumo || ""}</td>
+                        <th>#</th>
+                        <th>Folio</th>
+                        <th>Hra. asign.</th>
+                        <th>Sala</th>
+                        <th>Nom. completo</th>
+                        <th>Edad</th>
+                        <th>Sexo</th>
+                        <th>Procedimiento CIE-9</th>
+                        <th>Diagnostico</th>
+                        <th>Especialidad</th>
+                        <th>Procedencia</th>
+                        <th>Tiempo est.</th>
+                        <th>Anestesiólogo</th>
+                        <th>Cirujano</th>
+                        <th>Insumos</th>
                     </tr>
-                  `;
-              })
-              .join("")}
-          `;
-    })
-    .join("")}
-    </tbody>
-  </table>
+                </thead>
+                <tbody>
+                <tbody>
+                ${["Matutino", "Vespertino", "Nocturno"].map(turno => {
+                    const sortedRegistrations = todaysRegistrations.filter(appointment => {
+                        const hour = moment(appointment.hora_solicitada, "HH:mm").hour();
+                        if (turno === "Matutino") return hour >= 8 && hour < 15;
+                        if (turno === "Vespertino") return hour >= 15 && hour < 21;
+                        return hour >= 21 || hour < 6;
+                    }).sort((a, b) => {
+                        const salaOrder = ["A1", "A2", "T1", "T2", "1", "2", "3", "4", "5", "6", "E", "H", "RX"];
+                        const salaA = salaOrder.indexOf(a.sala_quirofano);
+                        const salaB = salaOrder.indexOf(b.sala_quirofano);
+                        if (salaA !== salaB) {
+                            return salaA - salaB;
+                        }
+                        const horaA = moment(a.hora_solicitada, "HH:mm");
+                        const horaB = moment(b.hora_solicitada, "HH:mm");
+                        return horaA - horaB;
+                    });
 
-  <table>
-            <thead>
-              <tr>
-                <th>Recuperación Matutino</th>
-                <th>Consulta Externa Piso 1 Mat</th>
-                <th>Consulta Externa Piso 2 Mat</th>
-                <th>Recuperación Vespertino</th>
-                <th>Consulta Externa Piso 2 Vespertino</th>
-                <th>Recuperación Nocturno</th>
-              </tr>
-            </thead>
-    <tbody>
-<tr>
-                ${[
-                  "Recup_Matutino",
-                  "Con_Ext_P1_mat",
-                  "Con_Ext_P2_mat",
-                  "Rec_Vespertino",
-                  "Con_Ext_P2_vesp",
-                  "Rec_Nocturno"
-                ]
-                  .map(
-                    (room) => `
-                    <td>
-${todaysAnesthesiologists
-  .filter(
-    (anesthesiologist) =>
-      anesthesiologist.sala_anestesio.includes(room)
-  )
-  .map((anesthesiologist) => anesthesiologist.nombre)
-  .join(", ")}
-                    </td>`
-                  )
-                  .join("")}
-              </tr>
-    </tbody>
-  </table>
-</body>
-</html>
+                    return `
+                        <tr class="turno-section">
+                            <td colspan="13">${turno} (de ${turno === "Matutino" ? "08:00 a 14:00" : turno === "Vespertino" ? "14:00 a 20:00" : "20:00 a 06:00"})</td>
+                        </tr>
+                        ${sortedRegistrations.map((appointment, index) => {
+                            const assignedAnesthesiologist = todaysAnesthesiologists.find(anesthesiologist =>
+                                anesthesiologist.sala_anestesio.includes(appointment.sala_quirofano) &&
+                                anesthesiologist.turno_anestesio === turno
+                            );
 
-      `;
+                            const anesthesiologistName = assignedAnesthesiologist ? assignedAnesthesiologist.nombre : "No asignado";
 
-      // Crear una ventana de impresión y escribir el contenido
-      const printWindow = window.open("", "_blank");
-      printWindow.document.open();
-      printWindow.document.write(printableContent);
-      printWindow.document.close();
-      printWindow.print();
+                            return `
+                                <tr>
+                                    <td>${index + 1}</td>
+                                    <td>${appointment.folio || ""}</td>
+                                    <td>${moment(appointment.hora_solicitada, "HH:mm").format("LT")}</td>
+                                    <td>Sala: ${appointment.sala_quirofano || ""}</td>
+                                    <td>${appointment.ap_paterno} ${appointment.ap_materno} ${appointment.nombre_paciente}</td>
+                                    <td>${appointment.edad || ""}</td>
+                                    <td>${appointment.sexo ? (appointment.sexo === "Femenino" ? "F" : "M") : "No especificado"}</td>
+                                    <td>${appointment.procedimientos_paciente ? appointment.procedimientos_paciente.slice(0, 60) : ""}</td>
+                                    <td>${appointment.diagnostico ? appointment.diagnostico.slice(0, 60) : ""}</td>
+                                    <td>${appointment.nombre_especialidad || ""}</td>
+                                    <td>${appointment.tipo_admision || "No especificado"}</td>
+                                    <td>${appointment.tiempo_estimado} min</td>
+                                    <td>${anesthesiologistName}</td>
+                                    <td>${appointment.nombre_cirujano ? appointment.nombre_cirujano.split(" ").slice(0, 2).join(" ") : ""}</td>
+                                    <td>${appointment.req_insumo || ""}</td>
+                                </tr>
+                            `;
+                        }).join("")}
+                    `;
+                }).join("")}
+                </tbody>
+            </table>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Recuperación Matutino</th>
+                        <th>Consulta Externa Piso 1 Mat</th>
+                        <th>Consulta Externa Piso 2 Mat</th>
+                        <th>Recuperación Vespertino</th>
+                        <th>Consulta Externa Piso 2 Vespertino</th>
+                        <th>Recuperación Nocturno</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        ${["Recup_Matutino", "Con_Ext_P1_mat", "Con_Ext_P2_mat", "Rec_Vespertino", "Con_Ext_P2_vesp", "Recup_Nocturno"].map(sala => {
+                            const assignedAnesthesiologists = todaysAnesthesiologists.filter(anesthesiologist =>
+                                anesthesiologist.sala_anestesio.includes(sala)
+                            ).map(anesthesiologist => anesthesiologist.nombre).join(", ");
+                            return `<td>${assignedAnesthesiologists || "No asignado"}</td>`;
+                        }).join("")}
+                    </tr>
+                </tbody>
+            </table>
+        </body>
+        </html>
+        `;
+
+        const newWindow = window.open();
+        newWindow.document.write(printableContent);
+        newWindow.document.close();
+        newWindow.print();
     } catch (error) {
-      console.error("Error al imprimir las solicitudes:", error);
+        console.error("Error printing:", error);
     }
-  };
+};
+
 
   const orderedAppointments = useMemo(() => {
     return filteredAppointments.sort((a, b) => {
