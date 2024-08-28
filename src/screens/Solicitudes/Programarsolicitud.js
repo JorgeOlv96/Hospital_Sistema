@@ -250,7 +250,7 @@ function ProgramarSolicitud() {
             (solicitud) => moment(solicitud.fecha_solicitada).format("YYYY-MM-DD") === today
         );
 
-        // Filtrar los anestesiólogos asignados para el día seleccionado
+        // Filtrar anestesiólogos asignados para el día seleccionado
         const todaysAnesthesiologists = anesthesiologistsData.filter(
             (anesthesiologist) => moment(anesthesiologist.dia_anestesio).format("YYYY-MM-DD") === today
         );
