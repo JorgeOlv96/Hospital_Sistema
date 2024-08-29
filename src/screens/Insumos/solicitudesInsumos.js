@@ -171,9 +171,15 @@ function SolicitudesInsumos() {
       ? new Date(appointment.fecha_solicitada).toISOString().slice(0, 10) ===
         dateFilter
       : true;
-
-    return matchesName && matchesSpecialty && matchesDate;
+    const matchesEstado = filter.estado
+      ? appointment.estado_solicitud
+          .toLowerCase()
+          .includes(filter.estado.toLowerCase())
+      : true;
+  
+    return matchesName && matchesSpecialty && matchesDate && matchesEstado;
   });
+  
 
   const startIndex = (page - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -229,22 +235,18 @@ function SolicitudesInsumos() {
                   onChange={(e) => setDateFilter(e.target.value)}
                   className="border rounded-lg px-4 py-2"
                 />
-                <input
-                  type="text"
-                  placeholder="Filtrar por estado"
-                  name="estado"
-                  value={
-                    filter.estado ||
-                    appointment?.estado_solicitud ||
-                    "No disponible"
-                  }
-                  onChange={handleFilterChange}
-                  readOnly
-                  className="border rounded-lg px-4 py-2"
-                  style={{
-                    ...getEstadoColorStyle(appointment.estado_solicitud),
-                  }}
-                />
+                  <input
+                    type="text"
+                    placeholder="Filtrar por estado"
+                    name="estado"
+                    value={filter.estado}
+                    onChange={handleFilterChange}
+                    className="border rounded-lg px-4 py-2"
+                    style={{
+                      ...getEstadoColorStyle(filter.estado),
+                    }}
+                  />
+
               </div>
             </div>
 
@@ -397,7 +399,19 @@ function SolicitudesInsumos() {
                                 : ""}
                             </span>
                           </th>
-                          <th className="px-4 py-2 cursor-pointer">Estado</th>
+                          <th
+                            className="px-4 py-2 cursor-pointer"
+                            onClick={() => handleSort("estado_solicitud")}
+                          >
+                            Estado{" "}
+                            <span>
+                              {sortBy === "estado_solicitud"
+                                ? sortOrder === "asc"
+                                  ? "▲"
+                                  : "▼"
+                                : ""}
+                            </span>
+                          </th>
                           <th className="px-4 py-3">Acciones</th>
                         
                         </tr>
