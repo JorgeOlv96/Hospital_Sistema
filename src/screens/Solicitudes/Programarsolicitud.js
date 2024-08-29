@@ -433,7 +433,7 @@ function ProgramarSolicitud() {
                 </thead>
                 <tbody>
                     <tr>
-                        ${["Recup_Matutino", "Con_Ext_P1_mat", "Con_Ext_P2_mat", "Rec_Vespertino", "Con_Ext_P2_vesp", "Recup_Nocturno"].map(sala => {
+                        ${["Recup_Matutino", "Con_Ext_P1_mat", "Con_Ext_P2_mat", "Rec_Vespertino", "Con_Ext_P2_vesp", "Rec_Nocturno"].map(sala => {
                             const assignedAnesthesiologists = todaysAnesthesiologists.filter(anesthesiologist =>
                                 anesthesiologist.sala_anestesio.includes(sala)
                             ).map(anesthesiologist => anesthesiologist.nombre).join(", ");
