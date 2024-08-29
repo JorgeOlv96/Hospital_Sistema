@@ -48,36 +48,34 @@ function SolicitudesInsumos() {
 
   const fetchPendingAppointments = async () => {
     try {
-        const response = await axios.get(`${baseURL}/api/solicitudes`);
-
-        // No necesitas hacer `response.json()` porque Axios ya maneja eso.
-        const data = response.data;
-
-        // Filtrar las solicitudes pendientes que requieren insumo
-        const filteredData = data.filter(
-            (solicitud) =>
-                solicitud.estado_solicitud === "Pendiente" &&
-                solicitud.req_insumo &&
-                solicitud.req_insumo.trim().toLowerCase() === "si"
-        );
-
-        // Filtrar por especialidad
-        const specialtyFilteredData = filteredData.filter(
-            (solicitud) =>
-                userSpecialty === "" || solicitud.nombre_especialidad === userSpecialty
-        );
-
-        // Ordenar los datos por fecha solicitada (más próxima al inicio) y por ID de solicitud de manera descendente
-        const sortedData = specialtyFilteredData
-            .sort((a, b) => new Date(a.fecha_solicitada) - new Date(b.fecha_solicitada))
-            .sort((a, b) => b.id_solicitud - a.id_solicitud);
-
-        setPendingAppointments(sortedData);
+      const response = await axios.get(`${baseURL}/api/solicitudes`);
+  
+      // No necesitas hacer `response.json()` porque Axios ya maneja eso.
+      const data = response.data;
+  
+      // Filtrar las solicitudes que requieren insumo
+      const filteredData = data.filter(
+        (solicitud) =>
+          solicitud.req_insumo && solicitud.req_insumo.trim().toLowerCase() === "si" &&
+          solicitud.estado_solicitud !== "Eliminada"
+      );
+  
+      // Filtrar por especialidad
+      const specialtyFilteredData = filteredData.filter(
+        (solicitud) =>
+          userSpecialty === "" || solicitud.nombre_especialidad === userSpecialty
+      );
+      
+      // Ordenar los datos por fecha solicitada (más próxima al inicio) y por ID de solicitud de manera descendente
+      const sortedData = specialtyFilteredData
+        .sort((a, b) => new Date(a.fecha_solicitada) - new Date(b.fecha_solicitada))
+        .sort((a, b) => b.id_solicitud - a.id_solicitud);
+  
+      setPendingAppointments(sortedData);
     } catch (error) {
-        console.error("Error fetching pending appointments:", error);
+      console.error("Error fetching pending appointments:", error);
     }
-};
-
+  };
   
 
 
@@ -115,9 +113,21 @@ function SolicitudesInsumos() {
 
   const getEstadoColorStyle = (estado) => {
     switch (estado.toLowerCase()) {
+      case "programada":
+        return { backgroundColor: "#68D391", color: "white" }; // Verde claro
+      case "realizada":
+        return { backgroundColor: "#63B3ED", color: "white" }; // Azul claro
+      case "suspendida":
+        return { backgroundColor: "#F6E05E", color: "white" }; // Amarillo
       case "pendiente":
-        return { backgroundColor: "#E9972F", color: "white" };
+        return { backgroundColor: "#E9972F", color: "white" }; // Rojo claro
+      case "pre-programada":
+        return { backgroundColor: "#06ABC9", color: "white" }; // Rosa claro
+      case "urgencia":
+        return { backgroundColor: "#FC8181", color: "white" }; // Rosa claro
       default:
+        // Aquí puedes manejar el caso por defecto
+
         return {};
     }
   };
@@ -388,6 +398,7 @@ function SolicitudesInsumos() {
                             </span>
                           </th>
                           <th className="px-4 py-2 cursor-pointer">Estado</th>
+                          <th className="px-4 py-3">Acciones</th>
                         
                         </tr>
                       </thead>
@@ -451,7 +462,14 @@ function SolicitudesInsumos() {
                                   {appointment.estado_solicitud}
                                 </div>
                               </td>
-                      
+                              <td className="border px-4 py-2 flex justify-center">
+                                <button
+                                  onClick={() => handleViewModal(appointment)}
+                                  className="bg-[#365b77] text-white px-5 py-2 rounded-md hover:bg-blue-800"
+                                >
+                                  Ver
+                                </button>
+                              </td>
                             </tr>
                           ))}
                       </tbody>
