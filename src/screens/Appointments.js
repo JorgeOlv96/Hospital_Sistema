@@ -546,7 +546,7 @@ ${todaysAnesthesiologists
       moment(appointment.start).isSame(printDate, "day")
     );
   
-    // Mapea los datos para el Excel
+    
     const dataForExcel = filteredAppointments.map((appointment) => ({
       
       ID: appointment.id,

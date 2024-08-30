@@ -286,7 +286,7 @@ function ProgramarSolicitud() {
   const printDailyAppointments = async (selectedDate) => {
     const today = moment(printDate).format("YYYY-MM-DD");
     try {
-      // Fetch de las solicitudes programadas
+      
       const solicitudesResponse = await fetch(
         `${baseURL}/api/solicitudes/preprogramadas`
       );
