@@ -347,11 +347,16 @@ function Programaranestesiologo() {
   const indexOfFirstAnesthesiologist =
     indexOfLastAnesthesiologist - anesthesiologistsPerPage;
 
-  // Filtrar anestesiólogos según el término de búsqueda y el campo seleccionado
-  const currentAnesthesiologists = anesthesiologists
+    const currentAnesthesiologists = anesthesiologists
     .filter((anesthesiologist) => {
-      const fieldValue = anesthesiologist[searchField]?.toLowerCase() || "";
-      return fieldValue.includes(searchTerm.toLowerCase());
+      // Verifica si alguno de los valores de los campos incluye el término de búsqueda
+      return Object.values(anesthesiologist).some((value) => {
+        // Convertir el valor a cadena solo si es de tipo string
+        if (typeof value === "string") {
+          return value.toLowerCase().includes(searchTerm.toLowerCase());
+        }
+        return false; // Ignorar valores que no sean cadenas
+      });
     })
     .slice(indexOfFirstAnesthesiologist, indexOfLastAnesthesiologist);
 
@@ -559,26 +564,16 @@ function Programaranestesiologo() {
             <div className="mt-1/2">
               <div className="text-left">
                 <div className="flex items-center justify-center mb-4">
-                  <div className="flex items-center space-x-4">
-                    <input
-                      type="text"
-                      placeholder="Buscar..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="px-3 py-2 border border-gray-300 rounded-md w-64"
-                    />
-                    <select
-                      value={searchField}
-                      onChange={(e) => setSearchField(e.target.value)}
-                      className="px-3 py-2 border border-gray-300 rounded-md"
-                    >
-                      <option value="nombre">Nombre</option>
-                      <option value="dia_anestesio">Día asignado</option>
-                      <option value="turno_anestesio">Turno asignado</option>
-                      <option value="hora_inicio">Hora inicio</option>
-                      <option value="hora_fin">Hora fin</option>
-                    </select>
-                  </div>
+                <div className="flex items-center space-x-4">
+                      <input
+                        type="text"
+                        placeholder="Buscar..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="px-3 py-2 border border-gray-300 rounded-md w-64"
+                      />
+                    </div>
+
                 </div>
               </div>
             </div>
