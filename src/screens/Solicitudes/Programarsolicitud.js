@@ -10,6 +10,9 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import moment from "moment";
 import "moment/locale/es"; // Importa el idioma de moment.js
 
+import { saveAs } from "file-saver";
+import * as XLSX from "xlsx";
+
 const localizer = momentLocalizer(moment);
 
 const messages = {
@@ -39,7 +42,7 @@ function ProgramarSolicitud() {
   const [specialtyFilter, setSpecialtyFilter] = useState("");
   const [dateFilter, setDateFilter] = useState("");
   const [viewMode, setViewMode] = useState("list"); // Agregamos un estado para la vista
-  const [view, setView] = useState(""); // Agregamos un estado para la vista
+  const [view, setView] = useState(""); // Default view
 
   const [openModal, setOpenModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState({});
@@ -228,34 +231,92 @@ function ProgramarSolicitud() {
     return `${day}-${month}-${year}`;
   };
 
+  // Función para exportar datos a Excel
+  const exportToExcel = async (selectedDate) => {
+    const formattedDate = moment(selectedDate).format("YYYY-MM-DD");
+
+    try {
+      // Fetch de las solicitudes programadas
+      const solicitudesResponse = await fetch(
+        `${baseURL}/api/solicitudes/preprogramadas`
+      );
+      if (!solicitudesResponse.ok) {
+        throw new Error("Network response for solicitudes was not ok");
+      }
+      const solicitudesData = await solicitudesResponse.json();
+
+      // Filtrar las solicitudes del día seleccionado
+      const filteredAppointments = solicitudesData.filter(
+        (solicitud) =>
+          moment(solicitud.fecha_solicitada).format("YYYY-MM-DD") ===
+          formattedDate
+      );
+
+      // Crear la hoja de cálculo a partir de los datos filtrados
+      const worksheet = XLSX.utils.json_to_sheet(filteredAppointments);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Solicitudes preprogramadas");
+
+      // Generar el archivo Excel y guardarlo con FileSaver
+      const excelBuffer = XLSX.write(workbook, {
+        bookType: "xlsx",
+        type: "array",
+      });
+      const data = new Blob([excelBuffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+
+      // Nombre del archivo con la fecha seleccionada
+      const fileName = `Solicitudes_${formattedDate}.xlsx`;
+      saveAs(data, fileName);
+    } catch (error) {
+      console.error("Error exporting data:", error);
+    }
+  };
+
+  // Manejo del evento de exportación
+  const handleExport = async () => {
+    if (selectedDate) {
+      await exportToExcel(selectedDate);
+    } else {
+      console.warn("No date selected!");
+    }
+  };
+
   const printDailyAppointments = async (selectedDate) => {
     const today = moment(printDate).format("YYYY-MM-DD");
     try {
-        // Fetch de las solicitudes programadas
-        const solicitudesResponse = await fetch(`${baseURL}/api/solicitudes/preprogramadas`);
-        if (!solicitudesResponse.ok) {
-            throw new Error("Network response for solicitudes was not ok");
-        }
-        const solicitudesData = await solicitudesResponse.json();
+      // Fetch de las solicitudes programadas
+      const solicitudesResponse = await fetch(
+        `${baseURL}/api/solicitudes/preprogramadas`
+      );
+      if (!solicitudesResponse.ok) {
+        throw new Error("Network response for solicitudes was not ok");
+      }
+      const solicitudesData = await solicitudesResponse.json();
 
-        // Fetch de los anestesiólogos
-        const anesthesiologistsResponse = await fetch(`${baseURL}/api/anestesio/anestesiologos`);
-        if (!anesthesiologistsResponse.ok) {
-            throw new Error("Network response for anesthesiologists was not ok");
-        }
-        const anesthesiologistsData = await anesthesiologistsResponse.json();
+      // Fetch de los anestesiólogos
+      const anesthesiologistsResponse = await fetch(
+        `${baseURL}/api/anestesio/anestesiologos`
+      );
+      if (!anesthesiologistsResponse.ok) {
+        throw new Error("Network response for anesthesiologists was not ok");
+      }
+      const anesthesiologistsData = await anesthesiologistsResponse.json();
 
-        // Filtrar las solicitudes del día seleccionado
-        const todaysRegistrations = solicitudesData.filter(
-            (solicitud) => moment(solicitud.fecha_solicitada).format("YYYY-MM-DD") === today
-        );
+      // Filtrar las solicitudes del día seleccionado
+      const todaysRegistrations = solicitudesData.filter(
+        (solicitud) =>
+          moment(solicitud.fecha_solicitada).format("YYYY-MM-DD") === today
+      );
 
-        // Filtrar anestesiólogos asignados para el día seleccionado
-        const todaysAnesthesiologists = anesthesiologistsData.filter(
-            (anesthesiologist) => moment(anesthesiologist.dia_anestesio).format("YYYY-MM-DD") === today
-        );
+      // Filtrar anestesiólogos asignados para el día seleccionado
+      const todaysAnesthesiologists = anesthesiologistsData.filter(
+        (anesthesiologist) =>
+          moment(anesthesiologist.dia_anestesio).format("YYYY-MM-DD") === today
+      );
 
-        const printableContent = `
+      const printableContent = `
         <html>
         <head>
             <style>
@@ -358,65 +419,144 @@ function ProgramarSolicitud() {
                 </thead>
                 <tbody>
                 <tbody>
-                ${["Matutino", "Vespertino", "Nocturno"].map(turno => {
-                    const sortedRegistrations = todaysRegistrations.filter(appointment => {
-                        const hour = moment(appointment.hora_solicitada, "HH:mm").hour();
+                ${["Matutino", "Vespertino", "Nocturno"]
+                  .map((turno) => {
+                    const sortedRegistrations = todaysRegistrations
+                      .filter((appointment) => {
+                        const hour = moment(
+                          appointment.hora_solicitada,
+                          "HH:mm"
+                        ).hour();
                         if (turno === "Matutino") return hour >= 8 && hour < 15;
-                        if (turno === "Vespertino") return hour >= 15 && hour < 21;
+                        if (turno === "Vespertino")
+                          return hour >= 15 && hour < 21;
                         return hour >= 21 || hour < 6;
-                    }).sort((a, b) => {
-                        const salaOrder = ["A1", "A2", "T1", "T2", "1", "2", "3", "4", "5", "6", "E", "H", "RX"];
+                      })
+                      .sort((a, b) => {
+                        const salaOrder = [
+                          "A1",
+                          "A2",
+                          "T1",
+                          "T2",
+                          "1",
+                          "2",
+                          "3",
+                          "4",
+                          "5",
+                          "6",
+                          "E",
+                          "H",
+                          "RX",
+                        ];
                         const salaA = salaOrder.indexOf(a.sala_quirofano);
                         const salaB = salaOrder.indexOf(b.sala_quirofano);
                         if (salaA !== salaB) {
-                            return salaA - salaB;
+                          return salaA - salaB;
                         }
                         const horaA = moment(a.hora_solicitada, "HH:mm");
                         const horaB = moment(b.hora_solicitada, "HH:mm");
                         return horaA - horaB;
-                    });
+                      });
 
                     return `
                         <tr class="turno-section">
-                            <td colspan="13">${turno} (de ${turno === "Matutino" ? "08:00 a 14:00" : turno === "Vespertino" ? "14:00 a 20:00" : "20:00 a 06:00"})</td>
+                            <td colspan="13">${turno} (de ${
+                      turno === "Matutino"
+                        ? "08:00 a 14:00"
+                        : turno === "Vespertino"
+                        ? "14:00 a 20:00"
+                        : "20:00 a 06:00"
+                    })</td>
                         </tr>
-                        ${sortedRegistrations.map((appointment, index) => {
-                            const assignedAnesthesiologist = todaysAnesthesiologists.find(anesthesiologist =>
-                                anesthesiologist.sala_anestesio.includes(appointment.sala_quirofano) &&
-                                anesthesiologist.turno_anestesio === turno
-                            );
+                        ${sortedRegistrations
+                          .map((appointment, index) => {
+                            const assignedAnesthesiologist =
+                              todaysAnesthesiologists.find(
+                                (anesthesiologist) =>
+                                  anesthesiologist.sala_anestesio.includes(
+                                    appointment.sala_quirofano
+                                  ) &&
+                                  anesthesiologist.turno_anestesio === turno
+                              );
 
-                            const anesthesiologistName = assignedAnesthesiologist ? assignedAnesthesiologist.nombre : "No asignado";
+                            const anesthesiologistName =
+                              assignedAnesthesiologist
+                                ? assignedAnesthesiologist.nombre
+                                : "No asignado";
 
                             return `
                                 <tr>
                                     <td>${index + 1}</td>
                                     <td>${appointment.folio || ""}</td>
-                                    <td>${moment(appointment.hora_solicitada, "HH:mm").format("LT")}</td>
-                                    <td>Sala: ${appointment.sala_quirofano || ""}</td>
-                                    <td>${appointment.ap_paterno} ${appointment.ap_materno} ${appointment.nombre_paciente}</td>
+                                    <td>${moment(
+                                      appointment.hora_solicitada,
+                                      "HH:mm"
+                                    ).format("LT")}</td>
+                                    <td>Sala: ${
+                                      appointment.sala_quirofano || ""
+                                    }</td>
+                                    <td>${appointment.ap_paterno} ${
+                              appointment.ap_materno
+                            } ${appointment.nombre_paciente}</td>
                                     <td>${appointment.edad || ""}</td>
-                                    <td>${appointment.sexo ? (appointment.sexo === "Femenino" ? "F" : "M") : "No especificado"}</td>
-                                    <td>${appointment.procedimientos_paciente ? appointment.procedimientos_paciente.slice(0, 60) : ""}</td>
-                                    <td>${appointment.diagnostico ? appointment.diagnostico.slice(0, 60) : ""}</td>
-                                    <td>${appointment.nombre_especialidad || ""}</td>
+                                    <td>${
+                                      appointment.sexo
+                                        ? appointment.sexo === "Femenino"
+                                          ? "F"
+                                          : "M"
+                                        : "No especificado"
+                                    }</td>
+                                    <td>${
+                                      appointment.procedimientos_paciente
+                                        ? appointment.procedimientos_paciente.slice(
+                                            0,
+                                            60
+                                          )
+                                        : ""
+                                    }</td>
+                                    <td>${
+                                      appointment.diagnostico
+                                        ? appointment.diagnostico.slice(0, 60)
+                                        : ""
+                                    }</td>
+                                    <td>${
+                                      appointment.nombre_especialidad || ""
+                                    }</td>
                                                                             <td>${(() => {
-                                            switch (appointment.tipo_admision) {
-                                                case "CONSULTA EXTERNA": return "C.E.";
-                                                case "CAMA": return `Cama - ${appointment.cama}`;
-                                                case "URGENCIAS": return "Urgencias";
-                                                default: return appointment.tipo_admision || "No especificado";
-                                            }
-                                        })()}</td>
+                                                                              switch (
+                                                                                appointment.tipo_admision
+                                                                              ) {
+                                                                                case "CONSULTA EXTERNA":
+                                                                                  return "C.E.";
+                                                                                case "CAMA":
+                                                                                  return `Cama - ${appointment.cama}`;
+                                                                                case "URGENCIAS":
+                                                                                  return "Urgencias";
+                                                                                default:
+                                                                                  return (
+                                                                                    appointment.tipo_admision ||
+                                                                                    "No especificado"
+                                                                                  );
+                                                                              }
+                                                                            })()}</td>
                                     <td>${appointment.tiempo_estimado} min</td>
                                     <td>${anesthesiologistName}</td>
-                                    <td>${appointment.nombre_cirujano ? appointment.nombre_cirujano.split(" ").slice(0, 2).join(" ") : ""}</td>
+                                    <td>${
+                                      appointment.nombre_cirujano
+                                        ? appointment.nombre_cirujano
+                                            .split(" ")
+                                            .slice(0, 2)
+                                            .join(" ")
+                                        : ""
+                                    }</td>
                                     <td>${appointment.req_insumo || ""}</td>
                                 </tr>
                             `;
-                        }).join("")}
+                          })
+                          .join("")}
                     `;
-                }).join("")}
+                  })
+                  .join("")}
                 </tbody>
             </table>
 
@@ -433,12 +573,29 @@ function ProgramarSolicitud() {
                 </thead>
                 <tbody>
                     <tr>
-                        ${["Recup_Matutino", "Con_Ext_P1_mat", "Con_Ext_P2_mat", "Rec_Vespertino", "Con_Ext_P2_vesp", "Rec_Nocturno"].map(sala => {
-                            const assignedAnesthesiologists = todaysAnesthesiologists.filter(anesthesiologist =>
-                                anesthesiologist.sala_anestesio.includes(sala)
-                            ).map(anesthesiologist => anesthesiologist.nombre).join(", ");
-                            return `<td>${assignedAnesthesiologists || "No asignado"}</td>`;
-                        }).join("")}
+                        ${[
+                          "Recup_Matutino",
+                          "Con_Ext_P1_mat",
+                          "Con_Ext_P2_mat",
+                          "Rec_Vespertino",
+                          "Con_Ext_P2_vesp",
+                          "Rec_Nocturno",
+                        ]
+                          .map((sala) => {
+                            const assignedAnesthesiologists =
+                              todaysAnesthesiologists
+                                .filter((anesthesiologist) =>
+                                  anesthesiologist.sala_anestesio.includes(sala)
+                                )
+                                .map(
+                                  (anesthesiologist) => anesthesiologist.nombre
+                                )
+                                .join(", ");
+                            return `<td>${
+                              assignedAnesthesiologists || "No asignado"
+                            }</td>`;
+                          })
+                          .join("")}
                     </tr>
                 </tbody>
             </table>
@@ -446,15 +603,14 @@ function ProgramarSolicitud() {
         </html>
         `;
 
-        const newWindow = window.open();
-        newWindow.document.write(printableContent);
-        newWindow.document.close();
-        newWindow.print();
+      const newWindow = window.open();
+      newWindow.document.write(printableContent);
+      newWindow.document.close();
+      newWindow.print();
     } catch (error) {
-        console.error("Error printing:", error);
+      console.error("Error printing:", error);
     }
-};
-
+  };
 
 const orderedAppointments = useMemo(() => {
   return filteredAppointments
@@ -584,20 +740,63 @@ const orderedAppointments = useMemo(() => {
               </div>
             </div>
 
-            <div className="flex items-center space-x-2">
-              <label className="font-semibold">Día a imprimir:</label>
-              <input
-                type="date"
-                value={formatDateInputValue(printDate)}
-                onChange={handlePrintDateChange}
-                className="px-1 py-1 border border-main rounded-md text-main"
-              />
-              <button
-                onClick={printDailyAppointments}
-                className="bg-[#5DB259] hover:bg-[#528E4F] text-white py-1 px-1 rounded inline-flex items-center"
-              >
-                Imprimir Pre-programadas
-              </button>
+            <div>
+              {/* Enlaces para cambiar vistas */}
+              <div className="flex justify-center space-x-4 mb-4">
+                <button
+                  onClick={() => setView("print")}
+                  className={`py-2 px-4 rounded ${
+                    view === "print" ? "bg-[#5DB259]" : "bg-gray-300"
+                  } text-white`}
+                >
+                  Imprimir
+                </button>
+                <button
+                  onClick={() => setView("export")}
+                  className={`py-2 px-4 rounded ${
+                    view === "export" ? "bg-[#4A5568]" : "bg-gray-300"
+                  } text-white`}
+                >
+                  Exportar
+                </button>
+              </div>
+
+              {/* Contenido según la vista seleccionada */}
+              {view === "print" && (
+                <div className="flex flex-col items-center space-y-2">
+                  <label className="font-semibold">Día a imprimir:</label>
+                  <input
+                    type="date"
+                    value={formatDateInputValue(printDate)}
+                    onChange={handlePrintDateChange}
+                    className="px-2 py-2 border border-main rounded-md text-main"
+                  />
+                  <button
+                    onClick={printDailyAppointments}
+                    className="bg-[#5DB259] hover:bg-[#528E4F] text-white py-2 px-4 rounded inline-flex items-center"
+                  >
+                    Imprimir Pre-programadas
+                  </button>
+                </div>
+              )}
+
+              {view === "export" && (
+                <div className="flex flex-col items-center space-y-2">
+                  <label className="font-semibold">Día a exportar:</label>
+                  <input
+                    type="date"
+                    value={selectedDate || ""}
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                    className="px-2 py-2 border rounded"
+                  />
+                  <button
+                    onClick={handleExport}
+                    className="bg-[#4A5568] hover:bg-[#758195] text-white py-2 px-4 rounded inline-flex items-center"
+                  >
+                    Exportar a Excel
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 
@@ -1032,33 +1231,33 @@ const orderedAppointments = useMemo(() => {
             </div>
           </div>
 
-              <div className="flex justify-center items-center mt-6 space-x-4">
-                <button
-                  onClick={() => setPage(page - 1)}
-                  disabled={page === 1}
-                  className={`${
-                    page === 1
-                      ? "bg-gray-300 cursor-not-allowed"
-                      : "bg-[#365b77] hover:bg-[#7498b6]"
-                  } text-white font-semibold py-2 px-6 rounded-full shadow-md transition-all duration-300 ease-in-out transform hover:scale-105`}
-                >
-                  &#8592;
-                </button>
-                <span className="text-lg font-semibold text-gray-800">
-                  Página {page}
-                </span>
-                <button
-                  onClick={() => setPage(page + 1)}
-                  disabled={page === totalPages}
-                  className={`${
-                    page === totalPages
-                      ? "bg-gray-300 cursor-not-allowed"
-                      : "bg-[#365b77] hover:bg-[#7498b6]"
-                  } text-white font-semibold py-2 px-6 rounded-full shadow-md transition-all duration-300 ease-in-out transform hover:scale-105`}
-                >
-                  &#8594;
-                </button>
-              </div>
+          <div className="flex justify-center items-center mt-6 space-x-4">
+            <button
+              onClick={() => setPage(page - 1)}
+              disabled={page === 1}
+              className={`${
+                page === 1
+                  ? "bg-gray-300 cursor-not-allowed"
+                  : "bg-[#365b77] hover:bg-[#7498b6]"
+              } text-white font-semibold py-2 px-6 rounded-full shadow-md transition-all duration-300 ease-in-out transform hover:scale-105`}
+            >
+              &#8592;
+            </button>
+            <span className="text-lg font-semibold text-gray-800">
+              Página {page}
+            </span>
+            <button
+              onClick={() => setPage(page + 1)}
+              disabled={page === totalPages}
+              className={`${
+                page === totalPages
+                  ? "bg-gray-300 cursor-not-allowed"
+                  : "bg-[#365b77] hover:bg-[#7498b6]"
+              } text-white font-semibold py-2 px-6 rounded-full shadow-md transition-all duration-300 ease-in-out transform hover:scale-105`}
+            >
+              &#8594;
+            </button>
+          </div>
         </div>
       </div>
     </Layout>
