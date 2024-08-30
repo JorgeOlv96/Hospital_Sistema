@@ -286,7 +286,7 @@ function ProgramarSolicitud() {
   const printDailyAppointments = async (selectedDate) => {
     const today = moment(printDate).format("YYYY-MM-DD");
     try {
-      // Fetch de las solicitudes programadas
+      
       const solicitudesResponse = await fetch(
         `${baseURL}/api/solicitudes/preprogramadas`
       );
@@ -612,8 +612,17 @@ function ProgramarSolicitud() {
     }
   };
 
-  const orderedAppointments = useMemo(() => {
-    return filteredAppointments.sort((a, b) => {
+const orderedAppointments = useMemo(() => {
+  return filteredAppointments
+    .sort((a, b) => {
+      // Ordenar por turno solicitado primero
+      const turnoOrder = ["Matutino", "Vespertino", "Nocturno", "Especial"];
+      const turnoDiff =
+        turnoOrder.indexOf(a.turno_solicitado) - turnoOrder.indexOf(b.turno_solicitado);
+      
+      if (turnoDiff !== 0) return turnoDiff;
+
+      // Luego ordenar por sala
       const salaOrder = [
         "A1",
         "A2",
@@ -629,14 +638,17 @@ function ProgramarSolicitud() {
         "H",
         "RX",
       ];
-      return (
-        salaOrder.indexOf(a.sala_quirofano) -
-          salaOrder.indexOf(b.sala_quirofano) ||
-        new Date(a.fecha_solicitada) - new Date(b.fecha_solicitada) ||
-        a.hora_solicitada.localeCompare(b.hora_solicitada)
-      );
+      const salaDiff = salaOrder.indexOf(a.sala_quirofano) - salaOrder.indexOf(b.sala_quirofano);
+      if (salaDiff !== 0) return salaDiff;
+
+      // Luego por fecha solicitada
+      const fechaDiff = new Date(a.fecha_solicitada) - new Date(b.fecha_solicitada);
+      if (fechaDiff !== 0) return fechaDiff;
+
+      // Finalmente por hora solicitada
+      return a.hora_solicitada.localeCompare(b.hora_solicitada);
     });
-  }, [filteredAppointments]);
+}, [filteredAppointments]);
 
   const events = pendingAppointments.map((app) => ({
     title: `${app.nombre_paciente} - ${app.nombre_especialidad}`,
