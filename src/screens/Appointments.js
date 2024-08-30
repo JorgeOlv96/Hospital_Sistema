@@ -419,8 +419,13 @@ function Appointments() {
                             ];
                             const salaA = salaOrder.indexOf(a.sala_quirofano);
                             const salaB = salaOrder.indexOf(b.sala_quirofano);
-                            return salaA - salaB;
-                        });
+                            if (salaA !== salaB) {
+                              return salaA - salaB;
+                            }
+                            const horaA = moment(a.hora_solicitada, "HH:mm");
+                            const horaB = moment(b.hora_solicitada, "HH:mm");
+                            return horaA - horaB;
+                          });
                     
                     // Generar el HTML para las solicitudes ordenadas
                     return `
