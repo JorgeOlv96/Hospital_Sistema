@@ -14,6 +14,7 @@ import AddAppointmentModalProgramado from "../components/Modals/AddApointmentMod
 import { Link } from "react-router-dom";
 import OperatingRoomSchedule from "../components/OperatingRoomSchedule";
 import { FaHospital } from "react-icons/fa";
+import * as XLSX from 'xlsx'; 
 import { FaCalendarAlt } from 'react-icons/fa'; // Asegúrate de instalar react-icons si aún no lo has hecho
 
 
@@ -21,7 +22,9 @@ moment.locale("es");
 
 const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
 
-const CustomToolbar = ({ date, view, onView, onNavigate, onPrint, selectedDate, handleDateChange }) => {
+
+const CustomToolbar = ({ date, view, onView, onNavigate, onPrint, selectedDate, handleDateChange, onExport }) => {
+
   const [printDate, setPrintDate] = useState(new Date());
 
   const goToBack = () => {
@@ -65,8 +68,6 @@ const CustomToolbar = ({ date, view, onView, onNavigate, onPrint, selectedDate, 
     const selectedDate = moment(e.target.value).startOf("day").toDate();
     setPrintDate(selectedDate);
   };
-  
-
   return (
     <div className="flex flex-col gap-4 mb-6">
       <h1 className="text-xl font-semibold">Solicitudes</h1>
@@ -91,6 +92,12 @@ const CustomToolbar = ({ date, view, onView, onNavigate, onPrint, selectedDate, 
             className="bg-[#5DB259] hover:bg-[#528E4F] text-white py-2 px-4 rounded inline-flex items-center ml-4"
           >
             Imprimir Aprobadas
+          </button>
+          <button
+            onClick={() => onExport(moment(printDate).startOf("day").toDate())}
+            className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center ml-4"
+          >
+            Exportar Datos
           </button>
         </div>
       </div>
@@ -533,6 +540,41 @@ ${todaysAnesthesiologists
       console.error("Error al imprimir las solicitudes:", error);
     }
   };
+  const handleExportToExcel = (printDate) => {
+    // Filtra las citas para el día seleccionado
+    const filteredAppointments = appointments.filter((appointment) =>
+      moment(appointment.start).isSame(printDate, "day")
+    );
+  
+    // Mapea los datos para el Excel
+    const dataForExcel = filteredAppointments.map((appointment) => ({
+      
+      ID: appointment.id,
+      Folio: appointment.folio,
+      Paciente: appointment.title,
+      "Fecha Programada": moment(appointment.start).format("DD/MM/YYYY"),
+      "Hora Asignada": moment(appointment.start).format("HH:mm"),
+      "Tiempo Estimado": appointment.tiempo_estimado,
+      Sala: appointment.operatingRoom,
+      Sexo: appointment.sexo,
+      Procedimientos: appointment.procedimientos_paciente,
+      Diagnostico: appointment.diagnostico,
+      Especialidad: appointment.nombre_especialidad,
+      Clave: appointment.clave_esp,
+      Procedencia: appointment.tipo_admision,
+      Anestesiólogo: appointment.nombre_anestesiologo,
+      Cirujano: appointment.nombre_cirujano,
+      Insumos: appointment.req_insumo
+    }));
+    console.log(filteredAppointments);
+    // Define la hoja de Excel y los datos
+    const ws = XLSX.utils.json_to_sheet(dataForExcel);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Citas");
+  
+    // Genera y descarga el archivo Excel
+    XLSX.writeFile(wb, `Citas_${moment(printDate).format("YYYYMMDD")}.xlsx`);
+  };
 
   return (
     <Layout>
@@ -564,6 +606,7 @@ ${todaysAnesthesiologists
       onPrint={handlePrintClick}
       selectedDate={selectedDate}
       handleDateChange={handleDateChange}
+      onExport={handleExportToExcel}
     />
           {view === "operatingRooms" ? (
             <OperatingRoomSchedule
