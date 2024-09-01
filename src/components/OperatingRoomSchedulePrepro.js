@@ -1,27 +1,34 @@
 import React from 'react';
 import moment from 'moment';
-import './OperatingRoomSchedulePrepro.css';
+import './OperatingRoomSchedule.css';
 
-const OperatingRoomSchedulePre = [
-                                  'A1', 
-                                  'A2', 
-                                  'T1', 
-                                  'T2', 
-                                  '1', 
-                                  '2', 
-                                  '3', 
-                                  '4', 
-                                  '5', 
-                                  '6', 
-                                  'E', 
-                                  'H', 
-                                  'RX'
-                                ];
+const OperatingRooms = [
+  'A1', 
+  'A2', 
+  'T1', 
+  'T2', 
+  '1', 
+  '2', 
+  '3', 
+  '4', 
+  '5', 
+  '6', 
+  'E', 
+  'H', 
+  'RX'
+];
 
-const OperatingRoomSchedulePrepro = ({ date, appointments, onEventClick }) => {
-  const filteredAppointments = appointments.filter(app =>
+const OperatingRoomSchedulePrepro = ({ date, events, onEventClick }) => {
+  // Agrega un console.log para verificar los datos recibidos
+  console.log("Eventos recibidos:", events);
+
+  // Filtrar eventos por la fecha seleccionada
+  const filteredAppointments = events.filter(app =>
     moment(app.start).isSame(date, 'day') || moment(app.end).isSame(date, 'day')
   );
+
+  // Agrega un console.log para verificar los eventos filtrados
+  console.log("Eventos filtrados para la fecha seleccionada:", filteredAppointments);
 
   const getAppointmentClass = (folio) => {
     if (folio && (folio.endsWith('R1') || folio.endsWith('R2') || folio.endsWith('R3') || folio.endsWith('R4') || folio.endsWith('R5'))) {
@@ -39,8 +46,12 @@ const OperatingRoomSchedulePrepro = ({ date, appointments, onEventClick }) => {
       return `${String(hour).padStart(2, '0')}:00`;
     });
 
-    const schedule = OperatingRoomSchedulePre.map(room => {
-      const roomAppointments = filteredAppointments.filter(app => app.operatingRoom === room);
+    // Genera el horario para cada sala
+    const schedule = OperatingRooms.map(room => {
+      const roomAppointments = filteredAppointments.filter(app => app.sala_quirofano === room);
+
+      // Agrega un console.log para verificar los eventos en cada sala
+      console.log(`Eventos para la sala ${room}:`, roomAppointments);
 
       const cells = hours.map((hour, index) => {
         const startOfHour = moment(date).startOf('day').add(index + 7, 'hours');
@@ -50,7 +61,10 @@ const OperatingRoomSchedulePrepro = ({ date, appointments, onEventClick }) => {
           moment(app.start).isBefore(endOfHour) && moment(app.end).isAfter(startOfHour)
         );
 
+        // Agrega un console.log para verificar eventos que se superponen en cada hora
         if (overlappingAppointments.length > 0) {
+          console.log(`Eventos que se superponen en ${hour}:`, overlappingAppointments);
+
           return (
             <div key={hour} className="schedule-slot occupied">
               {overlappingAppointments.map((appointment, idx) => {
@@ -89,7 +103,7 @@ const OperatingRoomSchedulePrepro = ({ date, appointments, onEventClick }) => {
       <div key={hour} className="schedule-row">
         <div className="schedule-time" style={{ backgroundColor: getBackgroundColor(hour) }}>{hour}</div>
         {schedule.map((cells, roomIndex) => (
-          <div key={OperatingRoomSchedulePre[roomIndex]} className="schedule-cell">
+          <div key={OperatingRooms[roomIndex]} className="schedule-cell">
             {cells[index]}
           </div>
         ))}
@@ -109,7 +123,7 @@ const OperatingRoomSchedulePrepro = ({ date, appointments, onEventClick }) => {
     <div className="operating-room-schedule">
       <div className="schedule-header">
         <div className="schedule-time-header">Hora</div>
-        {OperatingRoomSchedulePre.map(room => (
+        {OperatingRooms.map(room => (
           <div key={room} className="schedule-room">{`Sala ${room}`}</div>
         ))}
       </div>

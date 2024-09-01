@@ -4,7 +4,7 @@ import axios from "axios";
 import AddAppointmentModalPending from "../../components/Modals/AddApointmentModalPending";
 import { Link } from "react-router-dom";
 import { FaTable, FaThLarge, FaInfoCircle, FaClock } from "react-icons/fa";
-
+import OperatingRoomSchedulePrepro from "../../components/OperatingRoomSchedulePrepro";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import moment from "moment";
@@ -90,7 +90,13 @@ function ProgramarSolicitud() {
     setSelectedAppointment(appointment);
     setOpen(true);
   };
+  const handlePreviousDay = () => {
+    setSelectedDate(prevDate => moment(prevDate).subtract(1, 'day').toDate());
+  };
 
+  const handleNextDay = () => {
+    setSelectedDate(prevDate => moment(prevDate).add(1, 'day').toDate());
+  };
   const handleModal = () => {
     setOpen(false);
     setSelectedAppointment(null); // Limpia la selección cuando se cierra la modal
@@ -217,9 +223,12 @@ function ProgramarSolicitud() {
   };
 
   const handleViewChange = (newView) => {
-    setView(newView);
+    if (newView === "agenda") {
+      setViewMode("agenda"); // Cambia a tu vista personalizada
+    } else {
+      setViewMode("calendar"); // Mantén el calendario para otras vistas
+    }
   };
-
   // Llamada a la función de impresión
   const handlePrintClick = (selectedDate) => {
     printDailyAppointments(selectedDate);
@@ -649,13 +658,21 @@ const orderedAppointments = useMemo(() => {
       return a.hora_solicitada.localeCompare(b.hora_solicitada);
     });
 }, [filteredAppointments]);
+const events = pendingAppointments.map((app) => {
+  // Calcula la hora de finalización añadiendo la duración estimada a la hora de solicitud
+  const startDateTime = new Date(app.fecha_solicitada + "T" + app.hora_solicitada);
+  const endDateTime = new Date(startDateTime.getTime() + (app.tiempo_estimado || 60) * 60000); // Usa 60 minutos por defecto si no está definido
 
-  const events = pendingAppointments.map((app) => ({
+  return {
     title: `${app.nombre_paciente} - ${app.nombre_especialidad}`,
-    start: new Date(app.fecha_solicitada + "T" + app.hora_solicitada),
-    end: new Date(app.fecha_solicitada + "T" + app.hora_solicitada),
+    start: startDateTime,
+    end: endDateTime,
     resource: app,
-  }));
+    estado: app.estado,
+    sala_quirofano: app.sala_quirofano, // Asegúrate de que esta propiedad esté presente
+  };
+});
+
 
   const salas = [
     "A1",
@@ -900,44 +917,44 @@ const orderedAppointments = useMemo(() => {
                   </button>
                 </div>
               </div>
+              <>
+    {viewMode === "calendar" && (
+      <div className="bg-white p-4 shadow-md rounded-lg">
+        <Calendar
+          localizer={localizer}
+          events={events}
+          startAccessor="start"
+          endAccessor="end"
+          style={{ height: 800, marginBottom: 60 }}
+          onSelectEvent={handleEventClick}
+          onView={handleViewChange} // Intercepta el cambio de vista
+          messages={messages}
+        />
 
-              {viewMode === "calendar" && (
-                <div className="bg-white p-4 shadow-md rounded-lg">
-                  <Calendar
-                    localizer={localizer}
-                    events={events}
-                    startAccessor="start"
-                    endAccessor="end"
-                    style={{ height: 800, marginBottom: 60 }}
-                    onSelectEvent={handleEventClick}
-                    messages={{
-                      today: "Hoy",
-                      previous: "Anterior",
-                      next: "Siguiente",
-                      month: "Mes",
-                      week: "Semana",
-                      day: "Día",
-                      agenda: "Agenda",
-                      date: "Fecha", // Traducción de "Date"
-                      time: "Hora", // Traducción de "Time"
-                      event: "Paciente", // Traducción de "Event"
-                      noEventsInRange: "No hay eventos en este rango",
-                      showMore: (total) => `+ Ver más (${total})`, // Personaliza el mensaje de "show more"
-                    }} // Traducción al español
-                  />
+        {open && selectedAppointment && (
+          <AddAppointmentModalPending
+            datas={pendingAppointments}
+            isOpen={open}
+            closeModal={handleModal}
+            onDeleteAppointment={handleDeleteAppointment}
+            appointmentId={selectedAppointment.id_solicitud}
+          />
+        )}
+      </div>
+    )}
 
-                  {open && selectedAppointment && (
-                    <AddAppointmentModalPending
-                      datas={pendingAppointments}
-                      isOpen={open}
-                      closeModal={handleModal}
-                      onDeleteAppointment={handleDeleteAppointment}
-                      appointmentId={selectedAppointment.id_solicitud}
-                    />
-                  )}
-                </div>
-              )}
-
+{viewMode === "agenda" && (
+  <div className="bg-white p-4 shadow-md rounded-lg">
+    <OperatingRoomSchedulePrepro
+      date={selectedDate} // Asegúrate de definir 'selectedDate' como el día seleccionado
+      events={events} // Pasar los eventos/solicitudes al componente de horarios de quirófano
+      onEventClick={handleEventClick} // La función para manejar clics en eventos
+      onPreviousDay={handlePreviousDay} // Asegúrate de definir estas funciones si las usas
+      onNextDay={handleNextDay}
+    />
+  </div>
+)}
+  </>
               {viewMode === "list" && (
                 <>
                   {filteredAppointments.length === 0 ? (
