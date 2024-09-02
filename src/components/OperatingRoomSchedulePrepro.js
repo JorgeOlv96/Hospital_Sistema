@@ -2,23 +2,9 @@ import React from 'react';
 import moment from 'moment';
 import './OperatingRoomSchedule.css';
 
-const OperatingRooms = [
-  'A1', 
-  'A2', 
-  'T1', 
-  'T2', 
-  '1', 
-  '2', 
-  '3', 
-  '4', 
-  '5', 
-  '6', 
-  'E', 
-  'H', 
-  'RX'
-];
+const OperatingRooms = ['A1', 'A2', 'T1', 'T2', '1', '2', '3', '4', '5', '6', 'E', 'H', 'RX'];
 
-const OperatingRoomSchedulePrepro = ({ date, events, onEventClick }) => {
+const OperatingRoomSchedulePrepro = ({ date, events, onEventClick, onPreviousDay, onNextDay }) => {
   // Agrega un console.log para verificar los datos recibidos
   console.log("Eventos recibidos:", events);
 
@@ -46,12 +32,8 @@ const OperatingRoomSchedulePrepro = ({ date, events, onEventClick }) => {
       return `${String(hour).padStart(2, '0')}:00`;
     });
 
-    // Genera el horario para cada sala
     const schedule = OperatingRooms.map(room => {
       const roomAppointments = filteredAppointments.filter(app => app.sala_quirofano === room);
-
-      // Agrega un console.log para verificar los eventos en cada sala
-      console.log(`Eventos para la sala ${room}:`, roomAppointments);
 
       const cells = hours.map((hour, index) => {
         const startOfHour = moment(date).startOf('day').add(index + 7, 'hours');
@@ -61,10 +43,7 @@ const OperatingRoomSchedulePrepro = ({ date, events, onEventClick }) => {
           moment(app.start).isBefore(endOfHour) && moment(app.end).isAfter(startOfHour)
         );
 
-        // Agrega un console.log para verificar eventos que se superponen en cada hora
         if (overlappingAppointments.length > 0) {
-          console.log(`Eventos que se superponen en ${hour}:`, overlappingAppointments);
-
           return (
             <div key={hour} className="schedule-slot occupied">
               {overlappingAppointments.map((appointment, idx) => {
@@ -121,6 +100,89 @@ const OperatingRoomSchedulePrepro = ({ date, events, onEventClick }) => {
 
   return (
     <div className="operating-room-schedule">
+<div 
+  className="schedule-navigation" 
+  style={{
+    display: 'flex', 
+    justifyContent: 'center',  // Center the content
+    alignItems: 'center', 
+    marginBottom: '20px', 
+    position: 'relative',
+    padding: '0 20px'  // Add padding to give more space on the sides
+  }}
+>
+  <span 
+    className="navigation-date" 
+    style={{
+      position: 'absolute',
+      left: '50%',
+      transform: 'translateX(-50%)',
+      fontWeight: 'bold',
+      fontSize: '1.5em'
+    }}
+  >
+    {moment(date).format('DD/MMMM/YYYY')}
+  </span>
+  <div 
+    className="navigation-buttons" 
+    style={{
+      display: 'flex', 
+      gap: '10px',
+      position: 'relative', // Removed absolute positioning
+      marginLeft: 'auto'  // Align buttons to the right side
+    }}
+  >
+    <button 
+      onClick={onPreviousDay} 
+      style={{
+        backgroundColor: '#007bff',
+        color: 'white',
+        border: '2px solid #007bff',
+        padding: '10px 20px',
+        borderRadius: '5px',
+        cursor: 'pointer',
+        transition: 'background-color 0.3s, border-color 0.3s'
+      }}
+      onMouseEnter={e => {
+        e.target.style.backgroundColor = 'white';
+        e.target.style.color = '#365b77';
+        e.target.style.borderColor = '#007bff';
+      }}
+      onMouseLeave={e => {
+        e.target.style.backgroundColor = '#365b77';
+        e.target.style.color = 'white';
+        e.target.style.borderColor = '#007bff';
+      }}
+    >
+      Anterior
+    </button>
+    <button 
+      onClick={onNextDay} 
+      style={{
+        backgroundColor: '#007bff',
+        color: 'white',
+        border: '2px solid #007bff',
+        padding: '10px 20px',
+        borderRadius: '5px',
+        cursor: 'pointer',
+        transition: 'background-color 0.3s, border-color 0.3s'
+      }}
+      onMouseEnter={e => {
+        e.target.style.backgroundColor = 'white';
+        e.target.style.color = '#365b77';
+        e.target.style.borderColor = '#007bff';
+      }}
+      onMouseLeave={e => {
+        e.target.style.backgroundColor = '#365b77';
+        e.target.style.color = 'white';
+        e.target.style.borderColor = '#007bff';
+      }}
+    >
+      Siguiente
+    </button>
+  </div>
+</div>
+
       <div className="schedule-header">
         <div className="schedule-time-header">Hora</div>
         {OperatingRooms.map(room => (
