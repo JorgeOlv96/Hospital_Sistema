@@ -569,6 +569,60 @@ function AddAppointmentModalPending({
 
           <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
             <div className="flex mb-4">
+              <div className="mr-4 w-full">
+                <label className="block font-semibold text-gray-700 mb-2">
+                  Tipo de admisión:
+                </label>
+                {isEditing ? (
+                  <>
+                    <select
+                      name="tipo_admision"
+                      value={patientData.tipo_admision}
+                      onChange={handleChange}
+                      className="bg-white p-3 rounded-lg w-full"
+                      style={{ maxWidth: "100%", boxSizing: "border-box" }}
+                    >
+                      <option value="">Seleccionar</option>
+                      <option value="Cama">Cama</option>
+                      <option value="Consulta externa">Consulta externa</option>
+                      <option value="UrgenciaS">Urgencia</option>
+                    </select>
+
+                    {patientData.tipo_admision === "Cama" && (
+                      <div className="mt-4">
+                        <label className="block font-semibold text-gray-700 mb-2">
+                          Cama:
+                        </label>
+                        <input
+                          type="text"
+                          name="cama"
+                          value={patientData.cama}
+                          onChange={handleChange}
+                          className="bg-white p-3 rounded-lg w-full"
+                          style={{ maxWidth: "100%", boxSizing: "border-box" }}
+                        />
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <p className="bg-gray-200 p-3 rounded-lg">
+                      {patientData?.tipo_admision}
+                    </p>
+
+                    {patientData.tipo_admision === "Cama" && (
+                      <p className="mt-4 bg-gray-200 p-3 rounded-lg">
+                        {patientData?.cama || "No especificada"}
+                      </p>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col p-4 bg-gray-100 rounded-lg shadow-md mt-4">
+            <div className="flex mb-4">
               
               <div className="mr-4 w-full">
                 <label className="block font-semibold text-gray-700 mb-2">

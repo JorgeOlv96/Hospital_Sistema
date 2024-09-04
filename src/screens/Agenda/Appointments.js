@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
-import Layout from "../Layout";
+import Layout from "../../Layout";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "moment/locale/es";
+import { saveAs } from "file-saver";
 import DatePicker from "react-datepicker";
 import { es } from "date-fns/locale"; // Importa el local en español
 import "react-datepicker/dist/react-datepicker.css";
@@ -10,9 +11,9 @@ import axios from "axios";
 import { BiChevronLeft, BiChevronRight, BiTime } from "react-icons/bi";
 import { HiOutlineViewGrid } from "react-icons/hi";
 import { HiOutlineCalendarDays } from "react-icons/hi2";
-import AddAppointmentModalProgramado from "../components/Modals/AddApointmentModalProgramado";
+import AddAppointmentModalProgramado from "../../components/Modals/AddApointmentModalProgramado";
 import { Link } from "react-router-dom";
-import OperatingRoomSchedule from "../components/OperatingRoomSchedule";
+import OperatingRoomSchedule from "../../components/OperatingRoomSchedule";
 import { FaHospital } from "react-icons/fa";
 import * as XLSX from 'xlsx'; 
 import { FaCalendarAlt } from 'react-icons/fa'; // Asegúrate de instalar react-icons si aún no lo has hecho
@@ -73,7 +74,7 @@ const CustomToolbar = ({ date, view, onView, onNavigate, onPrint, selectedDate, 
       <h1 className="text-xl font-semibold">Solicitudes</h1>
       <div className="my-4 flex items-center">
         <Link
-          to="/solicitudes/Programarsolicitud"
+          to="/agenda/Programarsolicitud"
           className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
         >
           Gestionar solicitudes
@@ -545,40 +546,57 @@ ${todaysAnesthesiologists
       console.error("Error al imprimir las solicitudes:", error);
     }
   };
-  const handleExportToExcel = (printDate) => {
-    // Filtra las citas para el día seleccionado
-    const filteredAppointments = appointments.filter((appointment) =>
-      moment(appointment.start).isSame(printDate, "day")
-    );
+  const exportToExcel = async (selectedDate) => {
+    const formattedDate = moment(selectedDate).format("YYYY-MM-DD");
   
-    
-    const dataForExcel = filteredAppointments.map((appointment) => ({
-      
-      ID: appointment.id,
-      Folio: appointment.folio,
-      Paciente: appointment.title,
-      "Fecha Programada": moment(appointment.start).format("DD/MM/YYYY"),
-      "Hora Asignada": moment(appointment.start).format("HH:mm"),
-      "Tiempo Estimado": appointment.tiempo_estimado,
-      Sala: appointment.operatingRoom,
-      Sexo: appointment.sexo,
-      Procedimientos: appointment.procedimientos_paciente,
-      Diagnostico: appointment.diagnostico,
-      Especialidad: appointment.nombre_especialidad,
-      Clave: appointment.clave_esp,
-      Procedencia: appointment.tipo_admision,
-      Anestesiólogo: appointment.nombre_anestesiologo,
-      Cirujano: appointment.nombre_cirujano,
-      Insumos: appointment.req_insumo
-    }));
-    console.log(filteredAppointments);
-    // Define la hoja de Excel y los datos
-    const ws = XLSX.utils.json_to_sheet(dataForExcel);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Citas");
+    try {
+      // Fetch de las solicitudes programadas
+      const solicitudesResponse = await fetch(
+        `${baseURL}/api/solicitudes/programadas`
+      );
+      if (!solicitudesResponse.ok) {
+        throw new Error("Network response for solicitudes was not ok");
+      }
+      const solicitudesData = await solicitudesResponse.json();
   
-    // Genera y descarga el archivo Excel
-    XLSX.writeFile(wb, `Citas_${moment(printDate).format("YYYYMMDD")}.xlsx`);
+      // Filtrar las solicitudes del día seleccionado
+      const filteredAppointments = solicitudesData.filter(
+        (solicitud) =>
+          moment(solicitud.fecha_solicitada).format("YYYY-MM-DD") ===
+          formattedDate
+      );
+  
+      // Ordenar por turno_solicitado: Matutino, Vespertino, Nocturno
+      const orderedAppointments = filteredAppointments.sort((a, b) => {
+        const turnosOrder = {
+          Matutino: 1,
+          Vespertino: 2,
+          Nocturno: 3,
+        };
+  
+        return turnosOrder[a.turno_solicitado] - turnosOrder[b.turno_solicitado];
+      });
+  
+      // Crear la hoja de cálculo a partir de los datos ordenados
+      const worksheet = XLSX.utils.json_to_sheet(orderedAppointments);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Solicitudes preprogramadas");
+  
+      // Generar el archivo Excel y guardarlo con FileSaver
+      const excelBuffer = XLSX.write(workbook, {
+        bookType: "xlsx",
+        type: "array",
+      });
+      const data = new Blob([excelBuffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+  
+      // Nombre del archivo con la fecha seleccionada
+      const fileName = `Programadas_${formattedDate}.xlsx`;
+      saveAs(data, fileName);
+    } catch (error) {
+      console.error("Error exporting data:", error);
+    }
   };
 
   return (
@@ -611,7 +629,7 @@ ${todaysAnesthesiologists
       onPrint={handlePrintClick}
       selectedDate={selectedDate}
       handleDateChange={handleDateChange}
-      onExport={handleExportToExcel}
+      onExport={exportToExcel}
     />
           {view === "operatingRooms" ? (
             <OperatingRoomSchedule

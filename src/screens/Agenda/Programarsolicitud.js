@@ -240,48 +240,62 @@ function ProgramarSolicitud() {
     return `${day}-${month}-${year}`;
   };
 
-  // Función para exportar datos a Excel
-  const exportToExcel = async (selectedDate) => {
-    const formattedDate = moment(selectedDate).format("YYYY-MM-DD");
+// Función para exportar datos a Excel
+// Función para exportar datos a Excel
+const exportToExcel = async (selectedDate) => {
+  const formattedDate = moment(selectedDate).format("YYYY-MM-DD");
 
-    try {
-      // Fetch de las solicitudes programadas
-      const solicitudesResponse = await fetch(
-        `${baseURL}/api/solicitudes/preprogramadas`
-      );
-      if (!solicitudesResponse.ok) {
-        throw new Error("Network response for solicitudes was not ok");
-      }
-      const solicitudesData = await solicitudesResponse.json();
-
-      // Filtrar las solicitudes del día seleccionado
-      const filteredAppointments = solicitudesData.filter(
-        (solicitud) =>
-          moment(solicitud.fecha_solicitada).format("YYYY-MM-DD") ===
-          formattedDate
-      );
-
-      // Crear la hoja de cálculo a partir de los datos filtrados
-      const worksheet = XLSX.utils.json_to_sheet(filteredAppointments);
-      const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Solicitudes preprogramadas");
-
-      // Generar el archivo Excel y guardarlo con FileSaver
-      const excelBuffer = XLSX.write(workbook, {
-        bookType: "xlsx",
-        type: "array",
-      });
-      const data = new Blob([excelBuffer], {
-        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      });
-
-      // Nombre del archivo con la fecha seleccionada
-      const fileName = `Solicitudes_${formattedDate}.xlsx`;
-      saveAs(data, fileName);
-    } catch (error) {
-      console.error("Error exporting data:", error);
+  try {
+    // Fetch de las solicitudes programadas
+    const solicitudesResponse = await fetch(
+      `${baseURL}/api/solicitudes/preprogramadas`
+    );
+    if (!solicitudesResponse.ok) {
+      throw new Error("Network response for solicitudes was not ok");
     }
-  };
+    const solicitudesData = await solicitudesResponse.json();
+
+    // Filtrar las solicitudes del día seleccionado
+    const filteredAppointments = solicitudesData.filter(
+      (solicitud) =>
+        moment(solicitud.fecha_solicitada).format("YYYY-MM-DD") ===
+        formattedDate
+    );
+
+    // Ordenar por turno_solicitado: Matutino, Vespertino, Nocturno
+    const orderedAppointments = filteredAppointments.sort((a, b) => {
+      const turnosOrder = {
+        Matutino: 1,
+        Vespertino: 2,
+        Nocturno: 3,
+      };
+
+      return turnosOrder[a.turno_solicitado] - turnosOrder[b.turno_solicitado];
+    });
+
+    // Crear la hoja de cálculo a partir de los datos ordenados
+    const worksheet = XLSX.utils.json_to_sheet(orderedAppointments);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Solicitudes preprogramadas");
+
+    // Generar el archivo Excel y guardarlo con FileSaver
+    const excelBuffer = XLSX.write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+    const data = new Blob([excelBuffer], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    // Nombre del archivo con la fecha seleccionada
+    const fileName = `Solicitudes_${formattedDate}.xlsx`;
+    saveAs(data, fileName);
+  } catch (error) {
+    console.error("Error exporting data:", error);
+  }
+};
+
+
 
   // Manejo del evento de exportación
   const handleExport = async () => {
@@ -717,7 +731,7 @@ const events = pendingAppointments.map((app) => {
             <div className="flex space-x-4">
               <div>
                 <Link
-                  to="/appointments"
+                  to="/agenda/appointments"
                   className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
                 >
                   <span>Agenda</span>
@@ -725,7 +739,7 @@ const events = pendingAppointments.map((app) => {
               </div>
               <div>
                 <Link
-                  to="/solicitudes/todas"
+                  to="/agenda/todas"
                   className="bg-[#4A5568] hover:bg-[#758195] text-white py-2 px-4 rounded inline-flex items-center"
                 >
                   <span>Todas las solicitudes</span>
@@ -733,7 +747,7 @@ const events = pendingAppointments.map((app) => {
               </div>
               <div>
                 <Link
-                  to="/solicitudes/Solicitudesprogramadas"
+                  to="/agenda/Solicitudesprogramadas"
                   className="bg-[#5DB259] hover:bg-[#528E4F] text-white py-2 px-4 rounded inline-flex items-center"
                 >
                   <span>Programadas</span>
@@ -741,7 +755,7 @@ const events = pendingAppointments.map((app) => {
               </div>
               <div>
                 <Link
-                  to="/solicitudes/Solicitudreaizada"
+                  to="/agenda/Solicitudreaizada"
                   className="bg-[#63B3ED] hover:bg-[#63B3ED] text-white py-2 px-4 rounded inline-flex items-center"
                 >
                   <span>Realizadas</span>
@@ -749,7 +763,7 @@ const events = pendingAppointments.map((app) => {
               </div>
               <div>
                 <Link
-                  to="/solicitudes/Solicitudsuspendida"
+                  to="/agenda/Solicitudsuspendida"
                   className="bg-[#D87D09] hover:bg-[#BF6E07] text-white py-2 px-4 rounded inline-flex items-center"
                 >
                   <span>Suspendidas</span>
@@ -906,7 +920,7 @@ const events = pendingAppointments.map((app) => {
                     <FaThLarge size={24} />
                   </button>
                   <button
-                    onClick={() => setViewMode("calendar")}
+                    onClick={() => setViewMode("agenda")}
                     className={`flex items-center px-4 py-2 rounded-md ${
                       viewMode === "calendar"
                         ? "bg-[#365b77] text-white"

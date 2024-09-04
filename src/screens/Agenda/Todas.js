@@ -4,6 +4,9 @@ import moment from "moment";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import AddAppointmentModal from "../../components/Modals/AddApointmentModal";
+import AddAppointmentModalProgramado from "../../components/Modals/AddApointmentModalProgramado";
+import AddAppointmentModalPending from "../../components/Modals/AddApointmentModalPending";
+import AddApointmentModalSuspendida from "../../components/Modals/AddApointmentModalSuspendida";
 import { FaTable, FaThLarge } from "react-icons/fa"; // Asegúrate de tener esta biblioteca instalada
 
 function TodasSolicitudes() {
@@ -147,6 +150,42 @@ function TodasSolicitudes() {
     setSelectedAppointment(solicitud);
     setOpen(true);
   };
+  
+  const renderModal = () => {
+    if (!selectedAppointment) return null;
+
+    switch (selectedAppointment.estado_solicitud) {
+      case "Programada":
+        return (
+          <AddAppointmentModalProgramado
+            datas={solicitudes}
+            isOpen={open}
+            closeModal={() => setOpen(false)}
+            appointmentId={selectedAppointment.id_solicitud}
+          />
+        );
+      case "Pre-programada":
+        return (
+          <AddAppointmentModalPending
+            datas={solicitudes}
+            isOpen={open}
+            closeModal={() => setOpen(false)}
+            appointmentId={selectedAppointment.id_solicitud}
+          />
+        );
+      case "Suspendida":
+        return (
+          <AddApointmentModalSuspendida
+            datas={solicitudes}
+            isOpen={open}
+            closeModal={() => setOpen(false)}
+            appointmentId={selectedAppointment.id_solicitud}
+          />
+        );
+      default:
+        return null;
+    }
+  };
 
   const handleSort = (field) => {
     if (sortBy === field) {
@@ -289,7 +328,7 @@ function TodasSolicitudes() {
           <div className="flex my-4 space-x-4">
             <div>
               <Link
-                to="/appointments"
+                to="/agenda/appointments"
                 className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
               >
                 <span>Agenda</span>
@@ -533,6 +572,7 @@ function TodasSolicitudes() {
                       </button>
                     </div>
                   </div>
+                  {renderModal()}
 
                   {view === "table" ? (
                     <div className="overflow-x-auto">

@@ -154,7 +154,7 @@ function Solicitudesprogramadas() {
           <div className="flex my-4 space-x-4">
             <div>
               <Link
-                to="/appointments"
+                to="/agenda/appointments"
                 className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
               >
                 <span>Agenda</span>
@@ -163,7 +163,7 @@ function Solicitudesprogramadas() {
 
             <div>
               <Link
-                to="/solicitudes/todas"
+                to="/agenda/todas"
                 className="bg-[#4A5568] hover:bg-[#758195] text-white py-2 px-4 rounded inline-flex items-center"
               >
                 <span>Todas las solicitudes</span>
@@ -172,7 +172,7 @@ function Solicitudesprogramadas() {
 
             <div>
               <Link
-                to="/solicitudes/Programarsolicitud"
+                to="/agenda/Programarsolicitud"
                 className="bg-[#06ABC9] hover:bg-[#00C5E8] text-white py-2 px-4 rounded inline-flex items-center"
               >
                 <span>Pre-programadas</span>
@@ -181,7 +181,7 @@ function Solicitudesprogramadas() {
 
             <div>
               <Link
-                to="/solicitudes/Solicitudreaizada"
+                to="/agenda/Realizadas"
                 className="bg-[#63B3ED] hover:bg-[#63B3ED] text-white py-2 px-4 rounded inline-flex items-center"
               >
                 <span>Realizadas</span>
@@ -190,7 +190,7 @@ function Solicitudesprogramadas() {
 
             <div>
               <Link
-                to="/solicitudes/Solicitudsuspendida"
+                to="/agenda/Solicitudsuspendida"
                 className="bg-[#D87D09] hover:bg-[#BF6E07] text-white py-2 px-4 rounded inline-flex items-center"
               >
                 <span>Suspendidas</span>

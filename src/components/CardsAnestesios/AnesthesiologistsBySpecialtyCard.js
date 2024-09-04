@@ -15,18 +15,6 @@ const AnesthesiologistsBySpecialtyCard = () => {
     '#FFCD56', '#4BC0C0', '#F7464A', '#46BFBD', '#FDB45C', '#949FB1', '#4D5360'
   ];
 
-  // Función para obtener el lunes de la semana actual
-  const getStartOfWeek = (date) => {
-    const day = date.getDay();
-    const diff = date.getDate() - day + (day === 0 ? -6 : 1);
-    return new Date(date.setDate(diff));
-  };
-
-  // Función para obtener el domingo de la semana actual
-  const getEndOfWeek = (startOfWeek) => {
-    return new Date(startOfWeek.getTime() + 6 * 24 * 60 * 60 * 1000);
-  };
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -37,22 +25,18 @@ const AnesthesiologistsBySpecialtyCard = () => {
         const anesthesiologists = await response.json();
 
         const specialtyCounts = {};
+        const today = new Date().toDateString();
 
-        // Obtener el lunes y domingo de la semana actual
-        const today = new Date();
-        const startOfWeek = getStartOfWeek(new Date(today));
-        const endOfWeek = getEndOfWeek(startOfWeek);
-
-        // Inicializar todas las salas permitidas con un conteo de 0
+        // Inicializar todas las salas con conteo 0
         allowedRooms.forEach(room => {
           specialtyCounts[room] = 0;
         });
 
-        // Contar los anestesiólogos por sala, excluyendo las salas no permitidas
         anesthesiologists.forEach(anesthesiologist => {
           const room = anesthesiologist.sala_anestesio;
-          const date = new Date(anesthesiologist.dia_anestesio);
-          if (allowedRooms.includes(room) && date >= startOfWeek && date <= endOfWeek) {
+          const date = new Date(anesthesiologist.dia_anestesio).toDateString();
+
+          if (allowedRooms.includes(room) && date === today) {
             specialtyCounts[room] += 1;
           }
         });
@@ -89,14 +73,14 @@ const AnesthesiologistsBySpecialtyCard = () => {
       },
       title: {
         display: true,
-        text: 'Anestesiólogos Programados por Sala (Semana Actual)',
+        text: 'Anestesiólogos Programados por Sala (Hoy)',
       },
     },
   };
 
   return (
     <div className="bg-white rounded-xl border-[1px] border-border p-5 shadow-md card-zoom">
-      <h3 className="text-lg font-medium mb-4">Anestesiólogos por Sala</h3>
+      <h3 className="text-lg font-medium mb-4">Anestesiólogos Programados por Sala</h3>
       <Bar data={chartData} options={options} />
     </div>
   );

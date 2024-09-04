@@ -11,7 +11,7 @@ import Dashboard from './screens/Dashboard';
 import Solicitudes from './screens/Solicitudes/Solicitudes';
 import Toast from './components/Notifications/Toast';
 import Payments from './screens/Payments/Payments';
-import Appointments from './screens/Appointments';
+import Appointments from './screens/Agenda/Appointments';
 import Patients from './screens/Patients/Patients';
 import Campaings from './screens/Campaings';
 import Services from './screens/Services';
@@ -36,10 +36,10 @@ import Crearsolicitud from './screens/Solicitudes/Crearsolicitud';
 import Urgencias from './screens/Urgencias';
 import IndexPage from './IndexPage';
 import Ayuda from './HelpPage';
-import Programarsolicitud from './screens/Solicitudes/Programarsolicitud';
-import Solicitudesprogramadas from './screens/Solicitudes/Programadas';
-import Solicitudessuspendidas from './screens/Solicitudes/Suspendidas';
-import Solicitudesrealizadas from './screens/Solicitudes/Realizadas';
+import Programarsolicitud from './screens/Agenda/Programarsolicitud';
+import Solicitudesprogramadas from './screens/Agenda/Programadas';
+import Solicitudessuspendidas from './screens/Agenda/Suspendidas';
+import Solicitudesrealizadas from './screens/Agenda/Realizadas';
 import Evaluacionmedica from './screens/Evaluacion';
 import Anestesiólogos from './screens/Anestesiologos';
 import Programaranestesiologo from './screens/Anestesio/Programaranestesiologo';
@@ -56,7 +56,7 @@ import Gestionusuarios from './screens/Gestorusuarios/Gestionusr';
 import SalaManager from './screens/Salas/SalaManager';
 import SolicitudesInsumos from './screens/Insumos/solicitudesInsumos';
 import GestorManager from './screens/Productividad/Gestorproductividad';
-import TodasSolicitudes from './screens/Solicitudes/Todas';
+import TodasSolicitudes from './screens/Agenda/Todas';
 
 function App() {
   Aos.init();
@@ -101,14 +101,14 @@ function App() {
             <Route path="/patients" element={<Patients />} />
             <Route path="/solicitudes" element={<Solicitudes />} />
             <Route path="/solicitudes/crearsolicitud" element={<Crearsolicitud />} />
-            <Route path="/solicitudes/Programarsolicitud" element={<Programarsolicitud />} />
-            <Route path="/solicitudes/Solicitudesprogramadas" element={<Solicitudesprogramadas />} />
-            <Route path="/solicitudes/Solicitudsuspendida" element={<Solicitudessuspendidas />} />
-            <Route path="/solicitudes/Solicitudreaizada" element={<Solicitudesrealizadas />} />
-            <Route path="/solicitudes/todas" element={<TodasSolicitudes />} />
+            <Route path="/agenda/Programarsolicitud" element={<Programarsolicitud />} />
+            <Route path="/agenda/Solicitudesprogramadas" element={<Solicitudesprogramadas />} />
+            <Route path="/agenda/Solicitudsuspendida" element={<Solicitudessuspendidas />} />
+            <Route path="/agenda/Solicitudreaizada" element={<Solicitudesrealizadas />} />
+            <Route path="/agenda/todas" element={<TodasSolicitudes />} />
             <Route path="/evaluacion" element={<Evaluacionmedica />} />
             {/* Others */}
-            <Route path="/appointments" element={<Appointments />} />
+            <Route path="/agenda/appointments" element={<Appointments />} />
             <Route path="/anestesiólogos" element={<Anestesiólogos />} />
             <Route path="/anestesio/Programaranestesiologo" element={<Programaranestesiologo />} />
             <Route path="/campaigns" element={<Campaings />} />

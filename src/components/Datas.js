@@ -67,7 +67,7 @@ export const MenuDatas = [
   },
   {
     title: 'Agenda',
-    path: '/appointments',
+    path: '/agenda/appointments',
     icon: FaRegCalendarAlt,
     viewRole: [1, 2, 3, 4, 5, 6]
   },

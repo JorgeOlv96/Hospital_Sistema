@@ -343,7 +343,7 @@ function AddAppointmentModalEvaluar({
                       <option value="">Seleccionar</option>
                       <option value="Cama">Cama</option>
                       <option value="Consulta externa">Consulta externa</option>
-                      <option value="Urgencia">Urgencia</option>
+                      <option value="UrgenciaS">Urgencia</option>
                     </select>
 
                     {patientData.tipo_admision === "Cama" && (

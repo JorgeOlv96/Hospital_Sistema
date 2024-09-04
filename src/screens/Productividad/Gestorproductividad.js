@@ -194,38 +194,51 @@ function GestorManager() {
   };
 
   const exportToExcel = () => {
+    // Ordenar historicoSolicitudes: primero por fecha_programada (descendente) y luego por fecha_solicitada (descendente)
+    const sortedSolicitudes = historicoSolicitudes.sort((a, b) => {
+      // Convertir fechas a objetos Date para compararlas
+      const fechaProgramadaA = a.fecha_programada ? new Date(a.fecha_programada) : null;
+      const fechaProgramadaB = b.fecha_programada ? new Date(b.fecha_programada) : null;
+  
+      // Comparar fechas programadas
+      if (fechaProgramadaA && fechaProgramadaB) {
+        return fechaProgramadaB - fechaProgramadaA;
+      } else if (fechaProgramadaA) {
+        return -1;
+      } else if (fechaProgramadaB) {
+        return 1;
+      }
+  
+      // Si no hay fecha_programada, comparar por fecha_solicitada
+      const fechaSolicitadaA = new Date(a.fecha_solicitada);
+      const fechaSolicitadaB = new Date(b.fecha_solicitada);
+  
+      return fechaSolicitadaB - fechaSolicitadaA;
+    });
+  
     const workbook = XLSX.utils.book_new();
-
-    // Convertir los datos a hojas de Excel
-    const solicitudesSheet = XLSX.utils.json_to_sheet(historicoSolicitudes);
-    const anestesiologosSheet = XLSX.utils.json_to_sheet(
-      historicoAnestesiologos
-    );
+  
+    // Convertir los datos ordenados a hojas de Excel
+    const solicitudesSheet = XLSX.utils.json_to_sheet(sortedSolicitudes);
+    const anestesiologosSheet = XLSX.utils.json_to_sheet(historicoAnestesiologos);
     const especialidadesSheet = XLSX.utils.json_to_sheet(especialidadesCount);
     const salasSheet = XLSX.utils.json_to_sheet(salasCount);
-
+  
     // Agregar las hojas al libro de Excel
     XLSX.utils.book_append_sheet(workbook, solicitudesSheet, "Solicitudes");
-    XLSX.utils.book_append_sheet(
-      workbook,
-      anestesiologosSheet,
-      "Anestesiologos"
-    );
-    XLSX.utils.book_append_sheet(
-      workbook,
-      especialidadesSheet,
-      "Conteo Especialidades"
-    );
+    XLSX.utils.book_append_sheet(workbook, anestesiologosSheet, "Anestesiologos");
+    XLSX.utils.book_append_sheet(workbook, especialidadesSheet, "Conteo Especialidades");
     XLSX.utils.book_append_sheet(workbook, salasSheet, "Conteo Salas");
-
+  
     // Obtener la fecha actual y formatear el nombre del archivo
     const today = new Date();
     const formattedDate = today.toISOString().slice(0, 10);
     const fileName = `Productividad_${formattedDate}.xlsx`;
-
+  
     // Guardar el archivo
     XLSX.writeFile(workbook, fileName);
   };
+  
 
   const startIndex = (page - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
