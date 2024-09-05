@@ -41,7 +41,7 @@ function ProgramarSolicitud() {
   const [nameFilter, setNameFilter] = useState("");
   const [specialtyFilter, setSpecialtyFilter] = useState("");
   const [dateFilter, setDateFilter] = useState("");
-  const [viewMode, setViewMode] = useState("list"); // Agregamos un estado para la vista
+  const [viewMode, setViewMode] = useState("agenda"); // Agregamos un estado para la vista
   const [view, setView] = useState(""); // Default view
 
   const [openModal, setOpenModal] = useState(false);
@@ -81,6 +81,16 @@ function ProgramarSolicitud() {
       const sortedData = data.sort((a, b) => b.id_solicitud - a.id_solicitud);
 
       setPendingAppointments(sortedData);
+
+      // Buscar la fecha más cercana a hoy
+      const today = moment().startOf('day');
+      const upcomingAppointments = sortedData
+        .filter((appointment) => moment(appointment.fecha_solicitada).isSameOrAfter(today));
+
+      if (upcomingAppointments.length > 0) {
+        const closestDate = upcomingAppointments[0].fecha_solicitada;
+        setSelectedDate(moment(closestDate).toDate()); // Actualizar la fecha seleccionada
+      }
     } catch (error) {
       console.error("Error fetching pending appointments:", error);
     }
@@ -273,8 +283,34 @@ const exportToExcel = async (selectedDate) => {
       return turnosOrder[a.turno_solicitado] - turnosOrder[b.turno_solicitado];
     });
 
-    // Crear la hoja de cálculo a partir de los datos ordenados
-    const worksheet = XLSX.utils.json_to_sheet(orderedAppointments);
+    // Reorganizar las propiedades para que 'cama' esté junto a 'tipo_intervencion'
+    const reorganizedAppointments = orderedAppointments.map((solicitud) => {
+      return {
+        id: solicitud.id_solicitud,
+        folio: solicitud.folio,
+        ap_paterno: solicitud.ap_paterno,
+        ap_materno: solicitud.ap_materno,
+        nombre_paciente: solicitud.nombre_paciente,
+        edad: solicitud.edad,
+        sexo: solicitud.sexo,
+        procedimientos_paciente: solicitud.procedimientos_paciente,
+        diagnostico: solicitud.diagnostico,
+        tiempo_estimado: solicitud.tiempo_estimado,
+        tipo_intervencion: solicitud.tipo_intervencion,
+        cama: solicitud.cama, // Mover cama junto a tipo_intervencion
+        fecha_solicitada: solicitud.fecha_solicitada,
+        turno_solicitado: solicitud.turno_solicitado,
+        sala_quirofano: solicitud.sala_quirofano,
+        nombre_especialidad: solicitud.nombre_especialidad,
+        cirujano: solicitud.nombre_cirujano,
+        req_insumo: solicitud.req_insumo,
+        procedimientos_extra: solicitud.procedimientos_extra
+        // Añade cualquier otro campo que desees
+      };
+    });
+
+    // Crear la hoja de cálculo a partir de los datos ordenados y reorganizados
+    const worksheet = XLSX.utils.json_to_sheet(reorganizedAppointments);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Solicitudes preprogramadas");
 
@@ -288,12 +324,13 @@ const exportToExcel = async (selectedDate) => {
     });
 
     // Nombre del archivo con la fecha seleccionada
-    const fileName = `Solicitudes_${formattedDate}.xlsx`;
+    const fileName = `Preprogramadas_${formattedDate}.xlsx`;
     saveAs(data, fileName);
   } catch (error) {
     console.error("Error exporting data:", error);
   }
 };
+
 
 
 
@@ -899,6 +936,16 @@ const events = pendingAppointments.map((app) => {
             <div className="flex flex-col space-y-4">
               <div className="flex justify-between">
                 <div className="flex space-x-2">
+                <button
+                    onClick={() => setViewMode("agenda")}
+                    className={`flex items-center px-4 py-2 rounded-md ${
+                      viewMode === "calendar"
+                        ? "bg-[#365b77] text-white"
+                        : "bg-gray-200"
+                    }`}
+                  >
+                    <FaInfoCircle size={24} />
+                  </button>
                   <button
                     onClick={() => setViewMode("list")}
                     className={`flex items-center px-4 py-2 mr-2 rounded-md ${
@@ -918,16 +965,6 @@ const events = pendingAppointments.map((app) => {
                     }`}
                   >
                     <FaThLarge size={24} />
-                  </button>
-                  <button
-                    onClick={() => setViewMode("agenda")}
-                    className={`flex items-center px-4 py-2 rounded-md ${
-                      viewMode === "calendar"
-                        ? "bg-[#365b77] text-white"
-                        : "bg-gray-200"
-                    }`}
-                  >
-                    <FaInfoCircle size={24} />
                   </button>
                 </div>
               </div>

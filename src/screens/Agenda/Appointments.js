@@ -71,7 +71,7 @@ const CustomToolbar = ({ date, view, onView, onNavigate, onPrint, selectedDate, 
   };
   return (
     <div className="flex flex-col gap-4 mb-6">
-      <h1 className="text-xl font-semibold">Solicitudes</h1>
+      <h1 className="text-xl font-semibold">Programación</h1>
       <div className="my-4 flex items-center">
         <Link
           to="/agenda/Programarsolicitud"
@@ -577,10 +577,37 @@ ${todaysAnesthesiologists
         return turnosOrder[a.turno_solicitado] - turnosOrder[b.turno_solicitado];
       });
   
-      // Crear la hoja de cálculo a partir de los datos ordenados
-      const worksheet = XLSX.utils.json_to_sheet(orderedAppointments);
+      // Reorganizar las propiedades para que 'cama' esté junto a 'tipo_intervencion'
+      const reorganizedAppointments = orderedAppointments.map((solicitud) => {
+        return {
+          id: solicitud.id_solicitud,
+          folio: solicitud.folio,
+          ap_paterno: solicitud.ap_paterno,
+          ap_materno: solicitud.ap_materno,
+          nombre_paciente: solicitud.nombre_paciente,
+          edad: solicitud.edad,
+          sexo: solicitud.sexo,
+          procedimientos_paciente: solicitud.procedimientos_paciente,
+          diagnostico: solicitud.diagnostico,
+          tiempo_estimado: solicitud.tiempo_estimado,
+          tipo_intervencion: solicitud.tipo_intervencion,
+          cama: solicitud.cama, // Mover cama junto a tipo_intervencion
+          fecha_solicitada: solicitud.fecha_solicitada,
+          turno_solicitado: solicitud.turno_solicitado,
+          sala_quirofano: solicitud.sala_quirofano,
+          nombre_especialidad: solicitud.nombre_especialidad,
+          req_insumo: solicitud.req_insumo,
+          nombre_anestesiologo: solicitud.nombre_anestesiologo,
+          cirujano: solicitud.nombre_cirujano,
+          procedimientos_extra: solicitud.procedimientos_extra
+          // Añade cualquier otro campo que desees
+        };
+      });
+  
+      // Crear la hoja de cálculo a partir de los datos ordenados y reorganizados
+      const worksheet = XLSX.utils.json_to_sheet(reorganizedAppointments);
       const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Solicitudes preprogramadas");
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Solicitudes programadas");
   
       // Generar el archivo Excel y guardarlo con FileSaver
       const excelBuffer = XLSX.write(workbook, {
@@ -598,7 +625,6 @@ ${todaysAnesthesiologists
       console.error("Error exporting data:", error);
     }
   };
-
   return (
     <Layout>
       <div

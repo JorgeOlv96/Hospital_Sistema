@@ -1,10 +1,12 @@
 import React from 'react';
 import moment from 'moment';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import './OperatingRoomSchedule.css';
 
 const OperatingRooms = ['A1', 'A2', 'T1', 'T2', '1', '2', '3', '4', '5', '6', 'E', 'H', 'RX'];
 
-const OperatingRoomSchedulePrepro = ({ date, events, onEventClick, onPreviousDay, onNextDay }) => {
+const OperatingRoomSchedulePrepro = ({ date, events, onEventClick, onPreviousDay, onNextDay, onDateChange  }) => {
   // Agrega un console.log para verificar los datos recibidos
   console.log("Eventos recibidos:", events);
 
