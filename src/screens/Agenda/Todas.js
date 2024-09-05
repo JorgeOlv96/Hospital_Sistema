@@ -28,7 +28,11 @@ function TodasSolicitudes() {
   const [totalPendientes, setTotalPendientes] = useState(0);
   const [totalPreprogramadas, setTotalPreprogramadas] = useState(0);
   const [totalUrgentes, setTotalUrgentes] = useState(0);
-
+  const [openProgramado, setOpenProgramado] = useState(false);
+  const [openPreProgramado, setOpenPreProgramado] = useState(false);
+  const [openSuspendida, setOpenSuspendida] = useState(false);
+  const [openSolicitud, setOpenSolicitud] = useState(false);
+  const [openRealizada, setOpenRealizada] = useState(false);
   const [filterState, setFilterState] = useState("all");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -148,19 +152,38 @@ function TodasSolicitudes() {
 
   const handleViewModal = (solicitud) => {
     setSelectedAppointment(solicitud);
-    setOpen(true);
+  
+    switch (solicitud.estado_solicitud) {
+      case "Programada":
+        setOpenProgramado(true);
+        break;
+      case "Pre-programada":
+        setOpenPreProgramado(true);
+        break;
+      case "Suspendida":
+        setOpenSuspendida(true);
+        break;
+        case "Pendiente":
+          setOpenSolicitud(true);
+          break;
+          case "Realizada":
+            setOpenSolicitud(true);
+            break;
+      default:
+        break;
+    }
   };
   
   const renderModal = () => {
     if (!selectedAppointment) return null;
-
+  
     switch (selectedAppointment.estado_solicitud) {
       case "Programada":
         return (
           <AddAppointmentModalProgramado
             datas={solicitudes}
-            isOpen={open}
-            closeModal={() => setOpen(false)}
+            isOpen={openProgramado}
+            closeModal={() => setOpenProgramado(false)}
             appointmentId={selectedAppointment.id_solicitud}
           />
         );
@@ -168,8 +191,8 @@ function TodasSolicitudes() {
         return (
           <AddAppointmentModalPending
             datas={solicitudes}
-            isOpen={open}
-            closeModal={() => setOpen(false)}
+            isOpen={openPreProgramado}
+            closeModal={() => setOpenPreProgramado(false)}
             appointmentId={selectedAppointment.id_solicitud}
           />
         );
@@ -177,14 +200,38 @@ function TodasSolicitudes() {
         return (
           <AddApointmentModalSuspendida
             datas={solicitudes}
-            isOpen={open}
-            closeModal={() => setOpen(false)}
+            isOpen={openSuspendida}
+            closeModal={() => setOpenSuspendida(false)}
             appointmentId={selectedAppointment.id_solicitud}
           />
         );
+        case "Pendiente":
+          return (
+            <AddAppointmentModal
+              datas={solicitudes}
+              isOpen={openSolicitud}
+              closeModal={() => setOpenSolicitud(false)}
+              appointmentId={selectedAppointment.id_solicitud}
+            />
+          );
+          case "Realizada":
+            return (
+              <AddAppointmentModal
+                datas={solicitudes}
+                isOpen={openSolicitud}
+                closeModal={() => setOpenSolicitud(false)}
+                appointmentId={selectedAppointment.id_solicitud}
+              />
+            );
       default:
         return null;
     }
+  };
+
+  const formatFechaSolicitada = (fecha) => {
+    if (!fecha) return "";
+    const [year, month, day] = fecha.split("-");
+    return `${day}-${month}-${year}`;
   };
 
   const handleSort = (field) => {
@@ -686,7 +733,9 @@ function TodasSolicitudes() {
                                     {solicitud.nombre_especialidad}
                                   </td>
                                   <td className="border px-4 py-2 text-center">
-                                    {solicitud.fecha_solicitada}
+                                  {formatFechaSolicitada(
+                                  solicitud.fecha_solicitada
+                                )}
                                   </td>
                                   <td className="border px-4 py-2 text-center">
                                     {solicitud.req_insumo}

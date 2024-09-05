@@ -59,6 +59,11 @@ function Solicitudesprogramadas() {
     setPage(1); // Reset to first page on filter change
   };
 
+  const formatFechaSolicitada = (fecha) => {
+    if (!fecha) return "";
+    const [year, month, day] = fecha.split("-");
+    return `${day}-${month}-${year}`;
+  };
   const handleViewModal = (appointment) => {
     setSelectedAppointment(appointment);
     setOpen(true);
@@ -181,7 +186,7 @@ function Solicitudesprogramadas() {
 
             <div>
               <Link
-                to="/agenda/Realizadas"
+                to="/agenda/Solicitudreaizada"
                 className="bg-[#63B3ED] hover:bg-[#63B3ED] text-white py-2 px-4 rounded inline-flex items-center"
               >
                 <span>Realizadas</span>
@@ -361,7 +366,9 @@ function Solicitudesprogramadas() {
                           {appointment.nombre_especialidad}
                         </td>
                         <td className="border px-4 py-2">
-                          {appointment.fecha_programada}
+                        {formatFechaSolicitada(
+                                  appointment.fecha_programada
+                                )}
                         </td>
                         <td className="border px-4 py-2 justify-center">
                           {appointment.sala_quirofano}

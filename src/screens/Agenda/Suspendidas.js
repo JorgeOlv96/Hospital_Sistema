@@ -54,7 +54,11 @@ function Solicitudessuspendidas() {
       console.error("Error fetching pending appointments:", error);
     }
   };
-  
+  const formatFechaSolicitada = (fecha) => {
+    if (!fecha) return "";
+    const [year, month, day] = fecha.split("-");
+    return `${day}-${month}-${year}`;
+  };
 
   const handleViewModal = (appointment) => {
     setSelectedAppointment(appointment);
@@ -357,7 +361,9 @@ function Solicitudessuspendidas() {
                           {appointment.nombre_especialidad}
                         </td>
                         <td className="border px-4 py-2">
-                          {appointment.fecha_programada}
+                        {formatFechaSolicitada(
+                                  appointment.fecha_programada
+                                )}
                         </td>
                         <td className="border px-4 py-2 justify-center">
                           {appointment.sala_quirofano}

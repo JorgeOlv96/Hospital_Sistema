@@ -58,7 +58,11 @@ function Solicitudesrealizadas() {
       // Puedes manejar este caso de otra manera, como mostrar un mensaje de error o redirigir a una página predeterminada.
     }
   };
-
+  const formatFechaSolicitada = (fecha) => {
+    if (!fecha) return "";
+    const [year, month, day] = fecha.split("-");
+    return `${day}-${month}-${year}`;
+  };
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
     setFilter({
@@ -368,7 +372,9 @@ function Solicitudesrealizadas() {
                           {appointment.nombre_especialidad}
                         </td>
                         <td className="border px-4 py-2">
-                          {appointment.fecha_programada}
+                        {formatFechaSolicitada(
+                                  appointment.fecha_programada
+                                )}
                         </td>
                         <td className="border px-4 py-2 justify-center">
                           {appointment.sala_quirofano}
