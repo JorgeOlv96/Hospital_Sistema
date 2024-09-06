@@ -591,6 +591,7 @@ ${todaysAnesthesiologists
           diagnostico: solicitud.diagnostico,
           tiempo_estimado: solicitud.tiempo_estimado,
           tipo_intervencion: solicitud.tipo_intervencion,
+          tipo_admision: solicitud.tipo_admision,
           cama: solicitud.cama, // Mover cama junto a tipo_intervencion
           fecha_solicitada: solicitud.fecha_solicitada,
           turno_solicitado: solicitud.turno_solicitado,

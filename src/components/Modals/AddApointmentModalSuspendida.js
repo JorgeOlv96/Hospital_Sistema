@@ -7,6 +7,7 @@ function AddApointmentModalSuspendida({
   isOpen,
   appointmentId,
   onSuspendAppointment,
+  onDeleteAppointment
 }) {
   const [patientData, setPatientData] = useState({
     hora_asignada: "",
@@ -35,6 +36,29 @@ function AddApointmentModalSuspendida({
         } else {
           setPatientData((prevData) => ({ ...prevData, turno: "Nocturno" }));
         }
+      }
+    }
+  };
+
+  const handleDelete = async () => {
+    const confirmation = window.confirm(
+      "¿Estás seguro de que deseas eliminar esta solicitud?"
+    );
+    if (confirmation) {
+      try {
+        const response = await axios.put(
+          `${baseURL}/api/solicitudes/delete/${appointmentId}`
+        );
+        if (response.status === 200) {
+          onDeleteAppointment(appointmentId); // Notificar al componente padre que la solicitud ha sido eliminada
+          closeModal(); // Cerrar el modal
+          window.location.reload();
+        } else {
+          console.error("Unexpected response:", response);
+        }
+      } catch (error) {
+        console.error("Error deleting appointment:", error.message);
+        // Puedes mostrar una notificación al usuario si es necesario
       }
     }
   };
@@ -136,15 +160,22 @@ function AddApointmentModalSuspendida({
         </div>
       ) : (
         <div className="p-4">
-          <div className="flex justify-center">
-            <button
-              onClick={handleReprogramar}
-              className="bg-[#001B58] bg-opacity-20 text-[#001B58] text-sm p-4 rounded-lg font-light"
-              style={{ marginBottom: "8px" }}
-            >
-              Reprogramar cita
-            </button>
-          </div>
+<div className="flex justify-center space-x-4">
+  <button
+    onClick={handleReprogramar}
+    className="bg-[#001B58] bg-opacity-20 text-[#001B58] text-sm p-4 rounded-lg font-light w-40 h-12"
+    style={{ marginBottom: "8px" }}
+  >
+    Reprogramar cita
+  </button>
+  <button
+    onClick={handleDelete}
+    className="bg-red-500 bg-opacity-20 text-red-500 text-sm p-4 rounded-lg font-light w-40 h-12"
+  >
+    Eliminar solicitud
+  </button>
+</div>
+
 
           <div className="mr-4 w-full mb-2">
             <label className="block font-semibold text-gray-700 mb-2">
