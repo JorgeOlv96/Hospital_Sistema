@@ -20,6 +20,16 @@ function Bitacoraenfermeria() {
   const itemsPerPage = 10;
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
 
+  // Estados para los filtros
+  const [nameFilter, setNameFilter] = useState("");
+  const [specialtyFilter, setSpecialtyFilter] = useState("");
+  const [dateFilter, setDateFilter] = useState("");
+  
+  const appointment = {
+    estado_solicitud: "programada", // o cualquier otro estado que tengas
+    // otros datos aquí
+  };
+
   const handleViewClick = (appointment) => {
     if (appointment.id_solicitud) {
       navigate(`/bitacora/Consultabitacora/${appointment.id_solicitud}`);
@@ -27,6 +37,29 @@ function Bitacoraenfermeria() {
       console.error("El ID de la cita no está definido:", appointment);
       // Puedes manejar este caso de otra manera, como mostrar un mensaje de error o redirigir a una página predeterminada.
     }
+  };
+
+
+
+  
+  const isDuplicated = (appointment) => {
+    return (
+      pendingAppointments.filter(
+        (a) =>
+          a.nombre_paciente === appointment.nombre_paciente &&
+          a.ap_paterno === appointment.ap_paterno &&
+          a.ap_materno === appointment.ap_materno &&
+          a.id_solicitud !== appointment.id_solicitud
+      ).length > 0
+    );
+  };
+
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilter((prevFilter) => ({
+      ...prevFilter,
+      [name]: value,
+    }));
   };
 
   useEffect(() => {
@@ -68,7 +101,7 @@ function Bitacoraenfermeria() {
   const getEstadoColorStyle = (estado) => {
     switch (estado.toLowerCase()) {
       case "programada":
-        return { backgroundColor: "#68D391", color: "black" }; // Color de fondo verde y texto negro
+        return { backgroundColor: "#68D391", color: "white" }; // Color de fondo verde y texto negro
       default:
         return {};
     }
@@ -83,6 +116,12 @@ function Bitacoraenfermeria() {
     }
   };
 
+  const formatFechaSolicitada = (fecha) => {
+    if (!fecha) return "";
+    const [year, month, day] = fecha.split("-");
+    return `${day}-${month}-${year}`;
+  };
+
   const sortedAppointments = [...pendingAppointments].sort((a, b) => {
     if (!sortBy) return 0;
 
@@ -94,15 +133,21 @@ function Bitacoraenfermeria() {
     return 0;
   });
 
+  // Método de filtrado
   const filteredAppointments = sortedAppointments.filter((appointment) => {
-    return (
-      (filter.fecha === "" ||
-        appointment.fecha_programada.includes(filter.fecha)) &&
-      (filter.especialidad === "" ||
-        appointment.nombre_especialidad.includes(filter.especialidad)) &&
-      (filter.estado === "" ||
-        appointment.estado_solicitud.includes(filter.estado))
-    );
+    const matchesName =
+      `${appointment.nombre_paciente} ${appointment.ap_paterno} ${appointment.ap_materno}`
+        .toLowerCase()
+        .includes(nameFilter.toLowerCase());
+    const matchesSpecialty = appointment.nombre_especialidad
+      .toLowerCase()
+      .includes(specialtyFilter.toLowerCase());
+    const matchesDate = dateFilter
+      ? new Date(appointment.fecha_programada).toISOString().slice(0, 10) ===
+        dateFilter
+      : true;
+
+    return matchesName && matchesSpecialty && matchesDate;
   });
 
   const startIndex = (page - 1) * itemsPerPage;
@@ -131,6 +176,60 @@ function Bitacoraenfermeria() {
             >
               <span>Ver solicitudes urgentes</span>
             </Link>
+          </div>
+
+           {/* Contenedor de filtros centrado */}
+           <div className="flex justify-center">
+            {/* Filtros */}
+            <div className="flex gap-4 mb-4 items-center">
+              <input
+                type="text"
+                placeholder="Filtrar por nombre"
+                value={nameFilter}
+                onChange={(e) => setNameFilter(e.target.value)}
+                className="border rounded-lg px-4 py-2"
+              />
+              <input
+                type="text"
+                placeholder="Filtrar por especialidad"
+                value={specialtyFilter}
+                onChange={(e) => setSpecialtyFilter(e.target.value)}
+                className="border rounded-lg px-4 py-2"
+              />
+              <input
+                type="date"
+                value={dateFilter}
+                onChange={(e) => setDateFilter(e.target.value)}
+                className="border rounded-lg px-4 py-2"
+              />
+              <input
+                type="text"
+                placeholder="Filtrar por estado"
+                name="estado"
+                value={
+                  filter.estado ||
+                  appointment?.estado_solicitud ||
+                  "No disponible"
+                }
+                onChange={handleFilterChange}
+                readOnly
+                className="border rounded-lg px-4 py-2"
+                style={{
+                  ...getEstadoColorStyle(appointment.estado_solicitud),
+                }}
+              />
+              {isDuplicated(appointment) && (
+                <span
+                  style={{
+                    textDecoration: "underline",
+                    color: "red",
+                    marginLeft: "10px",
+                  }}
+                >
+                  Si
+                </span>
+              )}
+            </div>
           </div>
 
           {filteredAppointments.length === 0 ? (
@@ -185,7 +284,7 @@ function Bitacoraenfermeria() {
                       className="px-4 py-2 cursor-pointer"
                       onClick={() => handleSort("fecha_programada")}
                     >
-                      Fecha asignada{" "}
+                      Fecha programada{" "}
                       <span>
                         {sortBy === "fecha_programada"
                           ? sortOrder === "asc"
@@ -219,18 +318,20 @@ function Bitacoraenfermeria() {
                         key={appointment.id}
                         className="bg-blue-50 hover:bg-blue-300"
                       >
-                        <td className="px-4 py-2">{appointment.folio}</td>
-                        <td className="px-4 py-2">
+                        <td className="border px-4 py-2">{appointment.folio}</td>
+                        <td className="border px-4 py-2">
                         {appointment.ap_paterno}{" "}
                         {appointment.ap_materno}{" "}{appointment.nombre_paciente}
                         </td>
-                        <td className="px-4 py-2">
+                        <td className="border px-4 py-2">
                           {appointment.nombre_especialidad}
                         </td>
-                        <td className="px-4 py-2">
-                          {appointment.fecha_programada}
+                        <td className="border px-4 py-2">
+                        {formatFechaSolicitada(
+                                  appointment.fecha_programada
+                                )}
                         </td>
-                        <td className="px-4 py-2 flex justify-center">
+                        <td className="border px-4 py-2">
                           {appointment.sala_quirofano}
                         </td>
                         <td className="border px-4 py-2">
@@ -253,7 +354,7 @@ function Bitacoraenfermeria() {
                             {appointment.estado_solicitud}
                           </div>
                         </td>
-                        <td className="px-4 py-2 flex justify-center">
+                        <td className="border px-4 py-2 flex justify-center">
                           <button
                             onClick={() => handleViewClick(appointment)}
                             className="bg-[#365b77] text-white px-5 py-2 rounded-md hover:bg-[#7498b6]"

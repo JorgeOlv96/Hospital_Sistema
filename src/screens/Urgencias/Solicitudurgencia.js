@@ -271,7 +271,7 @@ const SolicitudUrgencia = () => {
 
         const data = await response.json();
         console.log("Formulario válido y enviado:", formData);
-        navigate("/solicitudes");
+        navigate("/Urgencias/Urgentes");
       } catch (error) {
         console.error("Error en la solicitud:", error);
       }
