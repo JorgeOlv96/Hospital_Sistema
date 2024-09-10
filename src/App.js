@@ -120,7 +120,7 @@ function App() {
             <Route path="/bitacora/Consultabitacoraanestesio/:id" element={<ConsultabitacoraAnestesio />} />
             <Route path="/solicitudes/Consultarealizada/:id" element={<Consultarealizada />} />
             <Route path="/urgencias/Solicitudurgencia" element={<Solicitudurgencia />} />
-            <Route path="/urgencias/Consultaurgencia" element={<Consultaurgencia />} />
+            <Route path="/urgencias/Consultaurgencia/:id" element={<Consultaurgencia />} />
             <Route path="/urgencias/Urgentes" element={<Solicitudesurgentes />} />
             <Route path="/Gestionusr" element={<Gestionusuarios />} />
             <Route path="/SalaManager" element={<SalaManager />} />

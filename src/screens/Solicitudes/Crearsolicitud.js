@@ -39,6 +39,7 @@ function CrearSolicitud() {
     procedimientos_paciente: false,
     procedimientos_extra: false,
     diagnostico: false,
+    tel_contacto: false
   });
 
   const navigate = useNavigate();
@@ -109,6 +110,7 @@ function CrearSolicitud() {
     procedimientos_paciente: null, // Inicializa con null o un valor por defecto
     procedimientos_extra: "",
     diagnostico: "",
+    tel_contacto: "",
   });
 
   // Función para obtener la fecha actual en el formato adecuado (YYYY-MM-DD)
@@ -1136,6 +1138,36 @@ function CrearSolicitud() {
                   ></textarea>
                   {errors.diagnostico && (
                     <p className="text-red-500">{errors.diagnostico}</p>
+                  )}
+                </div>
+                <div className="w-full mr-4">
+                  <label
+                    htmlFor="tel_contacto"
+                    className="block font-semibold text-white mb-1"
+                  >
+                    Teléfono(s) de contacto:
+                  </label>
+                  <input
+                    placeholder="Teléfono(s) de contacto del paciente"
+                    type="text"
+                    id="tel_contacto"
+                    name="tel_contacto"
+                    value={formData.tel_contacto}
+                    onChange={handleInputChange}
+                    onBlur={() =>
+                      setIsFieldTouched((prev) => ({
+                        ...prev,
+                        tel_contacto: true,
+                      }))
+                    }
+                    className={`border ${
+                      formData.tel_contacto
+                        ? "bg-[#A8CBD5] border-[#A8CBD5]"
+                        : "border-gray-300"
+                    } rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+                  />
+                  {errors.tel_contacto && (
+                    <p className="text-red-500">{errors.tel_contacto}</p>
                   )}
                 </div>
               </div>

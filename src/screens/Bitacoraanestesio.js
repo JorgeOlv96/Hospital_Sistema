@@ -17,8 +17,17 @@ function Bitacoraanestesio() {
   const [sortBy, setSortBy] = useState(null);
   const [sortOrder, setSortOrder] = useState("asc");
   const [page, setPage] = useState(1);
+  const [nameFilter, setNameFilter] = useState("");
+  const [specialtyFilter, setSpecialtyFilter] = useState("");
+  const [dateFilter, setDateFilter] = useState("");
   const itemsPerPage = 10;
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
+
+  const appointment = {
+    estado_solicitud: "programada", // o cualquier otro estado que tengas
+    // otros datos aquí
+  };
+
 
   const handleViewClick = (appointment) => {
     if (appointment.id_solicitud) {
@@ -27,6 +36,26 @@ function Bitacoraanestesio() {
       console.error("El ID de la cita no está definido:", appointment);
       // Puedes manejar este caso de otra manera, como mostrar un mensaje de error o redirigir a una página predeterminada.
     }
+  };
+  
+  const isDuplicated = (appointment) => {
+    return (
+      pendingAppointments.filter(
+        (a) =>
+          a.nombre_paciente === appointment.nombre_paciente &&
+          a.ap_paterno === appointment.ap_paterno &&
+          a.ap_materno === appointment.ap_materno &&
+          a.id_solicitud !== appointment.id_solicitud
+      ).length > 0
+    );
+  };
+
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilter((prevFilter) => ({
+      ...prevFilter,
+      [name]: value,
+    }));
   };
 
   useEffect(() => {
@@ -97,14 +126,19 @@ function Bitacoraanestesio() {
 
   const filteredAppointments = sortedAppointments.filter((appointment) => {
     return (
-      (filter.fecha === "" ||
-        appointment.fecha_programada.includes(filter.fecha)) &&
-      (filter.especialidad === "" ||
-        appointment.nombre_especialidad.includes(filter.especialidad)) &&
-      (filter.estado === "" ||
-        appointment.estado_solicitud.includes(filter.estado))
+      (nameFilter === "" ||
+        `${appointment.nombre_paciente} ${appointment.ap_paterno} ${appointment.ap_materno}`
+          .toLowerCase()
+          .includes(nameFilter.toLowerCase())) &&
+      (specialtyFilter === "" ||
+        appointment.nombre_especialidad
+          .toLowerCase()
+          .includes(specialtyFilter.toLowerCase())) &&
+      (dateFilter === "" || appointment.fecha_programada.includes(dateFilter)) &&
+      appointment.estado_solicitud === "Programada"
     );
   });
+  
 
   const startIndex = (page - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -134,6 +168,61 @@ function Bitacoraanestesio() {
             <span>Ver solicitudes urgentes</span>
           </Link>
         </div>
+
+        
+           {/* Contenedor de filtros centrado */}
+           <div className="flex justify-center">
+            {/* Filtros */}
+            <div className="flex gap-4 mb-4 items-center">
+              <input
+                type="text"
+                placeholder="Filtrar por nombre"
+                value={nameFilter}
+                onChange={(e) => setNameFilter(e.target.value)}
+                className="border rounded-lg px-4 py-2"
+              />
+              <input
+                type="text"
+                placeholder="Filtrar por especialidad"
+                value={specialtyFilter}
+                onChange={(e) => setSpecialtyFilter(e.target.value)}
+                className="border rounded-lg px-4 py-2"
+              />
+              <input
+                type="date"
+                value={dateFilter}
+                onChange={(e) => setDateFilter(e.target.value)}
+                className="border rounded-lg px-4 py-2"
+              />
+              <input
+                type="text"
+                placeholder="Filtrar por estado"
+                name="estado"
+                value={
+                  filter.estado ||
+                  appointment?.estado_solicitud ||
+                  "No disponible"
+                }
+                onChange={handleFilterChange}
+                readOnly
+                className="border rounded-lg px-4 py-2"
+                style={{
+                  ...getEstadoColorStyle(appointment.estado_solicitud),
+                }}
+              />
+              {isDuplicated(appointment) && (
+                <span
+                  style={{
+                    textDecoration: "underline",
+                    color: "red",
+                    marginLeft: "10px",
+                  }}
+                >
+                  Si
+                </span>
+              )}
+            </div>
+          </div>
 
         {filteredAppointments.length === 0 ? (
           <div className="text-center text-gray-500 mt-4">

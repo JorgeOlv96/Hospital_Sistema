@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
-import Layout from "../../Layout";
 import axios from "axios";
+import Layout from "../../Layout";
 import Modal from "../../components/Modals/Modal";
 import { MultiSelect } from "react-multi-select-component";
 import AsyncSelect from "react-select/async";
@@ -17,20 +17,9 @@ const Consultaurgencia = () => {
   ];
 
   const { id } = useParams();
-  const [patientData, setPatientData] = useState({
-    hora_entrada: "",
-    hora_incision: "",
-    hora_cierre: "",
-    hora_salida: "",
-    egreso: "",
-    enf_quirurgica: "",
-    enf_circulante: "",
-    tipo_anestesia: [],
-    nuevos_procedimientos_extra: [],
-  });
+  const [patientData, setPatientData] = useState({});
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const [procedimientoExtra, setProcedimientoExtra] = useState("");
   const [selected, setSelected] = useState([]);
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
@@ -38,7 +27,7 @@ const Consultaurgencia = () => {
   useEffect(() => {
     const fetchAppointmentData = async () => {
       try {
-        const response = await fetch(`${baseURL}/api/solicitudes/geturgencias${id}`
+        const response = await fetch(`${baseURL}/api/solicitudes/${id}`
         );
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -60,62 +49,6 @@ const Consultaurgencia = () => {
     fetchAppointmentData();
   }, [id]);
 
-  const fetchActiveNurses = async (inputValue) => {
-    try {
-      const response = await fetch(`${baseURL}/api/enfermeras/activos?search=${inputValue}`
-      );
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const data = await response.json();
-      return data.map((enfermeras) => ({
-        label: enfermeras.nombre_completo,
-        value: enfermeras.nombre_completo,
-      }));
-    } catch (error) {
-      console.error("Error fetching active nurses:", error);
-      return [];
-    }
-  };
-
-
-  const handleSelectChange = (selectedOption) => {
-    setPatientData((prevFormData) => ({
-      ...prevFormData,
-      enf_quirurgica: selectedOption ? selectedOption.value : "",
-    }));
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setPatientData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  const handleInputChange = (selectedOptions) => {
-    if (!Array.isArray(selectedOptions)) return;
-    setSelected(selectedOptions);
-    const values = selectedOptions.map((option) => option.value);
-    setPatientData((prevData) => ({
-      ...prevData,
-      tipo_anestesia: values,
-    }));
-  };
-
-  const agregarProcedimiento = () => {
-    setPatientData((prevData) => ({
-      ...prevData,
-      nuevos_procedimientos_extra: Array.isArray(
-        prevData.nuevos_procedimientos_extra
-      )
-        ? [...prevData.nuevos_procedimientos_extra, procedimientoExtra]
-        : [procedimientoExtra],
-    }));
-    setProcedimientoExtra(""); // Limpiar el campo después de agregar
-  };
-
   return (
     <Layout>
       <div
@@ -125,21 +58,20 @@ const Consultaurgencia = () => {
         data-aos-offset="200"
       >
       <div className="flex flex-col gap-2 mb-4">
-        <h1 className="text-xl font-semibold">Consulta Paciente urgente</h1>
-
+        <h1 className="text-xl font-semibold">Consulta de solicitud realizada</h1>
         <div className="flex my-4 justify-between">
-          <Link
-            to="/bitacora/Bitaenfermeria"
+        <Link
+            to="/urgencias/Urgentes"
             className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
           >
             <span style={{ display: "inline-flex", alignItems: "center" }}>
               <span>&lt;</span>
-              <span style={{ marginLeft: "5px" }}>Regresar a bitácora</span>
+              <span style={{ marginLeft: "5px" }}>Regresar</span>
             </span>
           </Link>
         </div>
 
-        <div class="flex flex-col p-4 bg-[#85AD8D] rounded-lg ">
+        <div class="flex flex-col p-4 bg-[#CB7E7E] rounded-lg ">
           <div class="flex mb-4">
             <div class="w-full mr-4">
               <label
@@ -154,7 +86,7 @@ const Consultaurgencia = () => {
                 name="folio"
                 value={patientData.folio || "N/A"}
                 readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
               />
             </div>
 
@@ -169,7 +101,7 @@ const Consultaurgencia = () => {
                 placeholder="Nombre del cirujano"
                 value={patientData.nombre_cirujano || "N/A"}
                 readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
               />
             </div>
           </div>
@@ -189,7 +121,7 @@ const Consultaurgencia = () => {
                 name="ap_paterno"
                 value={patientData.ap_paterno || "N/A"}
                 readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
               />
             </div>
 
@@ -207,7 +139,7 @@ const Consultaurgencia = () => {
                 name="ap_materno"
                 value={patientData.ap_materno || "N/A"}
                 readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
               />
             </div>
 
@@ -225,7 +157,7 @@ const Consultaurgencia = () => {
                 name="nombre_paciente"
                 value={patientData.nombre_paciente || "N/A"}
                 readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
               />
             </div>
 
@@ -234,7 +166,7 @@ const Consultaurgencia = () => {
                 htmlFor="no_expediente"
                 className="block font-semibold text-white mb-1"
               >
-                Número de expediente
+                No. expediente
               </label>
               <input
                 placeholder="Expediente de paciente"
@@ -243,7 +175,7 @@ const Consultaurgencia = () => {
                 name="no_expediente"
                 value={patientData.no_expediente || "N/A"}
                 readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
               />
             </div>
 
@@ -261,7 +193,7 @@ const Consultaurgencia = () => {
                 name="edad"
                 value={patientData.edad || "N/A"}
                 readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
               />
             </div>
 
@@ -277,7 +209,7 @@ const Consultaurgencia = () => {
                 name="sexo"
                 value={patientData.sexo || "N/A"}
                 readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
               ></input>
             </div>
 
@@ -294,7 +226,7 @@ const Consultaurgencia = () => {
                 name="sala_quirofano"
                 value={patientData.sala_quirofano || "N/A"}
                 readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
               ></input>
             </div>
           </div>
@@ -313,7 +245,7 @@ const Consultaurgencia = () => {
                 name="fecha_nacimiento"
                 value={patientData.fecha_nacimiento || "N/A"}
                 readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
               />
             </div>
 
@@ -329,7 +261,7 @@ const Consultaurgencia = () => {
                 name="tipo_admision"
                 value={patientData.tipo_admision || "N/A"}
                 readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
               ></input>
             </div>
 
@@ -338,14 +270,14 @@ const Consultaurgencia = () => {
                 htmlFor="tipo_intervencion"
                 className="block font-semibold text-white mb-1"
               >
-                Intervención planeada:
+                Int. planeada:
               </label>
               <input
                 id="tipo_intervencion"
                 name="tipo_intervencion"
                 value={patientData.tipo_intervencion || "N/A"}
                 readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
               ></input>
             </div>
 
@@ -361,7 +293,7 @@ const Consultaurgencia = () => {
                 name="nombre_especialidad"
                 value={patientData.nombre_especialidad || "N/A"}
                 readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
               ></input>
             </div>
 
@@ -377,7 +309,7 @@ const Consultaurgencia = () => {
                 name="turno_solicitado"
                 value={patientData.turno_solicitado || "N/A"}
                 readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
               ></input>
             </div>
 
@@ -395,7 +327,7 @@ const Consultaurgencia = () => {
                 name="tiempo_estimado"
                 value={patientData.tiempo_estimado || "N/A"}
                 readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
               />
             </div>
 
@@ -411,7 +343,7 @@ const Consultaurgencia = () => {
                 name="req_insumo"
                 value={patientData.req_insumo || "N/A"}
                 readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
               ></input>
             </div>
           </div>
@@ -428,9 +360,9 @@ const Consultaurgencia = () => {
                 type="text"
                 id="fecha_solicitada"
                 name="fecha_solicitada"
-                value={patientData.fecha_programada || "N/A"}
+                value={patientData.fecha_solicitada || "N/A"}
                 readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
               />
             </div>
 
@@ -447,7 +379,7 @@ const Consultaurgencia = () => {
                 name="hora_asignada"
                 value={patientData.hora_asignada || "N/A"}
                 readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
               />
             </div>
 
@@ -463,69 +395,46 @@ const Consultaurgencia = () => {
                 name="procedimientos_paciente"
                 value={patientData.nombre_anestesiologo || "N/A"}
                 readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
               ></input>
             </div>
 
-            <div className="mr-4 w-full">
+            <div className="w-full mr-4">
               <label
-                htmlFor="tiempo_estimado"
+                htmlFor="enf_quirurgica"
                 className="block font-semibold text-white mb-1"
               >
-                Hora inicio Anes:
+                Enf. Quirúrgica:
               </label>
-              <input
-                placeholder="Minutos"
-                type="time"
-                id="hi_anestesia"
-                name="hi_anestesia"
-                value={patientData.hi_anestesia || ""}
-                onChange={handleChange}
-                className={`rounded-lg px-3 py-2 w-full bg-white`}
-              />
+              <div className="relative">
+                <input
+                  placeholder="Enf. Quirúrgica"
+                  type="text"
+                  id="enf_quirurgica"
+                  name="enf_quirurgica"
+                  value={patientData.enf_quirurgica || "N/A"}
+                  className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
+                />
+              </div>
             </div>
 
-            <div className="mr-4 w-full">
+            <div className="w-full mr-4">
               <label
-                htmlFor="tipo_anestesia"
+                htmlFor="enf_circulante"
                 className="block font-semibold text-white mb-1"
               >
-                Tipo Anes:
+                Enf. Circulante:
               </label>
-              <MultiSelect
-                options={options}
-                value={selected}
-                onChange={handleInputChange}
-                labelledBy="Seleccionar tipo de anestesia"
-                overrideStrings={{
-                  allItemsAreSelected: "Todo seleccionado",
-                  clearSearch: "Limpiar búsqueda",
-                  noOptions: "Sin opciones",
-                  search: "Buscar",
-                  selectAll: "Seleccionar todo",
-                  selectSomeItems: "Seleccionar",
-                }}
-                className="border border-[#A8D5B1] rounded-lg w-full bg-[#A8D5B1] text-[#333333] cursor-pointer text-sm"
-                style={{ minHeight: "auto" }}
-              />
-            </div>
-
-            <div className="mr-4 w-full">
-              <label
-                htmlFor="tiempo_estimado"
-                className="block font-semibold text-white mb-1"
-              >
-                Hora termino Anes:
-              </label>
+              <div className="relative">
               <input
-                placeholder="Minutos"
-                type="time"
-                id="ht_anestesia"
-                name="ht_anestesia"
-                value={patientData.ht_anestesia || ""}
-                onChange={handleChange}
-                className={`rounded-lg px-3 py-2 w-full bg-white`}
-              />
+                  placeholder="Enf. Quirúrgica"
+                  type="text"
+                  id="enf_circulante"
+                  name="enf_circulante"
+                  value={patientData.enf_circulante || "N/A"}
+                  className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
+                />
+              </div>
             </div>
 
             <div className="mr-4" style={{ width: "75%" }}>
@@ -540,48 +449,19 @@ const Consultaurgencia = () => {
                 name="req_insumo"
                 value={patientData.estado_solicitud || "N/A"}
                 readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
               ></input>
             </div>
           </div>
 
           <div class="flex mb-4">
-            <div className="w-full" style={{ width: "105%" }}>
-              <label
-                htmlFor="id_cirujano"
-                className="block font-semibold text-white mb-1"
-              >
-                Enf. Quirurgica:
-              </label>
-              <AsyncSelect
-                loadOptions={fetchActiveNurses}
-                onChange={handleSelectChange}
-                placeholder="Enf. Quirurgica"
-                className={`rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-              />
-            </div>
-
-            <div className="w-full" style={{ width: "105%" }}>
-              <label
-                htmlFor="id_cirujano"
-                className="block font-semibold text-white mb-1"
-              >
-                Enf. Circulante:
-              </label>
-              <AsyncSelect
-                loadOptions={fetchActiveNurses}
-                onChange={handleSelectChange}
-                placeholder="Enf. Circulante"
-                className={`rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-              />
-            </div>
-
-            <div class="w-full mr-4">
+            
+          <div class="w-full mr-4">
               <label
                 htmlFor="procedimientos_paciente"
                 className="block font-semibold text-white mb-1"
               >
-                Hora entr. cirugía:
+                Entr. quirófano:
               </label>
               <input
                 placeholder="Minutos"
@@ -589,14 +469,117 @@ const Consultaurgencia = () => {
                 id="hora_entrada"
                 name="hora_entrada"
                 value={patientData.hora_entrada || ""}
-                onChange={handleChange}
-                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white cursor-default`}
+                readOnly
+                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
+              />
+            </div>
+            <div className="mr-4 w-full">
+              <label
+                htmlFor="tiempo_estimado"
+                className="block font-semibold text-white mb-1"
+              >
+                Hora inicio Anes:
+              </label>
+              <input
+                placeholder="Minutos"
+                type="time"
+                id="hi_anestesia"
+                name="hi_anestesia"
+                value={patientData.hi_anestesia || ""}
+                readOnly
+                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
               />
             </div>
 
+            <div className="mr-4 w-full">
+              <label
+                htmlFor="tipo_anestesia"
+                className="block font-semibold text-white mb-1"
+              >
+                Tipo Anes:
+              </label>
+              <input
+                options={options}
+                value={patientData.tipo_anestesia}
+                readOnly
+                labelledBy="Seleccionar tipo de anestesia"
+                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
+              />
+            </div>
             <div class="w-full mr-4">
               <label
-                htmlFor="procedimientos_paciente"
+                htmlFor="tiempo_estimado"
+                className="block font-semibold text-white mb-1"
+              >
+                Hora Incisión:
+              </label>
+              <input
+                placeholder="Minutos"
+                type="time"
+                id="hora_incision"
+                name="hora_incision"
+                value={patientData.hora_incision || ""}
+                readOnly
+                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default"`}
+              />
+            </div>
+
+            <div className="mr-4" style={{ width: "50%" }}>
+              <label
+                htmlFor="tiempo_estimado"
+                className="block font-semibold text-white mb-1"
+              >
+                Hora Cierre:
+              </label>
+              <input
+                placeholder="Minutos"
+                type="time"
+                id="hora_cierre"
+                name="hora_cierre"
+                value={patientData.hora_cierre || ""}
+                readOnly
+                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
+              />
+            </div>
+
+            <div className="mr-4 w-full">
+              <label
+                htmlFor="tiempo_estimado"
+                className="block font-semibold text-white mb-1"
+              >
+                Termino Anes:
+              </label>
+              <input
+                placeholder="Minutos"
+                type="time"
+                id="ht_anestesia"
+                name="ht_anestesia"
+                value={patientData.ht_anestesia || ""}
+                readOnly
+                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
+              />
+            </div>
+
+            <div className="mr-4 w-full">
+              <label
+                htmlFor="tiempo_estimado"
+                className="block font-semibold text-white mb-1"
+              >
+                Salida paciente:
+              </label>
+              <input
+                placeholder="Minutos"
+                type="time"
+                id="hora_salida"
+                name="hora_salida"
+                value={patientData.hora_salida || ""}
+                readOnly
+                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
+              />
+            </div>
+            <div class="w-full mr-4">
+              <label
+                htmlFor="egreso"
                 className="block font-semibold text-white mb-1"
               >
                 Egresa a:
@@ -606,64 +589,11 @@ const Consultaurgencia = () => {
                 id="egreso"
                 name="egreso"
                 value={patientData.egreso || ""}
-                onChange={handleChange}
-                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white cursor-default`}
+                readOnly
+                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
               ></input>
             </div>
 
-            <div class="w-full mr-4">
-              <label
-                htmlFor="tiempo_estimado"
-                className="block font-semibold text-white mb-1"
-              >
-                Hr Incisión:
-              </label>
-              <input
-                placeholder="Minutos"
-                type="time"
-                id="hora_incision"
-                name="hora_incision"
-                value={patientData.hora_incision || ""}
-                onChange={handleChange}
-                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white`}
-              />
-            </div>
-
-            <div className="mr-4 w-full">
-              <label
-                htmlFor="tiempo_estimado"
-                className="block font-semibold text-white mb-1"
-              >
-                Hora salida paciente:
-              </label>
-              <input
-                placeholder="Minutos"
-                type="time"
-                id="hora_salida"
-                name="hora_salida"
-                value={patientData.hora_salida || ""}
-                onChange={handleChange}
-                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white cursor-default`}
-              />
-            </div>
-
-            <div className="mr-4" style={{ width: "50%" }}>
-              <label
-                htmlFor="tiempo_estimado"
-                className="block font-semibold text-white mb-1"
-              >
-                Hr Cierre:
-              </label>
-              <input
-                placeholder="Minutos"
-                type="time"
-                id="hora_cierre"
-                name="hora_cierre"
-                value={patientData.hora_cierre || ""}
-                onChange={handleChange}
-                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white`}
-              />
-            </div>
           </div>
           <div className="mr-4 w-full">
             <label
@@ -677,7 +607,7 @@ const Consultaurgencia = () => {
               name="procedimientos_paciente"
               value={patientData.procedimientos_paciente || "N/A"}
               readOnly
-              className="border-[#A8D5B1] rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default"
+              className="border-[#DBB7B7] rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default"
             ></input>
           </div>
           <div>
@@ -708,31 +638,15 @@ const Consultaurgencia = () => {
                   htmlFor="procedimiento_extra"
                   className="block font-semibold text-white mb-1"
                 >
-                  Agregar procedimiento:
+                  Procedimientos adicionales:
                 </label>
                 <input
                   id="procedimiento_extra"
                   name="procedimiento_extra"
-                  value={procedimientoExtra}
-                  onChange={(e) => setProcedimientoExtra(e.target.value)}
-                  className="rounded-lg px-3 py-2 w-full bg-white"
+                  value={patientData.nuevos_procedimientos_extra || "N/A"}
+                  readOnly
+                  className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
                 ></input>
-              </div>
-              <div className="mr-4" style={{ width: "12%" }}>
-                <label
-                  htmlFor="agregar_procedimiento"
-                  className="block font-semibold text-white mb-1"
-                >
-                  Agregar más
-                </label>
-                <button
-                  id="agregar_procedimiento"
-                  name="agregar_procedimiento"
-                  className="border-[#A8D5B1] rounded-lg px-3 py-2 w-full bg-[#A8D5B1] text-white cursor-pointer"
-                  onClick={agregarProcedimiento}
-                >
-                  +
-                </button>
               </div>
             </div>
           </div>
@@ -743,7 +657,7 @@ const Consultaurgencia = () => {
                 htmlFor="diagnostico_paciente"
                 className="block font-semibold text-white mb-1"
               >
-                Diagnóstico del paciente
+                Diagnóstico del paciente:
               </label>
               <textarea
                 placeholder="Diagnóstico del paciente"
@@ -752,12 +666,14 @@ const Consultaurgencia = () => {
                 rows="4"
                 value={patientData.diagnostico || "N/A"}
                 readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
               ></textarea>
             </div>
           </div>
         </div>
       </div>
+
+    
       </div>
     </Layout>
   );

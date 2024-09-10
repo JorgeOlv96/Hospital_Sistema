@@ -121,10 +121,10 @@ function AddAppointmentModal({
           {/* Agrega aquí el nuevo campo "Elaborado por" */}
           <div className="mr-4 w-full mb-2">
             <label className="block font-semibold text-gray-700 mb-2">
-              Elaborado por:
+             Teléfono de contacto:
             </label>
             <p className="bg-gray-200 p-3 rounded-lg">
-              {patientData?.elaborado_por || "N/A"}
+              {patientData?.tel_contacto || "N/A"}
             </p>
           </div>
 

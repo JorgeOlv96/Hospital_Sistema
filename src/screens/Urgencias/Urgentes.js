@@ -56,6 +56,15 @@ function Solicitudesurgentes() {
     });
   };
 
+  const handleViewClick = (appointment) => {
+    if (appointment.id_solicitud) {
+      navigate(`/urgencias/Consultaurgencia/${appointment.id_solicitud}`);
+    } else {
+      console.error("El ID de la cita no está definido:", appointment);
+      // Puedes manejar este caso de otra manera, como mostrar un mensaje de error o redirigir a una página predeterminada.
+    }
+  };
+
   const handleViewModal = (appointment) => {
     setSelectedAppointment(appointment);
     setOpen(true);
@@ -267,7 +276,7 @@ function Solicitudesurgentes() {
                       className="px-4 py-2 cursor-pointer"
                       onClick={() => handleSort("fecha_solicitada")}
                     >
-                      Fecha solicitada{" "}
+                      Fecha de urgencia{" "}
                       <span>
                         {sortBy === "fecha_solicitada"
                           ? sortOrder === "asc"
@@ -310,7 +319,7 @@ function Solicitudesurgentes() {
                           {appointment.nombre_especialidad}
                         </td>
                         <td className="px-4 py-2">
-                          {appointment.fecha_programada}
+                          {appointment.fecha_solicitada}
                         </td>
                         <td className="px-4 py-2 flex justify-center">
                           {appointment.sala_quirofano}
@@ -337,7 +346,7 @@ function Solicitudesurgentes() {
                         </td>
                         <td className="px-4 py-2 flex justify-center">
                           <button
-                            onClick={() => handleViewModal(appointment)}
+                            onClick={() => handleViewClick(appointment)}
                             className="bg-[#365b77] text-white px-5 py-2 rounded-md hover:bg-[#7498b6]"
                           >
                             Ver
