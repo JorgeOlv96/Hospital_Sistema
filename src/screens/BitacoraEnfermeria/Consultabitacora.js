@@ -438,21 +438,26 @@ const Consultabitacora = () => {
               />
             </div>
 
-            <div class="w-full mr-4">
-              <label
-                htmlFor="tipo_admision"
-                className="block font-semibold text-white mb-1"
-              >
-                Procedencia paciente:
-              </label>
-              <input
-                id="tipo_admision"
-                name="tipo_admision"
-                value={patientData.tipo_admision || "N/A"}
-                readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
-              ></input>
-            </div>
+            <div className="w-full mr-4">
+  <label
+    htmlFor="tipo_admision"
+    className="block font-semibold text-white mb-1"
+  >
+    Procedencia paciente:
+  </label>
+  <input
+    id="tipo_admision"
+    name="tipo_admision"
+    value={
+      patientData.tipo_admision === "CAMA"
+        ? `Cama - ${patientData.cama || "N/A"}`
+        : patientData.tipo_admision || "N/A"
+    }
+    readOnly
+    className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+  ></input>
+</div>
+
 
             <div className="mr-4 w-full">
               <label
@@ -896,7 +901,7 @@ const Consultabitacora = () => {
                 rows="4"
                 value={patientData.comentarios}
                 onChange={handleChange}
-                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white cursor-default`}
+                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white`}
               ></textarea>
             </div>
           </div>

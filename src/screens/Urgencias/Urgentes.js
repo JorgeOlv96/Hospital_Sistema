@@ -3,6 +3,11 @@ import Layout from "../../Layout";
 import axios from "axios";
 import AddAppointmentModalProgramado from "../../components/Modals/AddApointmentModalProgramado";
 import { useNavigate, Link } from "react-router-dom";
+import moment from "moment";
+import "moment/locale/es"; // Importa el idioma de moment.js
+
+import { saveAs } from "file-saver";
+import * as XLSX from "xlsx";
 
 function Solicitudesurgentes() {
   const [pendingAppointments, setPendingAppointments] = useState([]);
@@ -18,6 +23,7 @@ function Solicitudesurgentes() {
   const [sortBy, setSortBy] = useState(null);
   const [sortOrder, setSortOrder] = useState("asc");
   const [page, setPage] = useState(1);
+  const [printDate, setPrintDate] = useState(new Date());
   const itemsPerPage = 10;
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
 
@@ -25,7 +31,8 @@ function Solicitudesurgentes() {
   const [nameFilter, setNameFilter] = useState("");
   const [specialtyFilter, setSpecialtyFilter] = useState("");
   const [dateFilter, setDateFilter] = useState("");
-
+  const [view, setView] = useState(""); // Default view
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const appointment = {
     estado_solicitud: "Urgencia", // o cualquier otro estado que tengas
     // otros datos aquí
@@ -143,6 +150,454 @@ const fetchPendingAppointments = async () => {
     }
   };
 
+  const formatDateInputValue = (date) => {
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${year}-${month}-${day}`;
+  };
+
+    const handlePrintDateChange = (e) => {
+    const selectedDate = moment(e.target.value).startOf("day").toDate();
+    setPrintDate(selectedDate);
+  };
+
+  const handlePrintClick = (selectedDate) => {
+    printDailyAppointments(selectedDate);
+  };
+
+  const formatFechaSolicitada = (fecha) => {
+    if (!fecha) return "";
+    const [year, month, day] = fecha.split("-");
+    return `${day}-${month}-${year}`;
+  };
+
+  const exportToExcel = async (selectedDate) => {
+    const formattedDate = moment(selectedDate).format("YYYY-MM-DD");
+  
+    try {
+      // Ejecutar ambas solicitudes en paralelo usando Promise.all
+      const [solicitudesResponse, urgenciasResponse] = await Promise.all([
+        fetch(`${baseURL}/api/solicitudes/realizadas`),
+        fetch(`${baseURL}/api/solicitudes/geturgencias`)
+      ]);
+  
+      // Verificar si ambas respuestas son válidas
+      if (!solicitudesResponse.ok || !urgenciasResponse.ok) {
+        throw new Error("Una o más respuestas de red no fueron correctas");
+      }
+  
+      // Obtener los datos de ambas respuestas
+      const solicitudesData = await solicitudesResponse.json();
+      const urgenciasData = await urgenciasResponse.json();
+  
+      // Filtrar y combinar datos de solicitudes programadas y urgencias
+      const filteredSolicitudes = solicitudesData.filter(
+        (solicitud) =>
+          moment(solicitud.fecha_programada).format("YYYY-MM-DD") ===
+          formattedDate
+      );
+  
+      const combinedAppointments = [...filteredSolicitudes, ...urgenciasData];
+  
+      // Ordenar por turno_solicitado: Matutino, Vespertino, Nocturno
+      const orderedAppointments = combinedAppointments.sort((a, b) => {
+        const turnosOrder = {
+          Matutino: 1,
+          Vespertino: 2,
+          Nocturno: 3,
+        };
+  
+        return turnosOrder[a.turno_solicitado] - turnosOrder[b.turno_solicitado];
+      });
+  
+      // Reorganizar las propiedades para que 'cama' esté junto a 'tipo_intervencion'
+      const reorganizedAppointments = orderedAppointments.map((solicitud) => {
+        return {
+          id: solicitud.id_solicitud,
+          folio: solicitud.folio,
+          ap_paterno: solicitud.ap_paterno,
+          ap_materno: solicitud.ap_materno,
+          nombre_paciente: solicitud.nombre_paciente,
+          edad: solicitud.edad,
+          sexo: solicitud.sexo,
+          procedimientos_paciente: solicitud.procedimientos_paciente,
+          diagnostico: solicitud.diagnostico,
+          tiempo_estimado: solicitud.tiempo_estimado,
+          tipo_intervencion: solicitud.tipo_intervencion,
+          tipo_admision: solicitud.tipo_admision,
+          cama: solicitud.cama, // Mover cama junto a tipo_intervencion
+          fecha_solicitada: solicitud.fecha_solicitada,
+          turno_solicitado: solicitud.turno_solicitado,
+          sala_quirofano: solicitud.sala_quirofano,
+          nombre_especialidad: solicitud.nombre_especialidad,
+          cirujano: solicitud.nombre_cirujano,
+          req_insumo: solicitud.req_insumo,
+          procedimientos_extra: solicitud.procedimientos_extra
+          // Añade cualquier otro campo que desees
+        };
+      });
+  
+      // Crear la hoja de cálculo a partir de los datos ordenados y reorganizados
+      const worksheet = XLSX.utils.json_to_sheet(reorganizedAppointments);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Solicitudes y Urgencias");
+  
+      // Generar el archivo Excel y guardarlo con FileSaver
+      const excelBuffer = XLSX.write(workbook, {
+        bookType: "xlsx",
+        type: "array",
+      });
+      const data = new Blob([excelBuffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+  
+      // Nombre del archivo con la fecha seleccionada
+      const fileName = `Solicitudes_y_Urgencias_${formattedDate}.xlsx`;
+      saveAs(data, fileName);
+    } catch (error) {
+      console.error("Error exporting data:", error);
+    }
+  };
+  
+
+  const handleExport = async () => {
+    if (selectedDate) {
+      await exportToExcel(selectedDate);
+    } else {
+      console.warn("No date selected!");
+    }
+  };
+  const printDailyAppointments = async (selectedDate) => {
+    const today = moment(printDate).format("YYYY-MM-DD");
+    try {
+      
+      const solicitudesResponse = await fetch(
+        `${baseURL}/api/solicitudes/preprogramadas`
+      );
+      if (!solicitudesResponse.ok) {
+        throw new Error("Network response for solicitudes was not ok");
+      }
+      const solicitudesData = await solicitudesResponse.json();
+
+      // Fetch de los anestesiólogos
+      const anesthesiologistsResponse = await fetch(
+        `${baseURL}/api/anestesio/anestesiologos`
+      );
+      if (!anesthesiologistsResponse.ok) {
+        throw new Error("Network response for anesthesiologists was not ok");
+      }
+      const anesthesiologistsData = await anesthesiologistsResponse.json();
+
+      // Filtrar las solicitudes del día seleccionado
+      const todaysRegistrations = solicitudesData.filter(
+        (solicitud) =>
+          moment(solicitud.fecha_solicitada).format("YYYY-MM-DD") === today
+      );
+
+      // Filtrar anestesiólogos asignados para el día seleccionado
+      const todaysAnesthesiologists = anesthesiologistsData.filter(
+        (anesthesiologist) =>
+          moment(anesthesiologist.dia_anestesio).format("YYYY-MM-DD") === today
+      );
+
+      const printableContent = `
+        <html>
+        <head>
+            <style>
+                body {
+                    background-color: #ffffff;
+                    font-family: Arial, sans-serif;
+                    font-size: 10px !important;
+                    margin: 10px;
+                    padding: 5px;
+                }
+                .header {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    margin-bottom: 10px;
+                }
+                .header img {
+                    max-width: 150px;
+                    height: auto;
+                    margin-right: 5px;
+                }
+                .header .date {
+                    font-size: 10px !important;
+                    text-align: left;
+                    margin-right: 5px;
+                }
+                .header h1 {
+                    font-size: 10px !important;
+                    margin: 5px;
+                    flex-grow: 2;
+                    text-align: right;
+                }
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-top: 10px;
+                    font-size: 8px !important;
+                }
+                th, td {
+                    border: 1px solid black;
+                    padding: 3px !important;
+                    text-align: left;
+                    white-space: nowrap;
+                }
+                .turno-section {
+                    background-color: #d3d3d3;
+                    text-align: left;
+                    font-weight: bold;
+                    padding: 5px;
+                    border-top: 2px solid black;
+                    border-bottom: 2px solid black;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="header" style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px;
+                background-color: #f4f4f4;
+            ">
+                <h4 style="margin: 0;">Solicitudes Programadas</h4>
+                <div style="
+                    display: flex;
+                    align-items: center;
+                    text-align: right;
+                ">
+                    <h1 style="
+                        margin: 0;
+                        font-size: 1em;
+                        line-height: 1;
+                    ">Hoja de impresión PRE-APROBADAS:</h1>
+                    <div class="date" style="
+                        margin-left: 10px;
+                        font-size: 1em;
+                    ">${moment(printDate).format("DD-MM-YYYY")}</div>
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Folio</th>
+                        <th>Hra. asign.</th>
+                        <th>Sala</th>
+                        <th>Nom. completo</th>
+                        <th>Edad</th>
+                        <th>Sexo</th>
+                        <th>Procedimiento CIE-9</th>
+                        <th>Diagnostico</th>
+                        <th>Especialidad</th>
+                        <th>Procedencia</th>
+                        <th>Tiempo est.</th>
+                        <th>Anestesiólogo</th>
+                        <th>Cirujano</th>
+                        <th>Insumos</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <tbody>
+                ${["Matutino", "Vespertino", "Nocturno"]
+                  .map((turno) => {
+                    const sortedRegistrations = todaysRegistrations
+                      .filter((appointment) => {
+                        const hour = moment(
+                          appointment.hora_solicitada,
+                          "HH:mm"
+                        ).hour();
+                        if (turno === "Matutino") return hour >= 8 && hour < 15;
+                        if (turno === "Vespertino")
+                          return hour >= 15 && hour < 21;
+                        return hour >= 21 || hour < 6;
+                      })
+                      .sort((a, b) => {
+                        const salaOrder = [
+                          "A1",
+                          "A2",
+                          "T1",
+                          "T2",
+                          "1",
+                          "2",
+                          "3",
+                          "4",
+                          "5",
+                          "6",
+                          "E",
+                          "H",
+                          "RX",
+                        ];
+                        const salaA = salaOrder.indexOf(a.sala_quirofano);
+                        const salaB = salaOrder.indexOf(b.sala_quirofano);
+                        if (salaA !== salaB) {
+                          return salaA - salaB;
+                        }
+                        const horaA = moment(a.hora_solicitada, "HH:mm");
+                        const horaB = moment(b.hora_solicitada, "HH:mm");
+                        return horaA - horaB;
+                      });
+
+                    return `
+                        <tr class="turno-section">
+                            <td colspan="13">${turno} (de ${
+                      turno === "Matutino"
+                        ? "08:00 a 14:00"
+                        : turno === "Vespertino"
+                        ? "14:00 a 20:00"
+                        : "20:00 a 06:00"
+                    })</td>
+                        </tr>
+                        ${sortedRegistrations
+                          .map((appointment, index) => {
+                            const assignedAnesthesiologist =
+                              todaysAnesthesiologists.find(
+                                (anesthesiologist) =>
+                                  anesthesiologist.sala_anestesio.includes(
+                                    appointment.sala_quirofano
+                                  ) &&
+                                  anesthesiologist.turno_anestesio === turno
+                              );
+
+                            const anesthesiologistName =
+                              assignedAnesthesiologist
+                                ? assignedAnesthesiologist.nombre
+                                : "No asignado";
+
+                            return `
+                                <tr>
+                                    <td>${index + 1}</td>
+                                    <td>${appointment.folio || ""}</td>
+                                    <td>${moment(
+                                      appointment.hora_solicitada,
+                                      "HH:mm"
+                                    ).format("LT")}</td>
+                                    <td>Sala: ${
+                                      appointment.sala_quirofano || ""
+                                    }</td>
+                                    <td>${appointment.ap_paterno} ${
+                              appointment.ap_materno
+                            } ${appointment.nombre_paciente}</td>
+                                    <td>${appointment.edad || ""}</td>
+                                    <td>${
+                                      appointment.sexo
+                                        ? appointment.sexo === "Femenino"
+                                          ? "F"
+                                          : "M"
+                                        : "No especificado"
+                                    }</td>
+                                    <td>${
+                                      appointment.procedimientos_paciente
+                                        ? appointment.procedimientos_paciente.slice(
+                                            0,
+                                            60
+                                          )
+                                        : ""
+                                    }</td>
+                                    <td>${
+                                      appointment.diagnostico
+                                        ? appointment.diagnostico.slice(0, 60)
+                                        : ""
+                                    }</td>
+                                    <td>${
+                                      appointment.nombre_especialidad || ""
+                                    }</td>
+                                                                            <td>${(() => {
+                                                                              switch (
+                                                                                appointment.tipo_admision
+                                                                              ) {
+                                                                                case "CONSULTA EXTERNA":
+                                                                                  return "C.E.";
+                                                                                case "CAMA":
+                                                                                  return `Cama - ${appointment.cama}`;
+                                                                                case "URGENCIAS":
+                                                                                  return "Urgencias";
+                                                                                default:
+                                                                                  return (
+                                                                                    appointment.tipo_admision ||
+                                                                                    "No especificado"
+                                                                                  );
+                                                                              }
+                                                                            })()}</td>
+                                    <td>${appointment.tiempo_estimado} min</td>
+                                    <td>${anesthesiologistName}</td>
+                                    <td>${
+                                      appointment.nombre_cirujano
+                                        ? appointment.nombre_cirujano
+                                            .split(" ")
+                                            .slice(0, 2)
+                                            .join(" ")
+                                        : ""
+                                    }</td>
+                                    <td>${appointment.req_insumo || ""}</td>
+                                </tr>
+                            `;
+                          })
+                          .join("")}
+                    `;
+                  })
+                  .join("")}
+                </tbody>
+            </table>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Recuperación Matutino</th>
+                        <th>Consulta Externa Piso 1 Mat</th>
+                        <th>Consulta Externa Piso 2 Mat</th>
+                        <th>Recuperación Vespertino</th>
+                        <th>Consulta Externa Piso 2 Vespertino</th>
+                        <th>Recuperación Nocturno</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        ${[
+                          "Recup_Matutino",
+                          "Con_Ext_P1_mat",
+                          "Con_Ext_P2_mat",
+                          "Rec_Vespertino",
+                          "Con_Ext_P2_vesp",
+                          "Rec_Nocturno",
+                        ]
+                          .map((sala) => {
+                            const assignedAnesthesiologists =
+                              todaysAnesthesiologists
+                                .filter((anesthesiologist) =>
+                                  anesthesiologist.sala_anestesio.includes(sala)
+                                )
+                                .map(
+                                  (anesthesiologist) => anesthesiologist.nombre
+                                )
+                                .join(", ");
+                            return `<td>${
+                              assignedAnesthesiologists || "No asignado"
+                            }</td>`;
+                          })
+                          .join("")}
+                    </tr>
+                </tbody>
+            </table>
+        </body>
+        </html>
+        `;
+
+      const newWindow = window.open();
+      newWindow.document.write(printableContent);
+      newWindow.document.close();
+      newWindow.print();
+    } catch (error) {
+      console.error("Error printing:", error);
+    }
+  };
+
+
   const sortedAppointments = [...pendingAppointments].sort((a, b) => {
     if (!sortBy) return 0;
 
@@ -195,6 +650,65 @@ const fetchPendingAppointments = async () => {
                   <span style={{ marginLeft: "5px" }}>Regresar a bitácora</span>
                 </span>
               </Link>
+              
+            <div>
+              {/* Enlaces para cambiar vistas */}
+              <div className="flex justify-center space-x-4 mb-4">
+                <button
+                  onClick={() => setView("print")}
+                  className={`py-2 px-4 rounded ${
+                    view === "print" ? "bg-[#5DB259]" : "bg-gray-300"
+                  } text-white`}
+                >
+                  Imprimir
+                </button>
+                <button
+                  onClick={() => setView("export")}
+                  className={`py-2 px-4 rounded ${
+                    view === "export" ? "bg-[#4A5568]" : "bg-gray-300"
+                  } text-white`}
+                >
+                  Exportar
+                </button>
+              </div>
+
+              {/* Contenido según la vista seleccionada */}
+              {view === "print" && (
+                <div className="flex flex-col items-center space-y-2">
+                  <label className="font-semibold">Día a imprimir:</label>
+                  <input
+                    type="date"
+                    value={formatDateInputValue(printDate)}
+                    onChange={handlePrintDateChange}
+                    className="px-2 py-2 border border-main rounded-md text-main"
+                  />
+                  <button
+                    onClick={printDailyAppointments}
+                    className="bg-[#5DB259] hover:bg-[#528E4F] text-white py-2 px-4 rounded inline-flex items-center"
+                  >
+                    Imprimir Pre-programadas
+                  </button>
+                </div>
+              )}
+
+              {view === "export" && (
+                <div className="flex flex-col items-center space-y-2">
+                  <label className="font-semibold">Día a exportar:</label>
+                  <input
+                    type="date"
+                    value={selectedDate || ""}
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                    className="px-2 py-2 border rounded"
+                  />
+                  <button
+                    onClick={handleExport}
+                    className="bg-[#4A5568] hover:bg-[#758195] text-white py-2 px-4 rounded inline-flex items-center"
+                  >
+                    Exportar a Excel
+                  </button>
+                </div>
+              )}
+            </div>
             </div>
           </div>
 
@@ -301,11 +815,11 @@ const fetchPendingAppointments = async () => {
                     </th>
                     <th
                       className="px-4 py-2 cursor-pointer"
-                      onClick={() => handleSort("fecha_solicitada")}
+                      onClick={() => handleSort("fecha_programada")}
                     >
                       Fecha de urgencia{" "}
                       <span>
-                        {sortBy === "fecha_solicitada"
+                        {sortBy === "fecha_programada"
                           ? sortOrder === "asc"
                             ? "▲"
                             : "▼"
@@ -346,7 +860,7 @@ const fetchPendingAppointments = async () => {
                           {appointment.nombre_especialidad}
                         </td>
                         <td className="px-4 py-2">
-                          {appointment.fecha_solicitada}
+                          {appointment.fecha_programada}
                         </td>
                         <td className="px-4 py-2 flex justify-center">
                           {appointment.sala_quirofano}

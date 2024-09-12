@@ -70,7 +70,7 @@ const SolicitudUrgencia = () => {
     edad: "",
     sexo: "",
     tipo_intervencion: "",
-    fecha_solicitada: "",
+    fecha_programada: "",
     turno_solicitado: "",
     nombre_anestesiologo: "",
     sala_quirofano: "",
@@ -634,16 +634,16 @@ const SolicitudUrgencia = () => {
           <div className="flex mb-4">
             <div className="w-full mr-4">
               <label
-                htmlFor="fecha_solicitada"
+                htmlFor="fecha_programada"
                 className="block font-semibold text-white mb-1"
               >
                 Fecha de urgencia:
               </label>
               <input
                 type="date"
-                id="fecha_solicitada"
-                name="fecha_solicitada"
-                value={formData.fecha_solicitada}
+                id="fecha_programada"
+                name="fecha_programada"
+                value={formData.fecha_programada}
                 onChange={handleInputChange}
                 className="border-[#C59494] rounded-lg px-3 py-2 w-full bg-white"
               />

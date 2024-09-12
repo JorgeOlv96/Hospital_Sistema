@@ -358,9 +358,9 @@ const Consultaurgencia = () => {
               </label>
               <input
                 type="text"
-                id="fecha_solicitada"
-                name="fecha_solicitada"
-                value={patientData.fecha_solicitada || "N/A"}
+                id="fecha_programada"
+                name="fecha_programada"
+                value={patientData.fecha_programada || "N/A"}
                 readOnly
                 className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
               />

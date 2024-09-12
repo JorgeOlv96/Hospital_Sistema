@@ -174,7 +174,7 @@ function Bitacoraenfermeria() {
               to="/urgencias/Urgentes"
               className="bg-[#5DB259] hover:bg-[#528E4F] text-white py-2 px-4 rounded-lg inline-flex items-center"
             >
-              <span>Ver solicitudes urgentes</span>
+              <span>Ver solicitudes realizadas urgentes</span>
             </Link>
           </div>
 
