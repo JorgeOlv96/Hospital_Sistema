@@ -10,7 +10,7 @@ function Solicitudesurgentes() {
   const [filter, setFilter] = useState({
     fecha: "",
     especialidad: "",
-    estado: "Urgencia",
+    estado: "",
   });
 
   const [selectedAppointment, setSelectedAppointment] = useState(null);
@@ -35,18 +35,34 @@ function Solicitudesurgentes() {
     fetchPendingAppointments();
   }, []);
 
-  const fetchPendingAppointments = async () => {
-    try {
-      const response = await fetch(`${baseURL}/api/solicitudes/geturgencias`);
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
-      }
-      const data = await response.json();
-      setPendingAppointments(data);
-    } catch (error) {
-      console.error("Error fetching pending appointments:", error);
+const fetchPendingAppointments = async () => {
+  try {
+    // Ejecutar ambas solicitudes en paralelo usando Promise.all
+    const [urgenciasResponse, realizadasResponse] = await Promise.all([
+      fetch(`${baseURL}/api/solicitudes/geturgencias`),
+      fetch(`${baseURL}/api/solicitudes/realizadas`)
+    ]);
+
+    // Verificar si ambas respuestas son válidas
+    if (!urgenciasResponse.ok || !realizadasResponse.ok) {
+      throw new Error("Una o más respuestas de red no fueron correctas");
     }
-  };
+
+    // Obtener los datos de ambas respuestas
+    const urgenciasData = await urgenciasResponse.json();
+    const realizadasData = await realizadasResponse.json();
+
+    // Combinar ambos resultados en un solo array (si es necesario)
+    const combinedAppointments = [...urgenciasData, ...realizadasData];
+
+    // Actualizar el estado con la lista combinada
+    setPendingAppointments(combinedAppointments);
+
+  } catch (error) {
+    console.error("Error fetching appointments:", error);
+  }
+};
+
 
   const handleFilterChange = (e) => {
     const { name, value } = e.target;
@@ -57,13 +73,22 @@ function Solicitudesurgentes() {
   };
 
   const handleViewClick = (appointment) => {
-    if (appointment.id_solicitud) {
-      navigate(`/urgencias/Consultaurgencia/${appointment.id_solicitud}`);
-    } else {
+    if (!appointment.id_solicitud) {
       console.error("El ID de la cita no está definido:", appointment);
-      // Puedes manejar este caso de otra manera, como mostrar un mensaje de error o redirigir a una página predeterminada.
+      return;
+    }
+  
+    // Verificar el estado de la solicitud para decidir la redirección
+    if (appointment.estado_solicitud === 'Urgencia') {
+      navigate(`/urgencias/Consultaurgencia/${appointment.id_solicitud}`);
+    } else if (appointment.estado_solicitud === 'Realizada') {
+      navigate(`/solicitudes/Consultarealizada/${appointment.id_solicitud}`);
+    } else {
+      console.warn("Estado de solicitud no reconocido:", appointment.estado);
+      // Puedes redirigir a una página de error o manejar este caso como desees
     }
   };
+  
 
   const handleViewModal = (appointment) => {
     setSelectedAppointment(appointment);
@@ -102,6 +127,8 @@ function Solicitudesurgentes() {
     switch (estado.toLowerCase()) {
       case "urgencia":
         return { backgroundColor: "#FC8181", color: "white" }; // Rosa claro
+        case "realizada":
+          return { backgroundColor: "#63B3ED", color: "white" }; 
       default:
         return {};
     }

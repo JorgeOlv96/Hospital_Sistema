@@ -27,6 +27,7 @@ const Consultabitacora = () => {
     enf_circulante: "",
     tipo_anestesia: [],
     nuevos_procedimientos_extra: [],
+    comentarios: "",
   });
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -158,6 +159,7 @@ const Consultabitacora = () => {
         hi_anestesia,
         tipo_anestesia,
         ht_anestesia,
+        comentarios,
       } = patientData;
       const response = await fetch(`${baseURL}/api/solicitudes/bitacoraenf/${id}`,
         {
@@ -176,6 +178,7 @@ const Consultabitacora = () => {
             hi_anestesia,
             tipo_anestesia,
             ht_anestesia,
+            comentarios
           }),
           headers: {
             "Content-Type": "application/json",
@@ -877,6 +880,23 @@ const Consultabitacora = () => {
                 value={patientData.diagnostico || "N/A"}
                 readOnly
                 className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+              ></textarea>
+            </div>
+            <div className="mr-4" style={{ width: "50%" }}>
+              <label
+                htmlFor="comentarios"
+                className="block font-semibold text-white mb-1"
+              >
+                Comentarios:
+              </label>
+              <textarea
+                placeholder="Escriba una nota o comentario sobre la cirugía realizada"
+                id="comentarios"
+                name="comentarios"
+                rows="4"
+                value={patientData.comentarios}
+                onChange={handleChange}
+                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white cursor-default`}
               ></textarea>
             </div>
           </div>

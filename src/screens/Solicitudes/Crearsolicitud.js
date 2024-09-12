@@ -1140,7 +1140,7 @@ function CrearSolicitud() {
                     <p className="text-red-500">{errors.diagnostico}</p>
                   )}
                 </div>
-                <div className="w-full mr-4">
+                <div className="w-1/2 mr-4">
                   <label
                     htmlFor="tel_contacto"
                     className="block font-semibold text-white mb-1"

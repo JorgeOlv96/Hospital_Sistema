@@ -49,6 +49,10 @@ const Consultarealizada = () => {
     fetchAppointmentData();
   }, [id]);
 
+  const handleGoBack = () => {
+    navigate(-1); // Navegar a la página anterior
+  };
+
   return (
     <Layout>
       <div
@@ -60,15 +64,16 @@ const Consultarealizada = () => {
       <div className="flex flex-col gap-2 mb-4">
         <h1 className="text-xl font-semibold">Consulta de solicitud realizada</h1>
         <div className="flex my-4 justify-between">
-          <Link
-            to="/solicitudes/Solicitudreaizada"
-            className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
-          >
-            <span style={{ display: "inline-flex", alignItems: "center" }}>
-              <span>&lt;</span>
-              <span style={{ marginLeft: "5px" }}>Regresar a realizadas</span>
-            </span>
-          </Link>
+        <button
+    onClick={handleGoBack}
+    className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
+  >
+    <span style={{ display: "inline-flex", alignItems: "center" }}>
+      <span>&lt;</span>
+      <span style={{ marginLeft: "5px" }}>Regresar</span>
+    </span>
+  </button>
+
         </div>
 
         <div class="flex flex-col p-4 bg-[#0dafbf] rounded-lg ">
@@ -668,6 +673,39 @@ const Consultarealizada = () => {
                 readOnly
                 className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
               ></textarea>
+            </div>
+            <div className="mr-4" style={{ width: "50%" }}>
+              <label
+                htmlFor="comentarios"
+                className="block font-semibold text-white mb-1"
+              >
+                Comentarios adicionales:
+              </label>
+              <textarea
+                placeholder="comentarios"
+                id="comentarios"
+                name="comentarios"
+                rows="4"
+                value={patientData.comentarios || "N/A"}
+                readOnly
+                className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
+              ></textarea>
+            </div>
+            <div class="w-1/4 mr-4">
+              <label
+                htmlFor="egreso"
+                className="block font-semibold text-white mb-1"
+              >
+                Teléfono de contacto
+              </label>
+              <input
+                type="text"
+                id="tel_contacto"
+                name="tel_contacto"
+                value={patientData.tel_contacto || ""}
+                readOnly
+                className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
+              ></input>
             </div>
           </div>
         </div>
