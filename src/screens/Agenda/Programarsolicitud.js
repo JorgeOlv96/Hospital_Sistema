@@ -468,13 +468,14 @@ const exportToExcel = async (selectedDate) => {
                         <th>Nom. completo</th>
                         <th>Edad</th>
                         <th>Sexo</th>
+                        <th>Procedencia</th>
+                        <th>Expediente</th>
                         <th>Procedimiento CIE-9</th>
                         <th>Diagnostico</th>
                         <th>Especialidad</th>
-                        <th>Procedencia</th>
                         <th>Tiempo est.</th>
-                        <th>Anestesiólogo</th>
                         <th>Cirujano</th>
+                        <th>Anestesiólogo</th>
                         <th>Insumos</th>
                     </tr>
                 </thead>
@@ -567,6 +568,24 @@ const exportToExcel = async (selectedDate) => {
                                           : "M"
                                         : "No especificado"
                                     }</td>
+                                    <td>${(() => {
+                                      switch (
+                                        appointment.tipo_admision
+                                          ) {
+                                            case "CONSULTA EXTERNA":
+                                              return "C.E.";
+                                            case "CAMA":
+                                              return `Cama - ${appointment.cama}`;
+                                            case "URGENCIAS":
+                                              return "Urgencias";
+                                            default:
+                                          return (
+                                            appointment.tipo_admision ||
+                                            "No especificado"
+                                        );
+                                      }
+                                    })()}</td>
+                                    <td>${appointment.no_expediente || ""}</td>
                                     <td>${
                                       appointment.procedimientos_paciente
                                         ? appointment.procedimientos_paciente.slice(
@@ -583,25 +602,7 @@ const exportToExcel = async (selectedDate) => {
                                     <td>${
                                       appointment.nombre_especialidad || ""
                                     }</td>
-                                                                            <td>${(() => {
-                                                                              switch (
-                                                                                appointment.tipo_admision
-                                                                              ) {
-                                                                                case "CONSULTA EXTERNA":
-                                                                                  return "C.E.";
-                                                                                case "CAMA":
-                                                                                  return `Cama - ${appointment.cama}`;
-                                                                                case "URGENCIAS":
-                                                                                  return "Urgencias";
-                                                                                default:
-                                                                                  return (
-                                                                                    appointment.tipo_admision ||
-                                                                                    "No especificado"
-                                                                                  );
-                                                                              }
-                                                                            })()}</td>
                                     <td>${appointment.tiempo_estimado} min</td>
-                                    <td>${anesthesiologistName}</td>
                                     <td>${
                                       appointment.nombre_cirujano
                                         ? appointment.nombre_cirujano
@@ -610,6 +611,7 @@ const exportToExcel = async (selectedDate) => {
                                             .join(" ")
                                         : ""
                                     }</td>
+                                    <td>${anesthesiologistName}</td>
                                     <td>${appointment.req_insumo || ""}</td>
                                 </tr>
                             `;

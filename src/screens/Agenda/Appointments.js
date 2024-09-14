@@ -394,13 +394,14 @@ function Appointments() {
                 <th>Nom. completo</th>
                 <th>Edad</th>
                 <th>Sexo</th>
+                <th>Procedencia</th>
+                <th>Expediente</th>
                 <th>Procedimiento CIE-9</th>
                 <th>Diagnostico</th>
                 <th>Especialidad</th>
-                <th>Procedencia</th>
                 <th>Tiempo est.</th>
-                <TH>Anestesiólogo</th>
                 <th>Cirujano</th>
+                <TH>Anestesiólogo</th>
                 <th>Insumos</th>
               </tr>
             </thead>
@@ -450,6 +451,15 @@ function Appointments() {
                                         <td>${appointment.ap_paterno} ${appointment.ap_materno} ${appointment.nombre_paciente}</td>
                                         <td>${appointment.edad || ""}</td>
                                         <td>${appointment.sexo ? (appointment.sexo === "Femenino" ? "F" : "M") : "No especificado"}</td>
+                                                                                <td>${(() => {
+                                            switch (appointment.tipo_admision) {
+                                                case "CONSULTA EXTERNA": return "C.E.";
+                                                case "CAMA": return `Cama - ${appointment.cama}`;
+                                                case "URGENCIAS": return "Urgencias";
+                                                default: return appointment.tipo_admision || "No especificado";
+                                            }
+                                        })()}</td>
+                                         <td>${appointment.no_expediente || ""}</td>
                                         <td>${(() => {
                                             const procedimientos = appointment.procedimientos_paciente || "";
                                             const [beforeDash, afterDash] = procedimientos.split("-", 2);
@@ -463,24 +473,16 @@ function Appointments() {
                                             return `${truncatedBeforeDash}${afterDash ? "-" + afterDash : ""}`;
                                         })()}</td>
                                         <td>${appointment.nombre_especialidad || ""}</td>
-                                        <td>${(() => {
-                                            switch (appointment.tipo_admision) {
-                                                case "CONSULTA EXTERNA": return "C.E.";
-                                                case "CAMA": return `Cama - ${appointment.cama}`;
-                                                case "URGENCIAS": return "Urgencias";
-                                                default: return appointment.tipo_admision || "No especificado";
-                                            }
-                                        })()}</td>
                                         <td>${appointment.tiempo_estimado} min</td>
                                         <td>${(() => {
-                                            const nombreanes = appointment.nombre_anestesiologo || "";
-                                            const words = nombreanes.split(" ");
+                                            const nombre = appointment.nombre_cirujano || "";
+                                            const words = nombre.split(" ");
                                             const truncatedName = words.slice(0, 2).join(" ");
                                             return truncatedName;
                                         })()}</td>
                                         <td>${(() => {
-                                            const nombre = appointment.nombre_cirujano || "";
-                                            const words = nombre.split(" ");
+                                            const nombreanes = appointment.nombre_anestesiologo || "";
+                                            const words = nombreanes.split(" ");
                                             const truncatedName = words.slice(0, 2).join(" ");
                                             return truncatedName;
                                         })()}</td>

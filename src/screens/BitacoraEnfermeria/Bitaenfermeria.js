@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import Layout from "../../Layout";
 import axios from "axios";
 import Consultabitacora from "../../screens/BitacoraEnfermeria/Consultabitacora";
@@ -17,6 +17,7 @@ function Bitacoraenfermeria() {
   const [sortBy, setSortBy] = useState(null);
   const [sortOrder, setSortOrder] = useState("asc");
   const [page, setPage] = useState(1);
+  const [inputPage, setInputPage] = useState(page);
   const itemsPerPage = 10;
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
 
@@ -149,6 +150,66 @@ function Bitacoraenfermeria() {
 
     return matchesName && matchesSpecialty && matchesDate;
   });
+
+  const orderedAppointments = useMemo(() => {
+    return filteredAppointments
+      .sort((a, b) => {
+        // Ordenar por turno solicitado primero
+        const turnoOrder = ["Matutino", "Vespertino", "Nocturno", "Especial"];
+        const turnoDiff =
+          turnoOrder.indexOf(a.turno_asignado) - turnoOrder.indexOf(b.turno_asignado);
+        
+        if (turnoDiff !== 0) return turnoDiff;
+
+        // Luego ordenar por sala
+        const salaOrder = [
+          "A1",
+          "A2",
+          "T1",
+          "T2",
+          "1",
+          "2",
+          "3",
+          "4",
+          "5",
+          "6",
+          "E",
+          "H",
+          "RX",
+        ];
+        const salaDiff = salaOrder.indexOf(a.sala_quirofano) - salaOrder.indexOf(b.sala_quirofano);
+        if (salaDiff !== 0) return salaDiff;
+
+        // Luego por fecha solicitada
+        const fechaDiff = new Date(a.fecha_programada) - new Date(b.fecha_programada);
+        if (fechaDiff !== 0) return fechaDiff;
+
+        // Finalmente por hora solicitada
+        return a.hora_asignada.localeCompare(b.hora_asignada);
+      });
+  }, [filteredAppointments]);
+
+  const totalPages = Math.ceil(orderedAppointments.length / itemsPerPage);
+
+  const handlePageInputChange = (e) => {
+    const value = parseInt(e.target.value);
+    setInputPage(value);
+  };
+
+  const handlePageInputSubmit = (e) => {
+    e.preventDefault();
+    if (inputPage >= 1 && inputPage <= totalPages) {
+      setPage(inputPage);
+    } else {
+      setInputPage(page);
+    }
+  };
+
+  const handlePageSelect = (e) => {
+    const selectedPage = parseInt(e.target.value);
+    setPage(selectedPage);
+    setInputPage(selectedPage);
+  };
 
   const startIndex = (page - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
@@ -371,32 +432,52 @@ function Bitacoraenfermeria() {
 
           {/* Paginación */}
           <div className="flex justify-center items-center mt-6 space-x-4">
-            <button
-              onClick={() => setPage(page - 1)}
-              disabled={page === 1}
-              className={`${
-                page === 1
-                  ? "bg-gray-300 cursor-not-allowed"
-                  : "bg-[#365b77] hover:bg-[#7498b6]"
-              } text-white font-semibold py-2 px-6 rounded-full shadow-md transition-all duration-300 ease-in-out transform hover:scale-105`}
-            >
-              &#8592;
-            </button>
-            <span className="text-lg font-semibold text-gray-800">
-              Página {page}
-            </span>
-            <button
-              onClick={() => setPage(page + 1)}
-              disabled={endIndex >= filteredAppointments.length}
-              className={`${
-                endIndex >= filteredAppointments.length
-                  ? "bg-gray-300 cursor-not-allowed"
-                  : "bg-[#365b77] hover:bg-[#7498b6]"
-              } text-white font-semibold py-2 px-6 rounded-full shadow-md transition-all duration-300 ease-in-out transform hover:scale-105`}
-            >
-              &#8594;
-            </button>
-          </div>
+        <button
+          onClick={() => {
+            setPage(page - 1);
+            setInputPage(page - 1);
+          }}
+          disabled={page === 1}
+          className={`${
+            page === 1
+              ? "bg-gray-300 cursor-not-allowed"
+              : "bg-[#365b77] hover:bg-[#7498b6]"
+          } text-white font-semibold py-2 px-6 rounded-full shadow-md transition-all duration-300 ease-in-out transform hover:scale-105`}
+        >
+          &#8592;
+        </button>
+
+        <select
+          value={page}
+          onChange={handlePageSelect}
+          className="px-2 py-1 border rounded-lg"
+        >
+          {[...Array(totalPages)].map((_, index) => (
+            <option key={index + 1} value={index + 1}>
+              Página {index + 1}
+            </option>
+          ))}
+        </select>
+
+        <span className="text-lg font-semibold text-gray-800">
+          de {totalPages}
+        </span>
+
+        <button
+          onClick={() => {
+            setPage(page + 1);
+            setInputPage(page + 1);
+          }}
+          disabled={page === totalPages}
+          className={`${
+            page === totalPages
+              ? "bg-gray-300 cursor-not-allowed"
+              : "bg-[#365b77] hover:bg-[#7498b6]"
+          } text-white font-semibold py-2 px-6 rounded-full shadow-md transition-all duration-300 ease-in-out transform hover:scale-105`}
+        >
+          &#8594;
+        </button>
+      </div>
           
         </div>
       </div>
