@@ -176,43 +176,36 @@ const fetchPendingAppointments = async () => {
     const formattedDate = moment(selectedDate).format("YYYY-MM-DD");
   
     try {
-      // Ejecutar ambas solicitudes en paralelo usando Promise.all
+      // Ejecutar ambas solicitudes en paralelo
       const [solicitudesResponse, urgenciasResponse] = await Promise.all([
         fetch(`${baseURL}/api/solicitudes/realizadas`),
         fetch(`${baseURL}/api/solicitudes/geturgencias`)
       ]);
   
-      // Verificar si ambas respuestas son válidas
       if (!solicitudesResponse.ok || !urgenciasResponse.ok) {
         throw new Error("Una o más respuestas de red no fueron correctas");
       }
   
-      // Obtener los datos de ambas respuestas
       const solicitudesData = await solicitudesResponse.json();
       const urgenciasData = await urgenciasResponse.json();
   
-      // Filtrar y combinar datos de solicitudes programadas y urgencias
+      // Filtrar las solicitudes por la fecha seleccionada
       const filteredSolicitudes = solicitudesData.filter(
         (solicitud) =>
-          moment(solicitud.fecha_programada).format("YYYY-MM-DD") ===
-          formattedDate
+          moment(solicitud.fecha_programada).format("YYYY-MM-DD") === formattedDate
       );
   
-      const combinedAppointments = [...filteredSolicitudes, ...urgenciasData];
+      // Filtrar urgencias también por la fecha seleccionada
+      const filteredUrgencias = urgenciasData.filter(
+        (urgencia) =>
+          moment(urgencia.fecha).format("YYYY-MM-DD") === formattedDate
+      );
   
-      // Ordenar por turno_solicitado: Matutino, Vespertino, Nocturno
-      const orderedAppointments = combinedAppointments.sort((a, b) => {
-        const turnosOrder = {
-          Matutino: 1,
-          Vespertino: 2,
-          Nocturno: 3,
-        };
+      // Combinar ambas listas
+      const combinedAppointments = [...filteredSolicitudes, ...filteredUrgencias];
   
-        return turnosOrder[a.turno_solicitado] - turnosOrder[b.turno_solicitado];
-      });
-  
-      // Reorganizar las propiedades para que 'cama' esté junto a 'tipo_intervencion'
-      const reorganizedAppointments = orderedAppointments.map((solicitud) => {
+      // Reorganizar los datos para la exportación
+      const reorganizedAppointments = combinedAppointments.map((solicitud) => {
         return {
           id: solicitud.id_solicitud,
           folio: solicitud.folio,
@@ -225,25 +218,24 @@ const fetchPendingAppointments = async () => {
           diagnostico: solicitud.diagnostico,
           tiempo_estimado: solicitud.tiempo_estimado,
           tipo_intervencion: solicitud.tipo_intervencion,
-          tipo_admision: solicitud.tipo_admision,
-          cama: solicitud.cama, // Mover cama junto a tipo_intervencion
+          cama: solicitud.cama,
           fecha_solicitada: solicitud.fecha_solicitada,
           turno_solicitado: solicitud.turno_solicitado,
           sala_quirofano: solicitud.sala_quirofano,
           nombre_especialidad: solicitud.nombre_especialidad,
           cirujano: solicitud.nombre_cirujano,
           req_insumo: solicitud.req_insumo,
-          procedimientos_extra: solicitud.procedimientos_extra
-          // Añade cualquier otro campo que desees
+          procedimientos_extra: solicitud.procedimientos_extra,
+          // Cualquier otro campo necesario
         };
       });
   
-      // Crear la hoja de cálculo a partir de los datos ordenados y reorganizados
+      // Crear la hoja de cálculo
       const worksheet = XLSX.utils.json_to_sheet(reorganizedAppointments);
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, "Solicitudes y Urgencias");
   
-      // Generar el archivo Excel y guardarlo con FileSaver
+      // Generar el archivo Excel
       const excelBuffer = XLSX.write(workbook, {
         bookType: "xlsx",
         type: "array",
@@ -252,13 +244,13 @@ const fetchPendingAppointments = async () => {
         type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       });
   
-      // Nombre del archivo con la fecha seleccionada
       const fileName = `Solicitudes_y_Urgencias_${formattedDate}.xlsx`;
       saveAs(data, fileName);
     } catch (error) {
       console.error("Error exporting data:", error);
     }
   };
+  
   
 
   const handleExport = async () => {
@@ -269,32 +261,33 @@ const fetchPendingAppointments = async () => {
     }
   };
   const printDailyAppointments = async (selectedDate) => {
-    const today = moment(printDate).format("YYYY-MM-DD");
+    const today = moment(selectedDate).format("YYYY-MM-DD");
     try {
-      
-      const solicitudesResponse = await fetch(
-        `${baseURL}/api/solicitudes/preprogramadas`
-      );
-      if (!solicitudesResponse.ok) {
-        throw new Error("Network response for solicitudes was not ok");
+      const [solicitudesResponse, anesthesiologistsResponse, urgenciasResponse] = await Promise.all([
+        fetch(`${baseURL}/api/solicitudes/realizadas`),
+        fetch(`${baseURL}/api/anestesio/anestesiologos`),
+        fetch(`${baseURL}/api/solicitudes/geturgencias`)
+      ]);
+  
+      if (!solicitudesResponse.ok || !anesthesiologistsResponse.ok || !urgenciasResponse.ok) {
+        throw new Error("Network response was not ok");
       }
+  
       const solicitudesData = await solicitudesResponse.json();
-
-      // Fetch de los anestesiólogos
-      const anesthesiologistsResponse = await fetch(
-        `${baseURL}/api/anestesio/anestesiologos`
-      );
-      if (!anesthesiologistsResponse.ok) {
-        throw new Error("Network response for anesthesiologists was not ok");
-      }
       const anesthesiologistsData = await anesthesiologistsResponse.json();
-
-      // Filtrar las solicitudes del día seleccionado
-      const todaysRegistrations = solicitudesData.filter(
-        (solicitud) =>
-          moment(solicitud.fecha_solicitada).format("YYYY-MM-DD") === today
-      );
-
+      const urgenciasData = await urgenciasResponse.json();
+  
+      // Filtrar las solicitudes y urgencias del día seleccionado
+      const todaysRegistrations = [
+        ...solicitudesData.filter(
+          (solicitud) => moment(solicitud.fecha_programada).format("YYYY-MM-DD") === today
+        ),
+        ...urgenciasData.filter(
+          (urgencia) => moment(urgencia.fecha_programada).format("YYYY-MM-DD") === today
+        )
+      ];
+      
+  
       // Filtrar anestesiólogos asignados para el día seleccionado
       const todaysAnesthesiologists = anesthesiologistsData.filter(
         (anesthesiologist) =>
@@ -409,7 +402,7 @@ const fetchPendingAppointments = async () => {
                     const sortedRegistrations = todaysRegistrations
                       .filter((appointment) => {
                         const hour = moment(
-                          appointment.hora_solicitada,
+                          appointment.hora_asignada,
                           "HH:mm"
                         ).hour();
                         if (turno === "Matutino") return hour >= 8 && hour < 15;
@@ -438,8 +431,8 @@ const fetchPendingAppointments = async () => {
                         if (salaA !== salaB) {
                           return salaA - salaB;
                         }
-                        const horaA = moment(a.hora_solicitada, "HH:mm");
-                        const horaB = moment(b.hora_solicitada, "HH:mm");
+                        const horaA = moment(a.hora_asignada, "HH:mm");
+                        const horaB = moment(b.hora_asignada, "HH:mm");
                         return horaA - horaB;
                       });
 
@@ -474,7 +467,7 @@ const fetchPendingAppointments = async () => {
                                     <td>${index + 1}</td>
                                     <td>${appointment.folio || ""}</td>
                                     <td>${moment(
-                                      appointment.hora_solicitada,
+                                      appointment.hora_asignada,
                                       "HH:mm"
                                     ).format("LT")}</td>
                                     <td>Sala: ${
@@ -686,7 +679,7 @@ const fetchPendingAppointments = async () => {
                     onClick={printDailyAppointments}
                     className="bg-[#5DB259] hover:bg-[#528E4F] text-white py-2 px-4 rounded inline-flex items-center"
                   >
-                    Imprimir Pre-programadas
+                    Imprimir
                   </button>
                 </div>
               )}
