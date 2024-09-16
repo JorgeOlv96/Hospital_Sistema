@@ -301,7 +301,7 @@ const Consultabitacora = () => {
                 for="ap_paterno"
                 class="block font-semibold text-white mb-1"
               >
-                Apellido paterno:
+                Ap. paterno:
               </label>
               <input
                 placeholder="Apellido paterno paciente"
@@ -319,7 +319,7 @@ const Consultabitacora = () => {
                 for="ap_materno"
                 class="block font-semibold text-white mb-1"
               >
-                Apellido materno:
+                Ap. materno:
               </label>
               <input
                 placeholder="Apellido materno paciente"
@@ -426,7 +426,7 @@ const Consultabitacora = () => {
                 htmlFor="fecha_nacimiento"
                 className="block font-semibold text-white mb-1"
               >
-                Fecha de nacimiento:
+                F. Nacimiento:
               </label>
               <input
                 type="text"
@@ -443,7 +443,7 @@ const Consultabitacora = () => {
     htmlFor="tipo_admision"
     className="block font-semibold text-white mb-1"
   >
-    Procedencia paciente:
+    Procedencia:
   </label>
   <input
     id="tipo_admision"
@@ -512,7 +512,7 @@ const Consultabitacora = () => {
                 htmlFor="tiempo_estimado"
                 className="block font-semibold text-white mb-1"
               >
-                Tiempo est. de cirugía:
+                Tiempo est.:
               </label>
               <input
                 placeholder="Minutos"
@@ -548,7 +548,7 @@ const Consultabitacora = () => {
                 htmlFor="fecha_solicitada"
                 className="block font-semibold text-white mb-1"
               >
-                Fecha de cirugía:
+                F. cirugía:
               </label>
               <input
                 type="text"
@@ -565,7 +565,7 @@ const Consultabitacora = () => {
                 htmlFor="hora_solicitada"
                 className="block font-semibold text-white mb-1"
               >
-                Hora de cirugía:
+                H. cirugía:
               </label>
               <input
                 type="time"
@@ -636,7 +636,7 @@ const Consultabitacora = () => {
                 htmlFor="enf_circulante"
                 className="block font-semibold text-white mb-1"
               >
-                Se preeveían ( proc. ):
+                Proc. Extras:
               </label>
               <div className="relative">
               <input
@@ -694,7 +694,7 @@ const Consultabitacora = () => {
                 htmlFor="tiempo_estimado"
                 className="block font-semibold text-white mb-1"
               >
-                Hora inicio Anes:
+                H.I. Anes:
               </label>
               <input
                 placeholder="Minutos"
