@@ -157,7 +157,7 @@ const fetchPendingAppointments = async () => {
     return `${year}-${month}-${day}`;
   };
 
-    const handlePrintDateChange = (e) => {
+  const handlePrintDateChange = (e) => {
     const selectedDate = moment(e.target.value).startOf("day").toDate();
     setPrintDate(selectedDate);
   };
@@ -172,6 +172,7 @@ const fetchPendingAppointments = async () => {
     return `${day}-${month}-${year}`;
   };
 
+  // Función para exportar datos a Excel
   const exportToExcel = async (selectedDate) => {
     const formattedDate = moment(selectedDate).format("YYYY-MM-DD");
   
@@ -192,7 +193,7 @@ const fetchPendingAppointments = async () => {
       // Filtrar las solicitudes por la fecha seleccionada
       const filteredSolicitudes = solicitudesData.filter(
         (solicitud) =>
-          moment(solicitud.fecha_programada).format("YYYY-MM-DD") === formattedDate
+          moment(solicitud.fecha_solicitada).format("YYYY-MM-DD") === formattedDate
       );
   
       // Filtrar urgencias también por la fecha seleccionada
@@ -251,8 +252,6 @@ const fetchPendingAppointments = async () => {
     }
   };
   
-  
-
   const handleExport = async () => {
     if (selectedDate) {
       await exportToExcel(selectedDate);
@@ -260,8 +259,9 @@ const fetchPendingAppointments = async () => {
       console.warn("No date selected!");
     }
   };
+  
   const printDailyAppointments = async (selectedDate) => {
-    const today = moment(selectedDate).format("YYYY-MM-DD");
+    const today = moment(printDate).format("YYYY-MM-DD");
     try {
       const [solicitudesResponse, anesthesiologistsResponse, urgenciasResponse] = await Promise.all([
         fetch(`${baseURL}/api/solicitudes/realizadas`),
@@ -612,7 +612,7 @@ const fetchPendingAppointments = async () => {
       .toLowerCase()
       .includes(specialtyFilter.toLowerCase());
     const matchesDate = dateFilter
-      ? new Date(appointment.fecha_solicitada).toISOString().slice(0, 10) ===
+      ? new Date(appointment.fecha_programada).toISOString().slice(0, 10) ===
         dateFilter
       : true;
 
@@ -632,6 +632,8 @@ const fetchPendingAppointments = async () => {
       >
         <div className="flex flex-col gap-2 mb-4">
           <h1 className="text-xl font-semibold">Solicitudes Urgentes</h1>
+          
+          <div className="flex justify-between my-4">
           <div className="flex my-4 space-x-4">
             <div>
               <Link
@@ -643,8 +645,10 @@ const fetchPendingAppointments = async () => {
                   <span style={{ marginLeft: "5px" }}>Regresar a bitácora</span>
                 </span>
               </Link>
-              
-            <div>
+            </div>
+          </div>
+
+          <div>
               {/* Enlaces para cambiar vistas */}
               <div className="flex justify-center space-x-4 mb-4">
                 <button
@@ -679,7 +683,7 @@ const fetchPendingAppointments = async () => {
                     onClick={printDailyAppointments}
                     className="bg-[#5DB259] hover:bg-[#528E4F] text-white py-2 px-4 rounded inline-flex items-center"
                   >
-                    Imprimir
+                    Imprimir Urgentes
                   </button>
                 </div>
               )}
@@ -703,7 +707,6 @@ const fetchPendingAppointments = async () => {
               )}
             </div>
             </div>
-          </div>
 
           {open && selectedAppointment && (
             <AddAppointmentModalProgramado
