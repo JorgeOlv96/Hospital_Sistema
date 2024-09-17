@@ -251,7 +251,6 @@ function ProgramarSolicitud() {
   };
 
 // Función para exportar datos a Excel
-// Función para exportar datos a Excel
 const exportToExcel = async (selectedDate) => {
   const formattedDate = moment(selectedDate).format("YYYY-MM-DD");
 
@@ -331,9 +330,6 @@ const exportToExcel = async (selectedDate) => {
     console.error("Error exporting data:", error);
   }
 };
-
-
-
 
   // Manejo del evento de exportación
   const handleExport = async () => {
@@ -810,7 +806,7 @@ const events = pendingAppointments.map((app) => {
                 </Link>
               </div>
             </div>
-
+           
             <div>
               {/* Enlaces para cambiar vistas */}
               <div className="flex justify-center space-x-4 mb-4">
