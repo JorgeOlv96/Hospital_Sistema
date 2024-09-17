@@ -350,7 +350,7 @@ const SolicitudUrgencia = () => {
                 for="ap_paterno"
                 class="block font-semibold text-white mb-1"
               >
-                Apellido paterno:
+                Ap. paterno:
               </label>
               <input
                 placeholder="Ap. paterno Pte."
@@ -368,7 +368,7 @@ const SolicitudUrgencia = () => {
                 for="ap_materno"
                 class="block font-semibold text-white mb-1"
               >
-                Apellido materno:
+                Ap. materno:
               </label>
               <input
                 placeholder="Apellido materno Pte."
@@ -404,7 +404,7 @@ const SolicitudUrgencia = () => {
                 htmlFor="edad"
                 className="block font-semibold text-white mb-1"
               >
-                Edad
+                Edad:
               </label>
               <input
                 placeholder="Edad de Pte."
@@ -446,7 +446,7 @@ const SolicitudUrgencia = () => {
                 htmlFor="sala_quirofano"
                 className="block font-semibold text-white mb-1"
               >
-                Sala solicitada:
+                Sala:
               </label>
               <select
                 type="text"
@@ -485,7 +485,7 @@ const SolicitudUrgencia = () => {
                 htmlFor="fecha_nacimiento"
                 className="block font-semibold text-white mb-1"
               >
-                Fecha de nacimiento:
+                F. Nacimiento:
               </label>
               <input
                 type="date"
@@ -502,7 +502,7 @@ const SolicitudUrgencia = () => {
                 htmlFor="tipo_intervencion"
                 className="block font-semibold text-white mb-1"
               >
-                Tipo de intervención:
+                T. intervención:
               </label>
               <select
                 id="tipo_intervencion"
@@ -560,7 +560,7 @@ const SolicitudUrgencia = () => {
                 htmlFor="clave_esp"
                 className="block font-semibold text-white mb-1"
               >
-                Clave
+                Clave:
               </label>
               <select
                 id="clave_esp"
@@ -583,7 +583,7 @@ const SolicitudUrgencia = () => {
                 htmlFor="turno_solicitado"
                 className="block font-semibold text-white mb-1"
               >
-                Turno
+                Turno:
               </label>
               <select
                 id="turno_solicitado"
@@ -637,7 +637,7 @@ const SolicitudUrgencia = () => {
                 htmlFor="fecha_programada"
                 className="block font-semibold text-white mb-1"
               >
-                Fecha de urgencia:
+                F. urgencia:
               </label>
               <input
                 type="date"
@@ -654,7 +654,7 @@ const SolicitudUrgencia = () => {
                 htmlFor="enfermera_circulante"
                 className="block font-semibold text-white mb-1"
               >
-                Nombre anestesiologo:
+                Anestesiologo:
               </label>
               <div className="relative w-full">
               <input
@@ -731,7 +731,7 @@ const SolicitudUrgencia = () => {
                 htmlFor="hora_entrada"
                 className="block font-semibold text-white mb-1"
               >
-                Entrada quirófano:
+                Entrada a sala:
               </label>
               <input
                 placeholder="Minutos"
@@ -776,7 +776,7 @@ const SolicitudUrgencia = () => {
                 htmlFor="tiempo_estimado"
                 className="block font-semibold text-white mb-1"
               >
-                Hora inicio Anes:
+                Hr.I. Anes:
               </label>
               <input
                 placeholder="Minutos"
@@ -812,7 +812,7 @@ const SolicitudUrgencia = () => {
                 htmlFor="tiempo_estimado"
                 className="block font-semibold text-white mb-1"
               >
-                Hora termino Anes:
+                Hr.T. Anes:
               </label>
               <input
                 placeholder="Minutos"
@@ -931,7 +931,7 @@ const SolicitudUrgencia = () => {
                   htmlFor="agregar_procedimiento"
                   className="block font-semibold text-white mb-1"
                 >
-                  Agregar más
+                  Añadir +
                 </label>
                 <button
                   id="agregar_procedimiento"

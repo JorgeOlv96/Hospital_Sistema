@@ -16,7 +16,34 @@ function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [userName, setUserName] = useState("Nombre no disponible");
   const [isLoading, setIsLoading] = useState(true);
+  const [isHeaderVisible, setIsHeaderVisible] = useState(true);
+  const [lastScrollTop, setLastScrollTop] = useState(0);
+
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollTop = window.pageYOffset || document.documentElement.scrollTop;
+  
+      if (currentScrollTop > lastScrollTop) {
+        // Desplazamiento hacia abajo
+        setIsHeaderVisible(false);
+      } else {
+        // Desplazamiento hacia arriba
+        setIsHeaderVisible(true);
+      }
+  
+      setLastScrollTop(currentScrollTop <= 0 ? 0 : currentScrollTop);
+    };
+  
+    window.addEventListener('scroll', handleScroll);
+  
+    // Cleanup
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [lastScrollTop]);
+  
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -74,8 +101,10 @@ function Header() {
   return (
     <>
       {isOpen && <MenuDrawer isOpen={isOpen} toggleDrawer={toggleDrawer} />}
-
-      <div className="xl:w-5/6 w-full 2xl:max-w-[1640px] bg-dry grid md:grid-cols-2 grid-cols-12 items-center bg-opacity-95 fixed top-0 z-40 xs:px-8 px-2">
+      
+      <div
+        className={`xl:w-5/6 w-full 2xl:max-w-[1640px] bg-dry grid md:grid-cols-2 grid-cols-12 items-center bg-opacity-95 fixed top-0 z-40 xs:px-8 px-2 transition-transform duration-300 ${isHeaderVisible ? 'translate-y-0' : '-translate-y-full'}`}
+      >
         <div className="md:col-span-1 sm:col-span-11 col-span-10 flex gap-4 items-center md:py-0 py-4">
           <button
             onClick={toggleDrawer}
@@ -103,6 +132,7 @@ function Header() {
       </div>
     </>
   );
+  
 }
 
 export default Header;

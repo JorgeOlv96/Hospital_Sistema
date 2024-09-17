@@ -267,7 +267,7 @@ const Consultabitacora = () => {
                 for="fecha_solicitud"
                 class="block font-semibold text-white mb-1"
               >
-                Folio de solicitud
+                Folio de solicitud:
               </label>
               <input
                 type="text"
@@ -355,7 +355,7 @@ const Consultabitacora = () => {
                 htmlFor="no_expediente"
                 className="block font-semibold text-white mb-1"
               >
-                No. expediente
+                No. Exp:
               </label>
               <input
                 placeholder="Expediente de paciente"
@@ -373,7 +373,7 @@ const Consultabitacora = () => {
                 htmlFor="edad"
                 className="block font-semibold text-white mb-1"
               >
-                Edad
+                Edad:
               </label>
               <input
                 placeholder="Edad de paciente"
@@ -496,7 +496,7 @@ const Consultabitacora = () => {
                 htmlFor="turno_solicitado"
                 className="block font-semibold text-white mb-1"
               >
-                Turno solicitado:
+                Turno:
               </label>
               <input
                 id="turno_solicitado"
@@ -783,7 +783,7 @@ const Consultabitacora = () => {
                 htmlFor="tiempo_estimado"
                 className="block font-semibold text-white mb-1"
               >
-                Salida paciente:
+                H. Salida:
               </label>
               <input
                 placeholder="Minutos"
@@ -875,7 +875,7 @@ const Consultabitacora = () => {
                 htmlFor="diagnostico_paciente"
                 className="block font-semibold text-white mb-1"
               >
-                Diagnóstico del paciente
+                Diagnóstico del paciente:
               </label>
               <textarea
                 placeholder="Diagnóstico del paciente"

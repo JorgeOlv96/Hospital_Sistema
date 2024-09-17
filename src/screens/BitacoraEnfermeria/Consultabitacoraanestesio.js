@@ -273,7 +273,7 @@ const ConsultabitacoraAnestesio = () => {
                 for="ap_paterno"
                 class="block font-semibold text-white mb-1"
               >
-                Apellido paterno:
+                Ap. paterno:
               </label>
               <input
                 placeholder="Apellido paterno paciente"
@@ -291,7 +291,7 @@ const ConsultabitacoraAnestesio = () => {
                 for="ap_materno"
                 class="block font-semibold text-white mb-1"
               >
-                Apellido materno:
+                Ap. materno:
               </label>
               <input
                 placeholder="Apellido materno paciente"
@@ -327,7 +327,7 @@ const ConsultabitacoraAnestesio = () => {
                 htmlFor="no_expediente"
                 className="block font-semibold text-white mb-1"
               >
-                No. expediente
+                No. Exp.:
               </label>
               <input
                 placeholder="Expediente de paciente"
@@ -345,7 +345,7 @@ const ConsultabitacoraAnestesio = () => {
                 htmlFor="edad"
                 className="block font-semibold text-white mb-1"
               >
-                Edad
+                Edad:
               </label>
               <input
                 placeholder="Edad de paciente"
@@ -398,7 +398,7 @@ const ConsultabitacoraAnestesio = () => {
                 htmlFor="fecha_nacimiento"
                 className="block font-semibold text-white mb-1"
               >
-                Fecha de nacimiento:
+                F. Nacimiento:
               </label>
               <input
                 type="text"
@@ -415,7 +415,7 @@ const ConsultabitacoraAnestesio = () => {
                 htmlFor="tipo_admision"
                 className="block font-semibold text-white mb-1"
               >
-                Procedencia paciente:
+                Procedencia:
               </label>
               <input
                 id="tipo_admision"
@@ -463,7 +463,7 @@ const ConsultabitacoraAnestesio = () => {
                 htmlFor="turno_solicitado"
                 className="block font-semibold text-white mb-1"
               >
-                Turno solicitado:
+                Turno:
               </label>
               <input
                 id="turno_solicitado"
@@ -479,7 +479,7 @@ const ConsultabitacoraAnestesio = () => {
                 htmlFor="tiempo_estimado"
                 className="block font-semibold text-white mb-1"
               >
-                Tiempo est. de cirugía:
+                Tiempo est.:
               </label>
               <input
                 placeholder="Minutos"
@@ -515,7 +515,7 @@ const ConsultabitacoraAnestesio = () => {
                 htmlFor="fecha_solicitada"
                 className="block font-semibold text-white mb-1"
               >
-                Fecha de cirugía:
+                F. Cirugía:
               </label>
               <input
                 type="text"
@@ -532,7 +532,7 @@ const ConsultabitacoraAnestesio = () => {
                 htmlFor="hora_solicitada"
                 className="block font-semibold text-white mb-1"
               >
-                Hora de cirugía:
+                Hr. Cirugía:
               </label>
               <input
                 type="time"
@@ -603,7 +603,7 @@ const ConsultabitacoraAnestesio = () => {
                 htmlFor="enf_circulante"
                 className="block font-semibold text-white mb-1"
               >
-                Se preeveían ( proc. ):
+                Proc. Extras:
               </label>
               <div className="relative">
               <input
@@ -659,7 +659,7 @@ const ConsultabitacoraAnestesio = () => {
                 htmlFor="tiempo_estimado"
                 className="block font-semibold text-white mb-1"
               >
-                Hora inicio Anes:
+                Hr.I. Anes:
               </label>
               <input
                 placeholder="Minutos"
@@ -702,7 +702,7 @@ const ConsultabitacoraAnestesio = () => {
                 htmlFor="tiempo_estimado"
                 className="block font-semibold text-white mb-1"
               >
-                Hora Incisión:
+                Hr. Incisión:
               </label>
               <input
                 placeholder="Minutos"
@@ -720,7 +720,7 @@ const ConsultabitacoraAnestesio = () => {
                 htmlFor="tiempo_estimado"
                 className="block font-semibold text-white mb-1"
               >
-                Hora Cierre:
+                Hr. Cierre:
               </label>
               <input
                 placeholder="Minutos"
@@ -738,7 +738,7 @@ const ConsultabitacoraAnestesio = () => {
                 htmlFor="tiempo_estimado"
                 className="block font-semibold text-white mb-1"
               >
-                Termino Anes:
+                Hr.T. Anes:
               </label>
               <input
                 placeholder="Minutos"
@@ -756,7 +756,7 @@ const ConsultabitacoraAnestesio = () => {
                 htmlFor="tiempo_estimado"
                 className="block font-semibold text-white mb-1"
               >
-                Salida paciente:
+                Hr. Salida:
               </label>
               <input
                 placeholder="Minutos"
