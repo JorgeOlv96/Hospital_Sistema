@@ -30,7 +30,7 @@ function Sidebar() {
         />
       </Link>
       
-      <div className="flex-colo gap-2 mt-8">
+      <div className="flex-colo mt-8">
         {menuItems.map((item, index) => (
           <Link
             to={item.path}
