@@ -714,7 +714,7 @@ const SolicitudUrgencia = () => {
                 htmlFor="hora_asignada"
                 className="block font-semibold text-white mb-1"
               >
-                Hora de cirugía:
+                Hr. Cirugía:
               </label>
               <input
                 type="time"
@@ -731,7 +731,7 @@ const SolicitudUrgencia = () => {
                 htmlFor="hora_entrada"
                 className="block font-semibold text-white mb-1"
               >
-                Entrada a sala:
+                Hr. Entrada:
               </label>
               <input
                 placeholder="Minutos"
@@ -847,7 +847,7 @@ const SolicitudUrgencia = () => {
                 htmlFor="tiempo_estimado"
                 className="block font-semibold text-white mb-1"
               >
-                Salida paciente:
+                Hr. Salida:
               </label>
               <input
                 placeholder="Minutos"
