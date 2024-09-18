@@ -172,7 +172,6 @@ const fetchPendingAppointments = async () => {
     return `${day}-${month}-${year}`;
   };
 
-  // Función para exportar datos a Excel
   const exportToExcel = async (selectedDate) => {
     const formattedDate = moment(selectedDate).format("YYYY-MM-DD");
   
@@ -190,48 +189,25 @@ const fetchPendingAppointments = async () => {
       const solicitudesData = await solicitudesResponse.json();
       const urgenciasData = await urgenciasResponse.json();
   
-      // Filtrar las solicitudes por la fecha seleccionada
+      // Filtrar los datos en el frontend según la fecha seleccionada
       const filteredSolicitudes = solicitudesData.filter(
         (solicitud) =>
-          moment(solicitud.fecha_solicitada).format("YYYY-MM-DD") === formattedDate
+          moment(solicitud.fecha_programada).format("YYYY-MM-DD") === formattedDate
       );
-  
-      // Filtrar urgencias también por la fecha seleccionada
       const filteredUrgencias = urgenciasData.filter(
         (urgencia) =>
-          moment(urgencia.fecha).format("YYYY-MM-DD") === formattedDate
+          moment(urgencia.fecha_programada).format("YYYY-MM-DD") === formattedDate
       );
   
-      // Combinar ambas listas
+      // Combinar los datos filtrados
       const combinedAppointments = [...filteredSolicitudes, ...filteredUrgencias];
   
-      // Reorganizar los datos para la exportación
-      const reorganizedAppointments = combinedAppointments.map((solicitud) => {
-        return {
-          id: solicitud.id_solicitud,
-          folio: solicitud.folio,
-          ap_paterno: solicitud.ap_paterno,
-          ap_materno: solicitud.ap_materno,
-          nombre_paciente: solicitud.nombre_paciente,
-          edad: solicitud.edad,
-          sexo: solicitud.sexo,
-          procedimientos_paciente: solicitud.procedimientos_paciente,
-          diagnostico: solicitud.diagnostico,
-          tiempo_estimado: solicitud.tiempo_estimado,
-          tipo_intervencion: solicitud.tipo_intervencion,
-          cama: solicitud.cama,
-          fecha_solicitada: solicitud.fecha_solicitada,
-          turno_solicitado: solicitud.turno_solicitado,
-          sala_quirofano: solicitud.sala_quirofano,
-          nombre_especialidad: solicitud.nombre_especialidad,
-          cirujano: solicitud.nombre_cirujano,
-          req_insumo: solicitud.req_insumo,
-          procedimientos_extra: solicitud.procedimientos_extra,
-          // Cualquier otro campo necesario
-        };
-      });
+      // No reorganizar, simplemente devolver los datos tal como los recibimos
+      const reorganizedAppointments = combinedAppointments.map((solicitud) => ({
+        ...solicitud, // Incluye todos los campos del objeto "solicitud"
+      }));
   
-      // Crear la hoja de cálculo
+      // Crear la hoja de cálculo con todos los campos
       const worksheet = XLSX.utils.json_to_sheet(reorganizedAppointments);
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, "Solicitudes y Urgencias");
@@ -252,13 +228,14 @@ const fetchPendingAppointments = async () => {
     }
   };
   
-  const handleExport = async () => {
-    if (selectedDate) {
-      await exportToExcel(selectedDate);
-    } else {
-      console.warn("No date selected!");
-    }
-  };
+const handleExport = async () => {
+  if (selectedDate) {
+    await exportToExcel(selectedDate);
+  } else {
+    console.warn("No date selected!");
+  }
+};
+
   
   const printDailyAppointments = async (selectedDate) => {
     const today = moment(printDate).format("YYYY-MM-DD");
@@ -357,7 +334,7 @@ const fetchPendingAppointments = async () => {
                 padding: 10px;
                 background-color: #f4f4f4;
             ">
-                <h4 style="margin: 0;">Solicitudes Programadas</h4>
+                <h4 style="margin: 0;">Solicitudes Realizadas</h4>
                 <div style="
                     display: flex;
                     align-items: center;
@@ -367,7 +344,7 @@ const fetchPendingAppointments = async () => {
                         margin: 0;
                         font-size: 1em;
                         line-height: 1;
-                    ">Hoja de impresión PRE-APROBADAS:</h1>
+                    ">Hoja de impresión Realizadas y Urgentes:</h1>
                     <div class="date" style="
                         margin-left: 10px;
                         font-size: 1em;
@@ -385,13 +362,14 @@ const fetchPendingAppointments = async () => {
                         <th>Nom. completo</th>
                         <th>Edad</th>
                         <th>Sexo</th>
+                        <th>No. Expediente</th>
+                        <th>Procedencia</th>
                         <th>Procedimiento CIE-9</th>
                         <th>Diagnostico</th>
                         <th>Especialidad</th>
-                        <th>Procedencia</th>
                         <th>Tiempo est.</th>
-                        <th>Anestesiólogo</th>
                         <th>Cirujano</th>
+                        <th>Anestesiólogo</th>
                         <th>Insumos</th>
                     </tr>
                 </thead>
@@ -484,23 +462,8 @@ const fetchPendingAppointments = async () => {
                                           : "M"
                                         : "No especificado"
                                     }</td>
-                                    <td>${
-                                      appointment.procedimientos_paciente
-                                        ? appointment.procedimientos_paciente.slice(
-                                            0,
-                                            60
-                                          )
-                                        : ""
-                                    }</td>
-                                    <td>${
-                                      appointment.diagnostico
-                                        ? appointment.diagnostico.slice(0, 60)
-                                        : ""
-                                    }</td>
-                                    <td>${
-                                      appointment.nombre_especialidad || ""
-                                    }</td>
-                                                                            <td>${(() => {
+                                    <td>${appointment.no_expediente || ""}</td>
+                                                                                                                <td>${(() => {
                                                                               switch (
                                                                                 appointment.tipo_admision
                                                                               ) {
@@ -517,9 +480,24 @@ const fetchPendingAppointments = async () => {
                                                                                   );
                                                                               }
                                                                             })()}</td>
-                                    <td>${appointment.tiempo_estimado} min</td>
-                                    <td>${anesthesiologistName}</td>
                                     <td>${
+                                      appointment.procedimientos_paciente
+                                        ? appointment.procedimientos_paciente.slice(
+                                            0,
+                                            60
+                                          )
+                                        : ""
+                                    }</td>
+                                    <td>${
+                                      appointment.diagnostico
+                                        ? appointment.diagnostico.slice(0, 60)
+                                        : ""
+                                    }</td>
+                                    <td>${
+                                      appointment.nombre_especialidad || ""
+                                    }</td>
+                                    <td>${appointment.tiempo_estimado} min</td>
+                                                                        <td>${
                                       appointment.nombre_cirujano
                                         ? appointment.nombre_cirujano
                                             .split(" ")
@@ -527,6 +505,7 @@ const fetchPendingAppointments = async () => {
                                             .join(" ")
                                         : ""
                                     }</td>
+                                    <td>${anesthesiologistName}</td>
                                     <td>${appointment.req_insumo || ""}</td>
                                 </tr>
                             `;
@@ -631,7 +610,7 @@ const fetchPendingAppointments = async () => {
         data-aos-offset="200"
       >
         <div className="flex flex-col gap-2 mb-4">
-          <h1 className="text-xl font-semibold">Solicitudes Urgentes</h1>
+          <h1 className="text-xl font-semibold">Solicitudes Realizadas y Urgentes</h1>
           
           <div className="flex justify-between my-4">
           <div className="flex my-4 space-x-4">
