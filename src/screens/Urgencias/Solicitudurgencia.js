@@ -60,7 +60,7 @@ const SolicitudUrgencia = () => {
   const [procedimientoExtra, setProcedimientoExtra] = useState("");
   const [selected, setSelected] = useState([]);
   const [formData, setFormData] = useState({
-    fecha_solicitud: obtenerFechaActual(),
+    fecha_solicitud: "",
     clave_esp: "",
     nombre_especialidad: "",
     ap_paterno: "",
@@ -86,8 +86,10 @@ const SolicitudUrgencia = () => {
     egreso: "",
     enf_quirurgica: "",
     enf_circulante: "",
-    tipo_anestesia: [],
+    tipo_anestesia: [], // Array vacío por defecto
     nuevos_procedimientos_extra: [],
+    hi_anestesia: "",  // Vacío por defecto
+    ht_anestesia: "",  // Vacío por defecto
   });
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
 
@@ -138,27 +140,45 @@ const SolicitudUrgencia = () => {
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
-
+  
+    // Actualizar el valor del campo en el estado
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value,
     }));
-
+  
     if (name === "fecha_nacimiento") {
-      const today = new Date().toISOString().split("T")[0];
-      if (value > today) {
+      const today = new Date();
+      const birthDate = new Date(value);
+  
+      // Verificar si la fecha de nacimiento es futura
+      const todayStr = today.toISOString().split("T")[0]; // Para comparar solo la fecha (sin tiempo)
+      if (value > todayStr) {
         setErrors((prevErrors) => ({
           ...prevErrors,
           fecha_nacimiento: "Fecha de nacimiento no puede ser en el futuro",
         }));
       } else {
+        // Eliminar error si la fecha es válida
         setErrors((prevErrors) => {
           const { fecha_nacimiento, ...rest } = prevErrors;
           return rest;
         });
+  
+        // Calcular la edad (solo años)
+        const ageDiff = today - birthDate;
+        const ageDate = new Date(ageDiff);
+        const calculatedAge = Math.abs(ageDate.getUTCFullYear() - 1970); // Calcular edad en años
+  
+        // Actualizar la edad en el estado
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+          edad: calculatedAge,
+        }));
       }
     }
   };
+  
 
   const handleNombreEspecialidadChange = (e) => {
     const selectedNombreEspecialidad = e.target.value;
@@ -239,15 +259,23 @@ const SolicitudUrgencia = () => {
 
   const validateForm = () => {
     const newErrors = {};
+  
     Object.keys(formData).forEach((key) => {
-      if (!formData[key] && key !== "nuevos_procedimientos_extra") {
+      // Validar si los campos están vacíos, pero excluyendo aquellos que son opcionales
+      if (
+        !formData[key] && 
+        key !== "nuevos_procedimientos_extra" && 
+        key !== "tipo_anestesia" &&
+        key !== "hi_anestesia" &&
+        key !== "ht_anestesia"
+      ) {
         newErrors[key] = "Campo requerido";
       }
     });
+  
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -312,11 +340,12 @@ const SolicitudUrgencia = () => {
                 Fecha de solicitud:
               </label>
               <input
-                type="text"
+                type="date"
                 id="fecha_solicitud"
                 name="fecha_solicitud"
                 value={formData.fecha_solicitud}
-                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
+                onChange={handleInputChange}
+                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full`}
               />
             </div>
 
@@ -398,25 +427,34 @@ const SolicitudUrgencia = () => {
                 className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-white`}
               />
             </div>
+            <div className="w-full mr-4">
+        <label htmlFor="fecha_nacimiento" className="block font-semibold text-white mb-1">
+          F. Nacimiento:
+        </label>
+        <input
+          type="date"
+          id="fecha_nacimiento"
+          name="fecha_nacimiento"
+          value={formData.fecha_nacimiento}
+          onChange={handleInputChange}
+          className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-white`}
+        />
+      </div>
 
-            <div className="mr-4 w-full">
-              <label
-                htmlFor="edad"
-                className="block font-semibold text-white mb-1"
-              >
-                Edad:
-              </label>
-              <input
-                placeholder="Edad de Pte."
-                type="int"
-                id="edad"
-                name="edad"
-                value={formData.edad}
-                onChange={handleInputChange}
-                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-white`}
-              />
-            </div>
-
+      <div className="mr-4 w-full">
+        <label htmlFor="edad" className="block font-semibold text-white mb-1">
+          Edad:
+        </label>
+        <input
+          placeholder="Edad de Pte."
+          type="number"
+          id="edad"
+          name="edad"
+          value={formData.edad}
+          readOnly
+          className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
+        />
+      </div>
             <div className="mr-4 w-full" style={{ width: "100%" }}>
               <label
                 htmlFor="sexo"
@@ -440,8 +478,11 @@ const SolicitudUrgencia = () => {
               </select>
               {errors.sexo && <p className="text-red-500">{errors.sexo}</p>}
             </div>
+          </div>
 
-            <div className="mr-4" style={{ width: "75%" }}>
+          <div class="flex mb-4">
+
+          <div className="mr-4" style={{ width: "75%" }}>
               <label
                 htmlFor="sala_quirofano"
                 className="block font-semibold text-white mb-1"
@@ -477,26 +518,6 @@ const SolicitudUrgencia = () => {
                 <p className="text-red-500">{errors.nombre_paciente}</p>
               )}
             </div>
-          </div>
-
-          <div class="flex mb-4">
-            <div class="w-full mr-4">
-              <label
-                htmlFor="fecha_nacimiento"
-                className="block font-semibold text-white mb-1"
-              >
-                F. Nacimiento:
-              </label>
-              <input
-                type="date"
-                id="fecha_nacimiento"
-                name="fecha_nacimiento"
-                value={formData.fecha_nacimiento}
-                onChange={handleInputChange}
-                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-white`}
-              />
-            </div>
-
             <div class="w-full mr-4">
               <label
                 htmlFor="tipo_intervencion"
