@@ -18,6 +18,8 @@ const Consultarealizada = () => {
 
   const { id } = useParams();
   const [patientData, setPatientData] = useState({});
+  const [isEditing, setIsEditing] = useState(false); // Estado para el modo de edición
+  const [formData, setFormData] = useState({}); // Estado para los datos del formulario
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [procedimientoExtra, setProcedimientoExtra] = useState("");
@@ -27,13 +29,13 @@ const Consultarealizada = () => {
   useEffect(() => {
     const fetchAppointmentData = async () => {
       try {
-        const response = await fetch(`${baseURL}/api/solicitudes/${id}`
-        );
+        const response = await fetch(`${baseURL}/api/solicitudes/${id}`);
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
         const data = await response.json();
         setPatientData(data);
+        setFormData(data); // Inicializar formData con los datos actuales
         setSelected(
           data.tipo_anestesia.map((type) =>
             options.find((opt) => opt.value === type)
@@ -53,6 +55,33 @@ const Consultarealizada = () => {
     navigate(-1); // Navegar a la página anterior
   };
 
+  const handleEdit = () => {
+    setIsEditing(true); // Activar el modo de edición
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false); // Desactivar el modo de edición
+    setFormData(patientData); // Revertir cambios
+  };
+
+  const handleSaveEdit = async () => {
+    try {
+      const response = await axios.put(`${baseURL}/api/solicitudes/editarrealizadas`, formData);
+      if (response.status === 200) {
+        setPatientData(formData); // Actualizar los datos originales
+        setIsEditing(false); // Desactivar el modo de edición
+      }
+    } catch (error) {
+      console.error("Error saving data:", error);
+    }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+
   return (
     <Layout>
       <div
@@ -64,7 +93,7 @@ const Consultarealizada = () => {
       <div className="flex flex-col gap-2 mb-4">
         <h1 className="text-xl font-semibold">Consulta de solicitud realizada</h1>
         <div className="flex my-4 justify-between">
-        <button
+  <button
     onClick={handleGoBack}
     className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
   >
@@ -73,8 +102,32 @@ const Consultarealizada = () => {
       <span style={{ marginLeft: "5px" }}>Regresar</span>
     </span>
   </button>
+  
+  {!isEditing ? (
+    <button
+      onClick={handleEdit}
+      className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
+    >
+      Editar
+    </button>
+  ) : (
+    <>
+      <button
+        onClick={handleSaveEdit}
+        className="bg-green-800 hover:bg-green-700 text-white py-2 px-4 rounded inline-flex items-center"
+      >
+        Guardar
+      </button>
+      <button
+        onClick={handleCancelEdit}
+        className="bg-red-600 hover:bg-red-500 text-white py-2 px-4 rounded inline-flex items-center"
+      >
+        Cancelar
+      </button>
+    </>
+  )}
+</div>
 
-        </div>
 
         <div class="flex flex-col p-4 bg-[#0dafbf] rounded-lg ">
           <div class="flex mb-4">
@@ -405,42 +458,36 @@ const Consultarealizada = () => {
             </div>
 
             <div className="w-full mr-4">
-              <label
-                htmlFor="enf_quirurgica"
-                className="block font-semibold text-white mb-1"
-              >
-                Enf. Quirúrgica:
-              </label>
-              <div className="relative">
-                <input
-                  placeholder="Enf. Quirúrgica"
-                  type="text"
-                  id="enf_quirurgica"
-                  name="enf_quirurgica"
-                  value={patientData.enf_quirurgica || "N/A"}
-                  className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
-                />
-              </div>
-            </div>
+        <label htmlFor="enf_quirurgica" className="block font-semibold text-white mb-1">Enf. Quirúrgica:</label>
+        <div className="relative">
+          <input
+            placeholder="Enf. Quirúrgica"
+            type="text"
+            id="enf_quirurgica"
+            name="enf_quirurgica"
+            value={formData.enf_quirurgica || ""}
+            onChange={handleInputChange}
+            readOnly={!isEditing}
+            className={`${isEditing ? 'border-gray-300' : 'bg-[#a8e7ed] cursor-default'} rounded-lg px-3 py-2 w-full`}
+          />
+        </div>
+      </div>
 
-            <div className="w-full mr-4">
-              <label
-                htmlFor="enf_circulante"
-                className="block font-semibold text-white mb-1"
-              >
-                Enf. Circulante:
-              </label>
-              <div className="relative">
-              <input
-                  placeholder="Enf. Quirúrgica"
-                  type="text"
-                  id="enf_circulante"
-                  name="enf_circulante"
-                  value={patientData.enf_circulante || "N/A"}
-                  className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
-                />
-              </div>
-            </div>
+      <div className="w-full mr-4">
+        <label htmlFor="enf_circulante" className="block font-semibold text-white mb-1">Enf. Circulante:</label>
+        <div className="relative">
+          <input
+            placeholder="Enf. Circulante"
+            type="text"
+            id="enf_circulante"
+            name="enf_circulante"
+            value={formData.enf_circulante || ""}
+            onChange={handleInputChange}
+            readOnly={!isEditing}
+            className={`${isEditing ? 'border-gray-300' : 'bg-[#a8e7ed] cursor-default'} rounded-lg px-3 py-2 w-full`}
+          />
+        </div>
+      </div>
 
             <div className="mr-4" style={{ width: "75%" }}>
               <label
