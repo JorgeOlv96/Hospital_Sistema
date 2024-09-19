@@ -202,12 +202,40 @@ const fetchPendingAppointments = async () => {
       // Combinar los datos filtrados
       const combinedAppointments = [...filteredSolicitudes, ...filteredUrgencias];
   
-      // No reorganizar, simplemente devolver los datos tal como los recibimos
-      const reorganizedAppointments = combinedAppointments.map((solicitud) => ({
-        ...solicitud, // Incluye todos los campos del objeto "solicitud"
-      }));
+      // Reorganizar los datos y seleccionar solo los campos deseados
+      const reorganizedAppointments = combinedAppointments.map((solicitud) => {
+        let tipoAnestesiaFormatted = "";
   
-      // Crear la hoja de cálculo con todos los campos
+        // Validación de `tipo_anestesia`
+        if (Array.isArray(solicitud.tipo_anestesia)) {
+          tipoAnestesiaFormatted = solicitud.tipo_anestesia.join(", ");
+        } else if (typeof solicitud.tipo_anestesia === "string") {
+          tipoAnestesiaFormatted = solicitud.tipo_anestesia; // Ya es una cadena, simplemente la asignamos
+        } else {
+          console.warn(`Formato inesperado en tipo_anestesia:`, solicitud.tipo_anestesia);
+        }
+  
+        return {
+          folio: solicitud.folio,
+          sala_quirofano: solicitud.sala_quirofano,
+          "nombre del paciente": `${solicitud.ap_paterno || ""} ${solicitud.ap_materno || ""} ${solicitud.nombre_paciente || ""}`,
+          edad: solicitud.edad,
+          tipo_admision: solicitud.tipo_admision,
+          cama: solicitud.cama,
+          procedimientos_paciente: solicitud.procedimientos_paciente,
+          diagnostico: solicitud.diagnostico,
+          hora_entrada: solicitud.hora_entrada,
+          hora_salida: solicitud.hora_salida,
+          nombre_cirujano: solicitud.nombre_cirujano,
+          nombre_anestesiologo: solicitud.nombre_anestesiologo,
+          tipo_anestesia: tipoAnestesiaFormatted,
+          enf_quirurgica: solicitud.enf_quirurgica,
+          enf_circulante: solicitud.enf_circulante,
+          egreso: solicitud.egreso
+        };
+      });
+  
+      // Crear la hoja de cálculo con los campos seleccionados
       const worksheet = XLSX.utils.json_to_sheet(reorganizedAppointments);
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, "Solicitudes y Urgencias");
@@ -227,6 +255,8 @@ const fetchPendingAppointments = async () => {
       console.error("Error exporting data:", error);
     }
   };
+  
+  
   
 const handleExport = async () => {
   if (selectedDate) {
@@ -357,20 +387,21 @@ const handleExport = async () => {
                     <tr>
                         <th>#</th>
                         <th>Folio</th>
-                        <th>Hra. asign.</th>
                         <th>Sala</th>
                         <th>Nom. completo</th>
                         <th>Edad</th>
-                        <th>Sexo</th>
-                        <th>No. Expediente</th>
                         <th>Procedencia</th>
                         <th>Procedimiento CIE-9</th>
                         <th>Diagnostico</th>
-                        <th>Especialidad</th>
-                        <th>Tiempo est.</th>
+                        <th>Hora Entrada</th>
+                        <th>Hora Salida</th>
                         <th>Cirujano</th>
                         <th>Anestesiólogo</th>
-                        <th>Insumos</th>
+                        <th>Tipo Anestesia</th>
+                        <th>Enf. Quirurgica</th>
+                        <th>Enf. Circulante</th>
+                        <th>Egresa a:</th>
+                        <th>Tipo de solicitud</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -444,10 +475,6 @@ const handleExport = async () => {
                                 <tr>
                                     <td>${index + 1}</td>
                                     <td>${appointment.folio || ""}</td>
-                                    <td>${moment(
-                                      appointment.hora_asignada,
-                                      "HH:mm"
-                                    ).format("LT")}</td>
                                     <td>Sala: ${
                                       appointment.sala_quirofano || ""
                                     }</td>
@@ -455,31 +482,23 @@ const handleExport = async () => {
                               appointment.ap_materno
                             } ${appointment.nombre_paciente}</td>
                                     <td>${appointment.edad || ""}</td>
-                                    <td>${
-                                      appointment.sexo
-                                        ? appointment.sexo === "Femenino"
-                                          ? "F"
-                                          : "M"
-                                        : "No especificado"
-                                    }</td>
-                                    <td>${appointment.no_expediente || ""}</td>
-                                                                                                                <td>${(() => {
-                                                                              switch (
-                                                                                appointment.tipo_admision
-                                                                              ) {
-                                                                                case "CONSULTA EXTERNA":
-                                                                                  return "C.E.";
-                                                                                case "CAMA":
-                                                                                  return `Cama - ${appointment.cama}`;
-                                                                                case "URGENCIAS":
-                                                                                  return "Urgencias";
-                                                                                default:
-                                                                                  return (
-                                                                                    appointment.tipo_admision ||
-                                                                                    "No especificado"
-                                                                                  );
-                                                                              }
-                                                                            })()}</td>
+                                    <td>${(() => {
+                                      switch (
+                                        appointment.tipo_admision
+                                              ) {
+                                      case "CONSULTA EXTERNA":
+                                        return "C.E.";
+                                      case "CAMA":
+                                        return `Cama - ${appointment.cama}`;
+                                      case "URGENCIAS":
+                                        return "Urgencias";
+                                      default:
+                                        return (
+                                          appointment.tipo_admision ||
+                                            "No especificado"
+                                                );
+                                              }
+                                          })()}</td>
                                     <td>${
                                       appointment.procedimientos_paciente
                                         ? appointment.procedimientos_paciente.slice(
@@ -493,11 +512,15 @@ const handleExport = async () => {
                                         ? appointment.diagnostico.slice(0, 60)
                                         : ""
                                     }</td>
+                                    <td>${moment(
+                                      appointment.hora_entrada,
+                                      "HH:mm"
+                                    ).format("LT")}</td>
+                                    <td>${moment(
+                                      appointment.hora_salida,
+                                      "HH:mm"
+                                    ).format("LT")}</td>
                                     <td>${
-                                      appointment.nombre_especialidad || ""
-                                    }</td>
-                                    <td>${appointment.tiempo_estimado} min</td>
-                                                                        <td>${
                                       appointment.nombre_cirujano
                                         ? appointment.nombre_cirujano
                                             .split(" ")
@@ -506,7 +529,10 @@ const handleExport = async () => {
                                         : ""
                                     }</td>
                                     <td>${anesthesiologistName}</td>
-                                    <td>${appointment.req_insumo || ""}</td>
+                                    <td>${appointment.tipo_anestesia || ""}</td>
+                                    <td>${appointment.enf_quirurgica || ""}</td>
+                                    <td>${appointment.enf_circulante || ""}</td>
+                                    <td>${appointment.egreso || ""}</td>
                                 </tr>
                             `;
                           })
@@ -662,7 +688,7 @@ const handleExport = async () => {
                     onClick={printDailyAppointments}
                     className="bg-[#5DB259] hover:bg-[#528E4F] text-white py-2 px-4 rounded inline-flex items-center"
                   >
-                    Imprimir Urgentes
+                    Imprimir
                   </button>
                 </div>
               )}
@@ -835,7 +861,9 @@ const handleExport = async () => {
                           {appointment.nombre_especialidad}
                         </td>
                         <td className="px-4 py-2">
-                          {appointment.fecha_programada}
+                        {formatFechaSolicitada(
+                                  appointment.fecha_programada
+                                )}
                         </td>
                         <td className="px-4 py-2 flex justify-center">
                           {appointment.sala_quirofano}

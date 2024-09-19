@@ -392,7 +392,7 @@ function Bitacoraenfermeria() {
                                   appointment.fecha_programada
                                 )}
                         </td>
-                        <td className="border px-4 py-2">
+                        <td className="border px-4 py-2 justify-center">
                           {appointment.sala_quirofano}
                         </td>
                         <td className="border px-4 py-2">
