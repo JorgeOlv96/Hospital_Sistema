@@ -4,7 +4,6 @@ import axios from "axios";
 import Layout from "../../Layout";
 import Modal from "../../components/Modals/Modal";
 import { MultiSelect } from "react-multi-select-component";
-import AsyncSelect from "react-select/async";
 
 const Consultarealizada = () => {
   const options = [
@@ -18,12 +17,10 @@ const Consultarealizada = () => {
 
   const { id } = useParams();
   const [patientData, setPatientData] = useState({});
-  const [isEditing, setIsEditing] = useState(false); // Estado para el modo de edición
-  const [formData, setFormData] = useState({}); // Estado para los datos del formulario
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState({});
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  const [procedimientoExtra, setProcedimientoExtra] = useState("");
-  const [selected, setSelected] = useState([]);
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
 
   useEffect(() => {
@@ -35,12 +32,10 @@ const Consultarealizada = () => {
         }
         const data = await response.json();
         setPatientData(data);
-        setFormData(data); // Inicializar formData con los datos actuales
-        setSelected(
-          data.tipo_anestesia.map((type) =>
-            options.find((opt) => opt.value === type)
-          )
-        );
+        setFormData({
+          ...data,
+          tipo_anestesia: data.tipo_anestesia ? data.tipo_anestesia.split(", ") : [], // Asegurarte de que sea un array
+        });
         setLoading(false);
       } catch (error) {
         console.error("Error fetching appointment data:", error);
@@ -52,58 +47,61 @@ const Consultarealizada = () => {
   }, [id]);
 
   const handleGoBack = () => {
-    navigate(-1); // Navegar a la página anterior
+    navigate(-1);
   };
 
   const handleEdit = () => {
-    setIsEditing(true); // Activar el modo de edición
+    setIsEditing(true);
   };
 
   const handleCancelEdit = () => {
-    setIsEditing(false); // Desactivar el modo de edición
-    setFormData({ ...patientData }); // Revertir cambios al estado original
+    setIsEditing(false);
+    setFormData({ ...patientData });
   };
+
   const handleTipoAnestesiaChange = (selectedOptions) => {
-    const selectedValues = selectedOptions.map(option => option.value); // Extraer los valores seleccionados
+    const selectedValues = selectedOptions.map(option => option.value);
     setFormData({ ...formData, tipo_anestesia: selectedValues });
   };
-  
+
   const handleSaveEdit = async () => {
     try {
-      // Muestra los datos que vas a enviar en la consola para verificar
-      console.log("Datos a enviar:", formData); 
-  
-      // Hacer la petición PATCH para actualizar la solicitud
+      console.log("Datos a enviar:", formData);
+
+      // Verificar que tipo_anestesia sea un array
+      if (!Array.isArray(formData.tipo_anestesia)) {
+        console.error("tipo_anestesia no es un array:", formData.tipo_anestesia);
+        return;
+      }
+
+      // Unir el array en un string separado por comas para guardar en la base de datos
+      const updatedData = {
+        ...formData,
+        tipo_anestesia: formData.tipo_anestesia.join(", "), // Convertir a string para guardar
+      };
+
       const response = await fetch(`${baseURL}/api/solicitudes/editarrealizadas/${id}`, {
         method: "PATCH",
-        body: JSON.stringify(formData),
+        body: JSON.stringify(updatedData),
         headers: {
           "Content-Type": "application/json",
         },
       });
-  
-      // Si la respuesta no es OK, lanzar un error
+
       if (!response.ok) {
         throw new Error("Network response was not ok");
       }
-  
-      // Actualiza los datos originales en la página con la nueva información
-      setPatientData(formData); 
-  
-      // Refrescar la página para reflejar los cambios en la interfaz
+
+      setPatientData(updatedData);
       window.location.reload();
     } catch (error) {
-      // Manejar cualquier error de red o de la API
       console.error("Error saving changes:", error);
     }
   };
-  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-  
-    // Actualizar también patientData si es necesario
     setPatientData({ ...patientData, [name]: value });
   };
 
@@ -615,12 +613,12 @@ const Consultarealizada = () => {
               />
             </div>
 
-            <div className="mr-4" style={{ width: "50%" }}>
+            <div class="w-full mr-4">
               <label
                 htmlFor="tiempo_estimado"
                 className="block font-semibold text-white mb-1"
               >
-                Hora Cierre:
+                Hr Cierre:
               </label>
               <input
                 placeholder="Minutos"
@@ -628,6 +626,7 @@ const Consultarealizada = () => {
                 id="hora_cierre"
                 name="hora_cierre"
                 value={patientData.hora_cierre || ""}
+                onChange={handleInputChange}
                 readOnly={!isEditing}
                 className={`${isEditing ? 'border-gray-300' : 'bg-[#a8e7ed] cursor-default'} rounded-lg px-3 py-2 w-full`}
               />
@@ -646,6 +645,7 @@ const Consultarealizada = () => {
                 id="ht_anestesia"
                 name="ht_anestesia"
                 value={patientData.ht_anestesia || ""}
+                onChange={handleInputChange}
                 readOnly={!isEditing}
                 className={`${isEditing ? 'border-gray-300' : 'bg-[#a8e7ed] cursor-default'} rounded-lg px-3 py-2 w-full`}
               />
@@ -664,6 +664,7 @@ const Consultarealizada = () => {
                 id="hora_salida"
                 name="hora_salida"
                 value={patientData.hora_salida || ""}
+                onChange={handleInputChange}
                 readOnly={!isEditing}
                 className={`${isEditing ? 'border-gray-300' : 'bg-[#a8e7ed] cursor-default'} rounded-lg px-3 py-2 w-full`}
               />
@@ -680,6 +681,7 @@ const Consultarealizada = () => {
                 id="egreso"
                 name="egreso"
                 value={patientData.egreso || ""}
+                onChange={handleInputChange}
                 readOnly={!isEditing}
                 className={`${isEditing ? 'border-gray-300' : 'bg-[#a8e7ed] cursor-default'} rounded-lg px-3 py-2 w-full`}
               ></input>
