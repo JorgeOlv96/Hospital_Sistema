@@ -390,6 +390,7 @@ const handleExport = async () => {
                         <th>Sala</th>
                         <th>Nom. completo</th>
                         <th>Edad</th>
+                        <th>Sexo</th>
                         <th>Procedencia</th>
                         <th>Procedimiento CIE-9</th>
                         <th>Diagnostico</th>
@@ -482,6 +483,7 @@ const handleExport = async () => {
                               appointment.ap_materno
                             } ${appointment.nombre_paciente}</td>
                                     <td>${appointment.edad || ""}</td>
+                                    <td>${appointment.sexo || ""}</td>
                                     <td>${(() => {
                                       switch (
                                         appointment.tipo_admision
