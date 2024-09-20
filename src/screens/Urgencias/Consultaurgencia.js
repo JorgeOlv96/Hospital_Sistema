@@ -18,6 +18,10 @@ const Consultaurgencia = () => {
 
   const { id } = useParams();
   const [patientData, setPatientData] = useState({});
+  const [isEditing, setIsEditing] = useState(false); // Estado para el modo de edición
+  const [formData, setFormData] = useState({
+    nombre_cirujano: "",
+  });
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [procedimientoExtra, setProcedimientoExtra] = useState("");
@@ -48,6 +52,44 @@ const Consultaurgencia = () => {
 
     fetchAppointmentData();
   }, [id]);
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handleSaveEdit = async () => {
+    // Asegúrate de que nuevos_procedimientos_extra sea un array o undefined
+    if (formData.nuevos_procedimientos_extra && !Array.isArray(formData.nuevos_procedimientos_extra)) {
+        formData.nuevos_procedimientos_extra = [formData.nuevos_procedimientos_extra];
+    }
+
+    // Eliminar nuevos_procedimientos_extra si está vacío o no es válido
+    if (!formData.nuevos_procedimientos_extra || formData.nuevos_procedimientos_extra.length === 0) {
+        delete formData.nuevos_procedimientos_extra; // Eliminar el campo del objeto
+    }
+
+    try {
+        await axios.patch(`${baseURL}/api/solicitudes/editarrealizadas/${id}`, formData);
+        setIsEditing(false);
+        // Opcionalmente, puedes volver a cargar los datos
+        // fetchAppointmentData();
+    } catch (error) {
+        console.error("Error saving appointment data:", error);
+    }
+};
+
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    setFormData(patientData); // Reset formData to original patientData
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
   return (
     <Layout>
@@ -69,6 +111,29 @@ const Consultaurgencia = () => {
               <span style={{ marginLeft: "5px" }}>Regresar</span>
             </span>
           </Link>
+ {/*              {!isEditing ? (
+        <button
+          onClick={handleEdit}
+          className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
+        >
+          Editar
+        </button>
+      ) : (
+        <>
+          <button
+            onClick={handleSaveEdit}
+            className="bg-green-800 hover:bg-green-700 text-white py-2 px-4 rounded inline-flex items-center"
+          >
+            Guardar
+          </button>
+          <button
+            onClick={handleCancelEdit}
+            className="bg-red-600 hover:bg-red-500 text-white py-2 px-4 rounded inline-flex items-center"
+          >
+            Cancelar
+          </button>
+        </>
+      )} */}
         </div>
 
         <div class="flex flex-col p-4 bg-[#CB7E7E] rounded-lg ">
@@ -91,19 +156,18 @@ const Consultaurgencia = () => {
             </div>
 
             <div className="w-full" style={{ width: "105%" }}>
-              <label
-                htmlFor="id_cirujano"
-                className="block font-semibold text-white mb-1"
-              >
-                Cirujano encargado:
-              </label>
-              <input
-                placeholder="Nombre del cirujano"
-                value={patientData.nombre_cirujano || "N/A"}
-                readOnly
-                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
-              />
-            </div>
+                <label htmlFor="id_cirujano" className="block font-semibold text-white mb-1">
+                  Cirujano encargado:
+                </label>
+                <input
+                  placeholder="Nombre del cirujano"
+                  value={patientData.nombre_cirujano || "N/A"} // Use formData
+                  onChange={handleChange}
+                  name="nombre_cirujano"
+                  readOnly={!isEditing} // Toggle editability
+                  className={`border-[#DBB7B7] rounded-lg px-3 py-2 w-full ${isEditing ? "" : "bg-[#DBB7B7] cursor-default"}`}
+                />
+              </div>
           </div>
 
           <div class="flex mb-4">

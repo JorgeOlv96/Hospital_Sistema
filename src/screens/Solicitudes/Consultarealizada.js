@@ -61,26 +61,51 @@ const Consultarealizada = () => {
 
   const handleCancelEdit = () => {
     setIsEditing(false); // Desactivar el modo de edición
-    setFormData(patientData); // Revertir cambios
+    setFormData({ ...patientData }); // Revertir cambios al estado original
   };
-
+  const handleTipoAnestesiaChange = (selectedOptions) => {
+    const selectedValues = selectedOptions.map(option => option.value); // Extraer los valores seleccionados
+    setFormData({ ...formData, tipo_anestesia: selectedValues });
+  };
+  
   const handleSaveEdit = async () => {
     try {
-      const response = await axios.put(`${baseURL}/api/solicitudes/editarrealizadas`, formData);
-      if (response.status === 200) {
-        setPatientData(formData); // Actualizar los datos originales
-        setIsEditing(false); // Desactivar el modo de edición
+      // Muestra los datos que vas a enviar en la consola para verificar
+      console.log("Datos a enviar:", formData); 
+  
+      // Hacer la petición PATCH para actualizar la solicitud
+      const response = await fetch(`${baseURL}/api/solicitudes/editarrealizadas/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify(formData),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+  
+      // Si la respuesta no es OK, lanzar un error
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
       }
+  
+      // Actualiza los datos originales en la página con la nueva información
+      setPatientData(formData); 
+  
+      // Refrescar la página para reflejar los cambios en la interfaz
+      window.location.reload();
     } catch (error) {
-      console.error("Error saving data:", error);
+      // Manejar cualquier error de red o de la API
+      console.error("Error saving changes:", error);
     }
   };
+  
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+  
+    // Actualizar también patientData si es necesario
+    setPatientData({ ...patientData, [name]: value });
   };
-
 
   return (
     <Layout>
@@ -506,58 +531,71 @@ const Consultarealizada = () => {
             </div>
           </div>
 
-          <div class="flex mb-4">
-            
-          <div class="w-full mr-4">
-              <label
-                htmlFor="procedimientos_paciente"
-                className="block font-semibold text-white mb-1"
-              >
-                Entr. quirófano:
-              </label>
-              <input
-                placeholder="Minutos"
-                type="time"
-                id="hora_entrada"
-                name="hora_entrada"
-                value={patientData.hora_entrada || ""}
-                readOnly
-                className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
-              />
-            </div>
-            <div className="mr-4 w-full">
-              <label
-                htmlFor="tiempo_estimado"
-                className="block font-semibold text-white mb-1"
-              >
-                Hora inicio Anes:
-              </label>
-              <input
-                placeholder="Minutos"
-                type="time"
-                id="hi_anestesia"
-                name="hi_anestesia"
-                value={patientData.hi_anestesia || ""}
-                readOnly
-                className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
-              />
-            </div>
+        <div class="flex mb-4">
+        <div className="w-full mr-4">
+          <label htmlFor="hora_entrada" className="block font-semibold text-white mb-1">
+            Entr. quirófano:
+          </label>
+          <input
+            placeholder="Minutos"
+            type="time"
+            id="hora_entrada"
+            name="hora_entrada"
+            value={formData.hora_entrada || ""}
+            onChange={handleInputChange}
+            readOnly={!isEditing}
+            className={`${isEditing ? 'border-gray-300' : 'bg-[#a8e7ed] cursor-default'} rounded-lg px-3 py-2 w-full`}
+          />
+        </div>
+        <div className="mr-4 w-full">
+          <label htmlFor="hi_anestesia" className="block font-semibold text-white mb-1">
+            Hora inicio Anes:
+          </label>
+          <input
+            placeholder="Minutos"
+            type="time"
+            id="hi_anestesia"
+            name="hi_anestesia"
+            value={formData.hi_anestesia || ""}
+            onChange={handleInputChange}
+            readOnly={!isEditing}
+            className={`${isEditing ? 'border-gray-300' : 'bg-[#a8e7ed] cursor-default'} rounded-lg px-3 py-2 w-full`}
+          />
+        </div>
 
-            <div className="mr-4 w-full">
-              <label
-                htmlFor="tipo_anestesia"
-                className="block font-semibold text-white mb-1"
-              >
-                Tipo Anes:
-              </label>
-              <input
-                options={options}
-                value={patientData.tipo_anestesia}
-                readOnly
-                labelledBy="Seleccionar tipo de anestesia"
-                className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
-              />
-            </div>
+        <div className="mr-4 w-full">
+  <label
+    htmlFor="tipo_anestesia"
+    className="block font-semibold text-white mb-1"
+  >
+    Tipo Anes:
+  </label>
+
+  {/* Mostrar MultiSelect solo si isEditing es true */}
+  {isEditing ? (
+    <MultiSelect
+      options={options}
+      value={options.filter(option => formData.tipo_anestesia?.includes(option.value))} // Selección actual
+      onChange={handleTipoAnestesiaChange}
+      labelledBy="Seleccionar tipo de anestesia"
+      overrideStrings={{
+        allItemsAreSelected: "Todo seleccionado",
+        clearSearch: "Limpiar búsqueda",
+        noOptions: "Sin opciones",
+        search: "Buscar",
+        selectAll: "Seleccionar todo",
+        selectSomeItems: "Seleccionar",
+      }}
+      className="border border-[#A8D5B1] rounded-lg w-full bg-[#A8D5B1] text-[#333333] cursor-pointer text-sm"
+      style={{ minHeight: "auto" }}
+    />
+  ) : (
+    // Verificar si tipo_anestesia es un array antes de usar join()
+    <p className="bg-[#a8e7ed] rounded-lg px-3 py-2 w-full text-black">
+      {Array.isArray(formData.tipo_anestesia) ? formData.tipo_anestesia.join(", ") : formData.tipo_anestesia || ""}
+    </p>
+  )}
+</div>
             <div class="w-full mr-4">
               <label
                 htmlFor="tiempo_estimado"
@@ -571,8 +609,9 @@ const Consultarealizada = () => {
                 id="hora_incision"
                 name="hora_incision"
                 value={patientData.hora_incision || ""}
-                readOnly
-                className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default"`}
+                onChange={handleInputChange}
+                readOnly={!isEditing}
+                className={`${isEditing ? 'border-gray-300' : 'bg-[#a8e7ed] cursor-default'} rounded-lg px-3 py-2 w-full`}
               />
             </div>
 
@@ -589,8 +628,8 @@ const Consultarealizada = () => {
                 id="hora_cierre"
                 name="hora_cierre"
                 value={patientData.hora_cierre || ""}
-                readOnly
-                className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
+                readOnly={!isEditing}
+                className={`${isEditing ? 'border-gray-300' : 'bg-[#a8e7ed] cursor-default'} rounded-lg px-3 py-2 w-full`}
               />
             </div>
 
@@ -607,8 +646,8 @@ const Consultarealizada = () => {
                 id="ht_anestesia"
                 name="ht_anestesia"
                 value={patientData.ht_anestesia || ""}
-                readOnly
-                className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
+                readOnly={!isEditing}
+                className={`${isEditing ? 'border-gray-300' : 'bg-[#a8e7ed] cursor-default'} rounded-lg px-3 py-2 w-full`}
               />
             </div>
 
@@ -625,8 +664,8 @@ const Consultarealizada = () => {
                 id="hora_salida"
                 name="hora_salida"
                 value={patientData.hora_salida || ""}
-                readOnly
-                className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
+                readOnly={!isEditing}
+                className={`${isEditing ? 'border-gray-300' : 'bg-[#a8e7ed] cursor-default'} rounded-lg px-3 py-2 w-full`}
               />
             </div>
             <div class="w-full mr-4">
@@ -641,8 +680,8 @@ const Consultarealizada = () => {
                 id="egreso"
                 name="egreso"
                 value={patientData.egreso || ""}
-                readOnly
-                className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
+                readOnly={!isEditing}
+                className={`${isEditing ? 'border-gray-300' : 'bg-[#a8e7ed] cursor-default'} rounded-lg px-3 py-2 w-full`}
               ></input>
             </div>
 
@@ -722,10 +761,7 @@ const Consultarealizada = () => {
               ></textarea>
             </div>
             <div className="mr-4" style={{ width: "50%" }}>
-              <label
-                htmlFor="comentarios"
-                className="block font-semibold text-white mb-1"
-              >
+              <label htmlFor="comentarios" className="block font-semibold text-white mb-1">
                 Comentarios adicionales:
               </label>
               <textarea
@@ -733,9 +769,10 @@ const Consultarealizada = () => {
                 id="comentarios"
                 name="comentarios"
                 rows="4"
-                value={patientData.comentarios || "N/A"}
-                readOnly
-                className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
+                value={patientData.comentarios || ""}
+                onChange={handleInputChange}
+                readOnly={!isEditing}
+                className={`${isEditing ? 'border-gray-300' : 'bg-[#a8e7ed] cursor-default'} rounded-lg px-3 py-2 w-full`}
               ></textarea>
             </div>
             <div class="w-1/4 mr-4">

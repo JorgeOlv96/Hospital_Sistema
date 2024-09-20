@@ -533,6 +533,13 @@ const handleExport = async () => {
                                     <td>${appointment.enf_quirurgica || ""}</td>
                                     <td>${appointment.enf_circulante || ""}</td>
                                     <td>${appointment.egreso || ""}</td>
+                                    <td>
+                                      ${
+                                        appointment.estado_solicitud === "Realizada"
+                                          ? "Programada"
+                                          : appointment.estado_solicitud
+                                      }
+                                    </td>
                                 </tr>
                             `;
                           })
@@ -540,46 +547,6 @@ const handleExport = async () => {
                     `;
                   })
                   .join("")}
-                </tbody>
-            </table>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Recuperación Matutino</th>
-                        <th>Consulta Externa Piso 1 Mat</th>
-                        <th>Consulta Externa Piso 2 Mat</th>
-                        <th>Recuperación Vespertino</th>
-                        <th>Consulta Externa Piso 2 Vespertino</th>
-                        <th>Recuperación Nocturno</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        ${[
-                          "Recup_Matutino",
-                          "Con_Ext_P1_mat",
-                          "Con_Ext_P2_mat",
-                          "Rec_Vespertino",
-                          "Con_Ext_P2_vesp",
-                          "Rec_Nocturno",
-                        ]
-                          .map((sala) => {
-                            const assignedAnesthesiologists =
-                              todaysAnesthesiologists
-                                .filter((anesthesiologist) =>
-                                  anesthesiologist.sala_anestesio.includes(sala)
-                                )
-                                .map(
-                                  (anesthesiologist) => anesthesiologist.nombre
-                                )
-                                .join(", ");
-                            return `<td>${
-                              assignedAnesthesiologists || "No asignado"
-                            }</td>`;
-                          })
-                          .join("")}
-                    </tr>
                 </tbody>
             </table>
         </body>
