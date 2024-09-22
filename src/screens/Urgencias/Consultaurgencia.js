@@ -5,6 +5,7 @@ import Layout from "../../Layout";
 import Modal from "../../components/Modals/Modal";
 import { MultiSelect } from "react-multi-select-component";
 import AsyncSelect from "react-select/async";
+import ProcedureSelect from "../Solicitudes/ProcedureSelect";
 
 const Consultaurgencia = () => {
   const options = [
@@ -53,6 +54,17 @@ const Consultaurgencia = () => {
   const handleEdit = () => {
     setIsEditing(true);
   };
+  const handleProcedureChange = (selectedOption) => {
+    setFormData({
+      ...formData,
+      procedimientos_paciente: selectedOption ? selectedOption.value : "",
+    });
+  };
+
+  const handleTipoAnestesiaChange = (selectedOptions) => {
+    const selectedValues = selectedOptions.map(option => option.value);
+    setFormData({ ...formData, tipo_anestesia: selectedValues });
+  };
 
   const handleSaveEdit = async () => {
     // Asegúrate de que nuevos_procedimientos_extra sea un array o undefined
@@ -68,6 +80,7 @@ const Consultaurgencia = () => {
     try {
         await axios.patch(`${baseURL}/api/solicitudes/editarrealizadas/${id}`, formData);
         setIsEditing(false);
+        window.location.reload();
         // Opcionalmente, puedes volver a cargar los datos
         // fetchAppointmentData();
     } catch (error) {
@@ -314,11 +327,12 @@ const Consultaurgencia = () => {
               >
                 Sala:
               </label>
+              {isEditing ? (
               <select
                 type="text"
                 id="sala_quirofano"
                 name="sala_quirofano"
-                value={patientData.sala_quirofano}
+                value={formData.sala_quirofano}
                 onChange={handleInputChange}
                 disabled={!isEditing} // Deshabilitar si no está en modo de edición
                 className={`border-[#DBB7B7] rounded-lg px-3 py-2 w-full ${isEditing ? "" : "bg-[#DBB7B7] cursor-not-allowed"}`} // Cambiar el estilo cuando no se puede editar
@@ -338,60 +352,49 @@ const Consultaurgencia = () => {
                 <option value="H">SALA H</option>
                 <option value="RX">SALA RX</option>
               </select>
+                ) : (
+                // Mostrar el input en modo de solo lectura
+                <input
+                  id="sala_quirofano"
+                  name="sala_quirofano"
+                  value={patientData.sala_quirofano || "N/A"}
+                  readOnly
+                  className={`border-[#DBB7B7] rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
+                />
+              )}
             </div>
-
-            <div class="w-full mr-4">
-              <label
-                htmlFor="tipo_admision"
-                className="block font-semibold text-white mb-1"
-              >
-                Procedencia paciente:
-              </label>
-              <input
-                id="tipo_admision"
-                name="tipo_admision"
-                value={patientData.tipo_admision || "N/A"}
-                readOnly
-                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
-              ></input>
-            </div>
-
-            <div class="w-full mr-4">
+            <div className="mr-4 w-full">
               <label
                 htmlFor="tipo_intervencion"
                 className="block font-semibold text-white mb-1"
               >
-                T. intervención:
+                Int. planeada:
               </label>
-              <select
-                id="tipo_intervencion"
-                name="tipo_intervencion"
-                value={patientData.tipo_intervencion}
-                onChange={handleInputChange}
-                disabled={!isEditing} // Deshabilitar si no está en modo de edición
-                className={`border-[#DBB7B7] rounded-lg px-3 py-2 w-full ${isEditing ? "" : "bg-[#DBB7B7] cursor-not-allowed"}`}
-              >
-                <option value=""> Seleccionar </option>
-                <option value="Cirugía">Cirugía</option>
-                <option value="Procedimiento">Procedimiento</option>
-                <option value="Cirugía ambulatoria">Cirugía ambulatoria</option>
-              </select>
-            </div>
 
-            <div className="mr-4 w-full">
-              <label
-                htmlFor="nombre_especialidad"
-                className="block font-semibold text-white mb-1"
-              >
-                Especialidad:
-              </label>
-              <input
-                id="nombre_especialidad"
-                name="nombre_especialidad"
-                value={patientData.nombre_especialidad || "N/A"}
-                readOnly
-                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
-              ></input>
+              {isEditing ? (
+                // Mostrar el select solo en modo edición
+                <select
+                  id="tipo_intervencion"
+                  name="tipo_intervencion"
+                  value={formData.tipo_intervencion || ""}
+                  onChange={handleInputChange}
+                  className={`border-[#DBB7B7] rounded-lg px-3 py-2 w-full ${isEditing ? "" : "bg-[#DBB7B7] cursor-not-allowed"}`}
+                >
+                  <option value="">Seleccionar</option>
+                  <option value="Cirugía">Cirugía</option>
+                  <option value="Procedimiento">Procedimiento</option>
+                  <option value="Cirugía ambulatoria">Cirugía ambulatoria</option>
+                </select>
+              ) : (
+                // Mostrar el input en modo de solo lectura
+                <input
+                  id="tipo_intervencion"
+                  name="tipo_intervencion"
+                  value={patientData.tipo_intervencion || "N/A"}
+                  readOnly
+                  className={`border-[#DBB7B7] rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
+                />
+              )}
             </div>
 
             <div className="mr-4 w-full">
@@ -399,15 +402,33 @@ const Consultaurgencia = () => {
                 htmlFor="turno_solicitado"
                 className="block font-semibold text-white mb-1"
               >
-                Turno solicitado:
+                Turno:
               </label>
-              <input
+              {isEditing ? (
+              <select
                 id="turno_solicitado"
                 name="turno_solicitado"
-                value={patientData.turno_solicitado || "N/A"}
-                readOnly
-                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
-              ></input>
+                value={formData.turno_solicitado}
+                onChange={handleInputChange}
+                disabled={!isEditing} // Deshabilitar si no está en modo de edición
+                className={`border-[#DBB7B7] rounded-lg px-3 py-2 w-full ${isEditing ? "" : "bg-[#DBB7B7] cursor-not-allowed"}`}
+              >
+                <option value=""> Seleccionar </option>
+                <option value="Matutino">Matutino</option>
+                <option value="Vespertino">Vespertino</option>
+                <option value="Nocturno">Nocturno</option>
+                <option value="Especial">Especial</option>
+              </select>
+              ) : (
+                // Mostrar el input en modo de solo lectura
+                <input
+                  id="turno_solicitado"
+                  name="turno_solicitado"
+                  value={patientData.turno_solicitado || "N/A"}
+                  readOnly
+                  className={`border-[#DBB7B7] rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
+                />
+              )}
             </div>
 
             <div className="mr-4" style={{ width: "75%" }}>
@@ -417,13 +438,30 @@ const Consultaurgencia = () => {
               >
                 Insumos:
               </label>
-              <input
+              {isEditing ? (
+              <select
                 id="req_insumo"
                 name="req_insumo"
-                value={patientData.req_insumo || "N/A"}
-                readOnly
-                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
-              ></input>
+                value={formData.req_insumo}
+                onChange={handleInputChange}
+                disabled={!isEditing} // Deshabilitar si no está en modo de edición
+                className={`border-[#DBB7B7] rounded-lg px-3 py-2 w-full ${isEditing ? "" : "bg-[#DBB7B7] cursor-not-allowed"}`}
+              >
+                <option value="">Seleccionar</option>
+                <option value="Si">Si</option>
+                <option value="No">No</option>
+              </select>
+                ) : (
+                // Mostrar el input en modo de solo lectura
+                <input
+                  id="req_insumo"
+                  name="req_insumo"
+                  value={patientData.req_insumo || "N/A"}
+                  readOnly
+                  className={`border-[#DBB7B7] rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
+                />
+              )}
+
             </div>
 
             <div className="mr-4" style={{ width: "75%" }}>
@@ -452,12 +490,13 @@ const Consultaurgencia = () => {
                 Fecha de cirugía:
               </label>
               <input
-                type="text"
+                type="date"
                 id="fecha_programada"
                 name="fecha_programada"
                 value={patientData.fecha_programada || "N/A"}
-                readOnly
-                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
+                onChange={handleInputChange}
+                readOnly={!isEditing} // Toggle editability
+                className={`border-[#DBB7B7] rounded-lg px-3 py-2 w-full ${isEditing ? "" : "bg-[#DBB7B7] cursor-default"}`}
               />
             </div>
 
@@ -473,8 +512,9 @@ const Consultaurgencia = () => {
                 id="hora_asignada"
                 name="hora_asignada"
                 value={patientData.hora_asignada || "N/A"}
-                readOnly
-                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
+                onChange={handleInputChange}
+                readOnly={!isEditing} // Toggle editability
+                className={`border-[#DBB7B7] rounded-lg px-3 py-2 w-full ${isEditing ? "" : "bg-[#DBB7B7] cursor-default"}`}
               />
             </div>
 
@@ -486,11 +526,12 @@ const Consultaurgencia = () => {
                 Anestesiólogo:
               </label>
               <input
-                id="procedimientos_paciente"
-                name="procedimientos_paciente"
+                id="nombre_anestesiologo"
+                name="nombre_anestesiologo"
                 value={patientData.nombre_anestesiologo || "N/A"}
-                readOnly
-                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
+                onChange={handleInputChange}
+                readOnly={!isEditing} // Toggle editability
+                className={`border-[#DBB7B7] rounded-lg px-3 py-2 w-full ${isEditing ? "" : "bg-[#DBB7B7] cursor-default"}`}
               ></input>
             </div>
 
@@ -508,7 +549,9 @@ const Consultaurgencia = () => {
                   id="enf_quirurgica"
                   name="enf_quirurgica"
                   value={patientData.enf_quirurgica || "N/A"}
-                  className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
+                  onChange={handleInputChange}
+                  readOnly={!isEditing} // Toggle editability
+                  className={`border-[#DBB7B7] rounded-lg px-3 py-2 w-full ${isEditing ? "" : "bg-[#DBB7B7] cursor-default"}`}
                 />
               </div>
             </div>
@@ -522,12 +565,14 @@ const Consultaurgencia = () => {
               </label>
               <div className="relative">
               <input
-                  placeholder="Enf. Quirúrgica"
+                  placeholder="Enf. Circulante"
                   type="text"
                   id="enf_circulante"
                   name="enf_circulante"
                   value={patientData.enf_circulante || "N/A"}
-                  className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
+                  onChange={handleInputChange}
+                  readOnly={!isEditing} // Toggle editability
+                  className={`border-[#DBB7B7] rounded-lg px-3 py-2 w-full ${isEditing ? "" : "bg-[#DBB7B7] cursor-default"}`}
                 />
               </div>
             </div>
@@ -548,8 +593,9 @@ const Consultaurgencia = () => {
                 id="hora_entrada"
                 name="hora_entrada"
                 value={patientData.hora_entrada || ""}
-                readOnly
-                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
+                onChange={handleInputChange}
+                readOnly={!isEditing} // Toggle editability
+                className={`border-[#DBB7B7] rounded-lg px-3 py-2 w-full ${isEditing ? "" : "bg-[#DBB7B7] cursor-default"}`}
               />
             </div>
             <div className="mr-4 w-full">
@@ -565,26 +611,45 @@ const Consultaurgencia = () => {
                 id="hi_anestesia"
                 name="hi_anestesia"
                 value={patientData.hi_anestesia || ""}
-                readOnly
-                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
+                onChange={handleInputChange}
+                readOnly={!isEditing} // Toggle editability
+                className={`border-[#DBB7B7] rounded-lg px-3 py-2 w-full ${isEditing ? "" : "bg-[#DBB7B7] cursor-default"}`}
               />
             </div>
 
             <div className="mr-4 w-full">
-              <label
-                htmlFor="tipo_anestesia"
-                className="block font-semibold text-white mb-1"
-              >
-                Tipo Anes:
-              </label>
-              <input
-                options={options}
-                value={patientData.tipo_anestesia}
-                readOnly
-                labelledBy="Seleccionar tipo de anestesia"
-                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
-              />
-            </div>
+          <label
+            htmlFor="tipo_anestesia"
+            className="block font-semibold text-white mb-1"
+          >
+            Tipo Anes:
+          </label>
+
+          {/* Mostrar MultiSelect solo si isEditing es true */}
+          {isEditing ? (
+            <MultiSelect
+              options={options}
+              value={options.filter(option => formData.tipo_anestesia?.includes(option.value))} // Selección actual
+              onChange={handleTipoAnestesiaChange}
+              labelledBy="Seleccionar tipo de anestesia"
+              overrideStrings={{
+                allItemsAreSelected: "Todo seleccionado",
+                clearSearch: "Limpiar búsqueda",
+                noOptions: "Sin opciones",
+                search: "Buscar",
+                selectAll: "Seleccionar todo",
+                selectSomeItems: "Seleccionar",
+              }}
+              className="border border-[#DBB7B7] rounded-lg w-full bg-[#DBB7B7] text-[#333333] cursor-pointer text-sm"
+              style={{ minHeight: "auto" }}
+            />
+          ) : (
+            // Verificar si tipo_anestesia es un array antes de usar join()
+            <p className="bg-[#DBB7B7] rounded-lg px-3 py-2 w-full text-black">
+              {Array.isArray(formData.tipo_anestesia) ? formData.tipo_anestesia.join(", ") : patientData.tipo_anestesia || ""}
+            </p>
+          )}
+        </div>
             <div class="w-full mr-4">
               <label
                 htmlFor="tiempo_estimado"
@@ -598,8 +663,9 @@ const Consultaurgencia = () => {
                 id="hora_incision"
                 name="hora_incision"
                 value={patientData.hora_incision || ""}
-                readOnly
-                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default"`}
+                onChange={handleInputChange}
+                readOnly={!isEditing} // Toggle editability
+                className={`border-[#DBB7B7] rounded-lg px-3 py-2 w-full ${isEditing ? "" : "bg-[#DBB7B7] cursor-default"}`}
               />
             </div>
 
@@ -616,8 +682,9 @@ const Consultaurgencia = () => {
                 id="hora_cierre"
                 name="hora_cierre"
                 value={patientData.hora_cierre || ""}
-                readOnly
-                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
+                onChange={handleInputChange}
+                readOnly={!isEditing} // Toggle editability
+                className={`border-[#DBB7B7] rounded-lg px-3 py-2 w-full ${isEditing ? "" : "bg-[#DBB7B7] cursor-default"}`}
               />
             </div>
 
@@ -634,8 +701,9 @@ const Consultaurgencia = () => {
                 id="ht_anestesia"
                 name="ht_anestesia"
                 value={patientData.ht_anestesia || ""}
-                readOnly
-                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
+                onChange={handleInputChange}
+                readOnly={!isEditing} // Toggle editability
+                className={`border-[#DBB7B7] rounded-lg px-3 py-2 w-full ${isEditing ? "" : "bg-[#DBB7B7] cursor-default"}`}
               />
             </div>
 
@@ -652,8 +720,9 @@ const Consultaurgencia = () => {
                 id="hora_salida"
                 name="hora_salida"
                 value={patientData.hora_salida || ""}
-                readOnly
-                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
+                onChange={handleInputChange}
+                readOnly={!isEditing} // Toggle editability
+                className={`border-[#DBB7B7] rounded-lg px-3 py-2 w-full ${isEditing ? "" : "bg-[#DBB7B7] cursor-default"}`}
               />
             </div>
             <div class="w-full mr-4">
@@ -668,27 +737,39 @@ const Consultaurgencia = () => {
                 id="egreso"
                 name="egreso"
                 value={patientData.egreso || ""}
-                readOnly
-                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
+                onChange={handleInputChange}
+                readOnly={!isEditing} // Toggle editability
+                className={`border-[#DBB7B7] rounded-lg px-3 py-2 w-full ${isEditing ? "" : "bg-[#DBB7B7] cursor-default"}`}
               ></input>
             </div>
 
           </div>
           <div className="mr-4 w-full">
             <label
-              htmlFor="procedimiento_paciente"
+              htmlFor="procedimientos_paciente"
               className="block font-semibold text-white mb-1"
             >
-              Procedimiento inicial del paciente:
+              Procedimientos del paciente:
             </label>
-            <input
-              id="procedimientos_paciente"
-              name="procedimientos_paciente"
-              value={patientData.procedimientos_paciente || "N/A"}
-              readOnly
-              className="border-[#DBB7B7] rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default"
-            ></input>
+
+            {isEditing ? (
+              // Cuando se está editando, mostrar el componente interactivo con fondo blanco
+              <div className="w-full">
+                <ProcedureSelect onChange={handleProcedureChange} />
+              </div>
+            ) : (
+              // Cuando no se está editando, mostrar un campo de solo lectura con fondo gris
+              <input
+                type="text"
+                id="procedimientos_paciente"
+                name="procedimientos_paciente"
+                value={patientData.procedimientos_paciente || "N/A"} // Asegurar que haya un valor por defecto
+                readOnly
+                className="border-[#DBB7B7] rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default"
+              />
+            )}
           </div>
+
           <div>
             {Array.isArray(patientData.nuevos_procedimientos_extra) &&
               patientData.nuevos_procedimientos_extra.map(
@@ -744,8 +825,24 @@ const Consultaurgencia = () => {
                 name="diagnostico"
                 rows="4"
                 value={patientData.diagnostico || "N/A"}
-                readOnly
-                className={`"border-[#DBB7B7]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
+                onChange={handleInputChange}
+                readOnly={!isEditing} // Toggle editability
+                className={`border-[#DBB7B7] rounded-lg px-3 py-2 w-full ${isEditing ? "" : "bg-[#DBB7B7] cursor-default"}`}
+              ></textarea>
+            </div>
+            <div className="mr-4" style={{ width: "50%" }}>
+              <label htmlFor="comentarios" className="block font-semibold text-white mb-1">
+                Comentarios adicionales:
+              </label>
+              <textarea
+                placeholder="comentarios"
+                id="comentarios"
+                name="comentarios"
+                rows="4"
+                value={patientData.comentarios || ""}
+                onChange={handleInputChange}
+                readOnly={!isEditing}
+                className={`${isEditing ? 'border-gray-300' : 'bg-[#DBB7B7] cursor-default'} rounded-lg px-3 py-2 w-full`}
               ></textarea>
             </div>
           </div>

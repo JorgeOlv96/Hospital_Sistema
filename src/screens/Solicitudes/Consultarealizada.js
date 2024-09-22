@@ -562,38 +562,38 @@ const Consultarealizada = () => {
         </div>
 
         <div className="mr-4 w-full">
-  <label
-    htmlFor="tipo_anestesia"
-    className="block font-semibold text-white mb-1"
-  >
-    Tipo Anes:
-  </label>
+          <label
+            htmlFor="tipo_anestesia"
+            className="block font-semibold text-white mb-1"
+          >
+            Tipo Anes:
+          </label>
 
-  {/* Mostrar MultiSelect solo si isEditing es true */}
-  {isEditing ? (
-    <MultiSelect
-      options={options}
-      value={options.filter(option => formData.tipo_anestesia?.includes(option.value))} // Selección actual
-      onChange={handleTipoAnestesiaChange}
-      labelledBy="Seleccionar tipo de anestesia"
-      overrideStrings={{
-        allItemsAreSelected: "Todo seleccionado",
-        clearSearch: "Limpiar búsqueda",
-        noOptions: "Sin opciones",
-        search: "Buscar",
-        selectAll: "Seleccionar todo",
-        selectSomeItems: "Seleccionar",
-      }}
-      className="border border-[#A8D5B1] rounded-lg w-full bg-[#A8D5B1] text-[#333333] cursor-pointer text-sm"
-      style={{ minHeight: "auto" }}
-    />
-  ) : (
-    // Verificar si tipo_anestesia es un array antes de usar join()
-    <p className="bg-[#a8e7ed] rounded-lg px-3 py-2 w-full text-black">
-      {Array.isArray(formData.tipo_anestesia) ? formData.tipo_anestesia.join(", ") : formData.tipo_anestesia || ""}
-    </p>
-  )}
-</div>
+          {/* Mostrar MultiSelect solo si isEditing es true */}
+          {isEditing ? (
+            <MultiSelect
+              options={options}
+              value={options.filter(option => formData.tipo_anestesia?.includes(option.value))} // Selección actual
+              onChange={handleTipoAnestesiaChange}
+              labelledBy="Seleccionar tipo de anestesia"
+              overrideStrings={{
+                allItemsAreSelected: "Todo seleccionado",
+                clearSearch: "Limpiar búsqueda",
+                noOptions: "Sin opciones",
+                search: "Buscar",
+                selectAll: "Seleccionar todo",
+                selectSomeItems: "Seleccionar",
+              }}
+              className="border border-[#A8D5B1] rounded-lg w-full bg-[#A8D5B1] text-[#333333] cursor-pointer text-sm"
+              style={{ minHeight: "auto" }}
+            />
+          ) : (
+            // Verificar si tipo_anestesia es un array antes de usar join()
+            <p className="bg-[#a8e7ed] rounded-lg px-3 py-2 w-full text-black">
+              {Array.isArray(formData.tipo_anestesia) ? formData.tipo_anestesia.join(", ") : formData.tipo_anestesia || ""}
+            </p>
+          )}
+        </div>
             <div class="w-full mr-4">
               <label
                 htmlFor="tiempo_estimado"
