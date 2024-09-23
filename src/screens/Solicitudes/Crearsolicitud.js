@@ -3,6 +3,7 @@ import axios from "axios";
 import Layout from "../../Layout";
 import { useNavigate } from "react-router-dom";
 import ProcedureSelect from "./ProcedureSelect";
+import PersonalSelect from "./PersonalSelect";
 import { AuthContext } from "../../AuthContext";
 import AsyncSelect from "react-select/async";
 
@@ -328,6 +329,13 @@ function CrearSolicitud() {
     setFormData({
       ...formData,
       procedimientos_paciente: selectedOption ? selectedOption.value : "",
+    });
+  };
+
+  const handlePersonalChange = (selectedOption) => {
+    setFormData({
+      ...formData,
+      nombre_cirujano: selectedOption ? selectedOption.value : "",
     });
   };
 
@@ -759,25 +767,18 @@ function CrearSolicitud() {
                   {errors.sexo && <p className="text-red-500">{errors.sexo}</p>}
                 </div>
 
-                <div className="mr-4" style={{ width: "96.5%" }}>
+                <div className="mr-4 w-full">
                   <label
                     htmlFor="nombre_cirujano"
-                    className="block font-semibold text-white mb-3"
+                    className="block font-semibold text-white mb-1"
                   >
-                    Cirujano responsable:
+                    Cirujano encargado:
                   </label>
-                  <input
-                    placeholder="Nombre del cirujano"
-                    type="text"
+                  <PersonalSelect
                     id="nombre_cirujano"
                     name="nombre_cirujano"
                     value={formData.nombre_cirujano}
-                    onChange={handleInputChange}
-                    className={`border ${
-                      formData.nombre_cirujano
-                        ? "bg-[#A8CBD5] border-[#A8CBD5]"
-                        : "border-gray-300"
-                    } rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+                    onChange={handlePersonalChange}
                   />
                   {errors.nombre_cirujano && (
                     <p className="text-red-500">{errors.nombre_cirujano}</p>

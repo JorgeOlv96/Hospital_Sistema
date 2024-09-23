@@ -494,6 +494,8 @@ const handleExport = async () => {
                                         return `Cama - ${appointment.cama}`;
                                       case "URGENCIAS":
                                         return "Urgencias";
+                                      case "":
+                                        return "";
                                       default:
                                         return (
                                           appointment.tipo_admision ||
@@ -522,15 +524,19 @@ const handleExport = async () => {
                                       appointment.hora_salida,
                                       "HH:mm"
                                     ).format("LT")}</td>
+                                      <td>
+                                        ${appointment.nombre_cirujano
+                                          ? `DR. ${appointment.nombre_cirujano.split(" ").slice(0, 2).join(" ")}`
+                                          : ""}
+                                      </td>
                                     <td>${
-                                      appointment.nombre_cirujano
-                                        ? appointment.nombre_cirujano
+                                      appointment.nombre_anestesiologo
+                                        ? appointment.nombre_anestesiologo
                                             .split(" ")
                                             .slice(0, 2)
                                             .join(" ")
                                         : ""
                                     }</td>
-                                    <td>${anesthesiologistName}</td>
                                     <td>${appointment.tipo_anestesia || ""}</td>
                                     <td>${appointment.enf_quirurgica || ""}</td>
                                     <td>${appointment.enf_circulante || ""}</td>

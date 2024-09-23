@@ -7,6 +7,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { startOfWeek, endOfWeek, format } from "date-fns";
 import Select from "react-select";
+import PersonalSelect from "../Solicitudes/PersonalSelect";
 
 function Programaranestesiologo() {
   const [formData, setFormData] = useState({
@@ -232,6 +233,13 @@ function Programaranestesiologo() {
           }));
       }
     }
+  };
+
+  const handlePersonalChange = (selectedOption) => {
+    setFormData({
+      ...formData,
+      nombre: selectedOption ? selectedOption.value : "",
+    });
   };
 
   const handleSaveAnesthesiologist = async () => {
@@ -463,22 +471,18 @@ function Programaranestesiologo() {
           <div className="flex flex-col">
             <div className="flex flex-col">
               <div className="flex mb-2 space-x-4">
-                <div className="w-1/4">
+              <div className="mr-4 w-full">
                   <label
-                    style={{ marginBottom: "30px" }}
-                    className="text-sm font-medium text-gray-700"
+                    htmlFor=""
+                    className="block text-sm font-medium text-gray-700"
                   >
-                    Nombre de anestesiólogo
+                   Nombre del anestesiólogo:
                   </label>
-                  <input
-                    placeholder="Nombre del anestesiologo"
-                    type="text"
+                  <PersonalSelect
                     id="nombre"
                     name="nombre"
                     value={formData.nombre}
-                    onChange={handleInputChange}
-                    className="block w-full px-4 py-2 border rounded shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    style={{ minHeight: "auto" }}
+                    onChange={handlePersonalChange}
                   />
                 </div>
 

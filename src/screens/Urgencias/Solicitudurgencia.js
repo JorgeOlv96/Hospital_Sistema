@@ -6,6 +6,7 @@ import Modal from "../../components/Modals/Modal";
 import { MultiSelect } from "react-multi-select-component";
 import AsyncSelect from "react-select/async";
 import ProcedureSelect from "../Solicitudes/ProcedureSelect";
+import PersonalSelect from "../Solicitudes/PersonalSelect";
 
 const SolicitudUrgencia = () => {
   const options = [
@@ -213,6 +214,14 @@ const SolicitudUrgencia = () => {
     });
   };
 
+  const handlePersonalChange = (selectedOption, fieldName) => {
+    setFormData({
+      ...formData,
+      [fieldName]: selectedOption ? selectedOption.value : "",
+    });
+  };
+  
+
   const handleSelectChange = (selectedOption) => {
     setFormData((prevFormData) => ({
       ...prevFormData,
@@ -348,28 +357,23 @@ const SolicitudUrgencia = () => {
                 className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full`}
               />
             </div>
-
-            <div className="w-full mr-4">
+            <div className="mr-4 w-full">
               <label
-                htmlFor="id_cirujano"
+                htmlFor="nombre_cirujano"
                 className="block font-semibold text-white mb-1"
               >
-                Cirujano encargado
+                Cirujano encargado:
               </label>
-              <div className="relative w-full">
-                <input
-                  placeholder="Nombre del cirujano"
-                  type="texte"
+              <PersonalSelect
                   id="nombre_cirujano"
                   name="nombre_cirujano"
                   value={formData.nombre_cirujano}
-                  onChange={handleInputChange}
-                  className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full`}
+                  onChange={(selectedOption) => handlePersonalChange(selectedOption, 'nombre_cirujano')}
+                  backgroundColor="#DBB7B7" // Color de fondo para esta página
                 />
-                {errors.nombre_cirujano && (
-                  <p className="text-red-500 mt-1">{errors.nombre_cirujano}</p>
-                )}
-              </div>
+              {errors.nombre_cirujano && (
+                <p className="text-red-500">{errors.nombre_cirujano}</p>
+              )}
             </div>
           </div>
 
@@ -669,65 +673,61 @@ const SolicitudUrgencia = () => {
                 className="border-[#C59494] rounded-lg px-3 py-2 w-full bg-white"
               />
             </div>
-
-            <div className="w-full mr-4">
+            <div className="mr-4 w-full">
               <label
-                htmlFor="enfermera_circulante"
+                htmlFor="nombre_anestesiologo"
                 className="block font-semibold text-white mb-1"
               >
-                Anestesiologo:
+                Anestesiólogo:
               </label>
-              <div className="relative w-full">
-              <input
-                  type="text"
+              <PersonalSelect
                   id="nombre_anestesiologo"
                   name="nombre_anestesiologo"
-                  placeholder="Nombre Anestesiologo"
                   value={formData.nombre_anestesiologo}
-                  onChange={handleInputChange}
-                  className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-white`}
+                  onChange={(selectedOption) => handlePersonalChange(selectedOption, 'nombre_anestesiologo')}
+                  backgroundColor="#DBB7B7" // Color de fondo para esta página
                 />
-              </div>
+              {errors.nombre_anestesiologo && (
+                <p className="text-red-500">{errors.nombre_anestesiologo}</p>
+              )}
             </div>
 
-            <div className="w-full mr-4">
+            <div className="mr-4 w-full">
               <label
-                htmlFor="enfermera_circulante"
+                htmlFor="enf_quirurgica"
                 className="block font-semibold text-white mb-1"
               >
                 Enf. Quirúrgica:
               </label>
-              <div className="relative w-full">
-              <input
-                  type="text"
+              <PersonalSelect
                   id="enf_quirurgica"
                   name="enf_quirurgica"
-                  placeholder="Enf. enf_quirurgica"
                   value={formData.enf_quirurgica}
-                  onChange={handleInputChange}
-                  className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-white`}
+                  onChange={(selectedOption) => handlePersonalChange(selectedOption, 'enf_quirurgica')}
+                  backgroundColor="#DBB7B7" // Color de fondo para esta página
                 />
-              </div>
+              {errors.enf_quirurgica && (
+                <p className="text-red-500">{errors.enf_quirurgica}</p>
+              )}
             </div>
 
-            <div className="w-full mr-4">
+            <div className="mr-4 w-full">
               <label
-                htmlFor="enfermera_circulante"
+                htmlFor="enf_circulante"
                 className="block font-semibold text-white mb-1"
               >
                 Enf. Circulante:
               </label>
-              <div className="relative w-full">
-              <input
-                  type="text"
+              <PersonalSelect
                   id="enf_circulante"
                   name="enf_circulante"
-                  placeholder="Enf. Circulante"
                   value={formData.enf_circulante}
-                  onChange={handleInputChange}
-                  className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-white`}
+                  onChange={(selectedOption) => handlePersonalChange(selectedOption, 'enf_circulante')}
+                  backgroundColor="#DBB7B7" // Color de fondo para esta página
                 />
-              </div>
+              {errors.enf_circulante && (
+                <p className="text-red-500">{errors.enf_circulante}</p>
+              )}
             </div>
 
             <div className="w-full mr-4">

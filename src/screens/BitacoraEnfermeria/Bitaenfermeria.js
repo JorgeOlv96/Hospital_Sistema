@@ -8,7 +8,7 @@ function Bitacoraenfermeria() {
   const navigate = useNavigate();
   const [pendingAppointments, setPendingAppointments] = useState([]);
   const [filter, setFilter] = useState({
-    fecha: "",
+    fecha: new Date().toISOString().slice(0, 10),
     especialidad: "",
     estado: "Programada",
   });
@@ -24,7 +24,7 @@ function Bitacoraenfermeria() {
   // Estados para los filtros
   const [nameFilter, setNameFilter] = useState("");
   const [specialtyFilter, setSpecialtyFilter] = useState("");
-  const [dateFilter, setDateFilter] = useState("");
+  const [dateFilter, setDateFilter] = useState(filter.fecha);
   
   const appointment = {
     estado_solicitud: "programada", // o cualquier otro estado que tengas
@@ -61,8 +61,10 @@ function Bitacoraenfermeria() {
       ...prevFilter,
       [name]: value,
     }));
+    if (name === "fecha") {
+      setDateFilter(value); // Actualiza el estado de dateFilter al cambiar la fecha
+    }
   };
-
   useEffect(() => {
     fetchPendingAppointments();
   }, []);
@@ -248,13 +250,6 @@ function Bitacoraenfermeria() {
                 placeholder="Filtrar por nombre"
                 value={nameFilter}
                 onChange={(e) => setNameFilter(e.target.value)}
-                className="border rounded-lg px-4 py-2"
-              />
-              <input
-                type="text"
-                placeholder="Filtrar por especialidad"
-                value={specialtyFilter}
-                onChange={(e) => setSpecialtyFilter(e.target.value)}
                 className="border rounded-lg px-4 py-2"
               />
               <input

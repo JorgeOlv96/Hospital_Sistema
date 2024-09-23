@@ -193,7 +193,7 @@ const Consultarealizada = () => {
                 for="ap_paterno"
                 class="block font-semibold text-white mb-1"
               >
-                Apellido paterno:
+                Ap. Paterno:
               </label>
               <input
                 placeholder="Apellido paterno paciente"
@@ -211,7 +211,7 @@ const Consultarealizada = () => {
                 for="ap_materno"
                 class="block font-semibold text-white mb-1"
               >
-                Apellido materno:
+                Ap. Materno:
               </label>
               <input
                 placeholder="Apellido materno paciente"
@@ -265,7 +265,7 @@ const Consultarealizada = () => {
                 htmlFor="edad"
                 className="block font-semibold text-white mb-1"
               >
-                Edad
+                Edad:
               </label>
               <input
                 placeholder="Edad de paciente"
@@ -318,7 +318,7 @@ const Consultarealizada = () => {
                 htmlFor="fecha_nacimiento"
                 className="block font-semibold text-white mb-1"
               >
-                Fecha de nacimiento:
+                F. Nacimiento:
               </label>
               <input
                 type="text"
@@ -335,7 +335,7 @@ const Consultarealizada = () => {
                 htmlFor="tipo_admision"
                 className="block font-semibold text-white mb-1"
               >
-                Procedencia paciente:
+                Procedencia:
               </label>
               <input
                 id="tipo_admision"
@@ -383,7 +383,7 @@ const Consultarealizada = () => {
                 htmlFor="turno_solicitado"
                 className="block font-semibold text-white mb-1"
               >
-                Turno solicitado:
+                Turno:
               </label>
               <input
                 id="turno_solicitado"
@@ -399,7 +399,7 @@ const Consultarealizada = () => {
                 htmlFor="tiempo_estimado"
                 className="block font-semibold text-white mb-1"
               >
-                Tiempo est. de cirugía:
+                Tiempo est.:
               </label>
               <input
                 placeholder="Minutos"
@@ -435,7 +435,7 @@ const Consultarealizada = () => {
                 htmlFor="fecha_solicitada"
                 className="block font-semibold text-white mb-1"
               >
-                Fecha de cirugía:
+                F. Cirugía:
               </label>
               <input
                 type="text"
@@ -452,7 +452,7 @@ const Consultarealizada = () => {
                 htmlFor="hora_solicitada"
                 className="block font-semibold text-white mb-1"
               >
-                Hora de cirugía:
+                H. Cirugía:
               </label>
               <input
                 type="time"
@@ -547,7 +547,7 @@ const Consultarealizada = () => {
         </div>
         <div className="mr-4 w-full">
           <label htmlFor="hi_anestesia" className="block font-semibold text-white mb-1">
-            Hora inicio Anes:
+            H.I. Anes:
           </label>
           <input
             placeholder="Minutos"
@@ -599,7 +599,7 @@ const Consultarealizada = () => {
                 htmlFor="tiempo_estimado"
                 className="block font-semibold text-white mb-1"
               >
-                Hora Incisión:
+                Hr. Incisión:
               </label>
               <input
                 placeholder="Minutos"
@@ -618,7 +618,7 @@ const Consultarealizada = () => {
                 htmlFor="tiempo_estimado"
                 className="block font-semibold text-white mb-1"
               >
-                Hr Cierre:
+                Hr. Cierre:
               </label>
               <input
                 placeholder="Minutos"
@@ -637,7 +637,7 @@ const Consultarealizada = () => {
                 htmlFor="tiempo_estimado"
                 className="block font-semibold text-white mb-1"
               >
-                Termino Anes:
+                H.T. Anes:
               </label>
               <input
                 placeholder="Minutos"
@@ -656,7 +656,7 @@ const Consultarealizada = () => {
                 htmlFor="tiempo_estimado"
                 className="block font-semibold text-white mb-1"
               >
-                Salida paciente:
+                Hr. Paciente:
               </label>
               <input
                 placeholder="Minutos"

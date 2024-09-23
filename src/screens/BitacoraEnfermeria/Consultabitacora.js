@@ -5,6 +5,7 @@ import Layout from "../../Layout";
 import Modal from "../../components/Modals/Modal";
 import { MultiSelect } from "react-multi-select-component";
 import AsyncSelect from "react-select/async";
+import PersonalSelect from "../Solicitudes/PersonalSelect";
 
 const Consultabitacora = () => {
   const options = [
@@ -217,6 +218,12 @@ const Consultabitacora = () => {
       ...prevData,
       tipo_anestesia: values,
     }));
+  };
+  const handlePersonalChange = (selectedOption, fieldName) => {
+    setPatientData({
+      ...patientData,
+      [fieldName]: selectedOption ? selectedOption.value : "",
+    });
   };
 
   const agregarProcedimiento = () => {
@@ -439,24 +446,24 @@ const Consultabitacora = () => {
             </div>
 
             <div className="w-full mr-4">
-  <label
-    htmlFor="tipo_admision"
-    className="block font-semibold text-white mb-1"
-  >
-    Procedencia:
-  </label>
-  <input
-    id="tipo_admision"
-    name="tipo_admision"
-    value={
-      patientData.tipo_admision === "CAMA"
-        ? `Cama - ${patientData.cama || "N/A"}`
-        : patientData.tipo_admision || "N/A"
-    }
-    readOnly
-    className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
-  ></input>
-</div>
+              <label
+                htmlFor="tipo_admision"
+                className="block font-semibold text-white mb-1"
+              >
+                Procedencia:
+              </label>
+              <input
+                id="tipo_admision"
+                name="tipo_admision"
+                value={
+                  patientData.tipo_admision === "CAMA"
+                    ? `Cama - ${patientData.cama || "N/A"}`
+                    : patientData.tipo_admision || "N/A"
+                }
+                readOnly
+                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+              ></input>
+            </div>
 
 
             <div className="mr-4 w-full">
@@ -592,44 +599,6 @@ const Consultabitacora = () => {
                 className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
               ></input>
             </div>
-
-            <div className="w-full mr-4">
-              <label
-                htmlFor="enf_quirurgica"
-                className="block font-semibold text-white mb-1"
-              >
-                Enf. Quirúrgica:
-              </label>
-              <div className="relative">
-                <input
-                  placeholder="Enf. Quirúrgica"
-                  type="text"
-                  id="enf_quirurgica"
-                  name="enf_quirurgica"
-                  onChange={handleChange}
-                  className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full`}
-                />
-              </div>
-            </div>
-
-            <div className="w-full mr-4">
-              <label
-                htmlFor="enf_circulante"
-                className="block font-semibold text-white mb-1"
-              >
-                Enf. Circulante:
-              </label>
-              <div className="relative">
-              <input
-                  placeholder="Enf. Circulante"
-                  type="text"
-                  id="enf_circulante"
-                  name="enf_circulante"
-                  onChange={handleChange}
-                  className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full`}
-                />
-              </div>
-            </div>
             
             <div className="w-full mr-4">
               <label
@@ -666,6 +635,40 @@ const Consultabitacora = () => {
                 onChange={handleChange}
                 className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white`}
               ></input>
+            </div>
+          </div>
+
+          <div class="flex mb-4">
+          <div className="mr-4 w-full">
+              <label
+                htmlFor="enf_quirurgica"
+                className="block font-semibold text-white mb-1"
+              >
+                Enf. Quirúrgica:
+              </label>
+              <PersonalSelect
+                  id="enf_quirurgica"
+                  name="enf_quirurgica"
+                  value={patientData.enf_quirurgica}
+                  onChange={(selectedOption) => handlePersonalChange(selectedOption, 'enf_quirurgica')}
+                  backgroundColor="#A8D5B1" // Color de fondo para esta página
+                />
+            </div>
+
+            <div className="mr-4 w-full">
+              <label
+                htmlFor="enf_circulante"
+                className="block font-semibold text-white mb-1"
+              >
+                Enf. Circulante:
+              </label>
+              <PersonalSelect
+                  id="enf_circulante"
+                  name="enf_circulante"
+                  value={patientData.enf_circulante}
+                  onChange={(selectedOption) => handlePersonalChange(selectedOption, 'enf_circulante')}
+                  backgroundColor="#A8D5B1" // Color de fondo para esta página
+                />
             </div>
           </div>
 
