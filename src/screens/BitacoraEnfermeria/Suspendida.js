@@ -2,7 +2,12 @@ import React, { useState, useEffect } from "react";
 import Layout from "../../Layout";
 import axios from "axios";
 import AddApointmentModalSuspendida from "../../components/Modals/AddApointmentModalSuspendida";
+import SuspendidaEnf from "../../components/Modals/SuspendidaEnf";
 import { Link } from "react-router-dom";
+import moment from "moment";
+import "moment/locale/es"; // Importa el idioma de moment.js
+import { saveAs } from "file-saver";
+import * as XLSX from "xlsx";
 
 function SolicitudessuspendidasB() {
   const [pendingAppointments, setPendingAppointments] = useState([]);
@@ -11,6 +16,7 @@ function SolicitudessuspendidasB() {
   const [sortBy, setSortBy] = useState(null);
   const [sortOrder, setSortOrder] = useState("asc");
   const [page, setPage] = useState(1);
+  const [printDate, setPrintDate] = useState(new Date());
   const itemsPerPage = 10;
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
 
@@ -18,6 +24,8 @@ function SolicitudessuspendidasB() {
   const [nameFilter, setNameFilter] = useState("");
   const [specialtyFilter, setSpecialtyFilter] = useState("");
   const [dateFilter, setDateFilter] = useState("");
+  const [view, setView] = useState(""); // Default view
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
   const [filter, setFilter] = useState({
     estado: "", // valor inicial para el estado de la solicitud
@@ -53,11 +61,6 @@ function SolicitudessuspendidasB() {
     } catch (error) {
       console.error("Error fetching pending appointments:", error);
     }
-  };
-  const formatFechaSolicitada = (fecha) => {
-    if (!fecha) return "";
-    const [year, month, day] = fecha.split("-");
-    return `${day}-${month}-${year}`;
   };
 
   const handleViewModal = (appointment) => {
@@ -111,6 +114,390 @@ function SolicitudessuspendidasB() {
     }
   };
 
+  const formatDateInputValue = (date) => {
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${year}-${month}-${day}`;
+  };
+
+  const handlePrintDateChange = (e) => {
+    const selectedDate = moment(e.target.value).startOf("day").toDate();
+    setPrintDate(selectedDate);
+  };
+
+  const handlePrintClick = (selectedDate) => {
+    printDailyAppointments(selectedDate);
+  };
+
+  const formatFechaSolicitada = (fecha) => {
+    if (!fecha) return "";
+    const [year, month, day] = fecha.split("-");
+    return `${day}-${month}-${year}`;
+  };
+
+  const exportToExcel = async (selectedDate) => {
+    const formattedDate = moment(selectedDate).format("YYYY-MM-DD");
+  
+    try {
+      // Ejecutar ambas solicitudes en paralelo
+      const [suspendidasResponse] = await Promise.all([
+
+        fetch(`${baseURL}/api/solicitudes/suspendidas`)
+      ]);
+  
+      if (!suspendidasResponse.ok) {
+        throw new Error("Una o más respuestas de red no fueron correctas");
+      }
+      const suspendidasData = await suspendidasResponse.json();
+  
+      // Filtrar los datos en el frontend según la fecha seleccionada
+      const filteredSuspendidas = suspendidasData.filter(
+        (suspendida) =>
+          moment(suspendida.fecha_programada).format("YYYY-MM-DD") === formattedDate
+      );
+      
+  
+      // Combinar los datos filtrados
+      const combinedAppointments = [ ...filteredSuspendidas];
+  
+      // Reorganizar los datos y seleccionar solo los campos deseados
+      const reorganizedAppointments = combinedAppointments.map((solicitud) => {
+        let tipoAnestesiaFormatted = "";
+  
+        // Validación de `tipo_anestesia`
+        if (Array.isArray(solicitud.tipo_anestesia)) {
+          tipoAnestesiaFormatted = solicitud.tipo_anestesia.join(", ");
+        } else if (typeof solicitud.tipo_anestesia === "string") {
+          tipoAnestesiaFormatted = solicitud.tipo_anestesia; // Ya es una cadena, simplemente la asignamos
+        } else {
+          console.warn(`Formato inesperado en tipo_anestesia:`, solicitud.tipo_anestesia);
+        }
+  
+        return {
+          folio: solicitud.folio,
+          sala_quirofano: solicitud.sala_quirofano,
+          "nombre del paciente": `${solicitud.ap_paterno || ""} ${solicitud.ap_materno || ""} ${solicitud.nombre_paciente || ""}`,
+          edad: solicitud.edad,
+          tipo_admision: solicitud.tipo_admision,
+          cama: solicitud.cama,
+          procedimientos_paciente: solicitud.procedimientos_paciente,
+          diagnostico: solicitud.diagnostico,
+          nombre_cirujano: solicitud.nombre_cirujano,
+          nombre_anestesiologo: solicitud.nombre_anestesiologo,
+          motivo_suspension: solicitud.motivo_suspension
+        };
+      });
+  
+      // Crear la hoja de cálculo con los campos seleccionados
+      const worksheet = XLSX.utils.json_to_sheet(reorganizedAppointments);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Solicitudes y Urgencias");
+  
+      // Generar el archivo Excel
+      const excelBuffer = XLSX.write(workbook, {
+        bookType: "xlsx",
+        type: "array",
+      });
+      const data = new Blob([excelBuffer], {
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      });
+  
+      const fileName = `Solicitudes_suspendidas_${formattedDate}.xlsx`;
+      saveAs(data, fileName);
+    } catch (error) {
+      console.error("Error exporting data:", error);
+    }
+  };
+  
+  
+  
+const handleExport = async () => {
+  if (selectedDate) {
+    await exportToExcel(selectedDate);
+  } else {
+    console.warn("No date selected!");
+  }
+};
+
+  
+  const printDailyAppointments = async (selectedDate) => {
+    const today = moment(printDate).format("YYYY-MM-DD");
+    try {
+      const [anesthesiologistsResponse, suspendidasResponse] = await Promise.all([
+        fetch(`${baseURL}/api/anestesio/anestesiologos`),
+        fetch(`${baseURL}/api/solicitudes/suspendidas`)
+      ]);
+  
+      if (!suspendidasResponse.ok || !anesthesiologistsResponse.ok)  {
+        throw new Error("Network response was not ok");
+      }
+      const anesthesiologistsData = await anesthesiologistsResponse.json();
+      const suspendidasData = await suspendidasResponse.json();
+  
+      // Filtrar las solicitudes y urgencias del día seleccionado
+      const todaysRegistrations = [
+        ...suspendidasData.filter(
+          (suspendida) => moment(suspendida.fecha_programada).format("YYYY-MM-DD") === today
+        )
+      ];
+      
+  
+      // Filtrar anestesiólogos asignados para el día seleccionado
+      const todaysAnesthesiologists = anesthesiologistsData.filter(
+        (anesthesiologist) =>
+          moment(anesthesiologist.dia_anestesio).format("YYYY-MM-DD") === today
+      );
+
+      const printableContent = `
+        <html>
+        <head>
+            <style>
+                body {
+                    background-color: #ffffff;
+                    font-family: Arial, sans-serif;
+                    font-size: 10px !important;
+                    margin: 10px;
+                    padding: 5px;
+                }
+                .header {
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    margin-bottom: 10px;
+                }
+                .header img {
+                    max-width: 150px;
+                    height: auto;
+                    margin-right: 5px;
+                }
+                .header .date {
+                    font-size: 10px !important;
+                    text-align: left;
+                    margin-right: 5px;
+                }
+                .header h1 {
+                    font-size: 10px !important;
+                    margin: 5px;
+                    flex-grow: 2;
+                    text-align: right;
+                }
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-top: 10px;
+                    font-size: 8px !important;
+                }
+                th, td {
+                    border: 1px solid black;
+                    padding: 3px !important;
+                    text-align: left;
+                    white-space: nowrap;
+                }
+                .turno-section {
+                    background-color: #d3d3d3;
+                    text-align: left;
+                    font-weight: bold;
+                    padding: 5px;
+                    border-top: 2px solid black;
+                    border-bottom: 2px solid black;
+                }
+            </style>
+        </head>
+        <body>
+            <div class="header" style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 10px;
+                background-color: #f4f4f4;
+            ">
+                <h4 style="margin: 0;">Solicitudes Realizadas</h4>
+                <div style="
+                    display: flex;
+                    align-items: center;
+                    text-align: right;
+                ">
+                    <h1 style="
+                        margin: 0;
+                        font-size: 1em;
+                        line-height: 1;
+                    ">Hoja de impresión Realizadas, Urgentes y Suspendidas:</h1>
+                    <div class="date" style="
+                        margin-left: 10px;
+                        font-size: 1em;
+                    ">${moment(printDate).format("DD-MM-YYYY")}</div>
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Folio</th>
+                        <th>Sala</th>
+                        <th>Nom. completo</th>
+                        <th>Edad</th>
+                        <th>Sexo</th>
+                        <th>Procedencia</th>
+                        <th>Procedimiento CIE-9</th>
+                        <th>Diagnostico</th>
+                        <th>Cirujano</th>
+                        <th>Anestesiólogo</th>
+                        <th>Estado final</th>
+                        <th>Motivo de suspensión</th>
+                    </tr>
+                </thead>
+                <tbody>
+                <tbody>
+                ${["Matutino", "Vespertino", "Nocturno"]
+                  .map((turno) => {
+                    const sortedRegistrations = todaysRegistrations
+                      .filter((appointment) => {
+                        const hour = moment(
+                          appointment.hora_asignada,
+                          "HH:mm"
+                        ).hour();
+                        if (turno === "Matutino") return hour >= 8 && hour < 15;
+                        if (turno === "Vespertino")
+                          return hour >= 15 && hour < 21;
+                        return hour >= 21 || hour < 6;
+                      })
+                      .sort((a, b) => {
+                        const salaOrder = [
+                          "A1",
+                          "A2",
+                          "T1",
+                          "T2",
+                          "1",
+                          "2",
+                          "3",
+                          "4",
+                          "5",
+                          "6",
+                          "E",
+                          "H",
+                          "RX",
+                        ];
+                        const salaA = salaOrder.indexOf(a.sala_quirofano);
+                        const salaB = salaOrder.indexOf(b.sala_quirofano);
+                        if (salaA !== salaB) {
+                          return salaA - salaB;
+                        }
+                        const horaA = moment(a.hora_asignada, "HH:mm");
+                        const horaB = moment(b.hora_asignada, "HH:mm");
+                        return horaA - horaB;
+                      });
+
+                    return `
+                        <tr class="turno-section">
+                            <td colspan="13">${turno} (de ${
+                      turno === "Matutino"
+                        ? "08:00 a 14:00"
+                        : turno === "Vespertino"
+                        ? "14:00 a 20:00"
+                        : "20:00 a 06:00"
+                    })</td>
+                        </tr>
+                        ${sortedRegistrations
+                          .map((appointment, index) => {
+                            const assignedAnesthesiologist =
+                              todaysAnesthesiologists.find(
+                                (anesthesiologist) =>
+                                  anesthesiologist.sala_anestesio.includes(
+                                    appointment.sala_quirofano
+                                  ) &&
+                                  anesthesiologist.turno_anestesio === turno
+                              );
+
+                            const anesthesiologistName =
+                              assignedAnesthesiologist
+                                ? assignedAnesthesiologist.nombre
+                                : "No asignado";
+
+                            return `
+                                <tr>
+                                    <td>${index + 1}</td>
+                                    <td>${appointment.folio || ""}</td>
+                                    <td>Sala: ${
+                                      appointment.sala_quirofano || ""
+                                    }</td>
+                                    <td>${appointment.ap_paterno} ${
+                              appointment.ap_materno
+                            } ${appointment.nombre_paciente}</td>
+                                    <td>${appointment.edad || ""}</td>
+                                    <td>${appointment.sexo || ""}</td>
+                                    <td>${(() => {
+                                      switch (
+                                        appointment.tipo_admision
+                                              ) {
+                                      case "CONSULTA EXTERNA":
+                                        return "C.E.";
+                                      case "CAMA":
+                                        return `Cama - ${appointment.cama}`;
+                                      case "URGENCIAS":
+                                        return "Urgencias";
+                                      case "":
+                                        return "";
+                                      default:
+                                        return (
+                                          appointment.tipo_admision ||
+                                            "No especificado"
+                                                );
+                                              }
+                                          })()}</td>
+                                    <td>${
+                                      appointment.procedimientos_paciente
+                                        ? appointment.procedimientos_paciente.slice(
+                                            0,
+                                            60
+                                          )
+                                        : ""
+                                    }</td>
+                                    <td>${
+                                      appointment.diagnostico
+                                        ? appointment.diagnostico.slice(0, 60)
+                                        : ""
+                                    }</td>
+                                      <td>
+                                        ${appointment.nombre_cirujano
+                                          ? `DR. ${appointment.nombre_cirujano.split(" ").slice(0, 2).join(" ")}`
+                                          : ""}
+                                      </td>
+                                    <td>${
+                                      appointment.nombre_anestesiologo
+                                        ? appointment.nombre_anestesiologo
+                                            .split(" ")
+                                            .slice(0, 2)
+                                            .join(" ")
+                                        : ""
+                                    }</td>
+                                    <td>${appointment.estado_solicitud}</td>
+                                    <td>${appointment.motivo_suspension}</td>
+                                </tr>
+                            `;
+                          })
+                          .join("")}
+                    `;
+                  })
+                  .join("")}
+                </tbody>
+            </table>
+        </body>
+        </html>
+        `;
+
+      const newWindow = window.open();
+      newWindow.document.write(printableContent);
+      newWindow.document.close();
+      newWindow.print();
+    } catch (error) {
+      console.error("Error printing:", error);
+    }
+  };
+
+
+
   const sortedAppointments = [...pendingAppointments].sort((a, b) => {
     if (!sortBy) return 0;
 
@@ -152,19 +539,83 @@ function SolicitudessuspendidasB() {
       >
         <div className="flex flex-col gap-2 mb-4">
           <h1 className="text-xl font-semibold">Solicitudes suspendidas</h1>
+          <div className="flex justify-between my-4">
           <div className="flex my-4 space-x-4">
             <div>
               <Link
                 to="/bitacora/Bitaenfermeria"
                 className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
               >
-                <span>Regresar</span>
+                <span style={{ display: "inline-flex", alignItems: "center" }}>
+                  <span>&lt;</span>
+                  <span style={{ marginLeft: "5px" }}>Regresar a bitácora</span>
+                </span>
               </Link>
             </div>
           </div>
 
+          <div>
+              {/* Enlaces para cambiar vistas */}
+              <div className="flex justify-center space-x-4 mb-4">
+                <button
+                  onClick={() => setView("print")}
+                  className={`py-2 px-4 rounded ${
+                    view === "print" ? "bg-[#5DB259]" : "bg-gray-300"
+                  } text-white`}
+                >
+                  Imprimir
+                </button>
+                <button
+                  onClick={() => setView("export")}
+                  className={`py-2 px-4 rounded ${
+                    view === "export" ? "bg-[#4A5568]" : "bg-gray-300"
+                  } text-white`}
+                >
+                  Exportar
+                </button>
+              </div>
+
+              {/* Contenido según la vista seleccionada */}
+              {view === "print" && (
+                <div className="flex flex-col items-center space-y-2">
+                  <label className="font-semibold">Día a imprimir:</label>
+                  <input
+                    type="date"
+                    value={formatDateInputValue(printDate)}
+                    onChange={handlePrintDateChange}
+                    className="px-2 py-2 border border-main rounded-md text-main"
+                  />
+                  <button
+                    onClick={printDailyAppointments}
+                    className="bg-[#5DB259] hover:bg-[#528E4F] text-white py-2 px-4 rounded inline-flex items-center"
+                  >
+                    Imprimir
+                  </button>
+                </div>
+              )}
+
+              {view === "export" && (
+                <div className="flex flex-col items-center space-y-2">
+                  <label className="font-semibold">Día a exportar:</label>
+                  <input
+                    type="date"
+                    value={selectedDate || ""}
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                    className="px-2 py-2 border rounded"
+                  />
+                  <button
+                    onClick={handleExport}
+                    className="bg-[#4A5568] hover:bg-[#758195] text-white py-2 px-4 rounded inline-flex items-center"
+                  >
+                    Exportar a Excel
+                  </button>
+                </div>
+              )}
+            </div>
+            </div>
+
           {open && selectedAppointment && (
-            <AddApointmentModalSuspendida
+            <SuspendidaEnf
               datas={pendingAppointments}
               isOpen={open}
               closeModal={handleModal}

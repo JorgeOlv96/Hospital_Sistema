@@ -5,6 +5,7 @@ import AddAppointmentModalProgramado from "../../components/Modals/AddApointment
 import { useNavigate, Link } from "react-router-dom";
 import moment from "moment";
 import AddApointmentModalSuspendida from "../../components/Modals/AddApointmentModalSuspendida";
+import SuspendidaEnf from "../../components/Modals/SuspendidaEnf";
 import "moment/locale/es"; // Importa el idioma de moment.js
 
 import { saveAs } from "file-saver";
@@ -88,14 +89,21 @@ const fetchPendingAppointments = async () => {
       return;
     }
   
-    // Verificar el estado de la solicitud para decidir la redirección
-    if (appointment.estado_solicitud === 'Urgencia') {
-      navigate(`/urgencias/Consultaurgencia/${appointment.id_solicitud}`);
-    } else if (appointment.estado_solicitud === 'Realizada') {
-      navigate(`/solicitudes/Consultarealizada/${appointment.id_solicitud}`);
-    } else {
-      console.warn("Estado de solicitud no reconocido:", appointment.estado);
-      // Puedes redirigir a una página de error o manejar este caso como desees
+    // Verificar el estado de la solicitud para decidir la acción
+    switch (appointment.estado_solicitud) {
+      case 'Urgencia':
+        navigate(`/urgencias/Consultaurgencia/${appointment.id_solicitud}`);
+        break;
+      case 'Realizada':
+        navigate(`/solicitudes/Consultarealizada/${appointment.id_solicitud}`);
+        break;
+      case 'Suspendida':
+        setSelectedAppointment(appointment);
+        setOpen(true);
+        break;
+      default:
+        console.warn("Estado de solicitud no reconocido:", appointment.estado_solicitud);
+        // Puedes redirigir a una página de error o manejar este caso como desees
     }
   };
   
@@ -250,7 +258,7 @@ const fetchPendingAppointments = async () => {
       // Crear la hoja de cálculo con los campos seleccionados
       const worksheet = XLSX.utils.json_to_sheet(reorganizedAppointments);
       const workbook = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(workbook, worksheet, "Solicitudes y Urgencias");
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Actividad del dia");
   
       // Generar el archivo Excel
       const excelBuffer = XLSX.write(workbook, {
@@ -261,7 +269,7 @@ const fetchPendingAppointments = async () => {
         type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       });
   
-      const fileName = `Solicitudes_y_Urgencias_${formattedDate}.xlsx`;
+      const fileName = `Actividad_${formattedDate}.xlsx`;
       saveAs(data, fileName);
     } catch (error) {
       console.error("Error exporting data:", error);
@@ -698,16 +706,25 @@ const handleExport = async () => {
               )}
             </div>
             </div>
-
-          {open && selectedAppointment && (
-            <AddAppointmentModalProgramado
-              datas={pendingAppointments}
-              isOpen={open}
-              closeModal={handleModal}
-              onDeleteAppointment={handleDeleteAppointment}
-              appointmentId={selectedAppointment.id_solicitud}
-            />
-          )}
+            {open && selectedAppointment && (
+                selectedAppointment.estado_solicitud === 'Suspendida' ? (
+                  <SuspendidaEnf
+                    datas={pendingAppointments}
+                    isOpen={open}
+                    closeModal={handleModal}
+                    onDeleteAppointment={handleDeleteAppointment}
+                    appointmentId={selectedAppointment.id_solicitud}
+                  />
+                ) : (
+                  <AddAppointmentModalProgramado
+                    datas={pendingAppointments}
+                    isOpen={open}
+                    closeModal={handleModal}
+                    onDeleteAppointment={handleDeleteAppointment}
+                    appointmentId={selectedAppointment.id_solicitud}
+                  />
+                )
+              )}
 
           {/* Contenedor de filtros centrado */}
           <div className="flex justify-center">

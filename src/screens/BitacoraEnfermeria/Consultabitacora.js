@@ -19,6 +19,8 @@ const Consultabitacora = () => {
 
   const { id } = useParams();
   const [patientData, setPatientData] = useState({
+    nombre_cirujano:"",
+    nombre_anestesiologo:"",
     hora_entrada: "",
     hora_incision: "",
     hora_cierre: "",
@@ -150,6 +152,8 @@ const Consultabitacora = () => {
     try {
       const {
         nuevos_procedimientos_extra,
+        nombre_cirujano,
+        nombre_anestesiologo,
         hora_entrada,
         hora_incision,
         hora_cierre,
@@ -170,6 +174,8 @@ const Consultabitacora = () => {
               nuevos_procedimientos_extra
             ),
             hora_entrada,
+            nombre_cirujano,
+            nombre_anestesiologo,
             hora_incision,
             hora_cierre,
             hora_salida,
