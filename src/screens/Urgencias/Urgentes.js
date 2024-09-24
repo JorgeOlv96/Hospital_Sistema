@@ -4,6 +4,7 @@ import axios from "axios";
 import AddAppointmentModalProgramado from "../../components/Modals/AddApointmentModalProgramado";
 import { useNavigate, Link } from "react-router-dom";
 import moment from "moment";
+import AddApointmentModalSuspendida from "../../components/Modals/AddApointmentModalSuspendida";
 import "moment/locale/es"; // Importa el idioma de moment.js
 
 import { saveAs } from "file-saver";
@@ -45,22 +46,24 @@ function Solicitudesurgentes() {
 const fetchPendingAppointments = async () => {
   try {
     // Ejecutar ambas solicitudes en paralelo usando Promise.all
-    const [urgenciasResponse, realizadasResponse] = await Promise.all([
+    const [urgenciasResponse, realizadasResponse, suspendidasResponse] = await Promise.all([
       fetch(`${baseURL}/api/solicitudes/geturgencias`),
-      fetch(`${baseURL}/api/solicitudes/realizadas`)
+      fetch(`${baseURL}/api/solicitudes/realizadas`),
+      fetch(`${baseURL}/api/solicitudes/suspendidas`)
     ]);
 
     // Verificar si ambas respuestas son válidas
-    if (!urgenciasResponse.ok || !realizadasResponse.ok) {
+    if (!urgenciasResponse.ok || !realizadasResponse.ok || !suspendidasResponse.ok) {
       throw new Error("Una o más respuestas de red no fueron correctas");
     }
 
     // Obtener los datos de ambas respuestas
     const urgenciasData = await urgenciasResponse.json();
     const realizadasData = await realizadasResponse.json();
+    const suspendidasData = await suspendidasResponse.json();
 
     // Combinar ambos resultados en un solo array (si es necesario)
-    const combinedAppointments = [...urgenciasData, ...realizadasData];
+    const combinedAppointments = [...urgenciasData, ...realizadasData, ...suspendidasData];
 
     // Actualizar el estado con la lista combinada
     setPendingAppointments(combinedAppointments);
@@ -177,17 +180,19 @@ const fetchPendingAppointments = async () => {
   
     try {
       // Ejecutar ambas solicitudes en paralelo
-      const [solicitudesResponse, urgenciasResponse] = await Promise.all([
+      const [solicitudesResponse, urgenciasResponse, suspendidasResponse] = await Promise.all([
         fetch(`${baseURL}/api/solicitudes/realizadas`),
-        fetch(`${baseURL}/api/solicitudes/geturgencias`)
+        fetch(`${baseURL}/api/solicitudes/geturgencias`),
+        fetch(`${baseURL}/api/solicitudes/suspendidas`)
       ]);
   
-      if (!solicitudesResponse.ok || !urgenciasResponse.ok) {
+      if (!solicitudesResponse.ok || !urgenciasResponse.ok || !suspendidasResponse.ok) {
         throw new Error("Una o más respuestas de red no fueron correctas");
       }
   
       const solicitudesData = await solicitudesResponse.json();
       const urgenciasData = await urgenciasResponse.json();
+      const suspendidasData = await suspendidasResponse.json();
   
       // Filtrar los datos en el frontend según la fecha seleccionada
       const filteredSolicitudes = solicitudesData.filter(
@@ -198,9 +203,14 @@ const fetchPendingAppointments = async () => {
         (urgencia) =>
           moment(urgencia.fecha_programada).format("YYYY-MM-DD") === formattedDate
       );
+      const filteredSuspendidas = suspendidasData.filter(
+        (suspendida) =>
+          moment(suspendida.fecha_programada).format("YYYY-MM-DD") === formattedDate
+      );
+      
   
       // Combinar los datos filtrados
-      const combinedAppointments = [...filteredSolicitudes, ...filteredUrgencias];
+      const combinedAppointments = [...filteredSolicitudes, ...filteredUrgencias, ...filteredSuspendidas];
   
       // Reorganizar los datos y seleccionar solo los campos deseados
       const reorganizedAppointments = combinedAppointments.map((solicitud) => {
@@ -231,7 +241,9 @@ const fetchPendingAppointments = async () => {
           tipo_anestesia: tipoAnestesiaFormatted,
           enf_quirurgica: solicitud.enf_quirurgica,
           enf_circulante: solicitud.enf_circulante,
-          egreso: solicitud.egreso
+          egreso: solicitud.egreso,
+          estado_solicitud: solicitud.estado_solicitud,
+          motivo_suspension: solicitud.motivo_suspension
         };
       });
   
@@ -270,19 +282,21 @@ const handleExport = async () => {
   const printDailyAppointments = async (selectedDate) => {
     const today = moment(printDate).format("YYYY-MM-DD");
     try {
-      const [solicitudesResponse, anesthesiologistsResponse, urgenciasResponse] = await Promise.all([
+      const [solicitudesResponse, anesthesiologistsResponse, urgenciasResponse, suspendidasResponse] = await Promise.all([
         fetch(`${baseURL}/api/solicitudes/realizadas`),
         fetch(`${baseURL}/api/anestesio/anestesiologos`),
-        fetch(`${baseURL}/api/solicitudes/geturgencias`)
+        fetch(`${baseURL}/api/solicitudes/geturgencias`),
+        fetch(`${baseURL}/api/solicitudes/suspendidas`)
       ]);
   
-      if (!solicitudesResponse.ok || !anesthesiologistsResponse.ok || !urgenciasResponse.ok) {
+      if (!solicitudesResponse.ok || !anesthesiologistsResponse.ok || !urgenciasResponse.ok || !suspendidasResponse.ok)  {
         throw new Error("Network response was not ok");
       }
   
       const solicitudesData = await solicitudesResponse.json();
       const anesthesiologistsData = await anesthesiologistsResponse.json();
       const urgenciasData = await urgenciasResponse.json();
+      const suspendidasData = await suspendidasResponse.json();
   
       // Filtrar las solicitudes y urgencias del día seleccionado
       const todaysRegistrations = [
@@ -291,6 +305,9 @@ const handleExport = async () => {
         ),
         ...urgenciasData.filter(
           (urgencia) => moment(urgencia.fecha_programada).format("YYYY-MM-DD") === today
+        ),
+        ...suspendidasData.filter(
+          (suspendida) => moment(suspendida.fecha_programada).format("YYYY-MM-DD") === today
         )
       ];
       
@@ -374,7 +391,7 @@ const handleExport = async () => {
                         margin: 0;
                         font-size: 1em;
                         line-height: 1;
-                    ">Hoja de impresión Realizadas y Urgentes:</h1>
+                    ">Hoja de impresión Realizadas, Urgentes y Suspendidas:</h1>
                     <div class="date" style="
                         margin-left: 10px;
                         font-size: 1em;
@@ -402,7 +419,7 @@ const handleExport = async () => {
                         <th>Enf. Quirurgica</th>
                         <th>Enf. Circulante</th>
                         <th>Egresa a:</th>
-                        <th>Tipo de solicitud</th>
+                        <th>Estado final</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -541,13 +558,7 @@ const handleExport = async () => {
                                     <td>${appointment.enf_quirurgica || ""}</td>
                                     <td>${appointment.enf_circulante || ""}</td>
                                     <td>${appointment.egreso || ""}</td>
-                                    <td>
-                                      ${
-                                        appointment.estado_solicitud === "Realizada"
-                                          ? "Programada"
-                                          : appointment.estado_solicitud
-                                      }
-                                    </td>
+                                    <td>${appointment.estado_solicitud}</td>
                                 </tr>
                             `;
                           })

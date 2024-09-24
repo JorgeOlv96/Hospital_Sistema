@@ -294,10 +294,12 @@ const Consultabitacora = () => {
                 Cirujano encargado:
               </label>
               <input
-                placeholder="Nombre del cirujano"
-                value={patientData.nombre_cirujano || "N/A"}
-                readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                type="text"
+                id="nombre_cirujano"
+                name="nombre_cirujano"
+                value={patientData.nombre_cirujano}
+                onChange={handleChange}
+                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white`}
               />
             </div>
           </div>
@@ -592,11 +594,12 @@ const Consultabitacora = () => {
                 Anestesiólogo:
               </label>
               <input
-                id="procedimientos_paciente"
-                name="procedimientos_paciente"
-                value={patientData.nombre_anestesiologo || "N/A"}
-                readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
+                type="=text"
+                id="nombre_anestesiologo"
+                name="nombre_anestesiologo"
+                value={patientData.nombre_anestesiologo}
+                onChange={handleChange}
+                className={`"border-white" rounded-lg px-3 py-2 w-full bg-white`}
               ></input>
             </div>
             
