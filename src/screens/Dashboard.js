@@ -19,6 +19,7 @@ import "./Dashboard.css"; // Asegúrate de incluir los estilos personalizados aq
 import AnesthesiologistsByShiftCard from '../components/CardsAnestesios/AnesthesiologistsByShiftCard'
 import AssignmentsPerDayChart from '../components/CardsAnestesios/AssignmentsPerDayChart';
 import AnesthesiologistsBySpecialtyCard from '../components/CardsAnestesios/AnesthesiologistsBySpecialtyCard';
+import SuspensionReasonsChart from "../components/CardsAnestesios/SuspensionReasonsChart";
 
 const initialDashboardCards = [
   {
@@ -232,6 +233,7 @@ function Dashboard() {
       <AnesthesiologistsByShiftCard />
       <AssignmentsPerDayChart />
       <AnesthesiologistsBySpecialtyCard />
+      <SuspensionReasonsChart />
     </div>
 
     </Layout>
