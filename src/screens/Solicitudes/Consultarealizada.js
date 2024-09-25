@@ -656,7 +656,7 @@ const Consultarealizada = () => {
                 htmlFor="tiempo_estimado"
                 className="block font-semibold text-white mb-1"
               >
-                Hr. Paciente:
+                Hr. Salida:
               </label>
               <input
                 placeholder="Minutos"

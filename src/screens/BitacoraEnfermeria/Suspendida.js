@@ -243,7 +243,7 @@ const handleExport = async () => {
       ];
       
   
-      // Filtrar anestesiólogos asignados para el día seleccionado
+      // Filtrar anestesiólogos asignados para el día seleccionad
       const todaysAnesthesiologists = anesthesiologistsData.filter(
         (anesthesiologist) =>
           moment(anesthesiologist.dia_anestesio).format("YYYY-MM-DD") === today

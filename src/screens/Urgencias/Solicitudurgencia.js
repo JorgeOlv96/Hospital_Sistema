@@ -91,6 +91,7 @@ const SolicitudUrgencia = () => {
     nuevos_procedimientos_extra: [],
     hi_anestesia: "",  // Vacío por defecto
     ht_anestesia: "",  // Vacío por defecto
+    comentarios: ""
   });
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
 
@@ -276,7 +277,16 @@ const SolicitudUrgencia = () => {
         key !== "nuevos_procedimientos_extra" && 
         key !== "tipo_anestesia" &&
         key !== "hi_anestesia" &&
-        key !== "ht_anestesia"
+        key !== "ht_anestesia" &&
+        key !== "hora_asignada" &&
+        key !== "hora_entrada" &&
+        key !== "hora_incision" &&
+        key !== "hora_cierre" &&
+        key !== "hora_salida" &&
+        key !== "comentarios" &&
+        key !== "egreso" &&
+        key !== "edad" &&
+        key !== "fecha_nacimiento"
       ) {
         newErrors[key] = "Campo requerido";
       }
@@ -288,26 +298,33 @@ const SolicitudUrgencia = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log("Submitting formData:", formData);
+    const formDataWithDefaults = {
+      ...formData,
+      fecha_nacimiento: formData.fecha_nacimiento || "1900-01-01", // Fecha genérica si está vacío
+      edad: formData.edad || "25"
+    };
+  
+    console.log("Submitting formData:", formDataWithDefaults);
+    
     if (validateForm()) {
       try {
-        console.log("Datos enviados:", formData); // <-- Aquí se agregaron los datos enviados
+        console.log("Datos enviados:", formDataWithDefaults); // <-- Aquí se agregaron los datos enviados
         const response = await fetch(`${baseURL}/api/solicitudes/urgencias`,
           {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify(formData),
+            body: JSON.stringify(formDataWithDefaults),
           }
         );
-
+  
         if (!response.ok) {
           throw new Error("Network response was not ok");
         }
-
+  
         const data = await response.json();
-        console.log("Formulario válido y enviado:", formData);
+        console.log("Formulario válido y enviado:", formDataWithDefaults);
         navigate("/Urgencias/Urgentes");
       } catch (error) {
         console.error("Error en la solicitud:", error);
@@ -432,33 +449,33 @@ const SolicitudUrgencia = () => {
               />
             </div>
             <div className="w-full mr-4">
-        <label htmlFor="fecha_nacimiento" className="block font-semibold text-white mb-1">
-          F. Nacimiento:
-        </label>
-        <input
-          type="date"
-          id="fecha_nacimiento"
-          name="fecha_nacimiento"
-          value={formData.fecha_nacimiento}
-          onChange={handleInputChange}
-          className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-white`}
-        />
-      </div>
+              <label htmlFor="fecha_nacimiento" className="block font-semibold text-white mb-1">
+                F. Nacimiento:
+              </label>
+              <input
+                type="date"
+                id="fecha_nacimiento"
+                name="fecha_nacimiento"
+                value={formData.fecha_nacimiento}
+                onChange={handleInputChange}
+                className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-white`}
+              />
+            </div>
 
-      <div className="mr-4 w-full">
-        <label htmlFor="edad" className="block font-semibold text-white mb-1">
-          Edad:
-        </label>
-        <input
-          placeholder="Edad de Pte."
-          type="number"
-          id="edad"
-          name="edad"
-          value={formData.edad}
-          readOnly
-          className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
-        />
-      </div>
+              <div className="mr-4 w-full">
+                <label htmlFor="edad" className="block font-semibold text-white mb-1">
+                  Edad:
+                </label>
+                <input
+                  placeholder="Edad de Pte."
+                  type="number"
+                  id="edad"
+                  name="edad"
+                  value={formData.edad}
+                  readOnly
+                  className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-[#DBB7B7] cursor-default`}
+                />
+              </div>
             <div className="mr-4 w-full" style={{ width: "100%" }}>
               <label
                 htmlFor="sexo"
@@ -982,6 +999,23 @@ const SolicitudUrgencia = () => {
                 value={formData.diagnostico}
                 onChange={handleInputChange}
                 className={`"border-[#C59494]"} rounded-lg px-3 py-2 w-full bg-white`}
+              ></textarea>
+            </div>
+            <div className="mr-4" style={{ width: "50%" }}>
+              <label
+                htmlFor="comentarios"
+                className="block font-semibold text-white mb-1"
+              >
+                Comentarios:
+              </label>
+              <textarea
+                placeholder="Escriba una nota o comentario sobre la cirugía realizada o instrucciones para editar después"
+                id="comentarios"
+                name="comentarios"
+                rows="4"
+                value={formData.comentarios}
+                onChange={handleInputChange}
+                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white`}
               ></textarea>
             </div>
           </div>

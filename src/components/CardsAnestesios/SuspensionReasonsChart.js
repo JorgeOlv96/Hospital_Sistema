@@ -41,7 +41,7 @@ const SuspensionReasonsChart = () => {
             // Tomar las cinco palabras siguientes al guion
             const motivoPartes = motivo.split(' - ');
             if (motivoPartes.length > 1) {
-              const palabrasPosteriores = motivoPartes[1].split(' ').slice(0, 5).join(' ');
+              const palabrasPosteriores = motivoPartes[1].split(' ').slice(0, 6).join(' ');
               acc[palabrasPosteriores] = (acc[palabrasPosteriores] || 0) + 1;
             }
           }
