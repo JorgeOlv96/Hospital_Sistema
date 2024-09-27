@@ -10,7 +10,6 @@ import {
   Legend,
 } from 'chart.js';
 
-// Registrar los componentes de Chart.js necesarios
 ChartJS.register(
   BarElement,
   CategoryScale,
@@ -34,30 +33,29 @@ const SuspensionReasonsChart = () => {
         }
         const suspensionData = await response.json();
 
-        // Agrupar los motivos de suspensión y contar las ocurrencias
-        const reasonCounts = suspensionData.reduce((acc, solicitud) => {
+        const reasonCounts = {};
+        const fullReasons = {};
+
+        suspensionData.forEach(solicitud => {
           let motivo = solicitud.motivo_suspension;
           if (motivo) {
             const motivoPartes = motivo.split(' - ');
             if (motivoPartes.length > 1) {
               const palabrasPosteriores = motivoPartes[1].split(' ').slice(0, 6).join(' ');
-              acc[palabrasPosteriores] = (acc[palabrasPosteriores] || 0) + 1;
+              reasonCounts[palabrasPosteriores] = (reasonCounts[palabrasPosteriores] || 0) + 1;
+              fullReasons[palabrasPosteriores] = motivo;
             }
           }
-          return acc;
-        }, {});
+        });
 
-        // Filtrar motivos vacíos y ordenar por las razones más comunes
         const sortedReasons = Object.entries(reasonCounts)
-          .filter(([reason]) => reason.trim() !== '') // Eliminar columnas sin descripción
+          .filter(([reason]) => reason.trim() !== '')
           .sort((a, b) => b[1] - a[1])
-          .slice(0, 10); // Obtener los 10 primeros o menos si no hay suficientes
+          .slice(0, 10);
 
-        // Verificar que no haya columnas vacías y solo usar los datos válidos
         const labels = sortedReasons.map(([reason]) => reason);
         const data = sortedReasons.map(([_, count]) => count);
 
-        // Colores dinámicos para las barras
         const backgroundColors = [
           '#FFA959', '#FF8850', '#FF6F47', '#FF5640', '#FF3D38', 
           '#FF2431', '#FF0A29', '#E50025', '#CC001F', '#B2001A'
@@ -70,10 +68,11 @@ const SuspensionReasonsChart = () => {
               label: 'Número de Suspensiones',
               data,
               backgroundColor: backgroundColors,
-              borderColor: backgroundColors.map(color => color.replace('FF', 'AA')), // Colores de borde más oscuros
+              borderColor: backgroundColors.map(color => color.replace('FF', 'AA')),
               borderWidth: 1,
             },
           ],
+          fullReasons, // Agregamos los motivos completos aquí
         });
       } catch (error) {
         setError(error.message);
@@ -92,14 +91,18 @@ const SuspensionReasonsChart = () => {
 
   const chartOptions = {
     responsive: true,
-    maintainAspectRatio: false, // Permite ajustar la altura personalizada
+    maintainAspectRatio: false,
     plugins: {
       legend: {
-        position: 'top',
+        display: false, // Ocultar la leyenda ya que no es necesaria
       },
       tooltip: {
         callbacks: {
-          label: (context) => `${context.label}: ${context.raw}`,
+          title: (context) => {
+            // Mostrar el motivo completo en el título del tooltip
+            return chartData.fullReasons[context[0].label];
+          },
+          label: (context) => `Suspensiones: ${context.raw}`,
         },
       },
     },
@@ -107,16 +110,27 @@ const SuspensionReasonsChart = () => {
       y: {
         beginAtZero: true,
       },
+      x: {
+        ticks: {
+          callback: function(value) {
+            // Mostrar solo las primeras 6 palabras en el eje X
+            const label = this.getLabelForValue(value);
+            return label.split(' ').slice(0, 6).join(' ');
+          },
+          maxRotation: 20,
+          minRotation: 20,
+        },
+      },
     },
   };
 
   return (
     <div 
       className="bg-white rounded-xl border-[1px] border-border p-5 shadow-md card-zoom" 
-      style={{ height: '600px', width: '100%' }} // Ajuste del tamaño del contenedor
+      style={{ height: '600px', width: '100%' }}
     >
       <h3 className="text-lg font-medium mb-4">Top 10 Motivos de Suspensión</h3>
-      <div style={{ height: '500px' }}> {/* Ajuste del espacio para el gráfico */}
+      <div style={{ height: '500px' }}>
         <Bar data={chartData} options={chartOptions} />
       </div>
     </div>

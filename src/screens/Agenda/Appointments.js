@@ -554,7 +554,7 @@ ${todaysAnesthesiologists
     try {
       // Fetch de las solicitudes programadas
       const solicitudesResponse = await fetch(
-        `${baseURL}/api/solicitudes/programadas`
+        `${baseURL}/api/solicitudes`
       );
       if (!solicitudesResponse.ok) {
         throw new Error("Network response for solicitudes was not ok");
@@ -564,7 +564,7 @@ ${todaysAnesthesiologists
       // Filtrar las solicitudes del día seleccionado
       const filteredAppointments = solicitudesData.filter(
         (solicitud) =>
-          moment(solicitud.fecha_solicitada).format("YYYY-MM-DD") ===
+          moment(solicitud.fecha_programada).format("YYYY-MM-DD") ===
           formattedDate
       );
   
@@ -595,14 +595,15 @@ ${todaysAnesthesiologists
           tipo_intervencion: solicitud.tipo_intervencion,
           tipo_admision: solicitud.tipo_admision,
           cama: solicitud.cama, // Mover cama junto a tipo_intervencion
-          fecha_solicitada: solicitud.fecha_solicitada,
-          turno_solicitado: solicitud.turno_solicitado,
+          fecha_programada: solicitud.fecha_programada,
+          turno: solicitud.turno,
           sala_quirofano: solicitud.sala_quirofano,
           nombre_especialidad: solicitud.nombre_especialidad,
           req_insumo: solicitud.req_insumo,
           nombre_anestesiologo: solicitud.nombre_anestesiologo,
           cirujano: solicitud.nombre_cirujano,
-          procedimientos_extra: solicitud.procedimientos_extra
+          procedimientos_extra: solicitud.procedimientos_extra,
+          estado_solicitud: solicitud.estado_solicitud
           // Añade cualquier otro campo que desees
         };
       });

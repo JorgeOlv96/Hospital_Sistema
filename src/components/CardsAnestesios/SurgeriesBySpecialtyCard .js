@@ -18,24 +18,26 @@ const SurgeriesBySpecialtyCard = () => {
         }
         const surgeries = await response.json();
 
-        // Agrupar las cirugías por especialidad y contar las ocurrencias
         const specialtyCounts = surgeries.reduce((acc, surgery) => {
           const specialty = surgery.nombre_especialidad;
-          if (specialty) {
-            acc[specialty] = (acc[specialty] || 0) + 1;
+          const clave = surgery.clave_esp;
+          if (specialty && clave) {
+            if (!acc[specialty]) {
+              acc[specialty] = { count: 0, clave };
+            }
+            acc[specialty].count += 1;
           }
           return acc;
         }, {});
 
-        // Ordenar las especialidades por el número de cirugías realizadas
         const sortedSpecialties = Object.entries(specialtyCounts)
-          .sort((a, b) => b[1] - a[1])
-          .slice(0, 10); // Tomar las 10 especialidades con más cirugías
+          .sort((a, b) => b[1].count - a[1].count)
+          .slice(0, 10);
 
-        const labels = sortedSpecialties.map(([specialty]) => specialty);
-        const data = sortedSpecialties.map(([_, count]) => count);
+        const labels = sortedSpecialties.map(([_, { clave }]) => clave);
+        const data = sortedSpecialties.map(([_, { count }]) => count);
+        const fullNames = sortedSpecialties.map(([name]) => name);
 
-        // Colores dinámicos para las barras
         const backgroundColors = [
           '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', 
           '#FFCD56', '#4BC0C0', '#F7464A', '#46BFBD'
@@ -52,6 +54,7 @@ const SurgeriesBySpecialtyCard = () => {
               borderWidth: 1,
             },
           ],
+          fullNames, // Añadimos los nombres completos para usarlos en el tooltip
         });
       } catch (error) {
         setError(error.message);
@@ -70,15 +73,18 @@ const SurgeriesBySpecialtyCard = () => {
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        position: 'top',
+        display: false,
       },
       title: {
-        display: true,
-        text: 'Cirugías Realizadas por Especialidad',
+        display: false,
       },
       tooltip: {
         callbacks: {
-          label: (context) => `${context.label}: ${context.raw} cirugías`,
+          title: (context) => {
+            // Muestra el nombre completo de la especialidad en el título del tooltip
+            return chartData.fullNames[context[0].dataIndex];
+          },
+          label: (context) => `${context.raw} cirugías`,
         },
       },
     },
@@ -86,13 +92,21 @@ const SurgeriesBySpecialtyCard = () => {
       y: {
         beginAtZero: true,
       },
+      x: {
+        ticks: {
+          maxRotation: 0,
+          minRotation: 0,
+        },
+      },
     },
   };
 
   return (
     <div className="bg-white rounded-xl border-[1px] border-border p-5 shadow-md card-zoom" style={{ height: '350px' }}>
       <h3 className="text-lg font-medium mb-4">Cirugías Realizadas por Especialidad</h3>
-      <Bar data={chartData} options={chartOptions} />
+      <div style={{ height: 'calc(100% - 40px)' }}>
+        <Bar data={chartData} options={chartOptions} />
+      </div>
     </div>
   );
 };
