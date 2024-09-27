@@ -21,6 +21,8 @@ import AssignmentsPerDayChart from '../components/CardsAnestesios/AssignmentsPer
 import AnesthesiologistsBySpecialtyCard from '../components/CardsAnestesios/AnesthesiologistsBySpecialtyCard';
 import SuspensionReasonsChart from "../components/CardsAnestesios/SuspensionReasonsChart";
 import SurgeriesBySpecialtyCard from "../components/CardsAnestesios/SurgeriesBySpecialtyCard ";
+import SurgeriesByRoomChart from "../components/CardsAnestesios/SurgeriesByRoomChart";
+import SolicitudesProgramadasPorEspecialidadCard from "../components/CardsAnestesios/SolicitudesProgramadasPorEspecialidadCard";
 
 const initialDashboardCards = [
   {
@@ -231,8 +233,8 @@ function Dashboard() {
       </div>
 
 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
-  <AnesthesiologistsByShiftCard />
-  <AssignmentsPerDayChart />
+  <SurgeriesByRoomChart />
+  <SolicitudesProgramadasPorEspecialidadCard />
   <SurgeriesBySpecialtyCard />
   <div className="lg:col-span-3">
     <SuspensionReasonsChart />

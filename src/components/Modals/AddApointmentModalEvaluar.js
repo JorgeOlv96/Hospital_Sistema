@@ -178,6 +178,17 @@ function AddAppointmentModalEvaluar({
     }
   };
 
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+    
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Los meses van de 0 a 11
+    const year = date.getFullYear();
+  
+    return `${day}-${month}-${year}`;
+  };
+
     // Función para generar el documento
     const generateDocument = async () => {
       try {
@@ -196,14 +207,14 @@ function AddAppointmentModalEvaluar({
         doc.render({
           folio: patientData.folio || "N/A",
           nombre_cirujano: patientData.nombre_cirujano || "N/A",
-          fecha_solicitud: patientData.fecha_solicitud || "N/A",
+          fecha_solicitud: formatDate(patientData.fecha_solicitud) || "N/A",
           curp: patientData.curp || "N/A",
           no_expediente: patientData.no_expediente || "N/A",
           tel_contacto: patientData.tel_contacto || "N/A",
           ap_paterno: patientData.ap_paterno || "N/A",
           ap_materno: patientData.ap_materno || "N/A",
           nombre_paciente: patientData.nombre_paciente || "N/A",
-          fecha_nacimiento: patientData.fecha_nacimiento || "N/A",
+          fecha_nacimiento: formatDate(patientData.fecha_nacimiento) || "N/A",
           edad: patientData.edad || "N/A",
           sexo: patientData.sexo || "N/A",
           sala_quirofano: patientData.sala_quirofano || "N/A",
@@ -212,7 +223,7 @@ function AddAppointmentModalEvaluar({
           tipo_intervencion: patientData.tipo_intervencion || "N/A",
           tipo_admision: patientData.tipo_admision || "N/A",
           cama: patientData.cama || "N/A",
-          fecha_solicitada: patientData.fecha_solicitada || "N/A",
+          fecha_solicitada: formatDate(patientData.fecha_solicitada) || "N/A",
           hora_solicitada: patientData.hora_solicitada || "N/A",
           turno_solicitado: patientData.turno_solicitado || "N/A",
           tiempo_estimado: patientData.tiempo_estimado || "N/A",

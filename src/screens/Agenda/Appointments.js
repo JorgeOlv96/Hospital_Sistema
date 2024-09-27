@@ -584,9 +584,7 @@ ${todaysAnesthesiologists
         return {
           id: solicitud.id_solicitud,
           folio: solicitud.folio,
-          ap_paterno: solicitud.ap_paterno,
-          ap_materno: solicitud.ap_materno,
-          nombre_paciente: solicitud.nombre_paciente,
+          "nombre del paciente": `${solicitud.ap_paterno || ""} ${solicitud.ap_materno || ""} ${solicitud.nombre_paciente || ""}`,
           edad: solicitud.edad,
           sexo: solicitud.sexo,
           procedimientos_paciente: solicitud.procedimientos_paciente,
