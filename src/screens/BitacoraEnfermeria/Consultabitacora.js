@@ -158,22 +158,39 @@ const Consultabitacora = () => {
       sala_quirofano: newSala || prevData.sala_quirofano // Si no se selecciona nueva sala, mantener la anterior
     }));
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(`${baseURL}/api/solicitudes/${id}`);
+        const loadedData = response.data;
+        setPatientData(prevData => ({
+          ...prevData,
+          ...loadedData,
+          nuevos_procedimientos_extra: JSON.parse(loadedData.nuevos_procedimientos_extra || '[]')
+        }));
+      } catch (err) {
+        setError('Error al cargar los datos de la solicitud');
+        console.error('Error al cargar los datos:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [id, baseURL]);
   
   const handleProcedureSelectChange = (selectedProcedure) => {
-    // Si nuevos_procedimientos_extra no es un arreglo, inicialízalo como uno vacío
-    const nuevosProcedimientos = Array.isArray(patientData.nuevos_procedimientos_extra)
-      ? [...patientData.nuevos_procedimientos_extra, selectedProcedure]
-      : [selectedProcedure];
-  
-    setPatientData({
-      ...patientData,
-      nuevos_procedimientos_extra: nuevosProcedimientos, // Actualizamos el campo JSON en el estado
-    });
-  
-    // Ocultar el selector una vez que se selecciona un procedimiento
+    setPatientData(prevData => ({
+      ...prevData,
+      nuevos_procedimientos_extra: [
+        ...(Array.isArray(prevData.nuevos_procedimientos_extra) ? prevData.nuevos_procedimientos_extra : []),
+        { value: selectedProcedure.value, label: selectedProcedure.label }
+      ]
+    }));
     setMostrarProcedureSelect(false);
   };
-  
   
 
   const handleSuspendReasonChange = (e) => {
@@ -331,16 +348,15 @@ const Consultabitacora = () => {
       setProcedimientoExtra('');
     }
   };
-
   const eliminarProcedimiento = (index) => {
-    const updatedProcedimientos = patientData.nuevos_procedimientos_extra.filter(
-      (_, i) => i !== index
-    );
-    setPatientData({
-      ...patientData,
-      nuevos_procedimientos_extra: updatedProcedimientos,
-    });
+    setPatientData(prevData => ({
+      ...prevData,
+      nuevos_procedimientos_extra: prevData.nuevos_procedimientos_extra.filter((_, i) => i !== index)
+    }));
   };
+
+  if (loading) return <div>Cargando...</div>;
+  if (error) return <div>{error}</div>;
 
   return (
     <Layout>
@@ -915,40 +931,60 @@ const Consultabitacora = () => {
               ></input>
             </div>
           </div>
-          <div className="mr-4 w-full">
-  <label
-    htmlFor="procedimiento_paciente"
-    className="block font-semibold text-white mb-1"
-  >
-    Procedimiento inicial del paciente:
-  </label>
-  <input
-    id="procedimientos_paciente"
-    name="procedimientos_paciente"
-    value={patientData.procedimientos_paciente || "N/A"}
-    readOnly
-    className="border-[#A8D5B1] rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default mb-2"
-  ></input>
+          <div className="p-4">
+<div className="mb-4">
+        <label htmlFor="procedimiento_paciente" className="block font-semibold text-white mb-1">
+          Procedimiento inicial del paciente:
+        </label>
+        <input
+          id="procedimientos_paciente"
+          name="procedimientos_paciente"
+          value={patientData.procedimientos_paciente || "N/A"}
+          readOnly
+          className="border-[#A8D5B1] rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default mb-2"
+        />
+      </div>
 
-  {/* Botón para agregar nuevos procedimientos */}
-  <button
-    className="border-[#A8D5B1] rounded-lg px-3 py-2 bg-[#A8D5B1] text-white cursor-pointer mb-2"
-    onClick={() => setMostrarProcedureSelect(true)}
-  >
-    +
-  </button>
-</div>
+      {Array.isArray(patientData.nuevos_procedimientos_extra) && patientData.nuevos_procedimientos_extra.length > 0 && (
+        <div className="mb-4">
+          <label className="block font-semibold text-white mb-1">
+            Procedimientos adicionales:
+          </label>
+          {patientData.nuevos_procedimientos_extra.map((proc, index) => (
+            <div key={index} className="flex items-center mb-2">
+              <input
+                value={proc.label || proc.value || "Procedimiento desconocido"}
+                readOnly
+                className="border-[#A8D5B1] rounded-lg px-3 py-2 flex-grow bg-[#A8D5B1] cursor-default mr-2"
+              />
+              <button
+                onClick={() => eliminarProcedimiento(index)}
+                className="bg-red-500 text-white rounded-lg px-3 py-2"
+              >
+                Eliminar
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
 
-{/* Renderizar el componente ProcedureSelect cuando se hace clic en "+" */}
-{mostrarProcedureSelect && (
-  <div className="mb-4">
-    <ProcedureSelect
-      id="procedimientos_paciente_extra"
-      name="procedimientos_paciente_extra"
-      onChange={handleProcedureSelectChange} // Maneja la selección
-    />
-  </div>
-)}
+      <button
+        className="border-[#A8D5B1] rounded-lg px-3 py-2 bg-[#A8D5B1] text-white cursor-pointer mb-2"
+        onClick={() => setMostrarProcedureSelect(true)}
+      >
+        +
+      </button>
+
+      {mostrarProcedureSelect && (
+        <div className="mb-4">
+          <ProcedureSelect
+            id="procedimientos_paciente_extra"
+            name="procedimientos_paciente_extra"
+            onChange={handleProcedureSelectChange}
+          />
+        </div>
+      )}
+    </div>
 
 
           <div className="flex mb-4">

@@ -6,7 +6,6 @@ import PizZip from "pizzip";
 import Docxtemplater from "docxtemplater";
 import { saveAs } from "file-saver";
 
-
 function AddAppointmentModalEvaluar({
   closeModal,
   isOpen,
@@ -190,62 +189,63 @@ function AddAppointmentModalEvaluar({
     return `${day}-${month}-${year}`;
   };
 
-  const generateDocument = async () => {
-    try {
-      // Cargar la plantilla docx como arrayBuffer
-      const response = await fetch("/plantilla.docx");
-      const arrayBuffer = await response.arrayBuffer();
-      const zip = new PizZip(arrayBuffer);
-
-      // Cargar los datos en el template
-      const doc = new Docxtemplater(zip, {
-        paragraphLoop: true,
-        linebreaks: true,
-      });
-
-      // Reemplazar los campos de la plantilla con los datos de la consulta
-      doc.render({
-        folio: patientData.folio || "N/A",
-        nombre_cirujano: patientData.nombre_cirujano || "N/A",
-        fecha_solicitud: formatDate(patientData.fecha_solicitud) || "N/A",
-        curp: patientData.curp || "N/A",
-        no_expediente: patientData.no_expediente || "N/A",
-        tel_contacto: patientData.tel_contacto || "N/A",
-        ap_paterno: patientData.ap_paterno || "N/A",
-        ap_materno: patientData.ap_materno || "N/A",
-        nombre_paciente: patientData.nombre_paciente || "N/A",
-        fecha_nacimiento: formatDate(patientData.fecha_nacimiento) || "N/A",
-        edad: patientData.edad || "N/A",
-        sexo: patientData.sexo || "N/A",
-        sala_quirofano: patientData.sala_quirofano || "N/A",
-        nombre_especialidad: patientData.nombre_especialidad || "N/A",
-        clave_esp: patientData.clave_esp || "N/A",
-        tipo_intervencion: patientData.tipo_intervencion || "N/A",
-        tipo_admision: patientData.tipo_admision || "N/A",
-        cama: patientData.cama || "N/A",
-        fecha_solicitada: formatDate(patientData.fecha_solicitada) || "N/A",
-        hora_solicitada: patientData.hora_solicitada || "N/A",
-        turno_solicitado: patientData.turno_solicitado || "N/A",
-        tiempo_estimado: patientData.tiempo_estimado || "N/A",
-        procedimientos_paciente: patientData.procedimientos_paciente || "N/A",
-        procedimientos_extra: patientData.procedimientos_extra || "N/A",
-        req_insumo: patientData.req_insumo,
-        diagnostico: patientData.diagnostico || "N/A",
-      });
-
-      // Generar el archivo .docx
-      const output = doc.getZip().generate({
-        type: "blob",
-        mimeType:
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-      });
-
-      // Descargar el archivo como .docx
-      saveAs(output, `Solicitud_${patientData.folio}.docx`);
-    } catch (error) {
-      console.error("Error generating document:", error);
-    }
-  };
+    // Función para generar el documento
+    const generateDocument = async () => {
+      try {
+        // Cargar la plantilla docx como arrayBuffer
+        const response = await fetch("/plantilla.docx");
+        const arrayBuffer = await response.arrayBuffer();
+        const zip = new PizZip(arrayBuffer);
+  
+        // Cargar los datos en el template
+        const doc = new Docxtemplater(zip, {
+          paragraphLoop: true,
+          linebreaks: true,
+        });
+  
+        // Reemplazar los campos de la plantilla con los datos de la consulta
+        doc.render({
+          folio: patientData.folio || "N/A",
+          nombre_cirujano: patientData.nombre_cirujano || "N/A",
+          fecha_solicitud: formatDate(patientData.fecha_solicitud) || "N/A",
+          curp: patientData.curp || "N/A",
+          no_expediente: patientData.no_expediente || "N/A",
+          tel_contacto: patientData.tel_contacto || "N/A",
+          ap_paterno: patientData.ap_paterno || "N/A",
+          ap_materno: patientData.ap_materno || "N/A",
+          nombre_paciente: patientData.nombre_paciente || "N/A",
+          fecha_nacimiento: formatDate(patientData.fecha_nacimiento) || "N/A",
+          edad: patientData.edad || "N/A",
+          sexo: patientData.sexo || "N/A",
+          sala_quirofano: patientData.sala_quirofano || "N/A",
+          nombre_especialidad: patientData.nombre_especialidad || "N/A",
+          clave_esp: patientData.clave_esp || "N/A",
+          tipo_intervencion: patientData.tipo_intervencion || "N/A",
+          tipo_admision: patientData.tipo_admision || "N/A",
+          cama: patientData.cama || "N/A",
+          fecha_solicitada: formatDate(patientData.fecha_solicitada) || "N/A",
+          hora_solicitada: patientData.hora_solicitada || "N/A",
+          turno_solicitado: patientData.turno_solicitado || "N/A",
+          tiempo_estimado: patientData.tiempo_estimado || "N/A",
+          procedimientos_paciente: patientData.procedimientos_paciente || "N/A",
+          procedimientos_extra: patientData.procedimientos_extra || "N/A",
+          req_insumo: patientData.req_insumo,
+          diagnostico: patientData.diagnostico || "N/A",
+        });
+  
+        // Generar el archivo .docx
+        const output = doc.getZip().generate({
+          type: "blob",
+          mimeType:
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        });
+  
+        // Descargar el archivo como .docx
+        saveAs(output, `Solicitud_${patientData.folio}.docx`);
+      } catch (error) {
+        console.error("Error generating document:", error);
+      }
+    };
 
   return (
     <Modal
