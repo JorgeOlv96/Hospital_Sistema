@@ -21,6 +21,7 @@ const Consultabitacora = () => {
   const [patientData, setPatientData] = useState({
     nombre_cirujano:"",
     nombre_anestesiologo:"",
+    sala_quirofano:"",
     hora_entrada: "",
     hora_incision: "",
     hora_cierre: "",
@@ -101,6 +102,14 @@ const Consultabitacora = () => {
     }
   };
 
+  const handleSalaChange = (newSala) => {
+    setPatientData((prevData) => ({
+      ...prevData,
+      sala_quirofano: newSala || prevData.sala_quirofano // Si no se selecciona nueva sala, mantener la anterior
+    }));
+  };
+  
+
   const handleSuspendReasonChange = (e) => {
     const selectedReason = e.target.value;
     setSuspendReason(selectedReason);
@@ -158,6 +167,7 @@ const Consultabitacora = () => {
         hora_incision,
         hora_cierre,
         hora_salida,
+        sala_quirofano,
         egreso,
         enf_quirurgica,
         enf_circulante,
@@ -179,6 +189,7 @@ const Consultabitacora = () => {
             hora_incision,
             hora_cierre,
             hora_salida,
+            sala_quirofano,
             egreso,
             enf_quirurgica,
             enf_circulante,
@@ -424,14 +435,30 @@ const Consultabitacora = () => {
               >
                 Sala:
               </label>
-              <input
-                type="text"
+
+              {/* Select para mostrar el valor actual y cambiarlo si es necesario */}
+              <select
                 id="sala_quirofano"
                 name="sala_quirofano"
-                value={patientData.sala_quirofano || "N/A"}
-                readOnly
-                className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
-              ></input>
+                value={patientData.sala_quirofano || ""}
+                onChange={(e) => handleSalaChange(e.target.value)}
+                className="border border-gray-300 rounded-lg px-3 py-2 w-full bg-white"
+              >
+                <option value="">Seleccionar sala</option>
+                <option value="A1">SALA A1</option>
+                <option value="A2">SALA A2</option>
+                <option value="T1">SALA T1</option>
+                <option value="T2">SALA T2</option>
+                <option value="1">SALA 1</option>
+                <option value="2">SALA 2</option>
+                <option value="3">SALA 3</option>
+                <option value="4">SALA 4</option>
+                <option value="5">SALA 5</option>
+                <option value="6">SALA 6</option>
+                <option value="E">SALA E</option>
+                <option value="H">SALA H</option>
+                <option value="RX">SALA RX</option>
+              </select>
             </div>
           </div>
 
@@ -628,22 +655,22 @@ const Consultabitacora = () => {
                 />
               </div>
             </div>
-
-            <div className="mr-4" style={{ width: "75%" }}>
-            <label
-                htmlFor="egreso"
+            <div class="w-full mr-4">
+              <label
+                htmlFor="procedimientos_paciente"
                 className="block font-semibold text-white mb-1"
               >
-                Egresa a:
+                Entr. quirófano:
               </label>
               <input
-                type="text"
-                id="egreso"
-                name="egreso"
-                value={patientData.egreso || ""}
+                placeholder="Minutos"
+                type="time"
+                id="hora_entrada"
+                name="hora_entrada"
+                value={patientData.hora_entrada || ""}
                 onChange={handleChange}
-                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white`}
-              ></input>
+                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white cursor-default`}
+              />
             </div>
           </div>
 
@@ -682,25 +709,6 @@ const Consultabitacora = () => {
           </div>
 
           <div class="flex mb-4">
-          <div class="w-full mr-4">
-              <label
-                htmlFor="procedimientos_paciente"
-                className="block font-semibold text-white mb-1"
-              >
-                Entr. quirófano:
-              </label>
-              <input
-                placeholder="Minutos"
-                type="time"
-                id="hora_entrada"
-                name="hora_entrada"
-                value={patientData.hora_entrada || ""}
-                onChange={handleChange}
-                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white cursor-default`}
-              />
-            </div>
-
-
             <div className="mr-4 w-full">
               <label
                 htmlFor="tiempo_estimado"
@@ -807,7 +815,22 @@ const Consultabitacora = () => {
                 className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white cursor-default`}
               />
             </div>
-      
+                  <div className="mr-4" style={{ width: "75%" }}>
+            <label
+                htmlFor="egreso"
+                className="block font-semibold text-white mb-1"
+              >
+                Egresa a:
+              </label>
+              <input
+                type="text"
+                id="egreso"
+                name="egreso"
+                value={patientData.egreso || ""}
+                onChange={handleChange}
+                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white`}
+              ></input>
+            </div>
           </div>
           <div className="mr-4 w-full">
             <label

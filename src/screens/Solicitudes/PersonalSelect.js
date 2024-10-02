@@ -1,14 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AsyncCreatableSelect from "react-select/async-creatable";
 import { FixedSizeList } from "react-window";
 
 const PersonalSelect = ({ onChange, value, backgroundColor = '#FFFFFF' }) => {
-  const [inputValue, setInputValue] = useState(''); // Para manejar el texto en el input
-  const [selectedOption, setSelectedOption] = useState(value);
+  const [inputValue, setInputValue] = useState('');
+  const [selectedOption, setSelectedOption] = useState(null);
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
 
+  useEffect(() => {
+    // Si hay un valor inicial, configurarlo como la opción seleccionada
+    if (value) {
+      setSelectedOption({ label: value, value: value });
+    }
+  }, [value]);
+
   const loadOptions = (inputValue, callback) => {
-    if (inputValue) { // Solo hacer la consulta si hay texto en el input
+    if (inputValue) {
       fetch(`${baseURL}/api/solicitudes/personal?q=${inputValue}`)
         .then((res) => res.json())
         .then((data) => {
@@ -19,12 +26,12 @@ const PersonalSelect = ({ onChange, value, backgroundColor = '#FFFFFF' }) => {
           callback(options);
         });
     } else {
-      callback([]); // Si el input está vacío, no devolver opciones
+      callback([]);
     }
   };
 
   const handleInputChange = (newValue) => {
-    setInputValue(newValue); // Actualiza el valor del input
+    setInputValue(newValue);
   };
 
   const handleChange = (option) => {
@@ -61,7 +68,7 @@ const PersonalSelect = ({ onChange, value, backgroundColor = '#FFFFFF' }) => {
       styles={{
         control: (provided, state) => ({
           ...provided,
-          backgroundColor: selectedOption ? backgroundColor : '#FFFFFF', // Cambia el fondo usando el prop
+          backgroundColor: selectedOption ? backgroundColor : '#FFFFFF',
           borderColor: state.isFocused ? '#4F638F' : provided.borderColor,
           boxShadow: state.isFocused ? '0 0 0 1px #4F638F' : provided.boxShadow,
           '&:hover': {

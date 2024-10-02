@@ -5,6 +5,7 @@ import AddAppointmentModal from "../../components/Modals/AddApointmentModal";
 import PizZip from "pizzip";
 import Docxtemplater from "docxtemplater";
 import { saveAs } from "file-saver";
+import { convertDocxToPdf } from 'docx-pdf';
 
 function AddAppointmentModalEvaluar({
   closeModal,

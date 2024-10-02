@@ -71,16 +71,30 @@ function Bitacoraenfermeria() {
 
   const fetchPendingAppointments = async () => {
     try {
-      const response = await fetch(`${baseURL}/api/solicitudes/programadas`);
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
+      // Obtener solicitudes programadas
+      const programadasResponse = await fetch(`${baseURL}/api/solicitudes/programadas`);
+      if (!programadasResponse.ok) {
+        throw new Error("Network response was not ok for programadas");
       }
-      const data = await response.json();
-      setPendingAppointments(data);
+      const programadasData = await programadasResponse.json();
+  
+      // Obtener solicitudes editables
+      const editablesResponse = await fetch(`${baseURL}/api/solicitudes/editables`);
+      if (!editablesResponse.ok) {
+        throw new Error("Network response was not ok for editables");
+      }
+      const editablesData = await editablesResponse.json();
+  
+      // Combinar ambas solicitudes en un solo array
+      const combinedAppointments = [...programadasData, ...editablesData];
+  
+      // Actualizar el estado con las citas combinadas
+      setPendingAppointments(combinedAppointments);
     } catch (error) {
-      console.error("Error fetching pending appointments:", error);
+      console.error("Error fetching appointments:", error);
     }
   };
+  
 
   const getEstadoColor = (estado) => {
     switch (estado.toLowerCase()) {
@@ -96,6 +110,8 @@ function Bitacoraenfermeria() {
         return "bg-red-400";
       case "Urgencia":
         return "bg-red-400";
+      case "Editable":
+        return "bg-red-400"
       default:
         return "";
     }
@@ -105,6 +121,8 @@ function Bitacoraenfermeria() {
     switch (estado.toLowerCase()) {
       case "programada":
         return { backgroundColor: "#68D391", color: "white" }; // Color de fondo verde y texto negro
+      case "editable":
+        return {backgroundColor: "#7166f8", color: "white"};
       default:
         return {};
     }
