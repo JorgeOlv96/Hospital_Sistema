@@ -6,6 +6,7 @@ import Modal from "../../components/Modals/Modal";
 import { MultiSelect } from "react-multi-select-component";
 import AsyncSelect from "react-select/async";
 import PersonalSelect from "../Solicitudes/PersonalSelect";
+import ProcedureSelect from "../Solicitudes/ProcedureSelect";
 
 const Consultabitacora = () => {
   const options = [
@@ -42,7 +43,16 @@ const Consultabitacora = () => {
   const [error, setError] = useState("");
   const [procedimientoExtra, setProcedimientoExtra] = useState("");
   const [selected, setSelected] = useState([]);
+  const [mostrarProcedureSelect, setMostrarProcedureSelect] = useState(false);
+  const [procedureSelected, setProcedureSelected] = useState(false);
+
+  const [mostrarInput, setMostrarInput] = useState(false);
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
+  const [errors, setErrors] = useState({
+    hora_incision: '',
+    hora_cierre: '',
+    hora_salida: ''
+  });
 
   useEffect(() => {
     const fetchAppointmentData = async () => {
@@ -102,12 +112,68 @@ const Consultabitacora = () => {
     }
   };
 
+  const validateTimes = (field, value) => {
+    const { hora_entrada, hora_incision, hora_cierre, hora_salida } = patientData;
+    let newErrors = { ...errors };
+
+    switch (field) {
+      case 'hora_incision':
+        if (value < hora_entrada) {
+          newErrors.hora_incision = 'La hora de incisión no puede ser menor a la hora de entrada';
+        } else {
+          newErrors.hora_incision = '';
+        }
+        break;
+      case 'hora_cierre':
+        if (value < hora_incision || value < hora_entrada) {
+          newErrors.hora_cierre = 'La hora de cierre no puede ser menor a la hora de incisión ni a la hora de entrada';
+        } else {
+          newErrors.hora_cierre = '';
+        }
+        break;
+      case 'hora_salida':
+        if (value < hora_cierre || value < hora_incision || value < hora_entrada) {
+          newErrors.hora_salida = 'La hora de salida no puede ser menor a la hora de cierre, incisión ni entrada';
+        } else {
+          newErrors.hora_salida = '';
+        }
+        break;
+      default:
+        break;
+    }
+
+    setErrors(newErrors);
+  };
+
+  useEffect(() => {
+    // Validar todos los campos cuando el componente se monta o los datos cambian
+    validateTimes('hora_incision', patientData.hora_incision);
+    validateTimes('hora_cierre', patientData.hora_cierre);
+    validateTimes('hora_salida', patientData.hora_salida);
+  }, [patientData.hora_entrada, patientData.hora_incision, patientData.hora_cierre, patientData.hora_salida]);
+
   const handleSalaChange = (newSala) => {
     setPatientData((prevData) => ({
       ...prevData,
       sala_quirofano: newSala || prevData.sala_quirofano // Si no se selecciona nueva sala, mantener la anterior
     }));
   };
+  
+  const handleProcedureSelectChange = (selectedProcedure) => {
+    // Si nuevos_procedimientos_extra no es un arreglo, inicialízalo como uno vacío
+    const nuevosProcedimientos = Array.isArray(patientData.nuevos_procedimientos_extra)
+      ? [...patientData.nuevos_procedimientos_extra, selectedProcedure]
+      : [selectedProcedure];
+  
+    setPatientData({
+      ...patientData,
+      nuevos_procedimientos_extra: nuevosProcedimientos, // Actualizamos el campo JSON en el estado
+    });
+  
+    // Ocultar el selector una vez que se selecciona un procedimiento
+    setMostrarProcedureSelect(false);
+  };
+  
   
 
   const handleSuspendReasonChange = (e) => {
@@ -225,6 +291,7 @@ const Consultabitacora = () => {
       ...prevData,
       [name]: value,
     }));
+    validateTimes(name, value);
   };
 
   const handleInputChange = (selectedOptions) => {
@@ -243,16 +310,36 @@ const Consultabitacora = () => {
     });
   };
 
+  const handleProcedimientoChange = (index, value) => {
+    const updatedProcedimientos = [...patientData.nuevos_procedimientos_extra];
+    updatedProcedimientos[index] = value;
+    setPatientData({
+      ...patientData,
+      nuevos_procedimientos_extra: updatedProcedimientos,
+    });
+  };
+
   const agregarProcedimiento = () => {
-    setPatientData((prevData) => ({
-      ...prevData,
-      nuevos_procedimientos_extra: Array.isArray(
-        prevData.nuevos_procedimientos_extra
-      )
-        ? [...prevData.nuevos_procedimientos_extra, procedimientoExtra]
-        : [procedimientoExtra],
-    }));
-    setProcedimientoExtra(""); // Limpiar el campo después de agregar
+    if (procedimientoExtra.trim() !== '') {
+      setPatientData((prevData) => ({
+        ...prevData,
+        nuevos_procedimientos_extra: [
+          ...(prevData.nuevos_procedimientos_extra || []),
+          procedimientoExtra,
+        ],
+      }));
+      setProcedimientoExtra('');
+    }
+  };
+
+  const eliminarProcedimiento = (index) => {
+    const updatedProcedimientos = patientData.nuevos_procedimientos_extra.filter(
+      (_, i) => i !== index
+    );
+    setPatientData({
+      ...patientData,
+      nuevos_procedimientos_extra: updatedProcedimientos,
+    });
   };
 
   return (
@@ -655,23 +742,19 @@ const Consultabitacora = () => {
                 />
               </div>
             </div>
-            <div class="w-full mr-4">
-              <label
-                htmlFor="procedimientos_paciente"
-                className="block font-semibold text-white mb-1"
-              >
-                Entr. quirófano:
-              </label>
-              <input
-                placeholder="Minutos"
-                type="time"
-                id="hora_entrada"
-                name="hora_entrada"
-                value={patientData.hora_entrada || ""}
-                onChange={handleChange}
-                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white cursor-default`}
-              />
-            </div>
+            <div className="mb-4">
+        <label htmlFor="hora_entrada" className="block font-semibold text-white mb-1">
+          Hora de entrada:
+        </label>
+        <input
+          type="time"
+          id="hora_entrada"
+          name="hora_entrada"
+          value={patientData.hora_entrada || ''}
+          onChange={handleChange}
+          className="rounded-lg px-3 py-2 w-full bg-white"
+        />
+      </div>
           </div>
 
           <div class="flex mb-4">
@@ -752,15 +835,15 @@ const Consultabitacora = () => {
                 Hora Incisión:
               </label>
               <input
-                placeholder="Minutos"
-                type="time"
-                id="hora_incision"
-                name="hora_incision"
-                value={patientData.hora_incision || ""}
-                onChange={handleChange}
-                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white`}
-              />
-            </div>
+          type="time"
+          id="hora_incision"
+          name="hora_incision"
+          value={patientData.hora_incision || ''}
+          onChange={handleChange}
+          className="rounded-lg px-3 py-2 w-full bg-white"
+        />
+        {errors.hora_incision && <p className="text-red-500 text-sm mt-1">{errors.hora_incision}</p>}
+      </div>
 
             <div className="w-full mr-4">
               <label
@@ -770,15 +853,15 @@ const Consultabitacora = () => {
                 Hora Cierre:
               </label>
               <input
-                placeholder="Minutos"
-                type="time"
-                id="hora_cierre"
-                name="hora_cierre"
-                value={patientData.hora_cierre || ""}
-                onChange={handleChange}
-                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white`}
-              />
-            </div>
+          type="time"
+          id="hora_cierre"
+          name="hora_cierre"
+          value={patientData.hora_cierre || ''}
+          onChange={handleChange}
+          className="rounded-lg px-3 py-2 w-full bg-white"
+        />
+        {errors.hora_cierre && <p className="text-red-500 text-sm mt-1">{errors.hora_cierre}</p>}
+      </div>
 
             <div className="mr-4 w-full">
               <label
@@ -806,15 +889,15 @@ const Consultabitacora = () => {
                 H. Salida:
               </label>
               <input
-                placeholder="Minutos"
-                type="time"
-                id="hora_salida"
-                name="hora_salida"
-                value={patientData.hora_salida || ""}
-                onChange={handleChange}
-                className={`"border-white"} rounded-lg px-3 py-2 w-full bg-white cursor-default`}
-              />
-            </div>
+          type="time"
+          id="hora_salida"
+          name="hora_salida"
+          value={patientData.hora_salida || ''}
+          onChange={handleChange}
+          className="rounded-lg px-3 py-2 w-full bg-white"
+        />
+        {errors.hora_salida && <p className="text-red-500 text-sm mt-1">{errors.hora_salida}</p>}
+      </div>
                   <div className="mr-4" style={{ width: "75%" }}>
             <label
                 htmlFor="egreso"
@@ -833,76 +916,40 @@ const Consultabitacora = () => {
             </div>
           </div>
           <div className="mr-4 w-full">
-            <label
-              htmlFor="procedimiento_paciente"
-              className="block font-semibold text-white mb-1"
-            >
-              Procedimiento inicial del paciente:
-            </label>
-            <input
-              id="procedimientos_paciente"
-              name="procedimientos_paciente"
-              value={patientData.procedimientos_paciente || "N/A"}
-              readOnly
-              className="border-[#A8D5B1] rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default mb-2 "
-            ></input>
-          </div>
-          <div>
-            {Array.isArray(patientData.nuevos_procedimientos_extra) &&
-              patientData.nuevos_procedimientos_extra.map(
-                (procedimiento, index) => (
-                  <div key={index} className="flex mb-4">
-                    <div className="mr-4 w-full">
-                      <label
-                        htmlFor={`procedimiento_${index}`}
-                        className="block font-semibold text-white mb-1"
-                      >
-                        Procedimiento del paciente:
-                      </label>
-                      <input
-                        id={`procedimiento_${index}`}
-                        name={`procedimiento_${index}`}
-                        value={procedimiento || ""}
-                        className="rounded-lg px-3 py-2 w-full bg-white"
-                      ></input>
-                    </div>
-                  </div>
-                )
-              )}
-            <div className="flex mb-4">
-              <div className="mr-4 w-full">
-                <label
-                  htmlFor="procedimiento_extra"
-                  className="block font-semibold text-white mb-1"
-                >
-                  Agregar procedimiento:
-                </label>
-                <input
-                  id="procedimiento_extra"
-                  name="procedimiento_extra"
-                  value={procedimientoExtra}
-                  onChange={(e) => setProcedimientoExtra(e.target.value)}
-                  className="rounded-lg px-3 py-2 w-full bg-white"
-                ></input>
-              </div>
-              <div className="mr-4" style={{ width: "12%" }}>
-                <label
-                  htmlFor="agregar_procedimiento"
-                  className="block font-semibold text-white mb-1"
-                >
-                  Agregar más
-                </label>
-                <button
-                  id="agregar_procedimiento"
-                  name="agregar_procedimiento"
-                  className="border-[#A8D5B1] rounded-lg px-3 py-2 w-full bg-[#A8D5B1] text-white cursor-pointer"
-                  onClick={agregarProcedimiento}
-                >
-                  +
-                </button>
-              </div>
-            </div>
-          </div>
+  <label
+    htmlFor="procedimiento_paciente"
+    className="block font-semibold text-white mb-1"
+  >
+    Procedimiento inicial del paciente:
+  </label>
+  <input
+    id="procedimientos_paciente"
+    name="procedimientos_paciente"
+    value={patientData.procedimientos_paciente || "N/A"}
+    readOnly
+    className="border-[#A8D5B1] rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default mb-2"
+  ></input>
+
+  {/* Botón para agregar nuevos procedimientos */}
+  <button
+    className="border-[#A8D5B1] rounded-lg px-3 py-2 bg-[#A8D5B1] text-white cursor-pointer mb-2"
+    onClick={() => setMostrarProcedureSelect(true)}
+  >
+    +
+  </button>
+</div>
+
+{/* Renderizar el componente ProcedureSelect cuando se hace clic en "+" */}
+{mostrarProcedureSelect && (
+  <div className="mb-4">
+    <ProcedureSelect
+      id="procedimientos_paciente_extra"
+      name="procedimientos_paciente_extra"
+      onChange={handleProcedureSelectChange} // Maneja la selección
+    />
+  </div>
+)}
+
 
           <div className="flex mb-4">
             <div className="mr-4" style={{ width: "50%" }}>
