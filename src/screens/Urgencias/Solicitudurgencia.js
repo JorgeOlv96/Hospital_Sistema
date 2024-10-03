@@ -646,8 +646,10 @@ const SolicitudUrgencia = () => {
                 <p className="text-red-500">{errors.turno_solicitado}</p>
               )}
             </div>
+          </div>
 
-            <div className="mr-4" style={{ width: "75%" }}>
+          <div className="flex mb-4">
+          <div className="mr-4" style={{ width: "75%" }}>
               <label
                 htmlFor="req_insumo"
                 className="block font-semibold text-white mb-1"
@@ -671,9 +673,6 @@ const SolicitudUrgencia = () => {
                 <p className="text-red-500">{errors.req_insumo}</p>
               )}
             </div>
-          </div>
-
-          <div className="flex mb-4">
             <div className="w-full mr-4">
               <label
                 htmlFor="fecha_programada"
@@ -690,6 +689,44 @@ const SolicitudUrgencia = () => {
                 className="border-[#C59494] rounded-lg px-3 py-2 w-full bg-white"
               />
             </div>
+
+            <div className="w-full mr-4">
+              <label
+                htmlFor="hora_asignada"
+                className="block font-semibold text-white mb-1"
+              >
+                Hr. Cirugía:
+              </label>
+              <input
+                type="time"
+                id="hora_asignada"
+                name="hora_asignada"
+                value={formData.hora_asignada}
+                onChange={handleInputChange}
+                className="border-[#C59494] rounded-lg px-3 py-2 w-full bg-white"
+              />
+            </div>
+
+            <div className="w-full mr-4" style={{ width: "75%" }}>
+              <label
+                htmlFor="hora_entrada"
+                className="block font-semibold text-white mb-1"
+              >
+                Hr. Entrada:
+              </label>
+              <input
+                placeholder="Minutos"
+                type="time"
+                id="hora_entrada"
+                name="hora_entrada"
+                value={formData.hora_entrada || ""}
+                onChange={handleInputChange}
+                className="border-[#C59494] rounded-lg px-3 py-2 w-full bg-white"
+              />
+            </div>
+          </div>
+
+          <div className="flex mb-4">
             <div className="mr-4 w-full">
               <label
                 htmlFor="nombre_anestesiologo"
@@ -745,41 +782,6 @@ const SolicitudUrgencia = () => {
               {errors.enf_circulante && (
                 <p className="text-red-500">{errors.enf_circulante}</p>
               )}
-            </div>
-
-            <div className="w-full mr-4">
-              <label
-                htmlFor="hora_asignada"
-                className="block font-semibold text-white mb-1"
-              >
-                Hr. Cirugía:
-              </label>
-              <input
-                type="time"
-                id="hora_asignada"
-                name="hora_asignada"
-                value={formData.hora_asignada}
-                onChange={handleInputChange}
-                className="border-[#C59494] rounded-lg px-3 py-2 w-full bg-white"
-              />
-            </div>
-
-            <div className="w-full mr-4" style={{ width: "75%" }}>
-              <label
-                htmlFor="hora_entrada"
-                className="block font-semibold text-white mb-1"
-              >
-                Hr. Entrada:
-              </label>
-              <input
-                placeholder="Minutos"
-                type="time"
-                id="hora_entrada"
-                name="hora_entrada"
-                value={formData.hora_entrada || ""}
-                onChange={handleInputChange}
-                className="border-[#C59494] rounded-lg px-3 py-2 w-full bg-white"
-              />
             </div>
           </div>
 
@@ -925,62 +927,6 @@ const SolicitudUrgencia = () => {
             {errors.procedimientos_paciente && (
               <p className="text-red-500">{errors.procedimientos_paciente}</p>
             )}
-          </div>
-          <div>
-            {Array.isArray(formData.nuevos_procedimientos_extra) &&
-              formData.nuevos_procedimientos_extra.map(
-                (procedimiento, index) => (
-                  <div key={index} className="flex mb-4">
-                    <div className="mr-4 w-full">
-                      <label
-                        htmlFor={`procedimiento_${index}`}
-                        className="block font-semibold text-white mb-1"
-                      >
-                        Procedimiento del paciente:
-                      </label>
-                      <input
-                        id={`procedimiento_${index}`}
-                        name={`procedimiento_${index}`}
-                        value={procedimiento || ""}
-                        className="rounded-lg px-3 py-2 w-full bg-white"
-                      ></input>
-                    </div>
-                  </div>
-                )
-              )}
-            <div className="flex mb-4">
-              <div className="mr-4 w-full">
-                <label
-                  htmlFor="procedimiento_extra"
-                  className="block font-semibold text-white mb-1"
-                >
-                  Agregar procedimiento:
-                </label>
-                <input
-                  id="procedimiento_extra"
-                  name="procedimiento_extra"
-                  value={procedimientoExtra}
-                  onChange={(e) => setProcedimientoExtra(e.target.value)}
-                  className="rounded-lg px-3 py-2 w-full bg-white"
-                ></input>
-              </div>
-              <div className="mr-4" style={{ width: "12%" }}>
-                <label
-                  htmlFor="agregar_procedimiento"
-                  className="block font-semibold text-white mb-1"
-                >
-                  Añadir +
-                </label>
-                <button
-                  id="agregar_procedimiento"
-                  name="agregar_procedimiento"
-                  className="border-[#D5A8A8] rounded-lg px-3 py-2 w-full bg-[#D5A8A8] text-white cursor-pointer"
-                  onClick={agregarProcedimiento}
-                >
-                  +
-                </button>
-              </div>
-            </div>
           </div>
 
           <div className="flex mb-4">
