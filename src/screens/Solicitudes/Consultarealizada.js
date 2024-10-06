@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Layout from "../../Layout";
-import Modal from "../../components/Modals/Modal";
 import { MultiSelect } from "react-multi-select-component";
 
 const Consultarealizada = () => {
@@ -21,6 +20,9 @@ const Consultarealizada = () => {
   const [formData, setFormData] = useState({});
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [canEdit, setCanEdit] = useState(true);
+  const [timeLeft, setTimeLeft] = useState(null);
+  const [userName, setUserName] = useState("");
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
 
   useEffect(() => {
@@ -34,9 +36,19 @@ const Consultarealizada = () => {
         setPatientData(data);
         setFormData({
           ...data,
-          tipo_anestesia: data.tipo_anestesia ? data.tipo_anestesia.split(", ") : [], // Asegurarte de que sea un array
+          tipo_anestesia: data.tipo_anestesia ? data.tipo_anestesia.split(", ") : [],
         });
         setLoading(false);
+
+        if (data.timestamp_no_editable) {
+          const timestampNoEditable = new Date(data.timestamp_no_editable);
+          const ahora = new Date();
+          const diferenciaHoras = (timestampNoEditable.getTime() + 16 * 60 * 60 * 1000 - ahora.getTime()) / (1000 * 60 * 60);
+          setCanEdit(diferenciaHoras > 0);
+          if (diferenciaHoras > 0) {
+            setTimeLeft(Math.floor(diferenciaHoras * 60)); // Convertir a minutos
+          }
+        }
       } catch (error) {
         console.error("Error fetching appointment data:", error);
         setLoading(false);
@@ -44,7 +56,47 @@ const Consultarealizada = () => {
     };
 
     fetchAppointmentData();
-  }, [id]);
+  }, [id, baseURL]);
+
+  useEffect(() => {
+    let timer;
+    if (timeLeft && timeLeft > 0) {
+      timer = setInterval(() => {
+        setTimeLeft(prevTime => {
+          if (prevTime <= 1) {
+            clearInterval(timer);
+            setCanEdit(false);
+            return 0;
+          }
+          return prevTime - 1;
+        });
+      }, 60000); // Actualizar cada minuto
+    }
+    return () => clearInterval(timer);
+  }, [timeLeft]);
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (token) {
+          const response = await axios.get(
+            `${baseURL}/api/auth/user`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          const { nombre, ap_paterno, ap_materno } = response.data;
+          setUserName(`${nombre} ${ap_paterno} ${ap_materno}`);
+        }
+      } catch (error) {
+        console.error("Error fetching user info:", error);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
 
   const handleGoBack = () => {
     navigate(-1);
@@ -68,16 +120,15 @@ const Consultarealizada = () => {
     try {
       console.log("Datos a enviar:", formData);
 
-      // Verificar que tipo_anestesia sea un array
       if (!Array.isArray(formData.tipo_anestesia)) {
         console.error("tipo_anestesia no es un array:", formData.tipo_anestesia);
         return;
       }
 
-      // Unir el array en un string separado por comas para guardar en la base de datos
       const updatedData = {
         ...formData,
-        tipo_anestesia: formData.tipo_anestesia.join(", "), // Convertir a string para guardar
+        tipo_anestesia: formData.tipo_anestesia.join(", "),
+        ultimo_editor: userName,
       };
 
       const response = await fetch(`${baseURL}/api/solicitudes/editarrealizadas/${id}`, {
@@ -92,8 +143,18 @@ const Consultarealizada = () => {
         throw new Error("Network response was not ok");
       }
 
+      const result = await response.json();
       setPatientData(updatedData);
-      window.location.reload();
+      if (result.timestamp_no_editable) {
+        const timestampNoEditable = new Date(result.timestamp_no_editable);
+        const ahora = new Date();
+        const diferenciaHoras = (timestampNoEditable.getTime() + 16 * 60 * 60 * 1000 - ahora.getTime()) / (1000 * 60 * 60);
+        setCanEdit(diferenciaHoras > 0);
+        if (diferenciaHoras > 0) {
+          setTimeLeft(Math.floor(diferenciaHoras * 60)); // Convertir a minutos
+        }
+      }
+      setIsEditing(false);
     } catch (error) {
       console.error("Error saving changes:", error);
     }
@@ -113,43 +174,49 @@ const Consultarealizada = () => {
         data-aos-delay="100"
         data-aos-offset="200"
       >
-      <div className="flex flex-col gap-2 mb-4">
-        <h1 className="text-xl font-semibold">Consulta de solicitud realizada</h1>
-        <div className="flex my-4 justify-between">
-  <button
-    onClick={handleGoBack}
-    className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
-  >
-    <span style={{ display: "inline-flex", alignItems: "center" }}>
-      <span>&lt;</span>
-      <span style={{ marginLeft: "5px" }}>Regresar</span>
-    </span>
-  </button>
-  
-  {!isEditing ? (
-    <button
-      onClick={handleEdit}
-      className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
-    >
-      Editar
-    </button>
-  ) : (
-    <>
-      <button
-        onClick={handleSaveEdit}
-        className="bg-green-800 hover:bg-green-700 text-white py-2 px-4 rounded inline-flex items-center"
-      >
-        Guardar
-      </button>
-      <button
-        onClick={handleCancelEdit}
-        className="bg-red-600 hover:bg-red-500 text-white py-2 px-4 rounded inline-flex items-center"
-      >
-        Cancelar
-      </button>
-    </>
-  )}
-</div>
+        <div className="flex flex-col gap-2 mb-4">
+          <h1 className="text-xl font-semibold">Consulta de solicitud realizada</h1>
+          <div className="flex my-4 justify-between">
+            <button
+              onClick={handleGoBack}
+              className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
+            >
+              <span style={{ display: "inline-flex", alignItems: "center" }}>
+                <span>&lt;</span>
+                <span style={{ marginLeft: "5px" }}>Regresar</span>
+              </span>
+            </button>
+            
+            {!isEditing && canEdit && (
+              <button
+                onClick={handleEdit}
+                className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded inline-flex items-center"
+              >
+                Editar
+              </button>
+            )}
+            {isEditing && (
+              <>
+                <button
+                  onClick={handleSaveEdit}
+                  className="bg-green-800 hover:bg-green-700 text-white py-2 px-4 rounded inline-flex items-center"
+                >
+                  Guardar
+                </button>
+                <button
+                  onClick={handleCancelEdit}
+                  className="bg-red-600 hover:bg-red-500 text-white py-2 px-4 rounded inline-flex items-center"
+                >
+                  Cancelar
+                </button>
+              </>
+            )}
+          </div>
+          {timeLeft && timeLeft > 0 && (
+            <div className="text-sm text-gray-600">
+              Tiempo restante para editar: {Math.floor(timeLeft / 60)} horas y {timeLeft % 60} minutos
+            </div>
+          )}
 
 
         <div class="flex flex-col p-4 bg-[#0dafbf] rounded-lg ">
