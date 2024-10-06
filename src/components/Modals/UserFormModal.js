@@ -96,6 +96,7 @@ const UserFormModal = ({ isOpen, closeModal, nombre, setNombre, apPaterno, setAp
                 <option value="4">(4) Médico</option>
                 <option value="5">(5) Analista de producción</option>
                 <option value="6">(6) Admin</option>
+                <option value="7">(7) Admin Enfermería</option>
               </select>
             </div>
           </div>

@@ -516,6 +516,7 @@ function Gestionusuarios() {
                         <option value="4">(4) Médico</option>
                         <option value="5">(5) Analista de producción</option>
                         <option value="6">(6) Admin</option>
+                        <option value="6">(7) Admin Enfermería</option>
                       </select>
                     </div>
                     <div>

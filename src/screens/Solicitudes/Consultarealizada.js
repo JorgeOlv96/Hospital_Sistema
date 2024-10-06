@@ -23,6 +23,7 @@ const Consultarealizada = () => {
   const [canEdit, setCanEdit] = useState(true);
   const [timeLeft, setTimeLeft] = useState(null);
   const [userName, setUserName] = useState("");
+  const [userRole, setUserRole] = useState(null); // Para almacenar el rol del usuario
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
 
   useEffect(() => {
@@ -40,13 +41,14 @@ const Consultarealizada = () => {
         });
         setLoading(false);
 
-        if (data.timestamp_no_editable) {
+        if (data.timestamp_no_editable && userRole === 2) {
+          // Solo aplica la lógica de deshabilitación si el rol es 2
           const timestampNoEditable = new Date(data.timestamp_no_editable);
           const ahora = new Date();
-          const diferenciaHoras = (timestampNoEditable.getTime() + 16 * 60 * 60 * 1000 - ahora.getTime()) / (1000 * 60 * 60);
-          setCanEdit(diferenciaHoras > 0);
-          if (diferenciaHoras > 0) {
-            setTimeLeft(Math.floor(diferenciaHoras * 60)); // Convertir a minutos
+          const diferenciaMinutos = (timestampNoEditable.getTime() + 17 * 60 * 60 * 1000 - ahora.getTime()) / (1000 * 60);
+          setCanEdit(diferenciaMinutos > 0);
+          if (diferenciaMinutos > 0) {
+            setTimeLeft(Math.floor(diferenciaMinutos));
           }
         }
       } catch (error) {
@@ -56,11 +58,12 @@ const Consultarealizada = () => {
     };
 
     fetchAppointmentData();
-  }, [id, baseURL]);
+  }, [id, baseURL, userRole]);
 
   useEffect(() => {
     let timer;
-    if (timeLeft && timeLeft > 0) {
+    if (timeLeft && timeLeft > 0 && userRole === 2) {
+      // Solo ejecuta el temporizador si el rol es 2
       timer = setInterval(() => {
         setTimeLeft(prevTime => {
           if (prevTime <= 1) {
@@ -73,7 +76,8 @@ const Consultarealizada = () => {
       }, 60000); // Actualizar cada minuto
     }
     return () => clearInterval(timer);
-  }, [timeLeft]);
+  }, [timeLeft, userRole]);
+
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
@@ -87,8 +91,11 @@ const Consultarealizada = () => {
               },
             }
           );
-          const { nombre, ap_paterno, ap_materno } = response.data;
-          setUserName(`${nombre} ${ap_paterno} ${ap_materno}`);
+          const { nombre, ap_paterno, ap_materno, rol_user } = response.data;
+          const fullName = `${nombre} ${ap_paterno} ${ap_materno}`;
+          setUserName(fullName);
+          setUserRole(rol_user); // Guardamos el rol del usuario
+          console.log("Datos del usuario:", { nombre, ap_paterno, ap_materno, rol_user, fullName });
         }
       } catch (error) {
         console.error("Error fetching user info:", error);
@@ -96,7 +103,7 @@ const Consultarealizada = () => {
     };
 
     fetchUserInfo();
-  }, []);
+  }, [baseURL]);
 
   const handleGoBack = () => {
     navigate(-1);
@@ -145,10 +152,10 @@ const Consultarealizada = () => {
 
       const result = await response.json();
       setPatientData(updatedData);
-      if (result.timestamp_no_editable) {
+      if (result.timestamp_no_editable && userRole === 2) {
         const timestampNoEditable = new Date(result.timestamp_no_editable);
         const ahora = new Date();
-        const diferenciaHoras = (timestampNoEditable.getTime() + 16 * 60 * 60 * 1000 - ahora.getTime()) / (1000 * 60 * 60);
+        const diferenciaHoras = (timestampNoEditable.getTime() + 17 * 60 * 60 * 1000 - ahora.getTime()) / (1000 * 60 * 60);
         setCanEdit(diferenciaHoras > 0);
         if (diferenciaHoras > 0) {
           setTimeLeft(Math.floor(diferenciaHoras * 60)); // Convertir a minutos
@@ -212,12 +219,13 @@ const Consultarealizada = () => {
               </>
             )}
           </div>
-          {timeLeft && timeLeft > 0 && (
+          
+          {/* Temporizador solo visible para usuarios con rol_user 2 */}
+          {userRole === 2 && timeLeft && timeLeft > 0 && (
             <div className="text-sm text-gray-600">
               Tiempo restante para editar: {Math.floor(timeLeft / 60)} horas y {timeLeft % 60} minutos
             </div>
           )}
-
 
         <div class="flex flex-col p-4 bg-[#0dafbf] rounded-lg ">
           <div class="flex mb-4">
@@ -239,18 +247,19 @@ const Consultarealizada = () => {
             </div>
 
             <div className="w-full" style={{ width: "105%" }}>
-              <label
-                htmlFor="id_cirujano"
-                className="block font-semibold text-white mb-1"
-              >
-                Cirujano encargado:
-              </label>
-              <input
-                placeholder="Nombre del cirujano"
-                value={patientData.nombre_cirujano || "N/A"}
-                readOnly
-                className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
-              />
+              <label htmlFor="nombre_cirujano" className="block font-semibold text-white mb-1">Cirujano encargado:</label>
+                <div className="relative">
+                  <input
+                    placeholder="Cirujano encargado"
+                    type="text"
+                    id="nombre_cirujano"
+                    name="nombre_cirujano"
+                    value={formData.nombre_cirujano || ""}
+                    onChange={handleInputChange}
+                    readOnly={!isEditing}
+                    className={`${isEditing ? 'border-gray-300' : 'bg-[#a8e7ed] cursor-default'} rounded-lg px-3 py-2 w-full`}
+                  />
+                </div>
             </div>
           </div>
 
@@ -368,14 +377,41 @@ const Consultarealizada = () => {
               >
                 Sala:
               </label>
-              <input
+              {isEditing ? (
+              <select
                 type="text"
                 id="sala_quirofano"
                 name="sala_quirofano"
-                value={patientData.sala_quirofano || "N/A"}
-                readOnly
-                className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
-              ></input>
+                value={formData.sala_quirofano}
+                onChange={handleInputChange}
+                disabled={!isEditing} // Deshabilitar si no está en modo de edición
+                className={`border-[#DBB7B7] rounded-lg px-3 py-2 w-full ${isEditing ? "" : "bg-[#DBB7B7] cursor-not-allowed"}`} // Cambiar el estilo cuando no se puede editar
+              >
+                <option value=""> Seleccionar </option>
+                <option value="A1">SALA A1</option>
+                <option value="A2">SALA A2</option>
+                <option value="T1">SALA T1</option>
+                <option value="T2">SALA T2</option>
+                <option value="1">SALA 1</option>
+                <option value="2">SALA 2</option>
+                <option value="3">SALA 3</option>
+                <option value="4">SALA 4</option>
+                <option value="5">SALA 5</option>
+                <option value="6">SALA 6</option>
+                <option value="E">SALA E</option>
+                <option value="H">SALA H</option>
+                <option value="RX">SALA RX</option>
+              </select>
+                ) : (
+                // Mostrar el input en modo de solo lectura
+                <input
+                  id="sala_quirofano"
+                  name="sala_quirofano"
+                  value={patientData.sala_quirofano || "N/A"}
+                  readOnly
+                  className={`border-[#a8e7ed] rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
+                />
+              )}
             </div>
           </div>
 
@@ -531,37 +567,37 @@ const Consultarealizada = () => {
               />
             </div>
 
-            <div className="mr-4 w-full">
-              <label
-                htmlFor="tiempo_estimado"
-                className="block font-semibold text-white mb-1"
-              >
-                Anestesiólogo:
-              </label>
-              <input
-                id="procedimientos_paciente"
-                name="procedimientos_paciente"
-                value={patientData.nombre_anestesiologo || "N/A"}
-                readOnly
-                className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
-              ></input>
+            <div className="w-full mr-4">
+              <label htmlFor="nombre_anestesiologo" className="block font-semibold text-white mb-1">Anestesiólogo:</label>
+                <div className="relative">
+                  <input
+                    placeholder="Anestesiologo"
+                    type="text"
+                    id="nombre_anestesiologo"
+                    name="nombre_anestesiologo"
+                    value={formData.nombre_anestesiologo || ""}
+                    onChange={handleInputChange}
+                    readOnly={!isEditing}
+                    className={`${isEditing ? 'border-gray-300' : 'bg-[#a8e7ed] cursor-default'} rounded-lg px-3 py-2 w-full`}
+                  />
+                </div>
             </div>
 
             <div className="w-full mr-4">
-        <label htmlFor="enf_quirurgica" className="block font-semibold text-white mb-1">Enf. Quirúrgica:</label>
-        <div className="relative">
-          <input
-            placeholder="Enf. Quirúrgica"
-            type="text"
-            id="enf_quirurgica"
-            name="enf_quirurgica"
-            value={formData.enf_quirurgica || ""}
-            onChange={handleInputChange}
-            readOnly={!isEditing}
-            className={`${isEditing ? 'border-gray-300' : 'bg-[#a8e7ed] cursor-default'} rounded-lg px-3 py-2 w-full`}
-          />
-        </div>
-      </div>
+              <label htmlFor="enf_quirurgica" className="block font-semibold text-white mb-1">Enf. Quirúrgica:</label>
+                <div className="relative">
+                  <input
+                    placeholder="Enf. Quirúrgica"
+                    type="text"
+                    id="enf_quirurgica"
+                    name="enf_quirurgica"
+                    value={formData.enf_quirurgica || ""}
+                    onChange={handleInputChange}
+                    readOnly={!isEditing}
+                    className={`${isEditing ? 'border-gray-300' : 'bg-[#a8e7ed] cursor-default'} rounded-lg px-3 py-2 w-full`}
+                  />
+                </div>
+            </div>
 
       <div className="w-full mr-4">
         <label htmlFor="enf_circulante" className="block font-semibold text-white mb-1">Enf. Circulante:</label>
@@ -844,27 +880,43 @@ const Consultarealizada = () => {
                 className={`${isEditing ? 'border-gray-300' : 'bg-[#a8e7ed] cursor-default'} rounded-lg px-3 py-2 w-full`}
               ></textarea>
             </div>
-            <div class="w-1/4 mr-4">
-              <label
-                htmlFor="egreso"
-                className="block font-semibold text-white mb-1"
-              >
-                Teléfono de contacto
-              </label>
-              <input
-                type="text"
-                id="tel_contacto"
-                name="tel_contacto"
-                value={patientData.tel_contacto || ""}
-                readOnly
-                className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
-              ></input>
+            <div className="flex flex-col">
+              <div class="w-full mb-4">
+                <label
+                  htmlFor="tel_contacto"
+                  className="block font-semibold text-white mb-1"
+                >
+                  Teléfono de contacto
+                </label>
+                <input
+                  type="text"
+                  id="tel_contacto"
+                  name="tel_contacto"
+                  value={patientData.tel_contacto || ""}
+                  readOnly
+                  className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
+                ></input>
+              </div>
+              <div class="w-full">
+                <label
+                  htmlFor="ultimo_editor"
+                  className="block font-semibold text-white mb-1"
+                >
+                  Último editor:
+                </label>
+                <input
+                  type="text"
+                  id="ultimo_editor"
+                  name="ultimo_editor"
+                  value={patientData.ultimo_editor || ""}
+                  readOnly
+                  className={`"border-[#a8e7ed]"} rounded-lg px-3 py-2 w-full bg-[#a8e7ed] cursor-default`}
+                ></input>
+              </div>
             </div>
           </div>
         </div>
       </div>
-
-    
       </div>
     </Layout>
   );

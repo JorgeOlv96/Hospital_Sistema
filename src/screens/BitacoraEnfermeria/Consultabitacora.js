@@ -45,6 +45,7 @@ const Consultabitacora = () => {
   const [selected, setSelected] = useState([]);
   const [mostrarProcedureSelect, setMostrarProcedureSelect] = useState(false);
   const [procedureSelected, setProcedureSelected] = useState(false);
+  const [userName, setUserName] = useState("");
 
   const [mostrarInput, setMostrarInput] = useState(false);
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
@@ -93,6 +94,33 @@ const Consultabitacora = () => {
       console.error("Error fetching suspend detail options:", error);
     }
   };
+
+  const fetchUserInfo = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (token) {
+        const response = await axios.get(
+          `${baseURL}/api/auth/user`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        const { nombre, ap_paterno, ap_materno } = response.data;
+        const fullName = `${nombre} ${ap_paterno} ${ap_materno}`;
+        setUserName(fullName);
+        console.log("Datos del usuario:", { nombre, ap_paterno, ap_materno, fullName });
+        return fullName;
+      }
+    } catch (error) {
+      console.error("Error fetching user info:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserInfo();
+  }, []);
 
   const fetchActiveNurses = async (inputValue) => {
     try {
@@ -242,6 +270,7 @@ const Consultabitacora = () => {
 
   const handleSave = async () => {
     try {
+      const userFullName = await fetchUserInfo();
       const {
         nuevos_procedimientos_extra,
         nombre_cirujano,
@@ -254,9 +283,6 @@ const Consultabitacora = () => {
         egreso,
         enf_quirurgica,
         enf_circulante,
-        hi_anestesia,
-        tipo_anestesia,
-        ht_anestesia,
         comentarios,
       } = patientData;
       const response = await fetch(`${baseURL}/api/solicitudes/bitacoraenf/${id}`,
@@ -276,10 +302,8 @@ const Consultabitacora = () => {
             egreso,
             enf_quirurgica,
             enf_circulante,
-            hi_anestesia,
-            tipo_anestesia,
-            ht_anestesia,
-            comentarios
+            comentarios,
+            ultimo_editor: userFullName  // Cambiado de usuario_modificacion a ultimo_editor
           }),
           headers: {
             "Content-Type": "application/json",
@@ -294,7 +318,6 @@ const Consultabitacora = () => {
       console.error("Error saving changes:", error);
     }
   };
-
   const handleSelectChange = (selectedOption) => {
     setPatientData((prevFormData) => ({
       ...prevFormData,
