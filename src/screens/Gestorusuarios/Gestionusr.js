@@ -75,6 +75,7 @@ function Gestionusuarios() {
     4: "Médico",
     5: "Analista de producción",
     6: "Admin",
+    7: "Admin Enfermería"
   };
 
   const handleFilterChange = (searchTerm) => {
@@ -516,7 +517,7 @@ function Gestionusuarios() {
                         <option value="4">(4) Médico</option>
                         <option value="5">(5) Analista de producción</option>
                         <option value="6">(6) Admin</option>
-                        <option value="6">(7) Admin Enfermería</option>
+                        <option value="7">(7) Admin Enfermería</option>
                       </select>
                     </div>
                     <div>
