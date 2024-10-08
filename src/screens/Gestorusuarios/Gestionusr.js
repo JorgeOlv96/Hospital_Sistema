@@ -51,6 +51,7 @@ function Gestionusuarios() {
     cedula: "",
     especialidad: "",
     pantallasDisponibles: [], // Agregar este campo
+    turno: "",
   });
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
 
@@ -345,6 +346,7 @@ function Gestionusuarios() {
                   <th className="px-4 py-2">Email</th>
                   <th className="px-4 py-2">Rol de usuario</th>
                   <th className="px-4 py-2">Especialidad</th>
+                  <th className="px-4 py-2">Turno</th>
                   <th className="px-4 py-2">Acciones</th>
                 </tr>
               </thead>
@@ -364,6 +366,9 @@ function Gestionusuarios() {
                       </td>
                       <td className="border px-4 py-2">
                         {user.especialidad || ""}
+                      </td>
+                      <td className="border px-4 py-2">
+                        {user.turno || ""}
                       </td>
                       <td className="border px-6 py-2 flex justify-center items-center">
                         <button
@@ -596,6 +601,28 @@ function Gestionusuarios() {
                           Trauma y Ortopedia
                         </option>
                         <option value="Urología">Urología</option>
+                      </select>
+                    </div>
+                    <div className="mb-4 w-full">
+                      <label
+                        htmlFor="turno"
+                        className="block text-sm font-medium text-gray-700"
+                      >
+                        Turno
+                      </label>
+                      <select
+                        id="turno"
+                        name="turno"
+                        value={userToEdit.turno}
+                        onChange={handleInputChange}
+                        className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md"
+                      >
+                        <option value="">Asignar turno de enfermería</option>
+                        <option value="Matutino">Matutino</option>
+                        <option value="Vespertino">Vespertino</option>
+                        <option value="Nocturno">Nocturno</option>
+                        <option value="Especial Diurno">Especial Diurno</option>
+                        <option value="Especial Nocturno">Especial Nocturno</option>
                       </select>
                     </div>
                   </div>

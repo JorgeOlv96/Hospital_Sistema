@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Layout from "../../Layout";
 import { MultiSelect } from "react-multi-select-component";
+import { AuthContext } from "../../AuthContext";
 
 const Consultarealizada = () => {
   const options = [
@@ -15,6 +16,7 @@ const Consultarealizada = () => {
   ];
 
   const { id } = useParams();
+  const { user } = useContext(AuthContext);
   const [patientData, setPatientData] = useState({});
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({});
@@ -91,11 +93,11 @@ const Consultarealizada = () => {
               },
             }
           );
-          const { nombre, ap_paterno, ap_materno, rol_user } = response.data;
+          const { nombre, ap_paterno, ap_materno, rol_user, turno } = response.data;
           const fullName = `${nombre} ${ap_paterno} ${ap_materno}`;
           setUserName(fullName);
           setUserRole(rol_user); // Guardamos el rol del usuario
-          console.log("Datos del usuario:", { nombre, ap_paterno, ap_materno, rol_user, fullName });
+          console.log("Datos del usuario:", { nombre, ap_paterno, ap_materno, rol_user, turno, fullName });
         }
       } catch (error) {
         console.error("Error fetching user info:", error);
