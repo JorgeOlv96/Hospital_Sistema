@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useContext } from "react";
 import Layout from "../../Layout";
 import axios from "axios";
 import Consultabitacora from "../../screens/BitacoraEnfermeria/Consultabitacora";
 import { useNavigate, Link } from "react-router-dom";
+import { AuthContext } from "../../AuthContext";
 
 function Bitacoraenfermeria() {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ function Bitacoraenfermeria() {
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [open, setOpen] = useState(false);
   const [sortBy, setSortBy] = useState(null);
+  const { user } = useContext(AuthContext);
   const [sortOrder, setSortOrder] = useState("asc");
   const [page, setPage] = useState(1);
   const [inputPage, setInputPage] = useState(page);
@@ -263,6 +265,13 @@ function Bitacoraenfermeria() {
                 >
                   <span>Suspendidas</span>
                 </Link>
+              <Link
+                to="/bitacora/appointmentsenf"
+                className="bg-[#365b77] hover:bg-[#365b77] text-white py-2 px-4 rounded-lg inline-flex items-center"
+              >
+                <span>Ver agenda</span>
+              </Link>
+
           </div>
 
            {/* Contenedor de filtros centrado */}

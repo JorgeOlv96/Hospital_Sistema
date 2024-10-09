@@ -58,6 +58,7 @@ import SolicitudesInsumos from './screens/Insumos/solicitudesInsumos';
 import GestorManager from './screens/Productividad/Gestorproductividad';
 import TodasSolicitudes from './screens/Agenda/Todas';
 import SolicitudessuspendidasB from './screens/BitacoraEnfermeria/Suspendida';
+import AppointmentsEnf from './screens/BitacoraEnfermeria/AgendaEnf';
 
 function App() {
   Aos.init();
@@ -117,6 +118,7 @@ function App() {
             <Route path="/urgencias" element={<Urgencias />} />
             <Route path="/bitacora" element={<Bitacora />} />
             <Route path="/bitacora/Bitaenfermeria" element={<Bitacoraenfermeria />} />
+            <Route path="/bitacora/appointmentsenf" element={<AppointmentsEnf />} />
             <Route path="/bitacora/Solicitudsuspendida" element={<SolicitudessuspendidasB />} />
             <Route path="/bitacora/Consultabitacora/:id" element={<Consultabitacora />} />
             <Route path="/bitacora/Consultabitacoraanestesio/:id" element={<ConsultabitacoraAnestesio />} />
