@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Layout from "../../Layout";
@@ -7,6 +7,7 @@ import { MultiSelect } from "react-multi-select-component";
 import AsyncSelect from "react-select/async";
 import PersonalSelect from "../Solicitudes/PersonalSelect";
 import ProcedureSelect from "../Solicitudes/ProcedureSelect";
+import { AuthContext } from "../../AuthContext";
 
 const Consultabitacora = () => {
   const options = [
@@ -19,6 +20,7 @@ const Consultabitacora = () => {
   ];
 
   const { id } = useParams();
+  const { user } = useContext(AuthContext);
   const [patientData, setPatientData] = useState({
     nombre_cirujano:"",
     nombre_anestesiologo:"",
@@ -34,6 +36,9 @@ const Consultabitacora = () => {
     nuevos_procedimientos_extra: [],
     comentarios: "",
   });
+  const [canEdit, setCanEdit] = useState(true);
+  const [userShift, setUserShift] = useState(null);
+  const [userRole, setUserRole] = useState(null);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [suspendModalOpen, setSuspendModalOpen] = useState(false);
@@ -95,7 +100,21 @@ const Consultabitacora = () => {
     }
   };
 
-  const fetchUserInfo = async () => {
+  const checkIfWithinShift = useCallback((shift) => {
+    const currentHour = new Date().getHours();
+    switch (shift) {
+      case 'matutino':
+        return currentHour >= 7 && currentHour < 14;
+      case 'vespertino':
+        return currentHour >= 14 && currentHour < 21;
+      case 'nocturno':
+        return currentHour >= 21 || currentHour < 7;
+      default:
+        return true; // If no shift is assigned, allow editing
+    }
+  }, []);
+
+  const fetchUserInfo = useCallback(async () => {
     try {
       const token = localStorage.getItem("token");
       if (token) {
@@ -107,20 +126,39 @@ const Consultabitacora = () => {
             },
           }
         );
-        const { nombre, ap_paterno, ap_materno } = response.data;
+        const { nombre, ap_paterno, ap_materno, rol_user, turno } = response.data;
         const fullName = `${nombre} ${ap_paterno} ${ap_materno}`;
         setUserName(fullName);
-        console.log("Datos del usuario:", { nombre, ap_paterno, ap_materno, fullName });
+        setUserShift(turno);
+        setUserRole(rol_user);
+
         return fullName;
       }
     } catch (error) {
       console.error("Error fetching user info:", error);
     }
-  };
+  }, [baseURL]);
 
   useEffect(() => {
-    fetchUserInfo();
-  }, []);
+    const checkEditPermissions = async () => {
+      await fetchUserInfo();
+
+      if (userRole === 2) {
+        const currentDate = new Date();
+        const scheduledDate = new Date(patientData.fecha_programada);
+        const dayAfterScheduled = new Date(scheduledDate);
+        dayAfterScheduled.setDate(dayAfterScheduled.getDate() + 1);
+
+        const canEditBasedOnDate = currentDate >= scheduledDate && currentDate <= dayAfterScheduled;
+        
+        const canEditBasedOnShift = checkIfWithinShift(userShift);
+
+        setCanEdit(canEditBasedOnDate && canEditBasedOnShift);
+      }
+    };
+
+    checkEditPermissions();
+  }, [patientData.fecha_programada, userRole, userShift, checkIfWithinShift, fetchUserInfo]);
 
   const fetchActiveNurses = async (inputValue) => {
     try {
@@ -268,7 +306,9 @@ const Consultabitacora = () => {
     }
   };
 
+
   const handleSave = async () => {
+    if (!canEdit) return;
     try {
       const userFullName = await fetchUserInfo();
       const {
@@ -303,7 +343,7 @@ const Consultabitacora = () => {
             enf_quirurgica,
             enf_circulante,
             comentarios,
-            ultimo_editor: userFullName  // Cambiado de usuario_modificacion a ultimo_editor
+            ultimo_editor: userFullName
           }),
           headers: {
             "Content-Type": "application/json",
@@ -318,6 +358,7 @@ const Consultabitacora = () => {
       console.error("Error saving changes:", error);
     }
   };
+
   const handleSelectChange = (selectedOption) => {
     setPatientData((prevFormData) => ({
       ...prevFormData,
@@ -404,7 +445,8 @@ const Consultabitacora = () => {
 
           <button
             onClick={handleSuspend}
-            className="bg-red-500 hover:bg-red-700 text-white py-2 px-4 rounded inline-flex items-center"
+            className={`bg-red-500 hover:bg-red-700 text-white py-2 px-4 rounded inline-flex items-center ${!canEdit ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={!canEdit}
           >
             Suspender cirugía
           </button>
@@ -1049,13 +1091,19 @@ const Consultabitacora = () => {
         </div>
 
         <div className="flex justify-center mt-4">
-          <button
+        <button
             onClick={handleSave}
-            className="bg-[#365b77] text-white px-4 py-2 rounded"
+            className={`bg-[#365b77] text-white px-4 py-2 rounded ${!canEdit ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={!canEdit}
           >
             Guardar
           </button>
         </div>
+        {!canEdit && (
+          <p className="text-red-500 mt-4">
+            No puedes editar esta bitácora debido a restricciones de fecha o turno.
+          </p>
+        )}
       </div>
 
       {suspendModalOpen && (
