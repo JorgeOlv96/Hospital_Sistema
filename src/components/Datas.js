@@ -51,67 +51,67 @@ export const MenuDatas = [
     title: 'Dashboard',
     path: '/dashboard',
     icon: HiOutlineHome,
-    viewRole: [1, 2, 3, 4, 5, 6]
+    viewRole: [1, 2, 3, 4, 5, 6, 7]
   },
   {
     title: 'Solicitudes',
     path: '/solicitudes',
     icon: FaWpforms,
-    viewRole: [1, 2, 3, 4, 5, 6]
+    viewRole: [1, 2, 3, 4, 5, 6, 7]
   },
   {
     title: 'Evaluación',
     path: '/evaluacion',
     icon: LuFileSpreadsheet,
-    viewRole: [1, 2, 3, 4, 5, 6]
+    viewRole: [1, 2, 3, 4, 5, 6, 7]
   },
   {
     title: 'Agenda',
     path: '/agenda/appointments',
     icon: FaRegCalendarAlt,
-    viewRole: [1, 2, 3, 4, 5, 6]
+    viewRole: [1, 2, 3, 4, 5, 6, 7]
   },
   {
     title: 'Anestesiólogos',
     path: '/anestesiólogos',
     icon: PiSyringe,
-    viewRole:[1, 2, 3, 4, 5, 6]
+    viewRole:[1, 2, 3, 4, 5, 6, 7]
   },
   {
     title: 'Bitácora enfermería',
     path: '/bitacora/Bitaenfermeria',
     icon: LiaUserNurseSolid,
-    viewRole: [1, 2, 3, 4, 5, 6]
+    viewRole: [1, 2, 3, 4, 5, 6, 7]
   },
   {
     title: 'Bitácora anestesiología',
     path: '/Bitacoraanestesio',
     icon: RiNurseFill ,
-    viewRole: [1, 2, 3, 4, 5, 6]
+    viewRole: [1, 2, 3, 4, 5, 6, 7]
   },
   {
     title: 'Gestor de usuarios',
     path: '/Gestionusr',
     icon: GrUserSettings , // Puedes cambiar este icono por uno más representativo si lo deseas
-    viewRole: [1, 2, 3, 4, 5, 6] // Solo accesible para el nivel 5
+    viewRole: [1, 2, 3, 4, 5, 6, 7] // Solo accesible para el nivel 5
   },
   {
     title: 'Gestor de salas',
     path: '/SalaManager',
     icon: IoIosPulse  , // Puedes cambiar este icono por uno más representativo si lo deseas
-    viewRole: [1, 2, 3, 4, 5, 6] // Solo accesible para el nivel 5
+    viewRole: [1, 2, 3, 4, 5, 6, 7] // Solo accesible para el nivel 5
   },
   {
     title: 'Solicitudes insumos',
     path: '/solicitudesInsumos',
     icon: AiOutlineMedicineBox , // Puedes cambiar este icono por uno más representativo si lo deseas
-    viewRole: [1, 2, 3, 4, 5, 6] // Solo accesible para el nivel 5
+    viewRole: [1, 2, 3, 4, 5, 6, 7] // Solo accesible para el nivel 5
   },
   {
     title: 'Gestor de productividad',
     path: '/Gestorproductividad',
     icon: BiBarChartAlt , // Puedes cambiar este icono por uno más representativo si lo deseas
-    viewRole: [1, 2, 3, 4, 5, 6] // Solo accesible para el nivel 5
+    viewRole: [1, 2, 3, 4, 5, 6, 7] // Solo accesible para el nivel 5
   },
 ];
 
