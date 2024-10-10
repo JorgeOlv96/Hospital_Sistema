@@ -103,16 +103,13 @@ const Consultabitacora = () => {
   const checkIfWithinShift = useCallback((shift) => {
     const currentHour = new Date().getHours();
     switch (shift) {
-      case 'matutino':
-        return currentHour >= 7 && currentHour < 14;
-      case 'vespertino':
-        return currentHour >= 14 && currentHour < 21;
-      case 'nocturno':
-        return currentHour >= 21 || currentHour < 7;
-      default:
-        return true; // If no shift is assigned, allow editing
+      case 'matutino': return currentHour >= 7 && currentHour < 14;
+      case 'vespertino': return currentHour >= 14 && currentHour < 21;
+      case 'nocturno': return currentHour >= 21 || currentHour < 7;
+      default: return true; // If no shift is assigned, allow editing
     }
   }, []);
+
 
   const fetchUserInfo = useCallback(async () => {
     try {
@@ -131,8 +128,7 @@ const Consultabitacora = () => {
         setUserName(fullName);
         setUserShift(turno);
         setUserRole(rol_user);
-
-        return fullName;
+        return { fullName, rol_user, turno };
       }
     } catch (error) {
       console.error("Error fetching user info:", error);
@@ -141,24 +137,35 @@ const Consultabitacora = () => {
 
   useEffect(() => {
     const checkEditPermissions = async () => {
-      await fetchUserInfo();
-
-      if (userRole === 2) {
+      const userInfo = await fetchUserInfo();
+      if (userInfo.rol_user === 2 && userInfo.turno) {
         const currentDate = new Date();
         const scheduledDate = new Date(patientData.fecha_programada);
-        const dayAfterScheduled = new Date(scheduledDate);
-        dayAfterScheduled.setDate(dayAfterScheduled.getDate() + 1);
-
-        const canEditBasedOnDate = currentDate >= scheduledDate && currentDate <= dayAfterScheduled;
         
-        const canEditBasedOnShift = checkIfWithinShift(userShift);
-
-        setCanEdit(canEditBasedOnDate && canEditBasedOnShift);
+        // Ajustar las fechas para comparar solo los días, no las horas
+        currentDate.setHours(0, 0, 0, 0);
+        scheduledDate.setHours(0, 0, 0, 0);
+        
+        const oneDayInMilliseconds = 48 * 60 * 60 * 1000;
+        const dayBeforeCurrentDate = new Date(currentDate.getTime() - oneDayInMilliseconds);
+        
+        const canEditBasedOnDate = (
+          scheduledDate.getTime() === currentDate.getTime() ||
+          scheduledDate.getTime() === dayBeforeCurrentDate.getTime()
+        );
+        
+        const canEditBasedOnShift = checkIfWithinShift(userInfo.turno);
+        const canEditBasedOnTurnoSolicitado = patientData.turno === userInfo.turno;
+        
+        setCanEdit(canEditBasedOnDate && canEditBasedOnShift && canEditBasedOnTurnoSolicitado);
+      } else {
+        setCanEdit(true); // Users with other roles or without assigned shift can edit without restrictions
       }
     };
-
+    
     checkEditPermissions();
-  }, [patientData.fecha_programada, userRole, userShift, checkIfWithinShift, fetchUserInfo]);
+  }, [patientData.fecha_programada, patientData.turno, checkIfWithinShift, fetchUserInfo]);
+
 
   const fetchActiveNurses = async (inputValue) => {
     try {
@@ -310,7 +317,7 @@ const Consultabitacora = () => {
   const handleSave = async () => {
     if (!canEdit) return;
     try {
-      const userFullName = await fetchUserInfo();
+      const userInfo = await fetchUserInfo();
       const {
         nuevos_procedimientos_extra,
         nombre_cirujano,
@@ -343,7 +350,7 @@ const Consultabitacora = () => {
             enf_quirurgica,
             enf_circulante,
             comentarios,
-            ultimo_editor: userFullName
+            ultimo_editor: userInfo.fullName
           }),
           headers: {
             "Content-Type": "application/json",
@@ -358,7 +365,6 @@ const Consultabitacora = () => {
       console.error("Error saving changes:", error);
     }
   };
-
   const handleSelectChange = (selectedOption) => {
     setPatientData((prevFormData) => ({
       ...prevFormData,
@@ -451,7 +457,11 @@ const Consultabitacora = () => {
             Suspender cirugía
           </button>
         </div>
-
+        {!canEdit && (
+          <p className="text-red-500 mt-4">
+            No puedes editar esta bitácora debido a restricciones de fecha o turno.
+          </p>
+        )}
         <div class="flex flex-col p-4 bg-[#85AD8D] rounded-lg ">
           <div class="flex mb-4">
             <div class="w-full mr-4">
@@ -703,15 +713,15 @@ const Consultabitacora = () => {
 
             <div className="mr-4 w-full">
               <label
-                htmlFor="turno_solicitado"
+                htmlFor="turno"
                 className="block font-semibold text-white mb-1"
               >
                 Turno:
               </label>
               <input
-                id="turno_solicitado"
-                name="turno_solicitado"
-                value={patientData.turno_solicitado || "N/A"}
+                id="turno"
+                name="turno"
+                value={patientData.turno || "N/A"}
                 readOnly
                 className={`"border-[#A8D5B1]"} rounded-lg px-3 py-2 w-full bg-[#A8D5B1] cursor-default`}
               ></input>
@@ -1099,11 +1109,6 @@ const Consultabitacora = () => {
             Guardar
           </button>
         </div>
-        {!canEdit && (
-          <p className="text-red-500 mt-4">
-            No puedes editar esta bitácora debido a restricciones de fecha o turno.
-          </p>
-        )}
       </div>
 
       {suspendModalOpen && (

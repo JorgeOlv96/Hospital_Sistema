@@ -15,7 +15,7 @@ function Solicitudesurgentes() {
   const [pendingAppointments, setPendingAppointments] = useState([]);
   const navigate = useNavigate();
   const [filter, setFilter] = useState({
-    fecha: "",
+    fecha: new Date().toISOString().slice(0, 10),
     especialidad: "",
     estado: "",
   });
@@ -32,7 +32,7 @@ function Solicitudesurgentes() {
   // Estados para los filtros
   const [nameFilter, setNameFilter] = useState("");
   const [specialtyFilter, setSpecialtyFilter] = useState("");
-  const [dateFilter, setDateFilter] = useState("");
+  const [dateFilter, setDateFilter] = useState(filter.fecha);
   const [view, setView] = useState(""); // Default view
   const [selectedDate, setSelectedDate] = useState(new Date());
   const appointment = {
