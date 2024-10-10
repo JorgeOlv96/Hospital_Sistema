@@ -147,12 +147,12 @@ const Consultabitacora = () => {
         scheduledDate.setHours(0, 0, 0, 0);
         
         const oneDayInMilliseconds = 48 * 60 * 60 * 1000;
-        const dayBeforeCurrentDate = new Date(currentDate.getTime() - oneDayInMilliseconds);
+        const yesterday = new Date(currentDate.getTime() - oneDayInMilliseconds);
+        const tomorrow = new Date(currentDate.getTime() + oneDayInMilliseconds);
         
-        const canEditBasedOnDate = (
-          scheduledDate.getTime() === currentDate.getTime() ||
-          scheduledDate.getTime() === dayBeforeCurrentDate.getTime()
-        );
+        const canEditBasedOnDate = 
+          scheduledDate.getTime() >= yesterday.getTime() && 
+          scheduledDate.getTime() <= tomorrow.getTime();
         
         const canEditBasedOnShift = checkIfWithinShift(userInfo.turno);
         const canEditBasedOnTurnoSolicitado = patientData.turno === userInfo.turno;
