@@ -1005,9 +1005,9 @@ function Solicitudes() {
                                       {solicitud.nombre_especialidad}
                                     </td>
                                     <td className="border px-4 py-2 text-center">
-                                    {formatFechaSolicitada(
-                                  solicitud.fecha_solicitada
-                                )}
+                                      {solicitud.estado_solicitud === 'Urgencia'
+                                      ? formatFechaSolicitada(solicitud.fecha_programada)
+                                      : formatFechaSolicitada(solicitud.fecha_solicitada)}
                                     </td>
                                     <td className="border px-4 py-2 text-center">
                                       {solicitud.req_insumo}

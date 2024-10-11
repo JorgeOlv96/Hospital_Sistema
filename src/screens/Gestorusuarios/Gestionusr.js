@@ -79,6 +79,21 @@ function Gestionusuarios() {
     7: "Admin Enfermería"
   };
 
+  const handleCheckboxChange = (screen) => {
+    setUserToEdit((prevUser) => {
+      const updatedPantallas = prevUser.pantallasDisponibles
+        ? prevUser.pantallasDisponibles.split(',')
+        : [];
+      const index = updatedPantallas.indexOf(screen);
+      if (index > -1) {
+        updatedPantallas.splice(index, 1);
+      } else {
+        updatedPantallas.push(screen);
+      }
+      return { ...prevUser, pantallasDisponibles: updatedPantallas.join(',') };
+    });
+  };
+
   const handleFilterChange = (searchTerm) => {
     // Filter pantallasDisponibles based on searchTerm
     const filteredPantallas = pantallasDisponibles.filter((pantalla) => {
@@ -148,7 +163,6 @@ function Gestionusuarios() {
 
       console.log("Pantallas disponibles:", userToEdit.pantallasDisponibles);
 
-      // Asegúrate de incluir pantallasDisponibles en userToEdit
       const response = await fetch(
         `${baseURL}/api/users/users/${userToEdit.id_usuario}`,
         {
@@ -156,20 +170,15 @@ function Gestionusuarios() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            ...userToEdit,
-            pantallasDisponibles: userToEdit.pantallasDisponibles.join(","), // Debe coincidir con el nombre que esperas en el backend
-          }),
+          body: JSON.stringify(userToEdit),
         }
       );
 
-      // Check if the response is ok, otherwise handle the error
       if (!response.ok) {
         const { message } = await response.json();
         throw new Error(message);
       }
 
-      // If the response is ok, update the state with the updated user
       const updatedUser = await response.json();
       setUsuarios((prevUsuarios) =>
         prevUsuarios.map((user) =>
@@ -177,19 +186,20 @@ function Gestionusuarios() {
         )
       );
 
-      // Close the modal and show a success message
       setShowModal(false);
       toast.success("Usuario actualizado correctamente");
     } catch (err) {
-      // Handle any errors from the try block or fetch
       console.error("Error updating user:", err);
       setError(err.message || "Error updating user. Please try again later.");
-      toast.error(
-        err.message || "Error updating user. Please try again later."
-      );
+      toast.error(err.message || "Error updating user. Please try again later.");
     }
   };
 
+  const availableScreens = [
+    "Dashboard", "Solicitudes", "Evaluación", "Agenda", "Anestesiólogos",
+    "Bitácora enfermería", "Bitácora anestesiología", "Gestor de salas",
+    "Solicitudes insumos", "Gestor de productividad", "Gestor de usuarios"
+  ];
   // Manejar cambios en los inputs del formulario modal
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -628,66 +638,21 @@ function Gestionusuarios() {
                   </div>
 
                   <div className="mb-4">
-                    <label className="block text-center mb-2">
-                      Pantallas Disponibles
-                    </label>
-
-                    <div className="grid grid-cols-2 gap-4 mt-4">
-                      {[
-                        "Dashboard",
-                        "Solicitudes",
-                        "Evaluación",
-                        "Agenda",
-                        "Anestesiólogos",
-                        "Bitácora enfermería",
-                        "Bitácora anestesiología",
-                        "Gestor de salas",
-                        "Solicitudes insumos",
-                        "Gestor de productividad",
-                        "Gestor de usuarios",
-                      ].map((screen) => (
-                        <div key={screen} className="flex items-center">
-                          <input
-                            type="checkbox"
-                            id={screen}
-                            name="pantallasDisponibles"
-                            value={screen}
-                            checked={
-                              userToEdit?.pantallasDisponibles?.includes(
-                                screen
-                              ) || false
-                            }
-                            onChange={(e) => {
-                              const { checked, value } = e.target;
-                              setUserToEdit((prevUser) => {
-                                const updatedPantallas = Array.isArray(
-                                  prevUser.pantallasDisponibles
-                                )
-                                  ? prevUser.pantallasDisponibles
-                                  : [];
-                                if (checked) {
-                                  updatedPantallas.push(value);
-                                } else {
-                                  const index = updatedPantallas.indexOf(value);
-                                  if (index > -1) {
-                                    updatedPantallas.splice(index, 1);
-                                  }
-                                }
-                                return {
-                                  ...prevUser,
-                                  pantallasDisponibles: updatedPantallas,
-                                };
-                              });
-                            }}
-                          />
-                          <label htmlFor={screen} className="ml-2">
-                            {screen}
-                          </label>
-                        </div>
-                      ))}
+                <label className="block text-center mb-2">Pantallas Disponibles</label>
+                <div className="grid grid-cols-2 gap-4 mt-4">
+                  {availableScreens.map((screen) => (
+                    <div key={screen} className="flex items-center">
+                      <input
+                        type="checkbox"
+                        id={screen}
+                        checked={userToEdit.pantallasDisponibles?.split(',').includes(screen) || false}
+                        onChange={() => handleCheckboxChange(screen)}
+                      />
+                      <label htmlFor={screen} className="ml-2">{screen}</label>
                     </div>
-                  </div>
-
+                  ))}
+                </div>
+                </div>
                   <div className="flex justify-end space-x-4">
                     <button
                       type="submit"
