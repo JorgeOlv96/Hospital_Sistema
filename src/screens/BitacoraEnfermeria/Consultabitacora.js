@@ -155,13 +155,28 @@ const Consultabitacora = () => {
           scheduledDate.getTime() <= tomorrow.getTime();
         
         const canEditBasedOnShift = checkIfWithinShift(userInfo.turno);
-        const canEditBasedOnTurnoSolicitado = patientData.turno === userInfo.turno;
+    
+        // Nueva lógica para permitir la edición en base al turno
+        const canEditBasedOnTurnoSolicitado = (() => {
+          const userShift = (userInfo.turno || '').toLowerCase(); // Default to empty string if turno is undefined
+          const turnoSolicitado = (patientData.turno || '').toLowerCase(); // Default to empty string if turno is undefined
+        
+          if (userShift === 'matutino') {
+            return turnoSolicitado === 'matutino' || turnoSolicitado === 'nocturno';
+          } else if (userShift === 'vespertino') {
+            return turnoSolicitado === 'vespertino' || turnoSolicitado === 'matutino';
+          } else if (userShift === 'nocturno') {
+            return turnoSolicitado === 'nocturno' || turnoSolicitado === 'vespertino';
+          }
+          return false;
+        })();
         
         setCanEdit(canEditBasedOnDate && canEditBasedOnShift && canEditBasedOnTurnoSolicitado);
       } else {
-        setCanEdit(true); // Users with other roles or without assigned shift can edit without restrictions
+        setCanEdit(true); // Usuarios con otros roles o sin turno asignado pueden editar sin restricciones
       }
     };
+    
     
     checkEditPermissions();
   }, [patientData.fecha_programada, patientData.turno, checkIfWithinShift, fetchUserInfo]);

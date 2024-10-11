@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Pie } from 'react-chartjs-2';
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import { Line } from 'react-chartjs-2';
+import { Chart as ChartJS, Tooltip, Legend, PointElement, LineElement, LinearScale, Title } from 'chart.js';
 
-ChartJS.register(ArcElement, Tooltip, Legend);
+ChartJS.register(PointElement, LineElement, Tooltip, Legend, LinearScale, Title);
 
 const SurgeriesBySpecialtyCard = () => {
   const [chartData, setChartData] = useState(null);
@@ -38,23 +38,23 @@ const SurgeriesBySpecialtyCard = () => {
         const data = sortedSpecialties.map(([_, { count }]) => count);
         const fullNames = sortedSpecialties.map(([name]) => name);
 
-        const backgroundColors = [
-          '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40', 
-          '#FFCD56', '#4BC0C0', '#F7464A', '#46BFBD'
-        ];
-
         setChartData({
           labels,
           datasets: [
             {
-              label: 'Cirugías Realizadas',
+              label: 'Cirugías Realizadas por Especialidad',
               data,
-              backgroundColor: backgroundColors,
-              borderColor: backgroundColors.map(color => color.replace('FF', 'AA')),
-              borderWidth: 1,
+              backgroundColor: '#36A2EB',
+              borderColor: '#36A2EB',
+              tension: 0.2, // Suaviza las líneas
+              pointRadius: 5, // Tamaño de los puntos
+              pointBackgroundColor: '#FF6384',
+              pointBorderColor: '#FF6384',
+              pointBorderWidth: 2,
+              fill: false, // Desactiva el relleno bajo la línea
             },
           ],
-          fullNames, // Añadimos los nombres completos para usarlos en el tooltip
+          fullNames, // Nombres completos para los tooltips
         });
       } catch (error) {
         setError(error.message);
@@ -71,6 +71,21 @@ const SurgeriesBySpecialtyCard = () => {
   const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: 'Especialidades (por clave)',
+        },
+      },
+      y: {
+        title: {
+          display: true,
+          text: 'Número de Cirugías',
+        },
+        beginAtZero: true,
+      },
+    },
     plugins: {
       legend: {
         position: 'bottom',
@@ -78,7 +93,7 @@ const SurgeriesBySpecialtyCard = () => {
       tooltip: {
         callbacks: {
           title: (context) => {
-            // Muestra el nombre completo de la especialidad en el título del tooltip
+            // Muestra el nombre completo de la especialidad en el tooltip
             return chartData.fullNames[context[0].dataIndex];
           },
           label: (context) => `${context.raw} cirugías`,
@@ -91,7 +106,7 @@ const SurgeriesBySpecialtyCard = () => {
     <div className="bg-white rounded-xl border-[1px] border-border p-5 shadow-md card-zoom" style={{ height: '350px' }}>
       <h3 className="text-lg font-medium mb-4">Cirugías Realizadas por Especialidad</h3>
       <div style={{ height: 'calc(100% - 40px)' }}>
-        <Pie data={chartData} options={chartOptions} />
+        <Line data={chartData} options={chartOptions} />
       </div>
     </div>
   );

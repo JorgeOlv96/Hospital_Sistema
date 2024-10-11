@@ -384,6 +384,19 @@ function Bitacoraenfermeria() {
                     </th>
                     <th
                       className="px-4 py-2 cursor-pointer"
+                      onClick={() => handleSort("turno")}
+                    >
+                      Turno{" "}
+                      <span>
+                        {sortBy === "turno"
+                          ? sortOrder === "asc"
+                            ? "▲"
+                            : "▼"
+                          : ""}
+                      </span>
+                    </th>
+                    <th
+                      className="px-4 py-2 cursor-pointer"
                       onClick={() => handleSort("sala_quirofano")}
                     >
                       Sala programada{" "}
@@ -419,6 +432,9 @@ function Bitacoraenfermeria() {
                         {formatFechaSolicitada(
                                   appointment.fecha_programada
                                 )}
+                        </td>
+                        <td className="border px-4 py-2 justify-center">
+                          {appointment.turno}
                         </td>
                         <td className="border px-4 py-2 justify-center">
                           {appointment.sala_quirofano}

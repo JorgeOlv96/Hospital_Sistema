@@ -1,18 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { Pie } from 'react-chartjs-2';
+import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
-  ArcElement,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Title,
   Tooltip,
   Legend,
-  Title,
 } from 'chart.js';
 
 ChartJS.register(
-  ArcElement,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Title,
   Tooltip,
-  Legend,
-  Title
+  Legend
 );
 
 const SurgeriesByRoomChart = () => {
@@ -31,6 +35,8 @@ const SurgeriesByRoomChart = () => {
         }
         const surgeries = await response.json();
 
+        console.log("Cirugías recibidas:", surgeries);
+
         // Obtener la fecha actual y el inicio de la semana
         const today = new Date();
         const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
@@ -38,6 +44,9 @@ const SurgeriesByRoomChart = () => {
         const endOfWeek = new Date(startOfWeek);
         endOfWeek.setDate(endOfWeek.getDate() + 6);
         endOfWeek.setHours(23, 59, 59, 999);
+
+        console.log("Inicio de la semana:", startOfWeek);
+        console.log("Fin de la semana:", endOfWeek);
 
         // Inicializar el conteo de cirugías para todas las salas
         const roomCounts = rooms.reduce((acc, room) => {
@@ -48,12 +57,18 @@ const SurgeriesByRoomChart = () => {
         // Contar las cirugías de la semana actual por sala
         surgeries.forEach(surgery => {
           const surgeryDate = new Date(surgery.fecha_programada);
+          console.log("Fecha de cirugía:", surgeryDate, "Sala:", surgery.sala_quirofano);
           if (surgeryDate >= startOfWeek && surgeryDate <= endOfWeek) {
             if (rooms.includes(surgery.sala_quirofano)) {
               roomCounts[surgery.sala_quirofano]++;
+              console.log("Cirugía contada para la sala:", surgery.sala_quirofano);
             }
+          } else {
+            console.log("Cirugía fuera del rango de fechas");
           }
         });
+
+        console.log("Conteo final de cirugías por sala:", roomCounts);
 
         // Preparar los datos para el gráfico
         const counts = rooms.map(room => roomCounts[room]);
@@ -63,7 +78,7 @@ const SurgeriesByRoomChart = () => {
           datasets: [{
             label: 'Cirugías Programadas',
             data: counts,
-            backgroundColor: rooms.map(() => `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.6)`),
+            backgroundColor: rooms.map(() => `rgba(${Math.floor(Math.random()*255)}, ${Math.floor(Math.random()*255)}, ${Math.floor(Math.random()*255)}, 0.6)`),
             borderColor: 'rgba(0, 0, 0, 0.1)',
             borderWidth: 1,
           }]
@@ -89,8 +104,7 @@ const SurgeriesByRoomChart = () => {
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        display: true,
-        position: 'right',
+        display: false,
       },
       title: {
         display: true,
@@ -102,11 +116,30 @@ const SurgeriesByRoomChart = () => {
         },
       },
     },
+    scales: {
+      y: {
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: 'Número de Cirugías',
+        },
+      },
+      x: {
+        title: {
+          display: true,
+          text: 'Sala de Quirófano',
+        },
+      },
+    },
+    animation: {
+      duration: 500,
+      easing: 'easeOutQuad',
+    },
   };
 
   return (
     <div className="bg-white rounded-xl border-[1px] border-border p-5 shadow-md card-zoom" style={{ height: '350px' }}>
-      <Pie data={chartData} options={chartOptions} />
+      <Bar data={chartData} options={chartOptions} />
     </div>
   );
 };

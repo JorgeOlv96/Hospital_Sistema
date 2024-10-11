@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { Pie } from 'react-chartjs-2';
+import { Pie, Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   ArcElement,
+  BarElement,
+  CategoryScale,
+  LinearScale,
   Tooltip,
   Legend,
 } from 'chart.js';
 
-ChartJS.register(ArcElement, Tooltip, Legend);
+ChartJS.register(ArcElement, BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 const SuspensionReasonsChart = () => {
   const [chartData, setChartData] = useState(null);
   const [error, setError] = useState(null);
+  const [isPieChart, setIsPieChart] = useState(true); // Estado para controlar el tipo de gráfico
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
 
   useEffect(() => {
@@ -97,14 +101,37 @@ const SuspensionReasonsChart = () => {
     },
   };
 
+  const toggleChartType = () => {
+    setIsPieChart(!isPieChart); // Cambia entre gráfica de pastel y barras
+  };
+
   return (
     <div 
       className="bg-white rounded-xl border-[1px] border-border p-5 shadow-md card-zoom" 
-      style={{ height: '600px', width: '100%' }}
+      style={{ height: '600px', width: '100%', overflow: 'hidden' }} // Ajuste de overflow
     >
       <h3 className="text-lg font-medium mb-4">Top 10 Motivos de Suspensión</h3>
-      <div style={{ height: '500px' }}>
-        <Pie data={chartData} options={chartOptions} />
+      <button
+        className="mb-4 px-3 py-1 bg-gray-200 text-gray-700 rounded-md text-sm" // Estilo más discreto
+        onClick={toggleChartType}
+      >
+        {isPieChart ? 'Ver como Barras' : 'Ver como Pastel'}
+      </button>
+      <div style={{ height: '450px', overflow: 'hidden' }}>
+        {isPieChart ? (
+          <Pie data={chartData} options={chartOptions} />
+        ) : (
+          <Bar 
+            data={chartData} 
+            options={{
+              ...chartOptions,
+              scales: {
+                x: { title: { display: true, text: 'Motivos' } },
+                y: { title: { display: true, text: 'Número de Suspensiones' } },
+              },
+            }} 
+          />
+        )}
       </div>
     </div>
   );
