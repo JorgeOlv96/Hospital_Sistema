@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Bar } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import { Pie } from 'react-chartjs-2';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 const SolicitudesProgramadasPorEspecialidadCard = () => {
   const [chartData, setChartData] = useState(null);
@@ -81,10 +81,7 @@ const SolicitudesProgramadasPorEspecialidadCard = () => {
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        display: false,
-      },
-      title: {
-        display: false,
+        display: true,
       },
       tooltip: {
         callbacks: {
@@ -95,24 +92,13 @@ const SolicitudesProgramadasPorEspecialidadCard = () => {
         },
       },
     },
-    scales: {
-      y: {
-        beginAtZero: true,
-      },
-      x: {
-        ticks: {
-          maxRotation: 0,
-          minRotation: 0,
-        },
-      },
-    },
   };
 
   return (
     <div className="bg-white rounded-xl border-[1px] border-border p-5 shadow-md card-zoom" style={{ height: '350px' }}>
       <h3 className="text-lg font-medium mb-4">Solicitudes Programadas por Especialidad (Hoy)</h3>
       <div style={{ height: 'calc(100% - 40px)' }}>
-        <Bar data={chartData} options={chartOptions} />
+        <Pie data={chartData} options={chartOptions} />
       </div>
     </div>
   );

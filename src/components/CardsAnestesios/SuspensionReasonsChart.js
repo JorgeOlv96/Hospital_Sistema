@@ -1,23 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Bar } from 'react-chartjs-2';
+import { Pie } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
-  BarElement,
-  CategoryScale,
-  LinearScale,
-  Title,
+  ArcElement,
   Tooltip,
   Legend,
 } from 'chart.js';
 
-ChartJS.register(
-  BarElement,
-  CategoryScale,
-  LinearScale,
-  Title,
-  Tooltip,
-  Legend
-);
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 const SuspensionReasonsChart = () => {
   const [chartData, setChartData] = useState(null);
@@ -57,8 +47,8 @@ const SuspensionReasonsChart = () => {
         const data = sortedReasons.map(([_, count]) => count);
 
         const backgroundColors = [
-          '#FFA959', '#FF8850', '#FF6F47', '#FF5640', '#FF3D38', 
-          '#FF2431', '#FF0A29', '#E50025', '#CC001F', '#B2001A'
+          '#4CAF50', '#2196F3', '#FFEB3B', '#FF5722', '#9C27B0',
+          '#00BCD4', '#CDDC39', '#E91E63', '#3F51B5', '#FF9800'
         ];
 
         setChartData({
@@ -68,8 +58,8 @@ const SuspensionReasonsChart = () => {
               label: 'Número de Suspensiones',
               data,
               backgroundColor: backgroundColors,
-              borderColor: backgroundColors.map(color => color.replace('FF', 'AA')),
-              borderWidth: 1,
+              borderColor: backgroundColors.map(color => '#FFFFFF'),
+              borderWidth: 2,
             },
           ],
           fullReasons, // Agregamos los motivos completos aquí
@@ -80,8 +70,8 @@ const SuspensionReasonsChart = () => {
       }
     };
 
-    fetchSuspensionReasons(); 
-    const intervalId = setInterval(fetchSuspensionReasons, 30000); 
+    fetchSuspensionReasons();
+    const intervalId = setInterval(fetchSuspensionReasons, 30000);
 
     return () => clearInterval(intervalId);
   }, [baseURL]);
@@ -94,31 +84,14 @@ const SuspensionReasonsChart = () => {
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        display: false, // Ocultar la leyenda ya que no es necesaria
+        position: 'bottom',
       },
       tooltip: {
         callbacks: {
           title: (context) => {
-            // Mostrar el motivo completo en el título del tooltip
             return chartData.fullReasons[context[0].label];
           },
           label: (context) => `Suspensiones: ${context.raw}`,
-        },
-      },
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
-      },
-      x: {
-        ticks: {
-          callback: function(value) {
-            // Mostrar solo las primeras 6 palabras en el eje X
-            const label = this.getLabelForValue(value);
-            return label.split(' ').slice(0, 6).join(' ');
-          },
-          maxRotation: 20,
-          minRotation: 20,
         },
       },
     },
@@ -131,7 +104,7 @@ const SuspensionReasonsChart = () => {
     >
       <h3 className="text-lg font-medium mb-4">Top 10 Motivos de Suspensión</h3>
       <div style={{ height: '500px' }}>
-        <Bar data={chartData} options={chartOptions} />
+        <Pie data={chartData} options={chartOptions} />
       </div>
     </div>
   );

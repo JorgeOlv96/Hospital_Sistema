@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Bar } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import { Pie } from 'react-chartjs-2';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 const SurgeriesBySpecialtyCard = () => {
   const [chartData, setChartData] = useState(null);
@@ -73,10 +73,7 @@ const SurgeriesBySpecialtyCard = () => {
     maintainAspectRatio: false,
     plugins: {
       legend: {
-        display: false,
-      },
-      title: {
-        display: false,
+        position: 'bottom',
       },
       tooltip: {
         callbacks: {
@@ -88,24 +85,13 @@ const SurgeriesBySpecialtyCard = () => {
         },
       },
     },
-    scales: {
-      y: {
-        beginAtZero: true,
-      },
-      x: {
-        ticks: {
-          maxRotation: 0,
-          minRotation: 0,
-        },
-      },
-    },
   };
 
   return (
     <div className="bg-white rounded-xl border-[1px] border-border p-5 shadow-md card-zoom" style={{ height: '350px' }}>
       <h3 className="text-lg font-medium mb-4">Cirugías Realizadas por Especialidad</h3>
       <div style={{ height: 'calc(100% - 40px)' }}>
-        <Bar data={chartData} options={chartOptions} />
+        <Pie data={chartData} options={chartOptions} />
       </div>
     </div>
   );
