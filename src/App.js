@@ -63,30 +63,6 @@ import AppointmentsEnf from './screens/BitacoraEnfermeria/AgendaEnf';
 function App() {
   Aos.init();
 
-  useEffect(() => {
-    const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
-
-    // Función para contar las solicitudes
-    const countSolicitudes = async () => {
-      try {
-        const response = await axios.get(`${baseURL}/api/solicitudes`);
-        const totalSolicitudes = response.data.length;
-        console.log(`Total de solicitudes: ${totalSolicitudes}`);
-      } catch (error) {
-        console.error('Error fetching solicitudes count:', error);
-      }
-    };
-
-    // Configura un intervalo para contar las solicitudes cada 40 segundos (40000 ms)
-    const interval = setInterval(countSolicitudes, 40000);
-
-    // Realiza un conteo inicial al cargar la aplicación
-    countSolicitudes();
-
-    // Limpia el intervalo al desmontar el componente
-    return () => clearInterval(interval);
-  }, []);
-
   return (
     <>
       {/* Routes */}
