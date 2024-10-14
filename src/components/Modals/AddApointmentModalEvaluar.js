@@ -5,6 +5,8 @@ import AddAppointmentModal from "../../components/Modals/AddApointmentModal";
 import PizZip from "pizzip";
 import Docxtemplater from "docxtemplater";
 import { saveAs } from "file-saver";
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 function AddAppointmentModalEvaluar({
   closeModal,
@@ -180,72 +182,179 @@ function AddAppointmentModalEvaluar({
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
-    
+  
     const date = new Date(dateString);
     const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Los meses van de 0 a 11
+    const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();
   
     return `${day}-${month}-${year}`;
   };
+  
+  // Función para generar el PDF
+  const generateDocument = async (patientData) => {
+    try {
+      const doc = new jsPDF('p', 'pt', 'letter');
+      const pageWidth = doc.internal.pageSize.width;
+      const pageHeight = doc.internal.pageSize.height;
 
-    // Función para generar el documento
-    const generateDocument = async () => {
-      try {
-        // Cargar la plantilla docx como arrayBuffer
-        const response = await fetch("/plantilla.docx");
-        const arrayBuffer = await response.arrayBuffer();
-        const zip = new PizZip(arrayBuffer);
+        // Cargar la imagen
+        const imageUrl = "/seseq.png"; // Ruta de la imagen
+
+        // Cargar la imagen
+        const img = await doc.addImage(imageUrl, 'PNG', 20, 20, 80, (100 / 130) * 50); // Ajustando el ancho a 80px
+        
   
-        // Cargar los datos en el template
-        const doc = new Docxtemplater(zip, {
-          paragraphLoop: true,
-          linebreaks: true,
-        });
+      // Función auxiliar para manejar valores nulos o indefinidos
+      const getValue = (value) => value || "N/A";
   
-        // Reemplazar los campos de la plantilla con los datos de la consulta
-        doc.render({
-          folio: patientData.folio || "N/A",
-          nombre_cirujano: patientData.nombre_cirujano || "N/A",
-          fecha_solicitud: formatDate(patientData.fecha_solicitud) || "N/A",
-          curp: patientData.curp || "N/A",
-          no_expediente: patientData.no_expediente || "N/A",
-          tel_contacto: patientData.tel_contacto || "N/A",
-          ap_paterno: patientData.ap_paterno || "N/A",
-          ap_materno: patientData.ap_materno || "N/A",
-          nombre_paciente: patientData.nombre_paciente || "N/A",
-          fecha_nacimiento: formatDate(patientData.fecha_nacimiento) || "N/A",
-          edad: patientData.edad || "N/A",
-          sexo: patientData.sexo || "N/A",
-          sala_quirofano: patientData.sala_quirofano || "N/A",
-          nombre_especialidad: patientData.nombre_especialidad || "N/A",
-          clave_esp: patientData.clave_esp || "N/A",
-          tipo_intervencion: patientData.tipo_intervencion || "N/A",
-          tipo_admision: patientData.tipo_admision || "N/A",
-          cama: patientData.cama || "N/A",
-          fecha_solicitada: formatDate(patientData.fecha_solicitada) || "N/A",
-          hora_solicitada: patientData.hora_solicitada || "N/A",
-          turno_solicitado: patientData.turno_solicitado || "N/A",
-          tiempo_estimado: patientData.tiempo_estimado || "N/A",
-          procedimientos_paciente: patientData.procedimientos_paciente || "N/A",
-          procedimientos_extra: patientData.procedimientos_extra || "N/A",
-          req_insumo: patientData.req_insumo,
-          diagnostico: patientData.diagnostico || "N/A",
-        });
+      // Función para ajustar la posición de los campos
+      const adjustPosition = (text, startX, y, maxWidth) => {
+        const textWidth = doc.getStringUnitWidth(text) * doc.internal.getFontSize() / doc.internal.scaleFactor;
+        return startX + Math.min(textWidth, maxWidth) + 20;
+      };
   
-        // Generar el archivo .docx
-        const output = doc.getZip().generate({
-          type: "blob",
-          mimeType:
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        });
+      // Encabezado
+      doc.setFont('Helvetica', 'bold');
+      doc.setFontSize(12);
+      doc.text('Solicitud, Registro y Autorización de Intervención Quirúrgica', pageWidth / 2, 40, { align: 'center' });
+      doc.text('Nuevo Hospital General de Querétaro', pageWidth / 2, 60, { align: 'center' });
   
-        // Descargar el archivo como .docx
-        saveAs(output, `Solicitud_${patientData.folio}.docx`);
-      } catch (error) {
-        console.error("Error generating document:", error);
+      // Autorización del Paciente
+      doc.setFont('Helvetica', 'normal');
+      doc.setFontSize(10);
+      doc.text('Autorización del Paciente:', 40, 100);
+  
+      const autorizacionTexto = 'Autorizo a los médicos de la presente unidad médica a cargo de los servicios de salud del estado de Querétaro, para que efectúen los tratamientos e intervenciones quirúrgicas necesarias para el alivio y/o curación de mi padecimiento, en inteligencia de que conozco los beneficios, riesgos y posibles complicaciones a los que estoy sujeto (a) por medio del procedimiento quirúrgico y anestésico a cual seré sometido(a).';
+      
+      // Eliminar el rectángulo alrededor del texto de autorización
+      doc.text(autorizacionTexto, 40, 120, { maxWidth: pageWidth - 80, align: 'justify' });
+  
+      // Nombre y firma del paciente
+      const nombreCompleto = `${getValue(patientData.ap_paterno)} ${getValue(patientData.ap_materno)} ${getValue(patientData.nombre_paciente)}`;
+      doc.text(nombreCompleto, 40, 205);
+      doc.line(40, 210, pageWidth / 2 - 20, 210);
+      doc.text('Nombre del paciente o representante legal', 40, 225);
+  
+      doc.line(pageWidth / 2 + 20, 210, pageWidth - 40, 210);
+      doc.text('Firma del paciente o representante legal', pageWidth / 2 + 20, 225);
+  
+      // Línea divisoria
+      doc.setLineWidth(1.5);
+      doc.line(40, 245, pageWidth - 40, 245);
+  
+      // Datos del Paciente
+      doc.setFont('Helvetica', 'bold');
+      doc.setFontSize(10);
+      doc.text('DATOS DEL PACIENTE', pageWidth / 2, 275, { align: 'center' });
+  
+      // Función para calcular la posición Y
+      const getYPosition = (index) => 305 + (index * 30);
+  
+      doc.setFont('Helvetica', 'normal');
+      doc.text(`Folio de Solicitud: ${getValue(patientData.folio)}`, 40, getYPosition(0));
+      doc.text(`Fecha de recibo de solicitud: ${formatDate(patientData.fecha_solicitud)}`, 400, getYPosition(0));
+  
+      doc.text(`CURP: ${getValue(patientData.curp)}`, 40, getYPosition(1));
+      doc.text(`No. de Expediente: ${getValue(patientData.no_expediente)}`, 240, getYPosition(1));
+      doc.text(`Teléfono de contacto: ${getValue(patientData.tel_contacto)}`, 420, getYPosition(1));
+  
+      doc.text(`Nombre del paciente: ${nombreCompleto}`, 40, getYPosition(2));
+      doc.text(`Fecha de nacimiento: ${formatDate(patientData.fecha_nacimiento)}`, 400, getYPosition(2));
+  
+      doc.text(`Edad: ${getValue(patientData.edad)}`, 40, getYPosition(3));
+      doc.text(`Sexo: ${getValue(patientData.sexo)}`, pageWidth / 2, getYPosition(3), { align: 'center' });
+  
+      // Sala, Procedencia, Cama (ajustando posiciones)
+      let nextX = 40;
+      doc.text(`Sala solicitada: Sala ${getValue(patientData.sala_quirofano)}`, nextX, getYPosition(4));
+      nextX = adjustPosition(`Sala solicitada: Sala ${getValue(patientData.sala_quirofano)}`, nextX, getYPosition(4), 200);
+      
+      const tipoAdmision = getValue(patientData.tipo_admision);
+      doc.text(`Procedencia del paciente: ${tipoAdmision === 'CONSULTA EXTERNA' ? 'C.E.' : tipoAdmision}`, nextX, getYPosition(4));
+      nextX = adjustPosition(`Procedencia del paciente: ${tipoAdmision === 'CONSULTA EXTERNA' ? 'C.E.' : tipoAdmision}`, nextX, getYPosition(4), 200);
+      
+      doc.text(`Cama: ${getValue(patientData.cama)}`, nextX, getYPosition(4));
+  
+      // Segunda línea divisoria
+      doc.setLineWidth(1.5);
+      doc.line(40, getYPosition(5), pageWidth - 40, getYPosition(5));
+  
+      // Procedimiento a realizar
+      doc.setFont('Helvetica', 'bold');
+      doc.text('PROCEDIMIENTO A REALIZAR', pageWidth / 2, getYPosition(6), { align: 'center' });
+  
+      doc.setFont('Helvetica', 'normal');
+      doc.text(`Fecha solicitada: ${formatDate(patientData.fecha_solicitada)}`, 40, getYPosition(7));
+      doc.text(`Hora solicitada: ${getValue(patientData.hora_solicitada)}`, 240, getYPosition(7));
+      doc.text(`Turno solicitado: ${getValue(patientData.turno_solicitado)}`, 440, getYPosition(7));
+  
+      doc.text(`Cirujano responsable: DR(A). ${getValue(patientData.nombre_cirujano)}`, 40, getYPosition(8));
+  
+      doc.text(`Tipo de intervención: ${getValue(patientData.tipo_intervencion)}`, 40, getYPosition(9));
+      doc.text(`Especialidad: ${getValue(patientData.nombre_especialidad)}`, 240, getYPosition(9));
+      doc.text(`Clave: ${getValue(patientData.clave_esp)}`, 440, getYPosition(9));
+  
+      doc.text(`Tiempo estimado de cirugía: ${getValue(patientData.tiempo_estimado)} Minutos`, 40, getYPosition(10));
+      doc.text(`Requiere insumos: ${getValue(patientData.req_insumo)}`, pageWidth / 2, getYPosition(10), { align: 'center' });
+  
+      const maxLineHeight = 24; // Altura máxima para dos líneas de texto
+      let currentY = getYPosition(11);
+  
+// Procedimiento CIE-9
+const cie9Label = `Procedimiento CI-E 9:`;
+const cie9Value = getValue(patientData.procedimientos_paciente);
+doc.text(cie9Label, 40, currentY);
+doc.text(cie9Value, 180, currentY); // Ajustar el 180 según el espacio que necesites
+currentY += maxLineHeight + 10; // Agregar espacio después del CIE-9
+
+// Diagnóstico y procedimientos
+const diagnosticoLabel = `Diagnóstico y procedimientos a realizar:`;
+const diagnosticoValue = getValue(patientData.diagnostico);
+doc.text(diagnosticoLabel, 40, currentY);
+doc.text(diagnosticoValue, 220, currentY); // Ajustar el 220 según el espacio que necesites
+currentY += maxLineHeight;
+
+  
+      // Asegurar que hay suficiente espacio antes de la línea divisoria final
+      const minSpaceBeforeLine = 30;
+      if (pageHeight - 80 - currentY < minSpaceBeforeLine) {
+        currentY = pageHeight - 80 - minSpaceBeforeLine;
       }
-    };
+  
+      // Línea divisoria final
+      doc.setLineWidth(1.5);
+      doc.line(40, pageHeight - 80, pageWidth - 40, pageHeight - 80);
+  
+      // Firma del cirujano
+// Cirujano responsable
+const cirujanoLabel = 'Cirujano responsable:';
+const cirujanoX = 40; // Posición X de la etiqueta
+const cirujanoY = pageHeight - 40; // Posición Y
+doc.text(cirujanoLabel, cirujanoX, cirujanoY);
+
+// Calcular la posición para la línea
+const cirujanoLineX = cirujanoX + doc.getStringUnitWidth(cirujanoLabel) * doc.internal.getFontSize() / doc.internal.scaleFactor + 10; // Agregar un poco de espacio
+doc.line(cirujanoLineX, pageHeight - 35, cirujanoLineX + 100, pageHeight - 35); // Ajustar longitud de la línea
+
+// Firma y sello
+const firmaLabel = 'Firma y sello:';
+const firmaX = pageWidth / 2; // Posición X de la etiqueta para firma
+doc.text(firmaLabel, firmaX, cirujanoY);
+
+// Calcular la posición para la línea de firma
+const firmaLineX = firmaX + doc.getStringUnitWidth(firmaLabel) * doc.internal.getFontSize() / doc.internal.scaleFactor + 10; // Agregar un poco de espacio
+doc.line(firmaLineX, pageHeight - 35, firmaLineX + 100, pageHeight - 35); // Ajustar longitud de la línea
+
+  
+      // Guardar el PDF
+      doc.save(`Solicitud_${getValue(patientData.folio)}.pdf`);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+    }
+  };
+  
+  
 
   return (
     <Modal
@@ -301,10 +410,11 @@ function AddAppointmentModalEvaluar({
             </div>
 
             <button
-              onClick={generateDocument}
+              onClick={() => generateDocument(patientData)}
               className="bg-green-500 text-white text-sm p-4 rounded-lg font-light"
+              style={{ marginBottom: "8px" }}
             >
-              Imprimir Solicitud
+              Imprimir solicitud
             </button>
 
           </div>

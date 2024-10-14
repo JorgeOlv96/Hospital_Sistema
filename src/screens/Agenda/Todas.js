@@ -399,6 +399,44 @@ function TodasSolicitudes() {
                 </button>
                 <button
                   className={`px-4 py-2 rounded-lg ${estadoButtonClasses(
+                    "pendiente"
+                  )}`}
+                  style={
+                    filterState === "pendiente"
+                      ? {
+                          ...getEstadoColorStyle("pendiente"),
+                          opacity: 0.9,
+                        }
+                      : {
+                          ...getEstadoColorStyle("pendiente"),
+                          opacity: 0.7,
+                        }
+                  }
+                  onClick={() => setFilterState("pendiente")}
+                >
+                  Pendientes ({totalPendientes})
+                </button>
+                <button
+                  className={`px-4 py-2 rounded-lg ${estadoButtonClasses(
+                    "pre-programada"
+                  )}`}
+                  style={
+                    filterState === "pre-programada"
+                      ? {
+                          ...getEstadoColorStyle("pre-programada"),
+                          opacity: 0.9,
+                        }
+                      : {
+                          ...getEstadoColorStyle("pre-programada"),
+                          opacity: 0.7,
+                        }
+                  }
+                  onClick={() => setFilterState("pre-programada")}
+                >
+                  Pre-programadas ({totalPreprogramadas})
+                </button>
+                <button
+                  className={`px-4 py-2 rounded-lg ${estadoButtonClasses(
                     "programada"
                   )}`}
                   style={
@@ -453,44 +491,6 @@ function TodasSolicitudes() {
                   onClick={() => setFilterState("suspendida")}
                 >
                   Suspendidas ({totalSuspendidas})
-                </button>
-                <button
-                  className={`px-4 py-2 rounded-lg ${estadoButtonClasses(
-                    "pendiente"
-                  )}`}
-                  style={
-                    filterState === "pendiente"
-                      ? {
-                          ...getEstadoColorStyle("pendiente"),
-                          opacity: 0.9,
-                        }
-                      : {
-                          ...getEstadoColorStyle("pendiente"),
-                          opacity: 0.7,
-                        }
-                  }
-                  onClick={() => setFilterState("pendiente")}
-                >
-                  Pendientes ({totalPendientes})
-                </button>
-                <button
-                  className={`px-4 py-2 rounded-lg ${estadoButtonClasses(
-                    "pre-programada"
-                  )}`}
-                  style={
-                    filterState === "pre-programada"
-                      ? {
-                          ...getEstadoColorStyle("pre-programada"),
-                          opacity: 0.9,
-                        }
-                      : {
-                          ...getEstadoColorStyle("pre-programada"),
-                          opacity: 0.7,
-                        }
-                  }
-                  onClick={() => setFilterState("pre-programada")}
-                >
-                  Pre-programadas ({totalPreprogramadas})
                 </button>
                 <button
                   className={`px-4 py-2 rounded-lg ${estadoButtonClasses(
