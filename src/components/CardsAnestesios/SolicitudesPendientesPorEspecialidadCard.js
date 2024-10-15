@@ -27,12 +27,10 @@ const SolicitudesPendientesPorEspecialidadCard = () => {
         }
         const solicitudes = await response.json();
 
-        // Filtrar las solicitudes con estado "Pendiente"
         const solicitudesPendientes = solicitudes.filter(solicitud => 
           solicitud.estado_solicitud === 'Pendiente'
         );
 
-        // Contar solicitudes por especialidad
         const specialtyCounts = solicitudesPendientes.reduce((acc, solicitud) => {
           const specialty = solicitud.nombre_especialidad;
           const clave = solicitud.clave_esp;
@@ -45,11 +43,9 @@ const SolicitudesPendientesPorEspecialidadCard = () => {
           return acc;
         }, {});
 
-        // Ordenar las especialidades por el número de solicitudes
         const sortedSpecialties = Object.entries(specialtyCounts)
           .sort((a, b) => b[1].count - a[1].count);
 
-        // Preparar etiquetas y datos para la gráfica
         const labels = sortedSpecialties.map(([_, { clave }]) => clave);
         const data = sortedSpecialties.map(([_, { count }]) => count);
         const fullNames = sortedSpecialties.map(([name]) => name);
@@ -69,7 +65,7 @@ const SolicitudesPendientesPorEspecialidadCard = () => {
             {
               label: 'Solicitudes Pendientes',
               data,
-              backgroundColor: backgroundColors,
+              backgroundColor: backgroundColors.slice(0, data.length),
               borderColor: backgroundColors.map(() => '#FFFFFF'),
               borderWidth: 2,
             },
@@ -96,8 +92,8 @@ const SolicitudesPendientesPorEspecialidadCard = () => {
     maintainAspectRatio: false,
     plugins: {
       legend: {
+        display: !isPieChart,
         position: 'bottom',
-        display: false,
       },
       tooltip: {
         callbacks: {
@@ -114,11 +110,22 @@ const SolicitudesPendientesPorEspecialidadCard = () => {
     setIsPieChart(!isPieChart);
   };
 
+  const ColorLegend = () => (
+    <div className="text-sm overflow-y-auto" style={{ maxHeight: '400px' }}>
+      {chartData.fullNames.map((name, index) => (
+        <div key={index} className="flex items-center mb-2">
+          <div
+            className="w-4 h-4 mr-2 flex-shrink-0"
+            style={{ backgroundColor: chartData.datasets[0].backgroundColor[index] }}
+          ></div>
+          <span className="truncate" title={name}>{name}</span>
+        </div>
+      ))}
+    </div>
+  );
+
   return (
-    <div 
-      className="bg-white rounded-xl border-[1px] border-border p-5 shadow-md card-zoom" 
-      style={{ height: '600px', width: '100%', overflow: 'hidden' }}
-    >
+    <div className="bg-white rounded-xl border-[1px] border-border p-5 shadow-md card-zoom">
       <h3 className="text-lg font-medium mb-4">Especialidades con Solicitudes Pendientes</h3>
       <button
         className="mb-4 px-3 py-1 bg-gray-200 text-gray-700 rounded-md text-sm"
@@ -126,20 +133,28 @@ const SolicitudesPendientesPorEspecialidadCard = () => {
       >
         {isPieChart ? 'Ver como Barras' : 'Ver como Pastel'}
       </button>
-      <div style={{ height: '450px', overflow: 'hidden' }}>
-        {isPieChart ? (
-          <Pie data={chartData} options={chartOptions} />
-        ) : (
-          <Bar 
-            data={chartData} 
-            options={{
-              ...chartOptions,
-              scales: {
-                x: { title: { display: true, text: 'Especialidades' } },
-                y: { title: { display: true, text: 'Número de Solicitudes Pendientes' } },
-              },
-            }} 
-          />
+      <div className={`flex ${isPieChart ? 'flex-row' : 'flex-col'}`}>
+        <div className={isPieChart ? 'w-3/4 pr-4' : 'w-full'} style={{ height: '400px' }}>
+          {isPieChart ? (
+            <Pie data={chartData} options={chartOptions} />
+          ) : (
+            <Bar 
+              data={chartData} 
+              options={{
+                ...chartOptions,
+                scales: {
+                  x: { title: { display: true, text: 'Especialidades' } },
+                  y: { title: { display: true, text: 'Número de Solicitudes Pendientes' } },
+                },
+              }} 
+            />
+          )}
+        </div>
+        {isPieChart && (
+          <div className="w-1/4 pl-4 border-l">
+            <h4 className="text-sm font-medium mb-2">Leyenda</h4>
+            <ColorLegend />
+          </div>
         )}
       </div>
     </div>
