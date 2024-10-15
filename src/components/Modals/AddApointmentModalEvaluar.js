@@ -192,168 +192,169 @@ function AddAppointmentModalEvaluar({
   };
   
   // Función para generar el PDF
-  const generateDocument = async (patientData) => {
-    try {
-      const doc = new jsPDF('p', 'pt', 'letter');
-      const pageWidth = doc.internal.pageSize.width;
-      const pageHeight = doc.internal.pageSize.height;
+ // Función para generar el PDF
+const generateDocument = async (patientData) => {
+  try {
+    const doc = new jsPDF('p', 'pt', 'letter');
+    const pageWidth = doc.internal.pageSize.width;
+    const pageHeight = doc.internal.pageSize.height;
 
-        // Cargar la imagen
-        const imageUrl = "/seseq.png"; // Ruta de la imagen
+    // Cargar la imagen
+    const imageUrl = "/seseq.png"; // Ruta de la imagen
 
-        // Cargar la imagen
-        const img = await doc.addImage(imageUrl, 'PNG', 20, 20, 80, (100 / 130) * 50); // Ajustando el ancho a 80px
-        
-  
-      // Función auxiliar para manejar valores nulos o indefinidos
-      const getValue = (value) => value || "N/A";
-  
-      // Función para ajustar la posición de los campos
-      const adjustPosition = (text, startX, y, maxWidth) => {
-        const textWidth = doc.getStringUnitWidth(text) * doc.internal.getFontSize() / doc.internal.scaleFactor;
-        return startX + Math.min(textWidth, maxWidth) + 20;
-      };
-  
-      // Encabezado
+    // Cargar la imagen
+    const img = await doc.addImage(imageUrl, 'PNG', 20, 20, 80, (100 / 130) * 50); // Ajustando el ancho a 80px
+    
+
+    // Función auxiliar para manejar valores nulos o indefinidos y convertir a string
+    const getValue = (value) => (value != null && value !== undefined) ? String(value) : "N/A";
+
+    // Función para ajustar la posición de los campos
+    const adjustPosition = (text, startX, y, maxWidth) => {
+      const textWidth = doc.getStringUnitWidth(text) * doc.internal.getFontSize() / doc.internal.scaleFactor;
+      return startX + Math.min(textWidth, maxWidth) + 20;
+    };
+
+    // Función para imprimir campo y valor
+    const printFieldAndValue = (field, value, x, y) => {
       doc.setFont('Helvetica', 'bold');
-      doc.setFontSize(12);
-      doc.text('Solicitud, Registro y Autorización de Intervención Quirúrgica', pageWidth / 2, 40, { align: 'center' });
-      doc.text('Nuevo Hospital General de Querétaro', pageWidth / 2, 60, { align: 'center' });
-  
-      // Autorización del Paciente
+      doc.text(field, x, y);
+      const fieldWidth = doc.getStringUnitWidth(field) * doc.internal.getFontSize() / doc.internal.scaleFactor;
       doc.setFont('Helvetica', 'normal');
-      doc.setFontSize(10);
-      doc.text('Autorización del Paciente:', 40, 100);
-  
-      const autorizacionTexto = 'Autorizo a los médicos de la presente unidad médica a cargo de los servicios de salud del estado de Querétaro, para que efectúen los tratamientos e intervenciones quirúrgicas necesarias para el alivio y/o curación de mi padecimiento, en inteligencia de que conozco los beneficios, riesgos y posibles complicaciones a los que estoy sujeto (a) por medio del procedimiento quirúrgico y anestésico a cual seré sometido(a).';
-      
-      // Eliminar el rectángulo alrededor del texto de autorización
-      doc.text(autorizacionTexto, 40, 120, { maxWidth: pageWidth - 80, align: 'justify' });
-  
-      // Nombre y firma del paciente
-      const nombreCompleto = `${getValue(patientData.ap_paterno)} ${getValue(patientData.ap_materno)} ${getValue(patientData.nombre_paciente)}`;
-      doc.text(nombreCompleto, 40, 205);
-      doc.line(40, 210, pageWidth / 2 - 20, 210);
-      doc.text('Nombre del paciente o representante legal', 40, 225);
-  
-      doc.line(pageWidth / 2 + 20, 210, pageWidth - 40, 210);
-      doc.text('Firma del paciente o representante legal', pageWidth / 2 + 20, 225);
-  
-      // Línea divisoria
-      doc.setLineWidth(1.5);
-      doc.line(40, 245, pageWidth - 40, 245);
-  
-      // Datos del Paciente
-      doc.setFont('Helvetica', 'bold');
-      doc.setFontSize(10);
-      doc.text('DATOS DEL PACIENTE', pageWidth / 2, 275, { align: 'center' });
-  
-      // Función para calcular la posición Y
-      const getYPosition = (index) => 305 + (index * 30);
-  
-      doc.setFont('Helvetica', 'normal');
-      doc.text(`Folio de Solicitud: ${getValue(patientData.folio)}`, 40, getYPosition(0));
-      doc.text(`Fecha de recibo de solicitud: ${formatDate(patientData.fecha_solicitud)}`, 400, getYPosition(0));
-  
-      doc.text(`CURP: ${getValue(patientData.curp)}`, 40, getYPosition(1));
-      doc.text(`No. de Expediente: ${getValue(patientData.no_expediente)}`, 240, getYPosition(1));
-      doc.text(`Teléfono de contacto: ${getValue(patientData.tel_contacto)}`, 420, getYPosition(1));
-  
-      doc.text(`Nombre del paciente: ${nombreCompleto}`, 40, getYPosition(2));
-      doc.text(`Fecha de nacimiento: ${formatDate(patientData.fecha_nacimiento)}`, 400, getYPosition(2));
-  
-      doc.text(`Edad: ${getValue(patientData.edad)}`, 40, getYPosition(3));
-      doc.text(`Sexo: ${getValue(patientData.sexo)}`, pageWidth / 2, getYPosition(3), { align: 'center' });
-  
-      // Sala, Procedencia, Cama (ajustando posiciones)
-      let nextX = 40;
-      doc.text(`Sala solicitada: Sala ${getValue(patientData.sala_quirofano)}`, nextX, getYPosition(4));
-      nextX = adjustPosition(`Sala solicitada: Sala ${getValue(patientData.sala_quirofano)}`, nextX, getYPosition(4), 200);
-      
-      const tipoAdmision = getValue(patientData.tipo_admision);
-      doc.text(`Procedencia del paciente: ${tipoAdmision === 'CONSULTA EXTERNA' ? 'C.E.' : tipoAdmision}`, nextX, getYPosition(4));
-      nextX = adjustPosition(`Procedencia del paciente: ${tipoAdmision === 'CONSULTA EXTERNA' ? 'C.E.' : tipoAdmision}`, nextX, getYPosition(4), 200);
-      
-      doc.text(`Cama: ${getValue(patientData.cama)}`, nextX, getYPosition(4));
-  
-      // Segunda línea divisoria
-      doc.setLineWidth(1.5);
-      doc.line(40, getYPosition(5), pageWidth - 40, getYPosition(5));
-  
-      // Procedimiento a realizar
-      doc.setFont('Helvetica', 'bold');
-      doc.text('PROCEDIMIENTO A REALIZAR', pageWidth / 2, getYPosition(6), { align: 'center' });
-  
-      doc.setFont('Helvetica', 'normal');
-      doc.text(`Fecha solicitada: ${formatDate(patientData.fecha_solicitada)}`, 40, getYPosition(7));
-      doc.text(`Hora solicitada: ${getValue(patientData.hora_solicitada)}`, 240, getYPosition(7));
-      doc.text(`Turno solicitado: ${getValue(patientData.turno_solicitado)}`, 440, getYPosition(7));
-  
-      doc.text(`Cirujano responsable: DR(A). ${getValue(patientData.nombre_cirujano)}`, 40, getYPosition(8));
-  
-      doc.text(`Tipo de intervención: ${getValue(patientData.tipo_intervencion)}`, 40, getYPosition(9));
-      doc.text(`Especialidad: ${getValue(patientData.nombre_especialidad)}`, 240, getYPosition(9));
-      doc.text(`Clave: ${getValue(patientData.clave_esp)}`, 440, getYPosition(9));
-  
-      doc.text(`Tiempo estimado de cirugía: ${getValue(patientData.tiempo_estimado)} Minutos`, 40, getYPosition(10));
-      doc.text(`Requiere insumos: ${getValue(patientData.req_insumo)}`, pageWidth / 2, getYPosition(10), { align: 'center' });
-  
-      const maxLineHeight = 24; // Altura máxima para dos líneas de texto
-      let currentY = getYPosition(11);
-  
-// Procedimiento CIE-9
-const cie9Label = `Procedimiento CI-E 9:`;
-const cie9Value = getValue(patientData.procedimientos_paciente);
-doc.text(cie9Label, 40, currentY);
-doc.text(cie9Value, 180, currentY); // Ajustar el 180 según el espacio que necesites
-currentY += maxLineHeight + 10; // Agregar espacio después del CIE-9
+      const stringValue = getValue(value);
+      doc.text(stringValue, x + fieldWidth + 5, y);
+      doc.line(x + fieldWidth + 5, y + 2, x + fieldWidth + 5 + doc.getStringUnitWidth(stringValue) * doc.internal.getFontSize() / doc.internal.scaleFactor, y + 2);
+    };
 
-// Diagnóstico y procedimientos
-const diagnosticoLabel = `Diagnóstico y procedimientos a realizar:`;
-const diagnosticoValue = getValue(patientData.diagnostico);
-doc.text(diagnosticoLabel, 40, currentY);
-doc.text(diagnosticoValue, 220, currentY); // Ajustar el 220 según el espacio que necesites
-currentY += maxLineHeight;
+    // Encabezado
+    doc.setFont('Helvetica', 'bold');
+    doc.setFontSize(12);
+    doc.text('Solicitud, Registro y Autorización de Intervención Quirúrgica', pageWidth / 2, 40, { align: 'center' });
+    doc.text('Nuevo Hospital General de Querétaro', pageWidth / 2, 60, { align: 'center' });
 
-  
-      // Asegurar que hay suficiente espacio antes de la línea divisoria final
-      const minSpaceBeforeLine = 30;
-      if (pageHeight - 80 - currentY < minSpaceBeforeLine) {
-        currentY = pageHeight - 80 - minSpaceBeforeLine;
-      }
-  
-      // Línea divisoria final
-      doc.setLineWidth(1.5);
-      doc.line(40, pageHeight - 80, pageWidth - 40, pageHeight - 80);
-  
-      // Firma del cirujano
-// Cirujano responsable
-const cirujanoLabel = 'Cirujano responsable:';
-const cirujanoX = 40; // Posición X de la etiqueta
-const cirujanoY = pageHeight - 40; // Posición Y
-doc.text(cirujanoLabel, cirujanoX, cirujanoY);
+    // Autorización del Paciente
+    doc.setFont('Helvetica', 'normal');
+    doc.setFontSize(10);
+    doc.text('Autorización del Paciente:', 40, 100);
 
-// Calcular la posición para la línea
-const cirujanoLineX = cirujanoX + doc.getStringUnitWidth(cirujanoLabel) * doc.internal.getFontSize() / doc.internal.scaleFactor + 10; // Agregar un poco de espacio
-doc.line(cirujanoLineX, pageHeight - 35, cirujanoLineX + 100, pageHeight - 35); // Ajustar longitud de la línea
+    const autorizacionTexto = 'Autorizo a los médicos de la presente unidad médica a cargo de los servicios de salud del estado de Querétaro, para que efectúen los tratamientos e intervenciones quirúrgicas necesarias para el alivio y/o curación de mi padecimiento, en inteligencia de que conozco los beneficios, riesgos y posibles complicaciones a los que estoy sujeto (a) por medio del procedimiento quirúrgico y anestésico a cual seré sometido(a).';
+    
+    doc.text(autorizacionTexto, 40, 120, { maxWidth: pageWidth - 80, align: 'justify' });
 
-// Firma y sello
-const firmaLabel = 'Firma y sello:';
-const firmaX = pageWidth / 2; // Posición X de la etiqueta para firma
-doc.text(firmaLabel, firmaX, cirujanoY);
+    // Nombre y firma del paciente
+    const nombreCompleto = `${getValue(patientData.ap_paterno)} ${getValue(patientData.ap_materno)} ${getValue(patientData.nombre_paciente)}`;
+    doc.text(nombreCompleto, 40, 205);
+    doc.line(40, 210, pageWidth / 2 - 20, 210);
+    doc.text('Nombre del paciente o representante legal', 40, 225);
 
-// Calcular la posición para la línea de firma
-const firmaLineX = firmaX + doc.getStringUnitWidth(firmaLabel) * doc.internal.getFontSize() / doc.internal.scaleFactor + 10; // Agregar un poco de espacio
-doc.line(firmaLineX, pageHeight - 35, firmaLineX + 100, pageHeight - 35); // Ajustar longitud de la línea
+    doc.line(pageWidth / 2 + 20, 210, pageWidth - 40, 210);
+    doc.text('Firma del paciente o representante legal', pageWidth / 2 + 20, 225);
 
-  
-      // Guardar el PDF
-      doc.save(`Solicitud_${getValue(patientData.folio)}.pdf`);
-    } catch (error) {
-      console.error('Error generating PDF:', error);
+    // Línea divisoria
+    doc.setLineWidth(1.5);
+    doc.line(40, 245, pageWidth - 40, 245);
+
+    // Datos del Paciente
+    doc.setFont('Helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.text('DATOS DEL PACIENTE', pageWidth / 2, 275, { align: 'center' });
+
+    // Función para calcular la posición Y
+    const getYPosition = (index) => 305 + (index * 30);
+
+    // Ajustando las posiciones de los campos
+    printFieldAndValue("Folio de Solicitud: ", patientData.folio, 40, getYPosition(0));
+    printFieldAndValue("Fecha de recibo de solicitud: ", formatDate(patientData.fecha_solicitud), 300, getYPosition(0)); // Movido hacia la izquierda
+
+    printFieldAndValue("CURP: ", patientData.curp, 40, getYPosition(1));
+    printFieldAndValue("No. de Expediente: ", patientData.no_expediente, 220, getYPosition(1)); // Movido hacia la izquierda
+    printFieldAndValue("Teléfono de contacto: ", patientData.tel_contacto, 400, getYPosition(1)); // Movido hacia la izquierda
+
+    printFieldAndValue("Nombre del paciente: ", nombreCompleto, 40, getYPosition(2));
+    printFieldAndValue("Fecha de nacimiento: ", formatDate(patientData.fecha_nacimiento), 400, getYPosition(2));
+
+    printFieldAndValue("Edad: ", patientData.edad, 40, getYPosition(3));
+    printFieldAndValue("Sexo: ", patientData.sexo, pageWidth / 2, getYPosition(3));
+
+    // Sala, Procedencia, Cama (ajustando posiciones)
+    let nextX = 40;
+    printFieldAndValue("Sala solicitada: ", `Sala ${getValue(patientData.sala_quirofano)}`, nextX, getYPosition(4));
+    nextX = adjustPosition(`Sala solicitada: Sala ${getValue(patientData.sala_quirofano)}`, nextX, getYPosition(4), 200);
+    
+    const tipoAdmision = getValue(patientData.tipo_admision);
+    printFieldAndValue("Procedencia del paciente: ", tipoAdmision === 'CONSULTA EXTERNA' ? 'C.E.' : tipoAdmision, nextX, getYPosition(4));
+    nextX = adjustPosition(`Procedencia del paciente: ${tipoAdmision === 'CONSULTA EXTERNA' ? 'C.E.' : tipoAdmision}`, nextX, getYPosition(4), 200);
+    
+    printFieldAndValue("Cama: ", patientData.cama, nextX, getYPosition(4));
+
+    // Segunda línea divisoria
+    doc.setLineWidth(1.5);
+    doc.line(40, getYPosition(5), pageWidth - 40, getYPosition(5));
+
+    // Procedimiento a realizar
+    doc.setFont('Helvetica', 'bold');
+    doc.text('PROCEDIMIENTO A REALIZAR', pageWidth / 2, getYPosition(6), { align: 'center' });
+
+    printFieldAndValue("Fecha solicitada: ", formatDate(patientData.fecha_solicitada), 40, getYPosition(7));
+    printFieldAndValue("Hora solicitada: ", patientData.hora_solicitada, 240, getYPosition(7));
+    printFieldAndValue("Turno solicitado: ", patientData.turno_solicitado, 440, getYPosition(7));
+
+    printFieldAndValue("Cirujano responsable: ", `DR(A). ${getValue(patientData.nombre_cirujano)}`, 40, getYPosition(8));
+
+    printFieldAndValue("Tipo de intervención: ", patientData.tipo_intervencion, 40, getYPosition(9));
+    printFieldAndValue("Especialidad: ", patientData.nombre_especialidad, 240, getYPosition(9));
+    printFieldAndValue("Clave: ", patientData.clave_esp, 440, getYPosition(9));
+
+    printFieldAndValue("Tiempo estimado de cirugía: ", `${getValue(patientData.tiempo_estimado)} Minutos`, 40, getYPosition(10));
+    printFieldAndValue("Requiere insumos: ", patientData.req_insumo, pageWidth / 2, getYPosition(10));
+
+    const maxLineHeight = 24; // Altura máxima para dos líneas de texto
+    let currentY = getYPosition(11);
+
+    // Procedimiento CIE-9
+    printFieldAndValue("Procedimiento CI-E 9: ", patientData.procedimientos_paciente, 40, currentY);
+    currentY += maxLineHeight + 10; // Agregar espacio después del CIE-9
+
+    // Diagnóstico y procedimientos
+    printFieldAndValue("Diagnóstico y procedimientos a realizar: ", patientData.diagnostico, 40, currentY);
+    currentY += maxLineHeight;
+
+    // Asegurar que hay suficiente espacio antes de la línea divisoria final
+    const minSpaceBeforeLine = 30;
+    if (pageHeight - 80 - currentY < minSpaceBeforeLine) {
+      currentY = pageHeight - 80 - minSpaceBeforeLine;
     }
-  };
-  
+
+    // Línea divisoria final
+    doc.setLineWidth(1.5);
+    doc.line(40, pageHeight - 80, pageWidth - 40, pageHeight - 80);
+
+    // Cirujano responsable
+    doc.setFont('Helvetica', 'bold');
+    const cirujanoLabel = 'Cirujano responsable:';
+    const cirujanoX = 40; // Posición X de la etiqueta
+    const cirujanoY = pageHeight - 40; // Posición Y
+    doc.text(cirujanoLabel, cirujanoX, cirujanoY);
+
+    // Calcular la posición para la línea
+    const cirujanoLineX = cirujanoX + doc.getStringUnitWidth(cirujanoLabel) * doc.internal.getFontSize() / doc.internal.scaleFactor + 10; // Agregar un poco de espacio
+    doc.line(cirujanoLineX, pageHeight - 35, cirujanoLineX + 100, pageHeight - 35); // Ajustar longitud de la línea
+
+    // Firma y sello
+    const firmaLabel = 'Firma y sello:';
+    const firmaX = pageWidth / 2; // Posición X de la etiqueta para firma
+    doc.text(firmaLabel, firmaX, cirujanoY);
+
+    // Calcular la posición para la línea de firma
+    const firmaLineX = firmaX + doc.getStringUnitWidth(firmaLabel) * doc.internal.getFontSize() / doc.internal.scaleFactor + 10; // Agregar un poco de espacio
+    doc.line(firmaLineX, pageHeight - 35, firmaLineX + 100, pageHeight - 35); // Ajustar longitud de la línea
+
+    // Guardar el PDF
+    doc.save(`Solicitud_${getValue(patientData.folio)}.pdf`);
+  } catch (error) {
+    console.error('Error generating PDF:', error);
+  }
+};
   
 
   return (

@@ -59,6 +59,7 @@ import GestorManager from './screens/Productividad/Gestorproductividad';
 import TodasSolicitudes from './screens/Agenda/Todas';
 import SolicitudessuspendidasB from './screens/BitacoraEnfermeria/Suspendida';
 import AppointmentsEnf from './screens/BitacoraEnfermeria/AgendaEnf';
+import AppointmentsEv from './screens/AgendaEv';
 
 function App() {
   Aos.init();
@@ -85,6 +86,7 @@ function App() {
             <Route path="/agenda/Solicitudreaizada" element={<Solicitudesrealizadas />} />
             <Route path="/agenda/todas" element={<TodasSolicitudes />} />
             <Route path="/evaluacion" element={<Evaluacionmedica />} />
+            <Route path="/evaluacion/agendaev" element={<AppointmentsEv />} />
             {/* Others */}
             <Route path="/agenda/appointments" element={<Appointments />} />
             <Route path="/anestesiólogos" element={<Anestesiólogos />} />

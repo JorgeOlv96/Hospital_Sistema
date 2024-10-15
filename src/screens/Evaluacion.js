@@ -227,32 +227,42 @@ function Evaluacion() {
 
             <div className="overflow-x-auto">
               <div className="flex flex-col space-y-4">
-                <div className="flex justify-between">
-                  <div className="flex space-x-2">
-                    <button
-                      onClick={() => setView("table")}
-                      className={`p-2 rounded-md ${
-                        view === "table"
-                          ? "bg-[#365b77] text-white"
-                          : "text-[#365b77]"
-                      }`}
-                      aria-label="Vista en tabla"
-                    >
-                      <FaTable size={24} />
-                    </button>
-                    <button
-                      onClick={() => setView("cards")}
-                      className={`p-2 rounded-md ${
-                        view === "cards"
-                          ? "bg-[#365b77] text-white"
-                          : "text-[#365b77]"
-                      }`}
-                      aria-label="Vista en tarjetas"
-                    >
-                      <FaThLarge size={24} />
-                    </button>
-                  </div>
-                </div>
+              <div className="flex justify-between items-center">
+  <div className="flex space-x-2">
+    <button
+      onClick={() => setView("table")}
+      className={`p-2 rounded-md ${
+        view === "table"
+          ? "bg-[#365b77] text-white"
+          : "text-[#365b77]"
+      }`}
+      aria-label="Vista en tabla"
+    >
+      <FaTable size={24} />
+    </button>
+    <button
+      onClick={() => setView("cards")}
+      className={`p-2 rounded-md ${
+        view === "cards"
+          ? "bg-[#365b77] text-white"
+          : "text-[#365b77]"
+      }`}
+      aria-label="Vista en tarjetas"
+    >
+      <FaThLarge size={24} />
+    </button>
+  </div>
+
+  <div className="ml-auto">
+    <Link
+      to="/evaluacion/agendaev"
+      className="bg-[#365b77] hover:bg-[#365b77] text-white py-2 px-4 rounded-lg inline-flex items-center"
+    >
+      <span>Ver agenda</span>
+    </Link>
+  </div>
+</div>
+
 
                 {filteredAppointments.length === 0 ? (
                   <div className="text-center text-white font-extrabold bg-gradient-to-r from-blue-500 to-green-400 p-4 rounded-lg shadow-lg mt-6 text-xl animate-pulse">

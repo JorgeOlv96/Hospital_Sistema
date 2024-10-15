@@ -183,7 +183,7 @@ function Appointments() {
           .add(appointment.tiempo_estimado, "minutes")
           .toDate();
 
-          const patientFullName = `${appointment.ap_paterno} ${appointment.ap_materno} ${appointment.nombre_paciente}`;
+          const patientFullName = `${appointment.nombre_paciente} ${appointment.ap_paterno}`;
           const isRSeries = /R[1-9]/i.test(appointment.folio);
 
         return {
