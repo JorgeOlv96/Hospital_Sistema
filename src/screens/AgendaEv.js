@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import Layout from "../../Layout";
+import Layout from "../Layout";
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
 import "moment/locale/es";
@@ -10,9 +10,9 @@ import axios from "axios";
 import { BiChevronLeft, BiChevronRight, BiTime } from "react-icons/bi";
 import { HiOutlineViewGrid } from "react-icons/hi";
 import { HiOutlineCalendarDays } from "react-icons/hi2";
-import AddAppointmentModal from "../../components/Modals/AddApointmentModal";
+import AddAppointmentModal from "../components/Modals/AddApointmentModal";
 import { Link } from "react-router-dom";
-import OperatingRoomSchedule from "../../components/OperatingRoomSchedule";
+import OperatingRoomSchedule from "../components/OperatingRoomSchedule";
 import { FaHospital } from "react-icons/fa";
 import { FaCalendarAlt } from 'react-icons/fa'; // Asegúrate de instalar react-icons si aún no lo has hecho
 
@@ -119,7 +119,7 @@ const CustomToolbar = ({ date, view, onView, onNavigate, onPrint, selectedDate, 
 };
 
 // Dentro del componente `Appointments`
-function AppointmentsEnf() {
+function AppointmentsEv() {
   const localizer = momentLocalizer(moment);
   const [openModal, setOpenModal] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState({});
@@ -272,4 +272,4 @@ function AppointmentsEnf() {
   );
 }
 
-export default AppointmentsEnf;
+export default AppointmentsEv;
