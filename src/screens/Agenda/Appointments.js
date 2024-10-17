@@ -184,7 +184,7 @@ function Appointments() {
           .add(appointment.tiempo_estimado, "minutes")
           .toDate();
 
-          const patientFullName = `${appointment.ap_paterno} ${appointment.ap_materno} ${appointment.nombre_paciente}`;
+          const patientFullName = `${appointment.nombre_paciente} ${appointment.ap_paterno}`;
           const isRSeries = /R[1-9]/i.test(appointment.folio);
 
         return {
@@ -601,7 +601,8 @@ ${todaysAnesthesiologists
           nombre_anestesiologo: solicitud.nombre_anestesiologo,
           cirujano: solicitud.nombre_cirujano,
           procedimientos_extra: solicitud.procedimientos_extra,
-          estado_solicitud: solicitud.estado_solicitud
+          estado_solicitud: solicitud.estado_solicitud,
+          Motivo_suspesion: solicitud.motivo_suspension
           // Añade cualquier otro campo que desees
         };
       });
