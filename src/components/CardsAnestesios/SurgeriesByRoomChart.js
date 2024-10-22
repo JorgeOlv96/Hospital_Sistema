@@ -57,14 +57,12 @@ const SurgeriesByRoomChart = () => {
         // Contar las cirugías de la semana actual por sala
         surgeries.forEach(surgery => {
           const surgeryDate = new Date(surgery.fecha_programada);
-          console.log("Fecha de cirugía:", surgeryDate, "Sala:", surgery.sala_quirofano);
           if (surgeryDate >= startOfWeek && surgeryDate <= endOfWeek) {
             if (rooms.includes(surgery.sala_quirofano)) {
               roomCounts[surgery.sala_quirofano]++;
               console.log("Cirugía contada para la sala:", surgery.sala_quirofano);
             }
           } else {
-            console.log("Cirugía fuera del rango de fechas");
           }
         });
 

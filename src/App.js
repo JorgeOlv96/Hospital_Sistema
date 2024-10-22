@@ -70,10 +70,10 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<IndexPage />} />
+          <Route path="/login" element={<Login />} />
         </Routes>
         <AuthProvider>
           <Routes>
-            <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/dashboard" element={<Dashboard />} />
             {/* Patient */}

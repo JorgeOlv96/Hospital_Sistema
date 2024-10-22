@@ -439,7 +439,7 @@ function Gestionusuarios() {
 
           {showModal && (
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-              <div className="bg-white p-6 rounded shadow-lg w-1/3">
+              <div className="bg-white p-6 rounded shadow-lg w-1/2">
                 <h2 className="text-xl mb-4">Editar Usuario</h2>
                 <form onSubmit={handleSave}>
                   <div className="mb-4 grid grid-cols-3 gap-4">
@@ -547,6 +547,22 @@ function Gestionusuarios() {
                         id="cedula"
                         name="cedula"
                         value={userToEdit.cedula || ""}
+                        onChange={handleInputChange}
+                        className="w-full p-3 border rounded-lg"
+                      />
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="contraseña"
+                        className="block text-gray-700 mb-2"
+                      >
+                        Contraseña
+                      </label>
+                      <input
+                        type="password"
+                        id="contraseña"
+                        name="contraseña"
+                        value={userToEdit.contraseña || ""}
                         onChange={handleInputChange}
                         className="w-full p-3 border rounded-lg"
                       />

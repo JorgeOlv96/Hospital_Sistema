@@ -163,23 +163,29 @@ function AddAppointmentModalEvaluar({
   };
 
   const handlePreprogramar = async () => {
-    try {
-      const response = await fetch(
-        `${baseURL}/api/solicitudes/preprogramar/${appointmentId}`,
-        {
-          method: "PUT",
+    const userConfirmed = window.confirm("¿Estás seguro de que deseas pre-programar esta solicitud? Asegúrate de haber generado el archivo PDF.");
+    
+    if (userConfirmed) {
+      try {
+        const response = await fetch(
+          `${baseURL}/api/solicitudes/preprogramar/${appointmentId}`,
+          {
+            method: "PUT",
+          }
+        );
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
         }
-      );
-      if (!response.ok) {
-        throw new Error("Network response was not ok");
+        closeModal(); // Cerrar el modal después de preprogramar
+        window.location.reload(); // Recargar la página
+      } catch (error) {
+        console.error("Error al preprogramar la solicitud:", error);
       }
-      closeModal(); // Cerrar el modal después de preprogramar
-      window.location.reload();
-    } catch (error) {
-      console.error("Error preprogramar appointment:", error);
+    } else {
+      console.log("Preprogramación cancelada por el usuario.");
     }
   };
-
+  
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
   
@@ -376,12 +382,13 @@ const generateDocument = async (patientData) => {
       ) : (
         <div className="p-4">
           <div className="flex justify-between">
-            <button
-              onClick={handlePreprogramar}
-              className="bg-[#06ABC9] bg-opacity-20 text-[#001B58] text-sm p-3 rounded-lg font-light"
+
+          <button
+              onClick={() => generateDocument(patientData)}
+              className="bg-green-500 text-white text-sm p-4 rounded-lg font-light"
               style={{ marginBottom: "8px" }}
             >
-              Pre-programar
+              Imprimir solicitud
             </button>
 
             <div className="flex space-x-2">
@@ -409,13 +416,13 @@ const generateDocument = async (patientData) => {
                 </button>
               )}
             </div>
-
+            
             <button
-              onClick={() => generateDocument(patientData)}
-              className="bg-green-500 text-white text-sm p-4 rounded-lg font-light"
+              onClick={handlePreprogramar}
+              className="bg-[#06ABC9] bg-opacity-20 text-[#001B58] text-sm p-3 rounded-lg font-light"
               style={{ marginBottom: "8px" }}
             >
-              Imprimir solicitud
+              Pre-programar
             </button>
 
           </div>
