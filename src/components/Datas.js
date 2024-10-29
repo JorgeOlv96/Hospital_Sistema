@@ -113,6 +113,12 @@ export const MenuDatas = [
     icon: BiBarChartAlt , // Puedes cambiar este icono por uno más representativo si lo deseas
     viewRole: [1, 2, 3, 4, 5, 6, 7] // Solo accesible para el nivel 5
   },
+  {
+    title: 'Insumos',
+    path: '/insumos',
+    icon: BiBarChartAlt , // Puedes cambiar este icono por uno más representativo si lo deseas
+    viewRole: [1, 2, 3, 4, 5, 6, 7] // Solo accesible para el nivel 5
+  },
 ];
 
 export const getMenuItemsForUser = (user) => {

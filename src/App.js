@@ -15,6 +15,7 @@ import Appointments from './screens/Agenda/Appointments';
 import Patients from './screens/Patients/Patients';
 import Campaings from './screens/Campaings';
 import Services from './screens/Services';
+import Insumos from './screens/Medicine';
 import Invoices from './screens/Invoices/Invoices';
 import Settings from './screens/Settings';
 import CreateInvoice from './screens/Invoices/CreateInvoice';
@@ -22,7 +23,6 @@ import EditInvoice from './screens/Invoices/EditInvoice';
 import PreviewInvoice from './screens/Invoices/PreviewInvoice';
 import EditPayment from './screens/Payments/EditPayment';
 import PreviewPayment from './screens/Payments/PreviewPayment';
-import Medicine from './screens/Medicine';
 import PatientProfile from './screens/Patients/PatientProfile';
 import CreatePatient from './screens/Patients/CreatePatient';
 import Doctors from './screens/Doctors/Doctors';
@@ -92,7 +92,7 @@ function App() {
             <Route path="/anestesiólogos" element={<Anestesiólogos />} />
             <Route path="/anestesio/Programaranestesiologo" element={<Programaranestesiologo />} />
             <Route path="/campaigns" element={<Campaings />} />
-            <Route path="/medicine" element={<Medicine />} />
+            <Route path="/insumos" element={<Insumos />} />
             <Route path="/urgencias" element={<Urgencias />} />
             <Route path="/bitacora" element={<Bitacora />} />
             <Route path="/bitacora/Bitaenfermeria" element={<Bitacoraenfermeria />} />

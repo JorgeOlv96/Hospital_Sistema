@@ -130,6 +130,25 @@ function CrearSolicitud() {
     fetchSolicitudes();
   }, []);
 
+    // Filtrar especialidades según el usuario
+    const getFilteredEspecialidades = () => {
+      // Ocultar "Trauma y Ortopedia" solo si el usuario es uno de los correos especificados
+      const emailsToExclude = [
+        "jefaturaquirofanohgq@gmail.com",
+        "JCORONAS@SESEQRO.GOB.MX"
+      ];
+  
+      // Si el usuario está en la lista, excluir la especialidad
+      if (user && emailsToExclude.includes(user.email)) {
+        return Object.keys(especialidadToClave).filter(
+          (especialidad) => especialidad !== "Trauma y Ortopedia"
+        );
+      }
+  
+      // Devolver todas las especialidades si no se debe excluir ninguna
+      return Object.keys(especialidadToClave);
+    };
+
     // Verificar si el usuario tiene una especialidad asignada
     useEffect(() => {
       if (user && user.especialidad) {
@@ -878,61 +897,62 @@ function CrearSolicitud() {
                 </div>
 
                 <div className="mr-4" style={{ width: "49%" }}>
-                  <label
-                    htmlFor="nombre_especialidad"
-                    className="block font-semibold text-white mb-1"
-                  >
-                    Especialidad:
-                  </label>
-                  <select
-                    id="nombre_especialidad"
-                    name="nombre_especialidad"
-                    value={formData.nombre_especialidad}
-                    onChange={handleNombreEspecialidadChange}
-                    className={`border ${
-                      formData.nombre_especialidad
-                        ? "bg-[#A8CBD5] border-[#A8CBD5]"
-                        : "border-gray-300"
-                    } rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
-                  >
-                    <option value="">Seleccionar</option>
-                    {Object.keys(especialidadToClave).map((especialidad) => (
-                      <option key={especialidad} value={especialidad}>
-                        {especialidad}
-                      </option>
-                    ))}
-                  </select>
-                  {errors.nombre_especialidad && (
-                    <p className="text-red-500">{errors.nombre_especialidad}</p>
-                  )}
-                </div>
+      <label
+        htmlFor="nombre_especialidad"
+        className="block font-semibold text-white mb-1"
+      >
+        Especialidad:
+      </label>
+      <select
+        id="nombre_especialidad"
+        name="nombre_especialidad"
+        value={formData.nombre_especialidad}
+        onChange={handleNombreEspecialidadChange}
+        className={`border ${
+          formData.nombre_especialidad
+            ? "bg-[#A8CBD5] border-[#A8CBD5]"
+            : "border-gray-300"
+        } rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#4F638F] focus:border-[#001B58] w-full`}
+      >
+        <option value="">Seleccionar</option>
+        {getFilteredEspecialidades().map((especialidad) => (
+          <option key={especialidad} value={especialidad}>
+            {especialidad}
+          </option>
+        ))}
+      </select>
+      {errors.nombre_especialidad && (
+        <p className="text-red-500">{errors.nombre_especialidad}</p>
+      )}
+    </div>
 
-                <div className="mr-4" style={{ width: "43%" }}>
-                  <label
-                    htmlFor="clave_esp"
-                    className="block font-semibold text-white mb-1"
-                  >
-                    Cve. de esp.:
-                  </label>
-                  <select
-                    id="clave_esp"
-                    name="clave_esp"
-                    value={formData.clave_esp}
-                    onChange={handleClaveEspecialidadChange}
-                    className={`border ${
-                      formData.clave_esp
-                        ? "bg-[#A8CBD5] border-[#A8CBD5]"
-                        : "border-gray-300"
-                    } rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
-                  >
-                    <option value="">Seleccionar</option>
-                    {Object.values(especialidadToClave).map((clave) => (
-                      <option key={clave} value={clave}>
-                        {clave}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+    {/* Campo para seleccionar la clave de especialidad */}
+    <div className="mr-4" style={{ width: "43%" }}>
+      <label
+        htmlFor="clave_esp"
+        className="block font-semibold text-white mb-1"
+      >
+        Cve. de esp.:
+      </label>
+      <select
+        id="clave_esp"
+        name="clave_esp"
+        value={formData.clave_esp}
+        onChange={handleClaveEspecialidadChange}
+        className={`border ${
+          formData.clave_esp
+            ? "bg-[#A8CBD5] border-[#A8CBD5]"
+            : "border-gray-300"
+        } rounded-lg px-3 py-2 shadow-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
+      >
+        <option value="">Seleccionar</option>
+        {getFilteredEspecialidades().map((especialidad) => (
+          <option key={especialidad} value={especialidadToClave[especialidad]}>
+            {especialidadToClave[especialidad]}
+          </option>
+        ))}
+      </select>
+    </div>
               </div>
 
               <div className="flex mb-4">
