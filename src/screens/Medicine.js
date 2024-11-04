@@ -66,6 +66,11 @@ const Insumos = () => {
     modulo: "",
     paquete: "",
   });
+  const [selectedInsumos, setSelectedInsumos] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+const [selectedPackages, setSelectedPackages] = useState([]);
+const [packages, setPackages] = useState([]);
+const [selectedInsumo, setSelectedInsumo] = useState(null);
 
   // Configuración de encabezados con token
   const axiosConfig = {
@@ -123,6 +128,50 @@ const Insumos = () => {
     }));
   };
 
+  const handleDeleteInsumo = async (idInsumo) => {
+    try {
+      await fetch(`/api/insumos/${idInsumo}`, {
+        method: 'DELETE',
+      });
+      // Aquí actualizas la lista de insumos después de la eliminación
+      setInsumos(insumos.filter(insumo => insumo.id_insumo !== idInsumo));
+    } catch (error) {
+      console.error('Error eliminando insumo:', error);
+    }
+  };
+  
+  const handleInsumoSelected = async (idInsumo) => {
+    try {
+      setSelectedInsumo(idInsumo);
+      setIsModalOpen(true);
+  
+      // Llama a fetchPaquetes para obtener los paquetes
+      await fetchPaquetes();
+    } catch (error) {
+      console.error("Error en handleInsumoSelect:", error);
+    }
+  };
+
+
+
+// Función para guardar paquetes seleccionados
+const handleSavePackages = async () => {
+  await fetch(`/api/insumos/${selectedInsumo}/paquetes`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ paquetes: selectedPackages }),
+  });
+  setIsModalOpen(false);
+};
+
+const handlePackageSelection = (packageId) => {
+  setSelectedPackages((prevSelected) =>
+    prevSelected.includes(packageId)
+      ? prevSelected.filter((id) => id !== packageId)
+      : [...prevSelected, packageId]
+  );
+};
+
   const handleInsumoSelect = (event) => {
     const selectedId = event.target.value;
     const selectedInsumo = insumos.find(insumo => insumo.id_insumo === parseInt(selectedId));
@@ -144,14 +193,18 @@ const Insumos = () => {
   // Crear un nuevo paquete
   const createPaquete = async () => {
     try {
-      await axios.post(`${baseURL}/api/insumos/paquetes`, newPaquete, axiosConfig);
-      fetchPaquetes(); // Refrescar la lista de paquetes
+      const paqueteData = {
+        ...newPaquete,
+        insumos: selectedInsumos.map(id => ({ id_insumo: id }))
+      };
+      await axios.post(`${baseURL}/api/insumos/paquetes`, paqueteData, axiosConfig);
+      fetchPaquetes();
       setNewPaquete({ clave: "", nombre: "", descripcion: "" });
+      setSelectedInsumos([]);
     } catch (error) {
       console.error("Error al crear paquete:", error);
     }
   };
-
   // Mostrar detalles de un paquete
   const viewPaqueteDetails = async (idPaquete) => {
     try {
@@ -381,33 +434,122 @@ const Insumos = () => {
             </form>
           </div>
     
-          {/* Tabla de Insumos */}
-          <div className="bg-white rounded-lg shadow-md p-6">
-  <h2 className="text-xl font-semibold mb-4">Lista de Insumos y Paquetes Disponibles</h2>
-  <div className="overflow-x-auto">
-    <table className="w-full table-auto">
-      <thead className="bg-gray-50">
-        <tr>
-          <th className="px-4 py-2 text-left">Clave</th>
-          <th className="px-4 py-2 text-left">Nombre</th>
-          <th className="px-4 py-2 text-left">Descripción</th>
-          <th className="px-4 py-2 text-left">Tipo</th>
-        </tr>
-      </thead>
-      <tbody className="divide-y divide-gray-200">
-        {/* Combina insumos y paquetes */}
-        {[...insumos, ...paquetes].map((item) => (
-          <tr key={item.id_insumo || item.id_paquete} className="hover:bg-gray-50">
-            <td className="px-4 py-2">{item.clave}</td>
-            <td className="px-4 py-2">{item.nombre}</td>
-            <td className="px-4 py-2">{item.descripcion}</td>
-            <td className="px-4 py-2">{item.tipo || "Paquete"}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
-</div>
+ {/* Tabla de Insumos */}
+       <div className="mb-10">
+          <h2 className="text-2xl font-semibold mb-4">Lista de Insumos</h2>
+          <table className="min-w-full bg-white border">
+            <thead>
+              <tr>
+                <th className="py-2 px-4 border">Clave</th>
+                <th className="py-2 px-4 border">Nombre</th>
+                <th className="py-2 px-4 border">Especialidad</th>
+                <th className="py-2 px-4 border">Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              {insumos.map(insumo => (
+                <tr key={insumo.id_insumo}>
+                  <td className="py-2 px-4 border">{insumo.clave}</td>
+                  <td className="py-2 px-4 border">{insumo.nombre}</td>
+                  <td className="py-2 px-4 border">{insumo.especialidad}</td>
+                  <td className="py-2 px-4 border flex gap-2">
+                    <button
+                      onClick={() => handleInsumoSelected(insumo.id_insumo)}
+                      className="text-blue-600 hover:underline"
+                    >
+                      Seleccionar para Paquete
+                    </button>
+                    <button
+                      onClick={() => handleDeleteInsumo(insumo.id_insumo)}
+                      className="text-red-600 hover:underline"
+                    >
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Tabla de Paquetes */}
+        <div className="mb-10">
+          <h2 className="text-2xl font-semibold mb-4">Lista de Paquetes</h2>
+          <table className="min-w-full bg-white border">
+            <thead>
+              <tr>
+                <th className="py-2 px-4 border">Clave</th>
+                <th className="py-2 px-4 border">Nombre</th>
+                <th className="py-2 px-4 border">Descripción</th>
+              </tr>
+            </thead>
+            <tbody>
+              {paquetes.map(paquete => (
+                <tr key={paquete.id_paquete}>
+                  <td className="py-2 px-4 border">{paquete.clave}</td>
+                  <td className="py-2 px-4 border">{paquete.nombre}</td>
+                  <td className="py-2 px-4 border">{paquete.descripcion}</td>
+                  <td className="py-2 px-4 border">{paquete.nombre_insumo}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+
+      {/* Modal */}
+      {isModalOpen && (
+        <>
+          {/* Overlay */}
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-50 z-40"
+            onClick={() => setIsModalOpen(false)}
+          />
+          
+          {/* Modal Content */}
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <div className="bg-white rounded-lg p-6 max-w-md w-full max-h-[80vh] overflow-y-auto">
+              <h3 className="text-xl font-semibold mb-4">Seleccione los Paquetes</h3>
+              
+              {packages.length === 0 ? (
+                <p className="text-gray-500">No hay paquetes disponibles</p>
+              ) : (
+                <ul className="space-y-2 mb-4">
+                  {packages.map(pkg => (
+                    <li key={pkg.id_paquete} className="flex items-center">
+                      <label className="flex items-center space-x-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          className="form-checkbox h-5 w-5 text-blue-600"
+                          checked={selectedPackages.includes(pkg.id_paquete)}
+                          onChange={() => handlePackageSelection(pkg.id_paquete)}
+                        />
+                        <span>{pkg.nombre}</span>
+                      </label>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              
+              <div className="flex justify-end space-x-2 mt-4 pt-4 border-t">
+                <button
+                  onClick={() => setIsModalOpen(false)}
+                  className="px-4 py-2 text-gray-600 bg-gray-100 rounded hover:bg-gray-200"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleSavePackages}
+                  className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700"
+                  disabled={selectedPackages.length === 0}
+                >
+                  Guardar
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
 
     
           {/* Modal para detalles del paquete */}
