@@ -130,13 +130,27 @@ const [selectedInsumo, setSelectedInsumo] = useState(null);
 
   const handleDeleteInsumo = async (idInsumo) => {
     try {
-      await fetch(`/api/insumos/${idInsumo}`, {
+      await axios.delete(`${baseURL}/api/insumos/insumos/${idInsumo}`, {
         method: 'DELETE',
       });
       // Aquí actualizas la lista de insumos después de la eliminación
       setInsumos(insumos.filter(insumo => insumo.id_insumo !== idInsumo));
     } catch (error) {
       console.error('Error eliminando insumo:', error);
+    }
+  };
+
+  const handleDeletePaquete = async (idPaquete) => {
+    try {
+      const response = await axios.delete(`${baseURL}/api/insumos/paquetes/${idPaquete}`);
+      
+      if (response.status === 200) {
+        setPaquetes(paquetes.filter(paquete => paquete.id_paquete !== idPaquete));
+        alert('Paquete eliminado correctamente');
+      }
+    } catch (error) {
+      console.error('Error eliminando paquete:', error);
+      alert('Error al eliminar el paquete');
     }
   };
   
@@ -474,27 +488,41 @@ const handlePackageSelection = (packageId) => {
 
         {/* Tabla de Paquetes */}
         <div className="mb-10">
-          <h2 className="text-2xl font-semibold mb-4">Lista de Paquetes</h2>
-          <table className="min-w-full bg-white border">
-            <thead>
-              <tr>
-                <th className="py-2 px-4 border">Clave</th>
-                <th className="py-2 px-4 border">Nombre</th>
-                <th className="py-2 px-4 border">Descripción</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paquetes.map(paquete => (
-                <tr key={paquete.id_paquete}>
-                  <td className="py-2 px-4 border">{paquete.clave}</td>
-                  <td className="py-2 px-4 border">{paquete.nombre}</td>
-                  <td className="py-2 px-4 border">{paquete.descripcion}</td>
-                  <td className="py-2 px-4 border">{paquete.nombre_insumo}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+  <h2 className="text-2xl font-semibold mb-4">Lista de Paquetes</h2>
+  <table className="min-w-full bg-white border">
+    <thead>
+      <tr>
+        <th className="py-2 px-4 border">Clave</th>
+        <th className="py-2 px-4 border">Nombre</th>
+        <th className="py-2 px-4 border">Descripción</th>
+        <th className="py-2 px-4 border">Insumo</th>
+        <th className="py-2 px-4 border">Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {paquetes.map(paquete => (
+        <tr key={paquete.id_paquete}>
+          <td className="py-2 px-4 border">{paquete.clave}</td>
+          <td className="py-2 px-4 border">{paquete.nombre}</td>
+          <td className="py-2 px-4 border">{paquete.descripcion}</td>
+          <td className="py-2 px-4 border">{paquete.nombre_insumo}</td>
+          <td className="py-2 px-4 border">
+            <button
+              onClick={() => {
+                if (window.confirm('¿Estás seguro de que deseas eliminar este paquete?')) {
+                  handleDeletePaquete(paquete.id_paquete);
+                }
+              }}
+              className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded"
+            >
+              Eliminar
+            </button>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
 
 
       {/* Modal */}
