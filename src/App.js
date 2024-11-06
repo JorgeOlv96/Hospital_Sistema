@@ -60,6 +60,7 @@ import TodasSolicitudes from './screens/Agenda/Todas';
 import SolicitudessuspendidasB from './screens/BitacoraEnfermeria/Suspendida';
 import AppointmentsEnf from './screens/BitacoraEnfermeria/AgendaEnf';
 import AppointmentsEv from './screens/AgendaEv';
+import SolicitudInsumosPaciente from './screens/Solicitudes/SolicitudInsumosPaciente';
 
 function App() {
   Aos.init();
@@ -80,6 +81,7 @@ function App() {
             <Route path="/patients" element={<Patients />} />
             <Route path="/solicitudes" element={<Solicitudes />} />
             <Route path="/solicitudes/crearsolicitud" element={<Crearsolicitud />} />
+            <Route path="/solicitudes/solicitud-insumos/:id" element={<SolicitudInsumosPaciente />} />
             <Route path="/agenda/Programarsolicitud" element={<Programarsolicitud />} />
             <Route path="/agenda/Solicitudesprogramadas" element={<Solicitudesprogramadas />} />
             <Route path="/agenda/Solicitudsuspendida" element={<Solicitudessuspendidas />} />
