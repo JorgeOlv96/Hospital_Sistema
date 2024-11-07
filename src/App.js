@@ -81,7 +81,7 @@ function App() {
             <Route path="/patients" element={<Patients />} />
             <Route path="/solicitudes" element={<Solicitudes />} />
             <Route path="/solicitudes/crearsolicitud" element={<Crearsolicitud />} />
-            <Route path="/solicitudes/solicitud-insumos/:id" element={<SolicitudInsumosPaciente />} />
+            <Route path="/solicitudes/solicitud-insumos/:appointmentId" element={<SolicitudInsumosPaciente />} />
             <Route path="/agenda/Programarsolicitud" element={<Programarsolicitud />} />
             <Route path="/agenda/Solicitudesprogramadas" element={<Solicitudesprogramadas />} />
             <Route path="/agenda/Solicitudsuspendida" element={<Solicitudessuspendidas />} />

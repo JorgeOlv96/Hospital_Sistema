@@ -421,7 +421,7 @@ function CrearSolicitud() {
             if (formData.req_insumo === "Si") {
               // Abrir una nueva pestaña con SolicitudInsumosPaciente
               const newWindow = window.open('', '_blank');
-              newWindow.location.href = `/solicitud-insumos/${data.id}`;
+              newWindow.location.href = `/solicitudes/solicitud-insumos/${data.id}`;
             }
             navigate("/solicitudes");
         } catch (error) {
