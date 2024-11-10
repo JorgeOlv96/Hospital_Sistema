@@ -418,11 +418,6 @@ function CrearSolicitud() {
             const data = await response.json();
             console.log("Formulario válido y enviado:", formData);
             setIsLoading(false); // Detener el estado de carga después de enviar la solicitud
-            if (formData.req_insumo === "Si") {
-              // Abrir una nueva pestaña con SolicitudInsumosPaciente
-              const newWindow = window.open('', '_blank');
-              newWindow.location.href = `/solicitudes/solicitud-insumos/${data.id}`;
-            }
             navigate("/solicitudes");
         } catch (error) {
             console.error("Error en la solicitud:", error);

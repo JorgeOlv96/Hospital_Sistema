@@ -60,7 +60,6 @@ import TodasSolicitudes from './screens/Agenda/Todas';
 import SolicitudessuspendidasB from './screens/BitacoraEnfermeria/Suspendida';
 import AppointmentsEnf from './screens/BitacoraEnfermeria/AgendaEnf';
 import AppointmentsEv from './screens/AgendaEv';
-import SolicitudInsumosPaciente from './screens/Solicitudes/SolicitudInsumosPaciente';
 
 function App() {
   Aos.init();

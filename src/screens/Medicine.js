@@ -89,7 +89,6 @@ const [selectedInsumo, setSelectedInsumo] = useState(null);
   const fetchPaquetes = async () => {
     try {
       const response = await axios.get(`${baseURL}/api/insumos/paquetes`, axiosConfig);
-      console.log('Paquetes obtenidos:', response.data);
       setPaquetes(response.data);
     } catch (error) {
       console.error("Error al obtener paquetes:", error);
@@ -171,7 +170,7 @@ const [selectedInsumo, setSelectedInsumo] = useState(null);
 
 // Función para guardar paquetes seleccionados
 const handleSavePackages = async () => {
-  await axios.post(`${baseURL}/api/insumos/insumos/${selectedInsumo}/paquetes`, {
+  await fetch(`/api/insumos/${selectedInsumo}/paquetes`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ paquetes: selectedPackages }),
@@ -470,17 +469,13 @@ const handlePackageSelection = (packageId) => {
                   <td className="py-2 px-4 border flex gap-2">
                     <button
                       onClick={() => handleInsumoSelected(insumo.id_insumo)}
-                      className="bg-blue-600 text-white py-2 px-6 rounded-md hover:bg-blue-700 font-bold transition-colors"
+                      className="text-blue-600 hover:underline"
                     >
                       Seleccionar para Paquete
                     </button>
                     <button
-                      onClick={() => {
-                        if (window.confirm('¿Estás seguro de que deseas eliminar este insumo?')) {
-                          handleDeleteInsumo(insumo.id_insumo);
-                        }
-                      }}
-                      className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-3 rounded"
+                      onClick={() => handleDeleteInsumo(insumo.id_insumo)}
+                      className="text-red-600 hover:underline"
                     >
                       Eliminar
                     </button>
@@ -532,57 +527,57 @@ const handlePackageSelection = (packageId) => {
 
       {/* Modal */}
       {isModalOpen && (
-  <>
-    {/* Overlay */}
-    <div
-      className="fixed inset-0 bg-black bg-opacity-50 z-40"
-      onClick={() => setIsModalOpen(false)}
-    />
-
-    {/* Modal Content */}
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      <div className="bg-white rounded-lg p-6 max-w-md w-full max-h-[80vh] overflow-y-auto">
-        <h3 className="text-xl font-semibold mb-4">Seleccione los Paquetes</h3>
-
-        {paquetes.length > 0 ? (
-          <ul className="space-y-2 mb-4">
-            {paquetes.map((pkg) => (
-              <li key={pkg.id_paquete} className="flex items-center">
-                <label className="flex items-center space-x-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    className="form-checkbox h-5 w-5 text-blue-600"
-                    checked={selectedPackages.includes(pkg.id_paquete)}
-                    onChange={() => handlePackageSelection(pkg.id_paquete)}
-                  />
-                  <span>{pkg.nombre}</span>
-                </label>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p className="text-gray-500">No hay paquetes disponibles</p>
-        )}
-
-        <div className="flex justify-end space-x-2 mt-4 pt-4 border-t">
-          <button
+        <>
+          {/* Overlay */}
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-50 z-40"
             onClick={() => setIsModalOpen(false)}
-            className="px-4 py-2 text-gray-600 bg-gray-100 rounded hover:bg-gray-200"
-          >
-            Cancelar
-          </button>
-          <button
-            onClick={handleSavePackages}
-            className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700"
-            disabled={selectedPackages.length === 0}
-          >
-            Guardar
-          </button>
-        </div>
-      </div>
-    </div>
-  </>
-)}
+          />
+          
+          {/* Modal Content */}
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <div className="bg-white rounded-lg p-6 max-w-md w-full max-h-[80vh] overflow-y-auto">
+              <h3 className="text-xl font-semibold mb-4">Seleccione los Paquetes</h3>
+              
+              {packages.length === 0 ? (
+                <p className="text-gray-500">No hay paquetes disponibles</p>
+              ) : (
+                <ul className="space-y-2 mb-4">
+                  {packages.map(pkg => (
+                    <li key={pkg.id_paquete} className="flex items-center">
+                      <label className="flex items-center space-x-2 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          className="form-checkbox h-5 w-5 text-blue-600"
+                          checked={selectedPackages.includes(pkg.id_paquete)}
+                          onChange={() => handlePackageSelection(pkg.id_paquete)}
+                        />
+                        <span>{pkg.nombre}</span>
+                      </label>
+                    </li>
+                  ))}
+                </ul>
+              )}
+              
+              <div className="flex justify-end space-x-2 mt-4 pt-4 border-t">
+                <button
+                  onClick={() => setIsModalOpen(false)}
+                  className="px-4 py-2 text-gray-600 bg-gray-100 rounded hover:bg-gray-200"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={handleSavePackages}
+                  className="px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700"
+                  disabled={selectedPackages.length === 0}
+                >
+                  Guardar
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
 
     
           {/* Modal para detalles del paquete */}
