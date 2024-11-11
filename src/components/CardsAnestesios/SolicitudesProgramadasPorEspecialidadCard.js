@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { Pie } from 'react-chartjs-2';
+import { AuthContext } from '../../AuthContext';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -8,6 +9,7 @@ const SolicitudesProgramadasPorEspecialidadCard = () => {
   const [chartData, setChartData] = useState(null);
   const [error, setError] = useState(null);
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchSolicitudesData = async () => {
@@ -16,15 +18,22 @@ const SolicitudesProgramadasPorEspecialidadCard = () => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const solicitudes = await response.json();
+        let solicitudes = await response.json();
 
         // Obtener la fecha actual en formato YYYY-MM-DD
         const today = new Date().toISOString().split('T')[0];
 
         // Filtrar las solicitudes para el día actual
-        const solicitudesHoy = solicitudes.filter(solicitud => 
+        let solicitudesHoy = solicitudes.filter(solicitud => 
           solicitud.fecha_programada && solicitud.fecha_programada.startsWith(today)
         );
+
+        // Filtrar por especialidad si el usuario tiene una asignada
+        if (user?.especialidad) {
+          solicitudesHoy = solicitudesHoy.filter(
+            solicitud => solicitud.nombre_especialidad === user.especialidad
+          );
+        }
 
         const specialtyCounts = solicitudesHoy.reduce((acc, solicitud) => {
           const specialty = solicitud.nombre_especialidad;
@@ -55,7 +64,9 @@ const SolicitudesProgramadasPorEspecialidadCard = () => {
           labels,
           datasets: [
             {
-              label: 'Solicitudes Programadas',
+              label: user?.especialidad 
+                ? `Solicitudes de ${user.especialidad}`
+                : 'Solicitudes Programadas',
               data,
               backgroundColor: backgroundColors,
               borderColor: backgroundColors.map(color => color.replace('FF', 'AA')),
@@ -71,7 +82,11 @@ const SolicitudesProgramadasPorEspecialidadCard = () => {
     };
 
     fetchSolicitudesData();
-  }, [baseURL]);
+    
+    // Actualizar cada minuto para mantener los datos del día actual
+    const intervalId = setInterval(fetchSolicitudesData, 60000);
+    return () => clearInterval(intervalId);
+  }, [baseURL, user?.especialidad]); // Agregamos user?.especialidad como dependencia
 
   if (error) return <div>Error: {error}</div>;
   if (!chartData) return <div>Cargando...</div>;
@@ -94,9 +109,14 @@ const SolicitudesProgramadasPorEspecialidadCard = () => {
     },
   };
 
+  // Título dinámico basado en la especialidad del usuario
+  const chartTitle = user?.especialidad 
+    ? `Solicitudes Programadas - ${user.especialidad} (Hoy)`
+    : 'Solicitudes Programadas por Especialidad (Hoy)';
+
   return (
     <div className="bg-white rounded-xl border-[1px] border-border p-5 shadow-md card-zoom" style={{ height: '350px' }}>
-      <h3 className="text-lg font-medium mb-4">Solicitudes Programadas por Especialidad (Hoy)</h3>
+      <h3 className="text-lg font-medium mb-4">{chartTitle}</h3>
       <div style={{ height: 'calc(100% - 40px)' }}>
         <Pie data={chartData} options={chartOptions} />
       </div>

@@ -134,8 +134,8 @@ function CrearSolicitud() {
     const getFilteredEspecialidades = () => {
       // Ocultar "Trauma y Ortopedia" solo si el usuario es uno de los correos especificados
       const emailsToExclude = [
-        "jefaturaquirofanohgq@gmail.com",
-        "JCORONAS@SESEQRO.GOB.MX"
+        "",
+        ""
       ];
   
       // Si el usuario está en la lista, excluir la especialidad

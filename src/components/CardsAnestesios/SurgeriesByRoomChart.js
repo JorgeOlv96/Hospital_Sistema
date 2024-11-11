@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { Bar } from 'react-chartjs-2';
+import { AuthContext } from '../../AuthContext';
 import {
   Chart as ChartJS,
   BarElement,
@@ -23,6 +24,7 @@ const SurgeriesByRoomChart = () => {
   const [chartData, setChartData] = useState(null);
   const [error, setError] = useState(null);
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
+  const { user } = useContext(AuthContext);
 
   const rooms = ["A1", "A2", "T1", "T2", "1", "2", "3", "4", "5", "6", "E", "H", "RX"];
 
@@ -33,9 +35,14 @@ const SurgeriesByRoomChart = () => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const surgeries = await response.json();
+        let surgeries = await response.json();
 
-        console.log("Cirugías recibidas:", surgeries);
+        // Filtrar por especialidad si el usuario tiene una asignada
+        if (user?.especialidad) {
+          surgeries = surgeries.filter(
+            surgery => surgery.nombre_especialidad === user.especialidad
+          );
+        }
 
         // Obtener la fecha actual y el inicio de la semana
         const today = new Date();
@@ -44,9 +51,6 @@ const SurgeriesByRoomChart = () => {
         const endOfWeek = new Date(startOfWeek);
         endOfWeek.setDate(endOfWeek.getDate() + 6);
         endOfWeek.setHours(23, 59, 59, 999);
-
-        console.log("Inicio de la semana:", startOfWeek);
-        console.log("Fin de la semana:", endOfWeek);
 
         // Inicializar el conteo de cirugías para todas las salas
         const roomCounts = rooms.reduce((acc, room) => {
@@ -60,13 +64,9 @@ const SurgeriesByRoomChart = () => {
           if (surgeryDate >= startOfWeek && surgeryDate <= endOfWeek) {
             if (rooms.includes(surgery.sala_quirofano)) {
               roomCounts[surgery.sala_quirofano]++;
-              console.log("Cirugía contada para la sala:", surgery.sala_quirofano);
             }
-          } else {
           }
         });
-
-        console.log("Conteo final de cirugías por sala:", roomCounts);
 
         // Preparar los datos para el gráfico
         const counts = rooms.map(room => roomCounts[room]);
@@ -74,7 +74,9 @@ const SurgeriesByRoomChart = () => {
         setChartData({
           labels: rooms,
           datasets: [{
-            label: 'Cirugías Programadas',
+            label: user?.especialidad 
+              ? `Cirugías de ${user.especialidad}`
+              : 'Cirugías Programadas',
             data: counts,
             backgroundColor: rooms.map(() => `rgba(${Math.floor(Math.random()*255)}, ${Math.floor(Math.random()*255)}, ${Math.floor(Math.random()*255)}, 0.6)`),
             borderColor: 'rgba(0, 0, 0, 0.1)',
@@ -88,11 +90,10 @@ const SurgeriesByRoomChart = () => {
     };
 
     fetchData();
-    // Actualizar cada 30 segundos para datos en tiempo real
     const intervalId = setInterval(fetchData, 30000);
 
     return () => clearInterval(intervalId);
-  }, [baseURL]);
+  }, [baseURL, user?.especialidad]); // Agregamos user?.especialidad como dependencia
 
   if (error) return <div>Error: {error}</div>;
   if (!chartData) return <div>Cargando...</div>;
@@ -106,7 +107,9 @@ const SurgeriesByRoomChart = () => {
       },
       title: {
         display: true,
-        text: 'Cirugías Programadas por Sala esta Semana',
+        text: user?.especialidad 
+          ? `Cirugías Programadas de ${user.especialidad} por Sala esta Semana`
+          : 'Cirugías Programadas por Sala esta Semana',
       },
       tooltip: {
         callbacks: {

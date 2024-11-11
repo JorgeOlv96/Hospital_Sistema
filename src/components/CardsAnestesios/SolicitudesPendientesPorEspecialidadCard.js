@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { Pie, Bar } from 'react-chartjs-2';
+import { AuthContext } from '../../AuthContext';
 import {
   Chart as ChartJS,
   ArcElement,
@@ -17,6 +18,7 @@ const SolicitudesPendientesPorEspecialidadCard = () => {
   const [error, setError] = useState(null);
   const [isPieChart, setIsPieChart] = useState(true);
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchSolicitudesData = async () => {
@@ -27,9 +29,17 @@ const SolicitudesPendientesPorEspecialidadCard = () => {
         }
         const solicitudes = await response.json();
 
-        const solicitudesPendientes = solicitudes.filter(solicitud => 
+        // Filtrar primero por solicitudes pendientes
+        let solicitudesPendientes = solicitudes.filter(solicitud => 
           solicitud.estado_solicitud === 'Pendiente'
         );
+
+        // Si el usuario tiene una especialidad asignada, filtrar por ella
+        if (user?.especialidad) {
+          solicitudesPendientes = solicitudesPendientes.filter(solicitud =>
+            solicitud.nombre_especialidad === user.especialidad
+          );
+        }
 
         const specialtyCounts = solicitudesPendientes.reduce((acc, solicitud) => {
           const specialty = solicitud.nombre_especialidad;
@@ -82,7 +92,7 @@ const SolicitudesPendientesPorEspecialidadCard = () => {
     const intervalId = setInterval(fetchSolicitudesData, 30000);
 
     return () => clearInterval(intervalId);
-  }, [baseURL]);
+  }, [baseURL, user?.especialidad]); // Agregamos user.especialidad como dependencia
 
   if (error) return <div>Error: {error}</div>;
   if (!chartData) return <div>Cargando...</div>;
@@ -124,9 +134,14 @@ const SolicitudesPendientesPorEspecialidadCard = () => {
     </div>
   );
 
+  // Título dinámico según si hay especialidad filtrada o no
+  const chartTitle = user?.especialidad
+    ? `Solicitudes Pendientes - Especialidad: ${user.especialidad}`
+    : 'Especialidades con Solicitudes Pendientes';
+
   return (
     <div className="bg-white rounded-xl border-[1px] border-border p-5 shadow-md card-zoom">
-      <h3 className="text-lg font-medium mb-4">Especialidades con Solicitudes Pendientes</h3>
+      <h3 className="text-lg font-medium mb-4">{chartTitle}</h3>
       <button
         className="mb-4 px-3 py-1 bg-gray-200 text-gray-700 rounded-md text-sm"
         onClick={toggleChartType}

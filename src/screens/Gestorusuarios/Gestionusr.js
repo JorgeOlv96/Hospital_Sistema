@@ -198,7 +198,7 @@ function Gestionusuarios() {
   const availableScreens = [
     "Dashboard", "Solicitudes", "Evaluación", "Agenda", "Anestesiólogos",
     "Bitácora enfermería", "Bitácora anestesiología", "Gestor de salas",
-    "Solicitudes insumos", "Gestor de productividad", "Gestor de usuarios", "Insumos"
+    "Solicitudes insumos", "Gestor de productividad", "Gestor de usuarios"
   ];
   // Manejar cambios en los inputs del formulario modal
   const handleInputChange = (event) => {

@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { Line } from 'react-chartjs-2';
+import { AuthContext } from '../../AuthContext';
 import { Chart as ChartJS, Tooltip, Legend, PointElement, LineElement, LinearScale, Title } from 'chart.js';
 
 ChartJS.register(PointElement, LineElement, Tooltip, Legend, LinearScale, Title);
@@ -8,6 +9,7 @@ const SurgeriesBySpecialtyCard = () => {
   const [chartData, setChartData] = useState(null);
   const [error, setError] = useState(null);
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
     const fetchSurgeriesData = async () => {
@@ -16,7 +18,14 @@ const SurgeriesBySpecialtyCard = () => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        const surgeries = await response.json();
+        let surgeries = await response.json();
+
+        // Filtrar por especialidad si el usuario tiene una asignada
+        if (user?.especialidad) {
+          surgeries = surgeries.filter(
+            surgery => surgery.nombre_especialidad === user.especialidad
+          );
+        }
 
         const specialtyCounts = surgeries.reduce((acc, surgery) => {
           const specialty = surgery.nombre_especialidad;
@@ -42,19 +51,21 @@ const SurgeriesBySpecialtyCard = () => {
           labels,
           datasets: [
             {
-              label: 'Cirugías Realizadas por Especialidad',
+              label: user?.especialidad 
+                ? `Cirugías Realizadas - ${user.especialidad}`
+                : 'Cirugías Realizadas por Especialidad',
               data,
               backgroundColor: '#36A2EB',
               borderColor: '#36A2EB',
-              tension: 0.2, // Suaviza las líneas
-              pointRadius: 5, // Tamaño de los puntos
+              tension: 0.2,
+              pointRadius: 5,
               pointBackgroundColor: '#FF6384',
               pointBorderColor: '#FF6384',
               pointBorderWidth: 2,
-              fill: false, // Desactiva el relleno bajo la línea
+              fill: false,
             },
           ],
-          fullNames, // Nombres completos para los tooltips
+          fullNames,
         });
       } catch (error) {
         setError(error.message);
@@ -63,7 +74,7 @@ const SurgeriesBySpecialtyCard = () => {
     };
 
     fetchSurgeriesData();
-  }, [baseURL]);
+  }, [baseURL, user?.especialidad]); // Agregamos user?.especialidad como dependencia
 
   if (error) return <div>Error: {error}</div>;
   if (!chartData) return <div>Cargando...</div>;
@@ -75,7 +86,9 @@ const SurgeriesBySpecialtyCard = () => {
       x: {
         title: {
           display: true,
-          text: 'Especialidades (por clave)',
+          text: user?.especialidad 
+            ? 'Cirugías por Periodo'
+            : 'Especialidades (por clave)',
         },
       },
       y: {
@@ -93,7 +106,6 @@ const SurgeriesBySpecialtyCard = () => {
       tooltip: {
         callbacks: {
           title: (context) => {
-            // Muestra el nombre completo de la especialidad en el tooltip
             return chartData.fullNames[context[0].dataIndex];
           },
           label: (context) => `${context.raw} cirugías`,
@@ -102,9 +114,14 @@ const SurgeriesBySpecialtyCard = () => {
     },
   };
 
+  // Título dinámico basado en la especialidad del usuario
+  const chartTitle = user?.especialidad 
+    ? `Cirugías Realizadas - ${user.especialidad}`
+    : 'Cirugías Realizadas por Especialidad';
+
   return (
     <div className="bg-white rounded-xl border-[1px] border-border p-5 shadow-md card-zoom" style={{ height: '350px' }}>
-      <h3 className="text-lg font-medium mb-4">Cirugías Realizadas por Especialidad</h3>
+      <h3 className="text-lg font-medium mb-4">{chartTitle}</h3>
       <div style={{ height: 'calc(100% - 40px)' }}>
         <Line data={chartData} options={chartOptions} />
       </div>
