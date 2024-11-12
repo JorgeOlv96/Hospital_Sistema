@@ -10,8 +10,15 @@ const SolicitudInsumosPaciente = () => {
   const [patientData, setPatientData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [insumos, setInsumos] = useState([]);
-  const [mostrarInsumos, setMostrarInsumos] = useState(false);
+  const [paquetes, setPaquetes] = useState([]);
   const [insumosSeleccionados, setInsumosSeleccionados] = useState([]);
+  const [paquetesSeleccionados, setPaquetesSeleccionados] = useState([]);
+  const [mostrarInsumos, setMostrarInsumos] = useState(false);
+  const [mostrarPaquetes, setMostrarPaquetes] = useState(false);
+  const [insumosAutocompletado, setInsumosAutocompletado] = useState([]);
+const [paquetesAutocompletado, setPaquetesAutocompletado] = useState([]);
+const [insumoBusqueda, setInsumoBusqueda] = useState("");
+const [paqueteBusqueda, setPaqueteBusqueda] = useState("");
 
   useEffect(() => {
     const fetchAppointmentData = async () => {
@@ -36,14 +43,72 @@ const SolicitudInsumosPaciente = () => {
     }
   };
 
-  const handleAgregarInsumos = () => {
-    fetchInsumos(); // Cargar insumos al hacer clic en "Agregar Insumos"
-    setMostrarInsumos(true);
+  const fetchPaquetes = async () => {
+    try {
+      const response = await axios.get(`${baseURL}/api/insumos/paquetes`);
+      setPaquetes(response.data);
+    } catch (error) {
+      console.error("Error al obtener paquetes:", error);
+    }
+  };
+
+  const handleAgregarInsumos = async () => {
+    try {
+      const response = await axios.get(`${baseURL}/api/insumos/insumos-disponibles`);
+      setInsumosAutocompletado(response.data.insumos);
+      setMostrarInsumos(true);
+    } catch (error) {
+      console.error("Error al obtener insumos:", error);
+    }
+  };
+  
+  const handleAgregarPaquetes = async () => {
+    try {
+      const response = await axios.get(`${baseURL}/api/insumos/paquetes`);
+      setPaquetesAutocompletado(response.data);
+      setMostrarPaquetes(true);
+    } catch (error) {
+      console.error("Error al obtener paquetes:", error);
+    }
   };
 
   const handleSeleccionarInsumo = (insumo) => {
     setInsumosSeleccionados([...insumosSeleccionados, insumo]);
   };
+
+  const handleSeleccionarPaquete = (paquete, cantidad) => {
+    setPaquetesSeleccionados([
+      ...paquetesSeleccionados,
+      { ...paquete, cantidad }
+    ]);
+  };
+
+  const handleGuardarSolicitud = async () => {
+    const nombreInsumos = insumosSeleccionados.map((insumo) => insumo.nombre).join(', ');
+    const cantidadesInsumos = insumosSeleccionados.map((insumo) => insumo.cantidad).join(', ');
+    const nombrePaquetes = paquetesSeleccionados.map((paquete) => paquete.nombre).join(', ');
+    const cantidadesPaquetes = paquetesSeleccionados.map((paquete) => paquete.cantidad).join(', ');
+  
+    const datosSolicitud = {
+      folio: patientData.folio,
+      nombre_insumos: nombreInsumos,
+      cantidades_insumos: cantidadesInsumos,
+      nombre_paquetes: nombrePaquetes,
+      cantidades_paquetes: cantidadesPaquetes,
+      estado: 'Sin solicitud'
+    };
+  
+    console.log('Datos de la solicitud de insumos:');
+    console.log(datosSolicitud);
+  
+    try {
+      const response = await axios.post(`${baseURL}/api/insumos/solicitudes-insumos`, datosSolicitud);
+      alert("Solicitud guardada con éxito");
+    } catch (error) {
+      console.error("Error al guardar solicitud:", error);
+    }
+  };
+
 
   if (loading) return <div>Cargando...</div>;
 
@@ -148,31 +213,103 @@ const SolicitudInsumosPaciente = () => {
           </button>
         </div>
         {mostrarInsumos && (
-          <div className="bg-gray-300 p-6 rounded-lg shadow-lg mt-4">
-            <h3 className="text-xl font-semibold mb-4">Seleccionar Insumos</h3>
-            <ul className="space-y-2">
-              {insumos.map((insumo) => (
-                <li key={insumo.id} className="flex justify-between items-center">
-                  <span>{insumo.nombre}</span>
-                  <button
-                    onClick={() => handleSeleccionarInsumo(insumo)}
-                    className="bg-green-500 text-white px-3 py-1 rounded-lg"
-                  >
-                    Seleccionar
-                  </button>
-                </li>
-              ))}
-            </ul>
-            <div className="mt-4">
-              <h4 className="text-lg font-semibold">Insumos Seleccionados:</h4>
-              <ul className="list-disc ml-5">
-                {insumosSeleccionados.map((insumo, index) => (
-                  <li key={index}>{insumo.nombre}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        )}
+  <div className="bg-gray-300 p-6 rounded-lg shadow-lg mt-4">
+    <h3 className="text-xl font-semibold mb-4">Seleccionar Insumos</h3>
+    <div className="mb-4">
+      <input
+        type="text"
+        placeholder="Buscar insumo..."
+        value={insumoBusqueda}
+        onChange={(e) => setInsumoBusqueda(e.target.value)}
+        className="w-full p-2 border rounded"
+      />
+      <ul className="mt-2 bg-white p-2 rounded-lg shadow-md">
+        {insumosAutocompletado
+          .filter((insumo) =>
+            insumo.nombre.toLowerCase().includes(insumoBusqueda.toLowerCase())
+          )
+          .map((insumo) => (
+            <li
+              key={insumo.id}
+              className="cursor-pointer hover:bg-gray-200 p-2 rounded"
+              onClick={() => handleSeleccionarInsumo(insumo)}
+            >
+              {insumo.nombre}
+            </li>
+          ))}
+      </ul>
+    </div>
+    <div className="mt-4">
+      <h4 className="text-lg font-semibold">Insumos Seleccionados:</h4>
+      <ul className="list-disc ml-5">
+        {insumosSeleccionados.map((insumo, index) => (
+          <li key={index}>
+            {insumo.nombre} - Cantidad: {insumo.cantidad}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+)}
+
+        <div className="mt-6 flex justify-end">
+          <button
+            onClick={handleAgregarPaquetes}
+            className="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-blue-700"
+          >
+            Agregar Paquetes
+          </button>
+        </div>
+
+        {mostrarPaquetes && (
+  <div className="bg-gray-300 p-6 rounded-lg shadow-lg mt-4">
+    <h3 className="text-xl font-semibold mb-4">Seleccionar Paquetes</h3>
+    <div className="mb-4">
+      <input
+        type="text"
+        placeholder="Buscar paquete..."
+        value={paqueteBusqueda}
+        onChange={(e) => setPaqueteBusqueda(e.target.value)}
+        className="w-full p-2 border rounded"
+      />
+      <ul className="mt-2 bg-white p-2 rounded-lg shadow-md">
+        {paquetesAutocompletado
+          .filter((paquete) =>
+            paquete.nombre.toLowerCase().includes(paqueteBusqueda.toLowerCase())
+          )
+          .map((paquete) => (
+            <li
+              key={paquete.id}
+              className="cursor-pointer hover:bg-gray-200 p-2 rounded"
+              onClick={() => handleSeleccionarPaquete(paquete, 1)}
+            >
+              {paquete.nombre}
+            </li>
+          ))}
+      </ul>
+    </div>
+    <div className="mt-4">
+      <h4 className="text-lg font-semibold">Paquetes Seleccionados:</h4>
+      <ul className="list-disc ml-5">
+        {paquetesSeleccionados.map((paquete, index) => (
+          <li key={index}>
+            {paquete.nombre} - Cantidad: {paquete.cantidad}
+          </li>
+        ))}
+      </ul>
+    </div>
+  </div>
+)}
+        
+
+        <div className="mt-6 flex justify-end">
+          <button
+            onClick={handleGuardarSolicitud}
+            className="bg-green-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-green-700"
+          >
+            Guardar Solicitud
+          </button>
+        </div>
 
   </div>
   </div>
