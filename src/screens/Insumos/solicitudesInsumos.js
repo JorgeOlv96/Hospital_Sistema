@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import Layout from "../../Layout";
-import AddAppointmentModalInsumos from "../../components/Modals/AddApointmentModalInsumos";
+import SolicitudInsumosModal from "../../components/Modals/SolicitudInsumosModal";
 import axios from "axios";
 import { AuthContext } from "../../AuthContext";
 import { FaTable, FaThLarge } from "react-icons/fa"; // Asegúrate de tener esta biblioteca instalada
@@ -48,34 +48,21 @@ function SolicitudesInsumos() {
 
   const fetchPendingAppointments = async () => {
     try {
-      const response = await axios.get(`${baseURL}/api/solicitudes`);
+      const response = await axios.get(`${baseURL}/api/insumos/solicitudes-insumos`);
   
-      // No necesitas hacer `response.json()` porque Axios ya maneja eso.
+      // Obtener los datos directamente desde la respuesta
       const data = response.data;
   
-      // Filtrar las solicitudes que requieren insumo
-      const filteredData = data.filter(
-        (solicitud) =>
-          solicitud.req_insumo && solicitud.req_insumo.trim().toLowerCase() === "si" &&
-          solicitud.estado_solicitud !== "Eliminada"
-      );
+      // Ordenar los datos solo por fecha solicitada de manera ascendente
+      const sortedData = data.sort((a, b) => new Date(a.fecha_solicitada) - new Date(b.fecha_solicitada));
   
-      // Filtrar por especialidad
-      const specialtyFilteredData = filteredData.filter(
-        (solicitud) =>
-          userSpecialty === "" || solicitud.nombre_especialidad === userSpecialty
-      );
-      
-      // Ordenar los datos por fecha solicitada (más próxima al inicio) y por ID de solicitud de manera descendente
-      const sortedData = specialtyFilteredData
-        .sort((a, b) => new Date(a.fecha_solicitada) - new Date(b.fecha_solicitada))
-        .sort((a, b) => b.id_solicitud - a.id_solicitud);
-  
+      // Actualizar el estado con todos los datos ordenados
       setPendingAppointments(sortedData);
     } catch (error) {
       console.error("Error fetching pending appointments:", error);
     }
   };
+  
   
 
 
@@ -92,7 +79,7 @@ function SolicitudesInsumos() {
     console.log("Eliminar cita con id:", appointmentId);
   };
 
-  const getEstadoColor = (estado) => {
+  const getEstadoColor = (estado = "") => {
     switch (estado.toLowerCase()) {
       case "programada":
         return "bg-green-400";
@@ -102,35 +89,34 @@ function SolicitudesInsumos() {
         return "bg-yellow-400";
       case "pendiente":
         return "bg-orange-400";
-      case "Pre-programada":
+      case "pre-programada":
         return "bg-red-400";
-      case "Urgencia":
+      case "urgencia":
         return "bg-red-400";
       default:
         return "";
     }
   };
-
-  const getEstadoColorStyle = (estado) => {
+  
+  const getEstadoColorStyle = (estado = "") => {
     switch (estado.toLowerCase()) {
       case "programada":
-        return { backgroundColor: "#68D391", color: "white" }; // Verde claro
+        return { backgroundColor: "#68D391", color: "white" };
       case "realizada":
-        return { backgroundColor: "#63B3ED", color: "white" }; // Azul claro
+        return { backgroundColor: "#63B3ED", color: "white" };
       case "suspendida":
-        return { backgroundColor: "#F6E05E", color: "white" }; // Amarillo
+        return { backgroundColor: "#F6E05E", color: "white" };
       case "pendiente":
-        return { backgroundColor: "#E9972F", color: "white" }; // Rojo claro
+        return { backgroundColor: "#E9972F", color: "white" };
       case "pre-programada":
-        return { backgroundColor: "#06ABC9", color: "white" }; // Rosa claro
+        return { backgroundColor: "#06ABC9", color: "white" };
       case "urgencia":
-        return { backgroundColor: "#FC8181", color: "white" }; // Rosa claro
+        return { backgroundColor: "#FC8181", color: "white" };
       default:
-        // Aquí puedes manejar el caso por defecto
-
         return {};
     }
   };
+  
 
   const formatFechaSolicitada = (fecha) => {
     if (!fecha) return "";
@@ -160,24 +146,23 @@ function SolicitudesInsumos() {
 
   // Método de filtrado
   const filteredAppointments = sortedAppointments.filter((appointment) => {
-    const matchesName =
-      `${appointment.nombre_paciente} ${appointment.ap_paterno} ${appointment.ap_materno}`
-        .toLowerCase()
-        .includes(nameFilter.toLowerCase());
-    const matchesSpecialty = appointment.nombre_especialidad
-      .toLowerCase()
-      .includes(specialtyFilter.toLowerCase());
-    const matchesDate = dateFilter
-      ? new Date(appointment.fecha_solicitada).toISOString().slice(0, 10) ===
-        dateFilter
-      : true;
-    const matchesEstado = filter.estado
-      ? appointment.estado_solicitud
-          .toLowerCase()
-          .includes(filter.estado.toLowerCase())
+    const matchesFolio = filter.folio
+      ? (appointment.folio || "").toString().toLowerCase().includes(filter.folio.toLowerCase())
       : true;
   
-    return matchesName && matchesSpecialty && matchesDate && matchesEstado;
+    const matchesInsumos = filter.nombre_insumos
+      ? (appointment.nombre_insumos || "").toLowerCase().includes(filter.nombre_insumos.toLowerCase())
+      : true;
+  
+    const matchesPaquetes = filter.nombre_paquetes
+      ? (appointment.nombre_paquetes || "").toLowerCase().includes(filter.nombre_paquetes.toLowerCase())
+      : true;
+  
+    const matchesEstado = filter.estado
+      ? (appointment.estado_solicitud || "").toLowerCase().includes(filter.estado.toLowerCase())
+      : true;
+  
+    return matchesFolio && matchesInsumos && matchesPaquetes && matchesEstado;
   });
   
 
@@ -202,12 +187,12 @@ function SolicitudesInsumos() {
             <h1 className="text-xl font-semibold">Solicitudes que requieren Insumos</h1>
 
             {open && selectedAppointment && (
-              <AddAppointmentModalInsumos
+              <SolicitudInsumosModal
                 datas={pendingAppointments}
                 isOpen={open}
                 closeModal={handleModal}
                 onDeleteAppointment={handleDeleteAppointment}
-                appointmentId={selectedAppointment.id_solicitud}
+                appointmentId={selectedAppointment.id}
               />
             )}
 
@@ -322,42 +307,14 @@ function SolicitudesInsumos() {
                           </th>
                           <th
                             className="px-4 py-2 cursor-pointer"
-                            onClick={() => handleSort("nombre_paciente")}
                           >
-                            Nombre del paciente{" "}
-                            <span>
-                              {sortBy === "nombre_paciente"
-                                ? sortOrder === "asc"
-                                  ? "▲"
-                                  : "▼"
-                                : ""}
-                            </span>
+                            Insumos requeridos{" "}
                           </th>
                           <th
                             className="px-4 py-2 cursor-pointer"
-                            onClick={() => handleSort("clave_esp")}
                           >
-                            Especialidad{" "}
-                            <span>
-                              {sortBy === "clave_esp"
-                                ? sortOrder === "asc"
-                                  ? "▲"
-                                  : "▼"
-                                : ""}
-                            </span>
-                          </th>
-                          <th
-                            className="px-4 py-2 cursor-pointer"
-                            onClick={() => handleSort("fecha_solicitada")}
-                          >
-                            Fecha solic.{" "}
-                            <span>
-                              {sortBy === "fecha_solicitada"
-                                ? sortOrder === "asc"
-                                  ? "▲"
-                                  : "▼"
-                                : ""}
-                            </span>
+                            Paquetes requeridos{" "}
+
                           </th>
                           
                           <th
@@ -367,32 +324,6 @@ function SolicitudesInsumos() {
                             Turno solic.{" "}
                             <span>
                               {sortBy === "turno_solicitado"
-                                ? sortOrder === "asc"
-                                  ? "▲"
-                                  : "▼"
-                                : ""}
-                            </span>
-                          </th>
-                          <th
-                            className="px-4 py-2 cursor-pointer"
-                            onClick={() => handleSort("sala_quirofano")}
-                          >
-                            Sala solic.{" "}
-                            <span>
-                              {sortBy === "sala_quirofano"
-                                ? sortOrder === "asc"
-                                  ? "▲"
-                                  : "▼"
-                                : ""}
-                            </span>
-                          </th>
-                          <th
-                            className="px-4 py-2 cursor-pointer"
-                            onClick={() => handleSort("insumos")}
-                          >
-                            Insumos{" "}
-                            <span>
-                              {sortBy === "cama"
                                 ? sortOrder === "asc"
                                   ? "▲"
                                   : "▼"
@@ -425,56 +356,23 @@ function SolicitudesInsumos() {
                               className="bg-blue-50 hover:bg-blue-300"
                             >
                               <td className="border px-6 py-4">
-                                {appointment.id_solicitud}
+                                {appointment.id}
                               </td>
                               <td className="border px-4 py-2">
                                 {appointment.folio}
                               </td>
                               <td className="border px-4 py-2 uppercase">
-                                {[
-                                  appointment.ap_paterno,
-                                  appointment.ap_materno,
-                                  appointment.nombre_paciente,
-                                ]
-                                  .filter(Boolean)
-                                  .join(" ")}
-                              </td>
-                              <td className="border px-4 py-2 text-center align-middle">
-                                {appointment.clave_esp}
+                                {
+                                  appointment.nombre_insumos}
                               </td>
                               <td className="border px-4 py-2">
-                              {formatFechaSolicitada(
-                                  appointment.fecha_solicitada
-                                )}
-                              </td>
-                              <td className="border px-4 py-2 text-center align-middle">
-                                {appointment.turno_solicitado.charAt(0)}
+                              {appointment.nombre_paquetes}
                               </td>
                               <td className="border px-4 py-2 text-center align-middle">
                                 {appointment.sala_quirofano}
                               </td>
                               <td className="border px-4 py-2 text-center align-middle">
-                                {appointment.req_insumo}
-                              </td>
-                              <td className="border px-4 py-2">
-                                <div
-                                  className={`inline-block px-1 py-1 rounded-lg ${getEstadoColor(
-                                    appointment.estado_solicitud
-                                  )}`}
-                                  style={{
-                                    ...getEstadoColorStyle(
-                                      appointment.estado_solicitud
-                                    ),
-                                    display: "flex",
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                    height: "100%",
-                                    width: "100%",
-                                    textAlign: "center",
-                                  }}
-                                >
-                                  {appointment.estado_solicitud}
-                                </div>
+                                {appointment.estado}
                               </td>
                               <td className="border px-4 py-2 flex justify-center">
                                 <button

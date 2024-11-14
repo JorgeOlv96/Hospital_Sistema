@@ -13,12 +13,12 @@ const SolicitudInsumosPaciente = () => {
   const [paquetes, setPaquetes] = useState([]);
   const [insumosSeleccionados, setInsumosSeleccionados] = useState([]);
   const [paquetesSeleccionados, setPaquetesSeleccionados] = useState([]);
-  const [mostrarInsumos, setMostrarInsumos] = useState(false);
-  const [mostrarPaquetes, setMostrarPaquetes] = useState(false);
+  const [mostrarListaInsumos, setMostrarListaInsumos] = useState(false);
+  const [mostrarListaPaquetes, setMostrarListaPaquetes] = useState(false);
   const [insumosAutocompletado, setInsumosAutocompletado] = useState([]);
-const [paquetesAutocompletado, setPaquetesAutocompletado] = useState([]);
-const [insumoBusqueda, setInsumoBusqueda] = useState("");
-const [paqueteBusqueda, setPaqueteBusqueda] = useState("");
+  const [paquetesAutocompletado, setPaquetesAutocompletado] = useState([]);
+  const [insumoBusqueda, setInsumoBusqueda] = useState("");
+  const [paqueteBusqueda, setPaqueteBusqueda] = useState("");
 
   useEffect(() => {
     const fetchAppointmentData = async () => {
@@ -52,36 +52,52 @@ const [paqueteBusqueda, setPaqueteBusqueda] = useState("");
     }
   };
 
+
   const handleAgregarInsumos = async () => {
     try {
       const response = await axios.get(`${baseURL}/api/insumos/insumos-disponibles`);
       setInsumosAutocompletado(response.data.insumos);
-      setMostrarInsumos(true);
+      setMostrarListaInsumos(true);
     } catch (error) {
       console.error("Error al obtener insumos:", error);
     }
   };
-  
+
   const handleAgregarPaquetes = async () => {
     try {
       const response = await axios.get(`${baseURL}/api/insumos/paquetes`);
       setPaquetesAutocompletado(response.data);
-      setMostrarPaquetes(true);
+      setMostrarListaPaquetes(true);
     } catch (error) {
       console.error("Error al obtener paquetes:", error);
     }
   };
 
   const handleSeleccionarInsumo = (insumo) => {
-    setInsumosSeleccionados([...insumosSeleccionados, insumo]);
+    setInsumosSeleccionados([...insumosSeleccionados, { ...insumo, cantidad: 1 }]);
+    setMostrarListaInsumos(false);
   };
 
-  const handleSeleccionarPaquete = (paquete, cantidad) => {
+  const handleCantidadInsumo = (index, cantidad) => {
+    const updatedInsumos = [...insumosSeleccionados];
+    updatedInsumos[index].cantidad = cantidad;
+    setInsumosSeleccionados(updatedInsumos);
+  };
+
+  const handleCantidadPaquete = (index, cantidad) => {
+    const updatedPaquetes = [...paquetesSeleccionados];
+    updatedPaquetes[index].cantidad = cantidad;
+    setPaquetesSeleccionados(updatedPaquetes);
+  };
+
+  const handleSeleccionarPaquete = (paquete) => {
     setPaquetesSeleccionados([
       ...paquetesSeleccionados,
-      { ...paquete, cantidad }
+      { ...paquete, cantidad: 1 }
     ]);
+    setMostrarListaPaquetes(false);
   };
+
 
   const handleGuardarSolicitud = async () => {
     const nombreInsumos = insumosSeleccionados.map((insumo) => insumo.nombre).join(', ');
@@ -212,45 +228,55 @@ const [paqueteBusqueda, setPaqueteBusqueda] = useState("");
             Agregar Insumos
           </button>
         </div>
-        {mostrarInsumos && (
-  <div className="bg-gray-300 p-6 rounded-lg shadow-lg mt-4">
-    <h3 className="text-xl font-semibold mb-4">Seleccionar Insumos</h3>
-    <div className="mb-4">
-      <input
-        type="text"
-        placeholder="Buscar insumo..."
-        value={insumoBusqueda}
-        onChange={(e) => setInsumoBusqueda(e.target.value)}
-        className="w-full p-2 border rounded"
-      />
-      <ul className="mt-2 bg-white p-2 rounded-lg shadow-md">
-        {insumosAutocompletado
-          .filter((insumo) =>
-            insumo.nombre.toLowerCase().includes(insumoBusqueda.toLowerCase())
-          )
-          .map((insumo) => (
-            <li
-              key={insumo.id}
-              className="cursor-pointer hover:bg-gray-200 p-2 rounded"
-              onClick={() => handleSeleccionarInsumo(insumo)}
-            >
-              {insumo.nombre}
-            </li>
-          ))}
-      </ul>
-    </div>
-    <div className="mt-4">
-      <h4 className="text-lg font-semibold">Insumos Seleccionados:</h4>
-      <ul className="list-disc ml-5">
-        {insumosSeleccionados.map((insumo, index) => (
-          <li key={index}>
-            {insumo.nombre} - Cantidad: {insumo.cantidad}
-          </li>
-        ))}
-      </ul>
-    </div>
-  </div>
-)}
+        {mostrarListaInsumos && (
+          <div className="bg-gray-300 p-6 rounded-lg shadow-lg mt-4">
+            <h3 className="text-xl font-semibold mb-4">Seleccionar Insumos</h3>
+            <div className="mb-4">
+              <input
+                type="text"
+                placeholder="Buscar insumo..."
+                value={insumoBusqueda}
+                onChange={(e) => setInsumoBusqueda(e.target.value)}
+                className="w-full p-2 border rounded"
+              />
+              <ul className="mt-2 bg-white p-2 rounded-lg shadow-md">
+                {insumosAutocompletado
+                  .filter((insumo) =>
+                    insumo.nombre.toLowerCase().includes(insumoBusqueda.toLowerCase())
+                  )
+                  .map((insumo, index) => (
+                    <li
+                      key={insumo.id}
+                      className="cursor-pointer hover:bg-gray-200 p-2 rounded"
+                      onClick={() => handleSeleccionarInsumo(insumo)}
+                    >
+                      {insumo.nombre}
+                    </li>
+                  ))}
+              </ul>
+            </div>
+          </div>
+        )}
+
+        {insumosSeleccionados.length > 0 && (
+          <div className="bg-gray-300 p-6 rounded-lg shadow-lg mt-4">
+            <h4 className="text-lg font-semibold">Insumos Seleccionados:</h4>
+            <ul className="list-disc ml-5">
+              {insumosSeleccionados.map((insumo, index) => (
+                <li key={index}>
+                  {insumo.nombre} - Cantidad:
+                  <input
+                    type="number"
+                    min="1"
+                    value={insumo.cantidad}
+                    onChange={(e) => handleCantidadInsumo(index, e.target.value)}
+                    className="w-16 ml-2 border rounded"
+                  />
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         <div className="mt-6 flex justify-end">
           <button
@@ -260,46 +286,36 @@ const [paqueteBusqueda, setPaqueteBusqueda] = useState("");
             Agregar Paquetes
           </button>
         </div>
+        {mostrarListaPaquetes && (
+          <div className="bg-gray-300 p-6 rounded-lg shadow-lg mt-4">
+            <h3 className="text-xl font-semibold mb-4">Seleccionar Paquetes</h3>
+            <div className="mb-4">
+              <input
+                type="text"
+                placeholder="Buscar paquete..."
+                value={paqueteBusqueda}
+                onChange={(e) => setPaqueteBusqueda(e.target.value)}
+                className="w-full p-2 border rounded"
+              />
+              <ul className="mt-2 bg-white p-2 rounded-lg shadow-md">
+                {paquetesAutocompletado
+                  .filter((paquete) =>
+                    paquete.nombre.toLowerCase().includes(paqueteBusqueda.toLowerCase())
+                  )
+                  .map((paquete, index) => (
+                    <li
+                      key={paquete.id}
+                      className="cursor-pointer hover:bg-gray-200 p-2 rounded"
+                      onClick={() => handleSeleccionarPaquete(paquete)}
+                    >
+                      {paquete.nombre}
+                    </li>
+                  ))}
+              </ul>
+            </div>
+          </div>
+        )}
 
-        {mostrarPaquetes && (
-  <div className="bg-gray-300 p-6 rounded-lg shadow-lg mt-4">
-    <h3 className="text-xl font-semibold mb-4">Seleccionar Paquetes</h3>
-    <div className="mb-4">
-      <input
-        type="text"
-        placeholder="Buscar paquete..."
-        value={paqueteBusqueda}
-        onChange={(e) => setPaqueteBusqueda(e.target.value)}
-        className="w-full p-2 border rounded"
-      />
-      <ul className="mt-2 bg-white p-2 rounded-lg shadow-md">
-        {paquetesAutocompletado
-          .filter((paquete) =>
-            paquete.nombre.toLowerCase().includes(paqueteBusqueda.toLowerCase())
-          )
-          .map((paquete) => (
-            <li
-              key={paquete.id}
-              className="cursor-pointer hover:bg-gray-200 p-2 rounded"
-              onClick={() => handleSeleccionarPaquete(paquete, 1)}
-            >
-              {paquete.nombre}
-            </li>
-          ))}
-      </ul>
-    </div>
-    <div className="mt-4">
-      <h4 className="text-lg font-semibold">Paquetes Seleccionados:</h4>
-      <ul className="list-disc ml-5">
-        {paquetesSeleccionados.map((paquete, index) => (
-          <li key={index}>
-            {paquete.nombre} - Cantidad: {paquete.cantidad}
-          </li>
-        ))}
-      </ul>
-    </div>
-  </div>
-)}
         
 
         <div className="mt-6 flex justify-end">
