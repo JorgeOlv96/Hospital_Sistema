@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Layout from "../../Layout";
+import InsumosSelect from "./InsumosSelect";
 import { useParams } from "react-router-dom";
-import { AuthContext } from "../../AuthContext";
 
 const SolicitudInsumosPaciente = () => {
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
@@ -63,6 +63,12 @@ const SolicitudInsumosPaciente = () => {
     }
   };
 
+  const handleEliminarInsumo = (index) => {
+    const updatedInsumos = [...insumosSeleccionados];
+    updatedInsumos.splice(index, 1);
+    setInsumosSeleccionados(updatedInsumos);
+  };
+
   const handleAgregarPaquetes = async () => {
     try {
       const response = await axios.get(`${baseURL}/api/insumos/paquetes`);
@@ -91,20 +97,16 @@ const SolicitudInsumosPaciente = () => {
   };
 
   const handleSeleccionarPaquete = (paquete) => {
-    setPaquetesSeleccionados([
-      ...paquetesSeleccionados,
-      { ...paquete, cantidad: 1 }
-    ]);
+    setPaquetesSeleccionados([...paquetesSeleccionados, { ...paquete, cantidad: 1 }]);
     setMostrarListaPaquetes(false);
   };
-
 
   const handleGuardarSolicitud = async () => {
     const nombreInsumos = insumosSeleccionados.map((insumo) => insumo.nombre).join(', ');
     const cantidadesInsumos = insumosSeleccionados.map((insumo) => insumo.cantidad).join(', ');
     const nombrePaquetes = paquetesSeleccionados.map((paquete) => paquete.nombre).join(', ');
     const cantidadesPaquetes = paquetesSeleccionados.map((paquete) => paquete.cantidad).join(', ');
-  
+
     const datosSolicitud = {
       folio: patientData.folio,
       nombre_insumos: nombreInsumos,
@@ -113,10 +115,7 @@ const SolicitudInsumosPaciente = () => {
       cantidades_paquetes: cantidadesPaquetes,
       estado: 'Sin solicitud'
     };
-  
-    console.log('Datos de la solicitud de insumos:');
-    console.log(datosSolicitud);
-  
+
     try {
       const response = await axios.post(`${baseURL}/api/insumos/solicitudes-insumos`, datosSolicitud);
       alert("Solicitud guardada con éxito");
@@ -229,42 +228,20 @@ const SolicitudInsumosPaciente = () => {
           </button>
         </div>
         {mostrarListaInsumos && (
-          <div className="bg-gray-300 p-6 rounded-lg shadow-lg mt-4">
-            <h3 className="text-xl font-semibold mb-4">Seleccionar Insumos</h3>
-            <div className="mb-4">
-              <input
-                type="text"
-                placeholder="Buscar insumo..."
-                value={insumoBusqueda}
-                onChange={(e) => setInsumoBusqueda(e.target.value)}
-                className="w-full p-2 border rounded"
-              />
-              <ul className="mt-2 bg-white p-2 rounded-lg shadow-md">
-                {insumosAutocompletado
-                  .filter((insumo) =>
-                    insumo.nombre.toLowerCase().includes(insumoBusqueda.toLowerCase())
-                  )
-                  .map((insumo, index) => (
-                    <li
-                      key={insumo.id}
-                      className="cursor-pointer hover:bg-gray-200 p-2 rounded"
-                      onClick={() => handleSeleccionarInsumo(insumo)}
-                    >
-                      {insumo.nombre}
-                    </li>
-                  ))}
-              </ul>
-            </div>
-          </div>
-        )}
+        <div className="bg-gray-300 p-6 rounded-lg shadow-lg mt-4">
+          <h3 className="text-xl font-semibold mb-4">Seleccionar Insumos</h3>
+          <InsumosSelect onSelect={handleSeleccionarInsumo} />
+        </div>
+      )}
 
-        {insumosSeleccionados.length > 0 && (
-          <div className="bg-gray-300 p-6 rounded-lg shadow-lg mt-4">
-            <h4 className="text-lg font-semibold">Insumos Seleccionados:</h4>
-            <ul className="list-disc ml-5">
-              {insumosSeleccionados.map((insumo, index) => (
-                <li key={index}>
-                  {insumo.nombre} - Cantidad:
+      {insumosSeleccionados.length > 0 && (
+        <div className="bg-gray-300 p-6 rounded-lg shadow-lg mt-4">
+          <h4 className="text-lg font-semibold">Insumos Seleccionados:</h4>
+          <ul className="list-disc ml-5">
+            {insumosSeleccionados.map((insumo, index) => (
+              <li key={index} className="flex items-center justify-between">
+                <span>{insumo.label}</span>
+                <div className="flex items-center">
                   <input
                     type="number"
                     min="1"
@@ -272,11 +249,19 @@ const SolicitudInsumosPaciente = () => {
                     onChange={(e) => handleCantidadInsumo(index, e.target.value)}
                     className="w-16 ml-2 border rounded"
                   />
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+                  <button
+                    onClick={() => handleEliminarInsumo(index)}
+                    className="ml-2 text-red-500 hover:text-red-700"
+                  >
+                    Eliminar
+                  </button>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
 
         <div className="mt-6 flex justify-end">
           <button
@@ -315,8 +300,6 @@ const SolicitudInsumosPaciente = () => {
             </div>
           </div>
         )}
-
-        
 
         <div className="mt-6 flex justify-end">
           <button
