@@ -53,16 +53,19 @@ const SolicitudInsumosPaciente = () => {
   };
 
 
-  const handleAgregarInsumos = async () => {
-    try {
-      const response = await axios.get(`${baseURL}/api/insumos/insumos-disponibles`);
-      setInsumosAutocompletado(response.data.insumos);
-      setMostrarListaInsumos(true);
-    } catch (error) {
-      console.error("Error al obtener insumos:", error);
-    }
+  const handleAgregarInsumos = () => {
+    setMostrarListaInsumos(true);
   };
 
+  const handleAceptarInsumos = (insumos) => {
+    const nuevosInsumos = insumos.map((insumo) => ({
+      nombre: insumo.label, // Se asegura de extraer el nombre correcto
+      id_insumo: insumo.value,
+      cantidad: 1,
+    }));
+    setInsumosSeleccionados((prev) => [...prev, ...nuevosInsumos]);
+    setMostrarListaInsumos(false);
+  };
   const handleEliminarInsumo = (index) => {
     const updatedInsumos = [...insumosSeleccionados];
     updatedInsumos.splice(index, 1);
@@ -228,39 +231,41 @@ const SolicitudInsumosPaciente = () => {
           </button>
         </div>
         {mostrarListaInsumos && (
-        <div className="bg-gray-300 p-6 rounded-lg shadow-lg mt-4">
-          <h3 className="text-xl font-semibold mb-4">Seleccionar Insumos</h3>
-          <InsumosSelect onSelect={handleSeleccionarInsumo} />
-        </div>
-      )}
+  <div className="bg-gray-300 p-6 rounded-lg shadow-lg mt-4">
+    <h3 className="text-xl font-semibold mb-4">Seleccionar Insumos</h3>
+    <InsumosSelect onSelect={handleAceptarInsumos} />
+  </div>
+)}
 
-      {insumosSeleccionados.length > 0 && (
-        <div className="bg-gray-300 p-6 rounded-lg shadow-lg mt-4">
-          <h4 className="text-lg font-semibold">Insumos Seleccionados:</h4>
-          <ul className="list-disc ml-5">
+       {/* Lista de insumos seleccionados */}
+       <div className="mt-6">
+          <h3 className="font-semibold text-lg mb-4">Insumos Seleccionados</h3>
+          <ul>
             {insumosSeleccionados.map((insumo, index) => (
-              <li key={index} className="flex items-center justify-between">
-                <span>{insumo.label}</span>
-                <div className="flex items-center">
+              <li
+                key={index}
+                className="flex items-center justify-between bg-white p-3 rounded-lg shadow-md mb-2"
+              >
+                <div>
+                  <p className="font-semibold">{insumo.nombre}</p>
                   <input
                     type="number"
                     min="1"
                     value={insumo.cantidad}
-                    onChange={(e) => handleCantidadInsumo(index, e.target.value)}
-                    className="w-16 ml-2 border rounded"
+                    onChange={(e) => handleCantidadInsumo(index, parseInt(e.target.value, 10))}
+                    className="mt-2 border p-2 rounded-lg w-20"
                   />
-                  <button
-                    onClick={() => handleEliminarInsumo(index)}
-                    className="ml-2 text-red-500 hover:text-red-700"
-                  >
-                    Eliminar
-                  </button>
                 </div>
+                <button
+                  onClick={() => handleEliminarInsumo(index)}
+                  className="bg-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-red-700"
+                >
+                  Eliminar
+                </button>
               </li>
             ))}
           </ul>
         </div>
-      )}
 
 
         <div className="mt-6 flex justify-end">

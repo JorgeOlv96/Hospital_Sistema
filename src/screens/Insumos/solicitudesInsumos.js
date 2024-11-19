@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import Layout from "../../Layout";
 import SolicitudInsumosModal from "../../components/Modals/SolicitudInsumosModal";
 import axios from "axios";
+import { Link } from 'react-router-dom';
 import { AuthContext } from "../../AuthContext";
 import { FaTable, FaThLarge } from "react-icons/fa"; // Asegúrate de tener esta biblioteca instalada
 
@@ -375,12 +376,12 @@ function SolicitudesInsumos() {
                                 {appointment.estado}
                               </td>
                               <td className="border px-4 py-2 flex justify-center">
-                                <button
-                                  onClick={() => handleViewModal(appointment)}
+                                <Link
+                                  to={`/solicitudInsumosDetalle/${appointment.id}`}
                                   className="bg-[#365b77] text-white px-5 py-2 rounded-md hover:bg-blue-800"
                                 >
                                   Ver
-                                </button>
+                                </Link>
                               </td>
                             </tr>
                           ))}
