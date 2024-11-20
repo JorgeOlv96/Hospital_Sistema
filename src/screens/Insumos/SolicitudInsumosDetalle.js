@@ -41,7 +41,8 @@ const SolicitudInsumosDetalle = () => {
     };
 
     fetchSolicitudData();
-  }, [appointmentId, baseURL]);
+  }, [appointmentId, baseURL])
+
 
   const handleInsumosSelect = (selectedOptions) => {
     const nuevosInsumos = selectedOptions.map(option => ({
@@ -82,25 +83,24 @@ const SolicitudInsumosDetalle = () => {
 
   const handleGuardarCambios = async () => {
     try {
+      // Convertir el array de objetos de vuelta a strings separados por comas
       const datosActualizados = {
-        ...solicitudData,
         nombre_insumos: insumos.map(i => i.nombre).join(','),
         cantidades_insumos: insumos.map(i => i.cantidad).join(','),
-        disponibilidad: insumos.map(i => i.disponible ? '1' : '0').join(','),
+        disponibilidad: insumos.map(i => i.disponible ? '1' : '0').join(',')
       };
   
-      // Determinar el estado de la solicitud
-      const todosDisponibles = insumos.every(i => i.disponible); // Todos los insumos están disponibles
-      const algunoDisponible = insumos.some(i => i.disponible); // Al menos un insumo está disponible
+      const response = await axios.patch(
+        `${baseURL}/api/insumos/solicitudes-insumos/${appointmentId}`,
+        datosActualizados
+      );
   
-      datosActualizados.estado = todosDisponibles
-        ? "Disponible"
-        : algunoDisponible
-        ? "Solicitado"
-        : "Pendiente"; // Fallback en caso de que no haya ningún disponible
+      // Actualizar el estado con la respuesta
+      setSolicitudData(prev => ({
+        ...prev,
+        ...response.data.datos
+      }));
   
-      // Usar PATCH para enviar los datos
-      await axios.patch(`${baseURL}/api/insumos/solicitudes-insumos/${appointmentId}`, datosActualizados);
       setMensaje({ tipo: "success", texto: "Cambios guardados exitosamente" });
     } catch (error) {
       console.error("Error guardando cambios:", error);

@@ -381,51 +381,60 @@ const generateDocument = async (patientData) => {
         </div>
       ) : (
         <div className="p-4">
-          <div className="flex justify-between">
+  <div className="flex justify-between">
+    <button
+      onClick={() => generateDocument(patientData)}
+      className="bg-green-500 text-white text-sm p-4 rounded-lg font-light"
+      style={{ marginBottom: "8px" }}
+    >
+      Imprimir solicitud
+    </button>
 
+    <div className="flex space-x-2">
+      {isEditing ? (
+        <>
           <button
-              onClick={() => generateDocument(patientData)}
-              className="bg-green-500 text-white text-sm p-4 rounded-lg font-light"
-              style={{ marginBottom: "8px" }}
-            >
-              Imprimir solicitud
-            </button>
+            className="bg-red-500 bg-opacity-20 text-red-500 text-sm p-3 rounded-lg font-light"
+            onClick={handleCancelChanges}
+          >
+            Cancelar
+          </button>
+          <button
+            className="bg-green-500 bg-opacity-20 text-green-500 text-sm p-3 rounded-lg font-light"
+            onClick={handleSaveChanges}
+          >
+            Guardar Cambios
+          </button>
+        </>
+      ) : (
+        <button
+          className="bg-blue-500 bg-opacity-20 text-blue-500 text-sm p-3 rounded-lg font-light"
+          onClick={() => setIsEditing(true)}
+        >
+          Editar
+        </button>
+      )}
+    </div>
+    
+    <button
+      onClick={handlePreprogramar}
+      className="bg-[#06ABC9] bg-opacity-20 text-[#001B58] text-sm p-3 rounded-lg font-light"
+      style={{ marginBottom: "8px" }}
+    >
+      Pre-programar
+    </button>
 
-            <div className="flex space-x-2">
-              {isEditing ? (
-                <>
-                  <button
-                    className="bg-red-500 bg-opacity-20 text-red-500 text-sm p-3 rounded-lg font-light"
-                    onClick={handleCancelChanges}
-                  >
-                    Cancelar
-                  </button>
-                  <button
-                    className="bg-green-500 bg-opacity-20 text-green-500 text-sm p-3 rounded-lg font-light"
-                    onClick={handleSaveChanges}
-                  >
-                    Guardar Cambios
-                  </button>
-                </>
-              ) : (
-                <button
-                  className="bg-blue-500 bg-opacity-20 text-blue-500 text-sm p-3 rounded-lg font-light"
-                  onClick={() => setIsEditing(true)}
-                >
-                  Editar
-                </button>
-              )}
-            </div>
-            
-            <button
-              onClick={handlePreprogramar}
-              className="bg-[#06ABC9] bg-opacity-20 text-[#001B58] text-sm p-3 rounded-lg font-light"
-              style={{ marginBottom: "8px" }}
-            >
-              Pre-programar
-            </button>
-
-          </div>
+    {/* New conditional button for viewing supply requests */}
+    {patientData.req_insumo === "SI" && (
+      <button
+        onClick={() => {/* Add your handler function here */}}
+        className="bg-[#06ABC9] bg-opacity-20 text-[#001B58] text-sm p-3 rounded-lg font-light"
+        style={{ marginBottom: "8px" }}
+      >
+        Ver solicitud de insumos
+      </button>
+    )}
+  </div>
 
           <div className="mr-4 w-full mb-2">
             <label className="block font-semibold text-gray-700 mb-2">
