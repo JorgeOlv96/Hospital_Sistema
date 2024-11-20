@@ -317,14 +317,13 @@ function SolicitudesInsumos() {
                             Paquetes requeridos{" "}
 
                           </th>
-                          
                           <th
                             className="px-4 py-2 cursor-pointer"
-                            onClick={() => handleSort("turno_solicitado")}
+                            onClick={() => handleSort("estado_solicitud")}
                           >
-                            Turno solic.{" "}
+                            Estado{" "}
                             <span>
-                              {sortBy === "turno_solicitado"
+                              {sortBy === "estado_solicitud"
                                 ? sortOrder === "asc"
                                   ? "▲"
                                   : "▼"
@@ -333,11 +332,11 @@ function SolicitudesInsumos() {
                           </th>
                           <th
                             className="px-4 py-2 cursor-pointer"
-                            onClick={() => handleSort("estado_solicitud")}
+                            onClick={() => handleSort("turno_solicitado")}
                           >
-                            Estado{" "}
+                            Progreso{" "}
                             <span>
-                              {sortBy === "estado_solicitud"
+                              {sortBy === "turno_solicitado"
                                 ? sortOrder === "asc"
                                   ? "▲"
                                   : "▼"
@@ -370,10 +369,10 @@ function SolicitudesInsumos() {
                               {appointment.nombre_paquetes}
                               </td>
                               <td className="border px-4 py-2 text-center align-middle">
-                                {appointment.sala_quirofano}
+                                {appointment.estado}
                               </td>
                               <td className="border px-4 py-2 text-center align-middle">
-                                {appointment.estado}
+                                {appointment.sala_quirofano}
                               </td>
                               <td className="border px-4 py-2 flex justify-center">
                                 <Link

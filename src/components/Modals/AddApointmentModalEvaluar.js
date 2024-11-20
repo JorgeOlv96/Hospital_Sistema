@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
+import { useParams, useNavigate } from "react-router-dom";
 import Modal from "./Modal";
 import AddAppointmentModal from "../../components/Modals/AddApointmentModal";
 import PizZip from "pizzip";
@@ -20,6 +21,7 @@ function AddAppointmentModalEvaluar({
   const [originalData, setOriginalData] = useState({});
   const [nombre_especialidad, setNombreEspecialidad] = useState("");
   const [clave_esp, setClaveEspecialidad] = useState("");
+  const navigate = useNavigate();
   const modalRef = useRef(null);
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
 
@@ -185,6 +187,30 @@ function AddAppointmentModalEvaluar({
       console.log("Preprogramación cancelada por el usuario.");
     }
   };
+
+    // Nueva función para manejar la visualización de la solicitud de insumos
+    const handleViewInsumos = async () => {
+      if (!patientData.folio) {
+        alert("El folio no está disponible.");
+        return;
+      }
+  
+      try {
+        const response = await axios.get(
+          `${baseURL}/api/solicitudes-insumos/folio/${patientData.folio}`
+        );
+  
+        if (response.data.length > 0) {
+          const id = response.data[0].id; // Toma el ID del resultado
+          navigate(`/solicitudInsumosDetalle/${id}`); // Redirige al usuario
+        } else {
+          alert("No se encontró una solicitud de insumo con ese folio.");
+        }
+      } catch (error) {
+        console.error("Error al obtener el ID de la solicitud de insumos:", error);
+        alert("Hubo un problema al obtener la solicitud de insumos.");
+      }
+    };
   
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
