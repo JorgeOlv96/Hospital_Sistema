@@ -88,14 +88,27 @@ const SolicitudInsumosDetalle = () => {
         cantidades_insumos: insumos.map(i => i.cantidad).join(','),
         disponibilidad: insumos.map(i => i.disponible ? '1' : '0').join(','),
       };
-
-      await axios.put(`${baseURL}/api/insumos/solicitudes-insumos/${appointmentId}`, datosActualizados);
+  
+      // Determinar el estado de la solicitud
+      const todosDisponibles = insumos.every(i => i.disponible); // Todos los insumos están disponibles
+      const algunoDisponible = insumos.some(i => i.disponible); // Al menos un insumo está disponible
+  
+      datosActualizados.estado = todosDisponibles
+        ? "Disponible"
+        : algunoDisponible
+        ? "Solicitado"
+        : "Pendiente"; // Fallback en caso de que no haya ningún disponible
+  
+      // Usar PATCH para enviar los datos
+      await axios.patch(`${baseURL}/api/insumos/solicitudes-insumos/${appointmentId}`, datosActualizados);
       setMensaje({ tipo: "success", texto: "Cambios guardados exitosamente" });
     } catch (error) {
       console.error("Error guardando cambios:", error);
       setMensaje({ tipo: "error", texto: "Error al guardar los cambios" });
     }
   };
+  
+  
 
   if (loading) return <div>Cargando...</div>;
 
