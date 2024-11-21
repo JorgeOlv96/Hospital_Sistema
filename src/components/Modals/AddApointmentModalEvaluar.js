@@ -197,7 +197,7 @@ function AddAppointmentModalEvaluar({
   
       try {
         const response = await axios.get(
-          `${baseURL}/api/solicitudes-insumos/folio/${patientData.folio}`
+          `${baseURL}/api/insumos/solicitudes-insumos/folio/${patientData.folio}`
         );
   
         if (response.data.length > 0) {
@@ -453,7 +453,7 @@ const generateDocument = async (patientData) => {
     {/* New conditional button for viewing supply requests */}
     {patientData.req_insumo === "SI" && (
       <button
-        onClick={() => {/* Add your handler function here */}}
+        onClick={handleViewInsumos}
         className="bg-[#06ABC9] bg-opacity-20 text-[#001B58] text-sm p-3 rounded-lg font-light"
         style={{ marginBottom: "8px" }}
       >

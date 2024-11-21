@@ -4,15 +4,18 @@ import { FixedSizeList } from "react-window";
 import axios from "axios";
 
 const InsumosSelect = ({ onSelect, selectedInsumos }) => {
-  const [inputValue, setInputValue] = useState('');
+  const [inputValue, setInputValue] = useState("");
   const [selectedOptions, setSelectedOptions] = useState(selectedInsumos || []);
   const [insumos, setInsumos] = useState([]);
-  const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
+  const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
 
+  // Cargar la lista completa de insumos al inicio
   useEffect(() => {
     const fetchInsumos = async () => {
       try {
-        const response = await axios.get(`${baseURL}/api/insumos/insumos-disponibles`);
+        const response = await axios.get(
+          `${baseURL}/api/insumos/insumos-disponibles`
+        );
         setInsumos(response.data.insumos);
       } catch (error) {
         console.error("Error al obtener insumos:", error);
@@ -21,15 +24,37 @@ const InsumosSelect = ({ onSelect, selectedInsumos }) => {
     fetchInsumos();
   }, [baseURL]);
 
+  // Filtrar insumos por descripción o clave
   const loadOptions = (inputValue, callback) => {
     const filteredInsumos = insumos.filter((insumo) =>
-      insumo.nombre.toLowerCase().includes(inputValue.toLowerCase())
+      insumo.descripcion.toLowerCase().includes(inputValue.toLowerCase()) ||
+      insumo.clave.toLowerCase().includes(inputValue.toLowerCase())
     );
-    const options = filteredInsumos.map((insumo) => ({
-      label: insumo.nombre,
-      value: insumo.id_insumo,
-    }));
-    callback(options);
+
+    const options = filteredInsumos.map((insumo) => {
+      const truncatedDescription =
+        insumo.descripcion.length > 100
+          ? `${insumo.descripcion.slice(0, 100)}`
+          : insumo.descripcion;
+
+      const finalDescription = `${insumo.clave} - ${truncatedDescription}`;
+
+      return {
+        label: finalDescription,
+        value: insumo.id_insumo,
+      };
+    });
+
+    // Si no hay texto ingresado, mostrar todas las opciones
+    if (!inputValue) {
+      const allOptions = insumos.map((insumo) => ({
+        label: `${insumo.clave} - ${insumo.descripcion.slice(0, 100)}`,
+        value: insumo.id_insumo,
+      }));
+      callback(allOptions);
+    } else {
+      callback(options);
+    }
   };
 
   const handleInputChange = (newValue) => {
@@ -61,7 +86,10 @@ const InsumosSelect = ({ onSelect, selectedInsumos }) => {
         isMulti
         cacheOptions
         loadOptions={loadOptions}
-        defaultOptions
+        defaultOptions={insumos.map((insumo) => ({
+          label: `${insumo.clave} - ${insumo.descripcion.slice(0, 100)}`,
+          value: insumo.id_insumo,
+        }))}
         onInputChange={handleInputChange}
         inputValue={inputValue}
         onChange={handleChange}
@@ -72,11 +100,11 @@ const InsumosSelect = ({ onSelect, selectedInsumos }) => {
         styles={{
           control: (provided, state) => ({
             ...provided,
-            backgroundColor: state.selectProps.value ? '#FFFFFF' : '#FFFFFF',
-            borderColor: state.isFocused ? '#FFFFFF' : provided.borderColor,
-            boxShadow: state.isFocused ? '0 0 0 1px #FFFFFF' : provided.boxShadow,
-            '&:hover': {
-              borderColor: '#000',
+            backgroundColor: state.selectProps.value ? "#FFFFFF" : "#FFFFFF",
+            borderColor: state.isFocused ? "#FFFFFF" : provided.borderColor,
+            boxShadow: state.isFocused ? "0 0 0 1px #FFFFFF" : provided.boxShadow,
+            "&:hover": {
+              borderColor: "#000",
             },
           }),
           menu: (provided) => ({
