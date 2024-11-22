@@ -132,23 +132,26 @@ function CrearSolicitud() {
 
     // Filtrar especialidades según el usuario
     const getFilteredEspecialidades = () => {
-      // Ocultar "Trauma y Ortopedia" solo si el usuario es uno de los correos especificados
+      // Ocultar "Trauma y Ortopedia" y "Columna" solo si el usuario es uno de los correos especificados
       const emailsToExclude = [
-        "",
-        ""
+        "jefaturaquirofanohgq@gmail.com",
+        "JCORONAS@SESEQRO.GOB.MX"
       ];
-  
-      // Si el usuario está en la lista, excluir la especialidad
+      
+      // Especialidades a excluir
+      const especialidadesToExclude = ["Trauma y Ortopedia", "Columna"];
+      
+      // Si el usuario está en la lista, excluir las especialidades especificadas
       if (user && emailsToExclude.includes(user.email)) {
         return Object.keys(especialidadToClave).filter(
-          (especialidad) => especialidad !== "Trauma y Ortopedia"
+          (especialidad) => !especialidadesToExclude.includes(especialidad)
         );
       }
-  
+    
       // Devolver todas las especialidades si no se debe excluir ninguna
       return Object.keys(especialidadToClave);
     };
-
+    
     // Verificar si el usuario tiene una especialidad asignada
     useEffect(() => {
       if (user && user.especialidad) {
