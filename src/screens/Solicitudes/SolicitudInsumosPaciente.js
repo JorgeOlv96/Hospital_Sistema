@@ -105,27 +105,38 @@ const SolicitudInsumosPaciente = () => {
   };
 
   const handleGuardarSolicitud = async () => {
-    const nombreInsumos = insumosSeleccionados.map((insumo) => insumo.nombre).join(', ');
-    const cantidadesInsumos = insumosSeleccionados.map((insumo) => insumo.cantidad).join(', ');
-    const nombrePaquetes = paquetesSeleccionados.map((paquete) => paquete.nombre).join(', ');
-    const cantidadesPaquetes = paquetesSeleccionados.map((paquete) => paquete.cantidad).join(', ');
-
+    const materialAdicional = insumosSeleccionados
+      .map((insumo) => insumo.nombre)
+      .join(", ");
+    const cantidadAdicional = insumosSeleccionados
+      .map((insumo) => insumo.cantidad)
+      .join(", ");
+    const nombrePaquete = paquetesSeleccionados
+      .map((paquete) => paquete.nombre)
+      .join(", ");
+    const cantidadPaquete = paquetesSeleccionados
+      .map((paquete) => paquete.cantidad)
+      .join(", ");
+  
     const datosSolicitud = {
-      folio: patientData.folio,
-      nombre_insumos: nombreInsumos,
-      cantidades_insumos: cantidadesInsumos,
-      nombre_paquetes: nombrePaquetes,
-      cantidades_paquetes: cantidadesPaquetes,
-      estado: 'Sin solicitud'
+      material_adicional: materialAdicional,
+      cantidad_adicional: cantidadAdicional,
+      nombre_paquete: nombrePaquete,
+      cantidad_paquete: cantidadPaquete,
     };
-
+  
     try {
-      const response = await axios.post(`${baseURL}/api/insumos/solicitudes-insumos`, datosSolicitud);
-      alert("Solicitud guardada con éxito");
+      const response = await axios.patch(
+        `${baseURL}/api/insumos/solicitudes-insumos/${appointmentId}`,
+        datosSolicitud
+      );
+      alert("Solicitud actualizada con éxito");
     } catch (error) {
       console.error("Error al guardar solicitud:", error);
+      alert("Ocurrió un error al actualizar la solicitud");
     }
   };
+  
 
 
   if (loading) return <div>Cargando...</div>;
