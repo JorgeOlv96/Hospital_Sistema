@@ -465,7 +465,7 @@ const handlePackageSelection = (packageId) => {
               {insumos.map(insumo => (
                 <tr key={insumo.id_insumo}>
                   <td className="py-2 px-4 border">{insumo.clave}</td>
-                  <td className="py-2 px-4 border">{insumo.nombre}</td>
+                  <td className="py-2 px-4 border">{insumo.descripcion}</td>
                   <td className="py-2 px-4 border">{insumo.especialidad}</td>
                   <td className="py-2 px-4 border flex gap-2">
                     <button

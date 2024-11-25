@@ -4,6 +4,69 @@ import Layout from "../../Layout";
 import InsumosSelect from "./InsumosSelect";
 import { useParams } from "react-router-dom";
 
+const SectionWithInsumos = ({ title, type, onAddInsumo }) => {
+  const [selectedInsumos, setSelectedInsumos] = useState([]);
+
+  const handleSelectInsumo = (insumo) => {
+    if (insumo && !selectedInsumos.find((item) => item.value === insumo.value)) {
+      const nuevoInsumo = { ...insumo, cantidad: 1 };
+      setSelectedInsumos((prev) => [...prev, nuevoInsumo]);
+      onAddInsumo(type, nuevoInsumo); // Actualizar datos globales
+    }
+  };
+
+  const handleQuantityChange = (index, newQuantity) => {
+    const updatedInsumos = [...selectedInsumos];
+    updatedInsumos[index].cantidad = newQuantity;
+    setSelectedInsumos(updatedInsumos);
+  };
+
+  const handleRemoveInsumo = (index) => {
+    const updatedInsumos = selectedInsumos.filter((_, i) => i !== index);
+    setSelectedInsumos(updatedInsumos);
+  };
+
+  return (
+    <div className="p-4 border rounded-lg shadow-sm bg-white">
+      <h3 className="text-lg font-semibold mb-4">{title}</h3>
+      <InsumosSelect onSelect={handleSelectInsumo} />
+
+      {selectedInsumos.length > 0 && (
+        <div className="mt-4 space-y-4">
+          {selectedInsumos.map((insumo, index) => (
+            <div
+              key={insumo.value}
+              className="flex items-center justify-between border rounded-lg p-2 bg-gray-100"
+            >
+              <div>
+                <p className="font-medium">{insumo.label}</p>
+              </div>
+              <div className="flex items-center space-x-2">
+                <input
+                  type="number"
+                  min={1}
+                  value={insumo.cantidad}
+                  onChange={(e) =>
+                    handleQuantityChange(index, Number(e.target.value))
+                  }
+                  className="border rounded p-1 w-16 text-center"
+                />
+                <button
+                  className="bg-red-500 text-white p-1 rounded hover:bg-red-600"
+                  onClick={() => handleRemoveInsumo(index)}
+                >
+                  Eliminar
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+
 const SolicitudInsumosPaciente = () => {
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
   const { appointmentId } = useParams();
@@ -19,6 +82,14 @@ const SolicitudInsumosPaciente = () => {
   const [paquetesAutocompletado, setPaquetesAutocompletado] = useState([]);
   const [insumoBusqueda, setInsumoBusqueda] = useState("");
   const [paqueteBusqueda, setPaqueteBusqueda] = useState("");
+  const [selectedInsumos, setSelectedInsumos] = useState({
+    materialAdicional: [],
+    materialExterno: [],
+    servicios: [],
+    paquetes: [],
+  });
+
+
 
   useEffect(() => {
     const fetchAppointmentData = async () => {
@@ -105,39 +176,77 @@ const SolicitudInsumosPaciente = () => {
   };
 
   const handleGuardarSolicitud = async () => {
-    const materialAdicional = insumosSeleccionados
-      .map((insumo) => insumo.nombre)
-      .join(", ");
-    const cantidadAdicional = insumosSeleccionados
-      .map((insumo) => insumo.cantidad)
-      .join(", ");
-    const nombrePaquete = paquetesSeleccionados
-      .map((paquete) => paquete.nombre)
-      .join(", ");
-    const cantidadPaquete = paquetesSeleccionados
-      .map((paquete) => paquete.cantidad)
-      .join(", ");
+    const hasInsumos = Object.values(selectedInsumos).some(
+      (insumos) => insumos.length > 0
+    );
+  
+    if (!hasInsumos) {
+      alert("Debe seleccionar al menos un insumo antes de guardar.");
+      return;
+    }
   
     const datosSolicitud = {
-      material_adicional: materialAdicional,
-      cantidad_adicional: cantidadAdicional,
-      nombre_paquete: nombrePaquete,
-      cantidad_paquete: cantidadPaquete,
+      material_adicional: selectedInsumos.materialAdicional.map(i => `${i.clave} - ${i.descripcion}`).join(", "),
+      cantidad_adicional: selectedInsumos.materialAdicional.map(i => i.cantidad).join(", "),
+      material_externo: selectedInsumos.materialExterno.map(i => `${i.clave} - ${i.descripcion}`).join(", "),
+      cantidad_externo: selectedInsumos.materialExterno.map(i => i.cantidad).join(", "),
+      servicios: selectedInsumos.servicios.map(i => `${i.clave} - ${i.descripcion}`).join(", "),
+      cantidad_servicios: selectedInsumos.servicios.map(i => i.cantidad).join(", "),
+      nombre_paquete: selectedInsumos.paquetes.map(i => `${i.clave} - ${i.descripcion}`).join(", "),
+      cantidad_paquete: selectedInsumos.paquetes.map(i => i.cantidad).join(", "),
+      estado_insumos: "Sin solicitud"
     };
   
     try {
-      const response = await axios.patch(
+      await axios.patch(
         `${baseURL}/api/insumos/solicitudes-insumos/${appointmentId}`,
         datosSolicitud
       );
-      alert("Solicitud actualizada con éxito");
+      alert("Solicitud guardada con éxito.");
     } catch (error) {
       console.error("Error al guardar solicitud:", error);
-      alert("Ocurrió un error al actualizar la solicitud");
+      alert("Ocurrió un error al guardar la solicitud.");
     }
   };
   
 
+
+// Actualizar la función handleAddInsumo
+const handleAddInsumo = (type, insumo) => {
+  if (insumo && insumo.clave && insumo.descripcion) {
+    setSelectedInsumos((prev) => ({
+      ...prev,
+      [type]: [...prev[type], {
+        ...insumo,
+        clave: insumo.clave,
+        descripcion: insumo.descripcion,
+        cantidad: insumo.cantidad || 1
+      }],
+    }));
+  }
+};
+  const renderSelectedInsumos = (type) => {
+    return selectedInsumos[type].length === 0 ? (
+      <p className="text-gray-500 italic">No hay insumos seleccionados</p>
+    ) : (
+      <div className="space-y-2">
+        {selectedInsumos[type].map((insumo, index) => (
+          <div key={index} className="flex items-center justify-between bg-gray-100 p-3 rounded-lg">
+            <div>
+              <p className="font-medium">{insumo.clave} - {insumo.descripcion}</p>
+              <p className="text-sm text-gray-600">Cantidad: {insumo.cantidad}</p>
+            </div>
+            <button
+              onClick={() => handleEliminarInsumo(type, index)}
+              className="text-red-600 hover:text-red-800 px-2 py-1"
+            >
+              Eliminar
+            </button>
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   if (loading) return <div>Cargando...</div>;
 
@@ -232,90 +341,46 @@ const SolicitudInsumosPaciente = () => {
       <p className="bg-white p-3 rounded-lg">{patientData?.nombre_cirujano || "N/A"}</p>
     </div>
   </div>
-
-  <div className="mt-6 flex justify-end">
-          <button
-            onClick={handleAgregarInsumos}
-            className="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-blue-700"
-          >
-            Agregar Insumos
-          </button>
+  <div className="grid grid-cols-2 gap-4 mb-6">
+            <SectionWithInsumos
+            title="Material Adicional"
+            type="materialAdicional"
+            onAddInsumo={handleAddInsumo}
+          />
+          <SectionWithInsumos
+            title="Material Externo"
+            type="materialExterno"
+            onAddInsumo={handleAddInsumo}
+          />
         </div>
-        {mostrarListaInsumos && (
-  <div className="bg-gray-300 p-6 rounded-lg shadow-lg mt-4">
-    <h3 className="text-xl font-semibold mb-4">Seleccionar Insumos</h3>
-    <InsumosSelect onSelect={handleAceptarInsumos} />
-  </div>
-)}
 
        {/* Lista de insumos seleccionados */}
-       <div className="mt-6">
-          <h3 className="font-semibold text-lg mb-4">Insumos Seleccionados</h3>
-          <ul>
-            {insumosSeleccionados.map((insumo, index) => (
-              <li
-                key={index}
-                className="flex items-center justify-between bg-white p-3 rounded-lg shadow-md mb-2"
-              >
-                <div>
-                  <p className="font-semibold">{insumo.nombre}</p>
-                  <input
-                    type="number"
-                    min="1"
-                    value={insumo.cantidad}
-                    onChange={(e) => handleCantidadInsumo(index, parseInt(e.target.value, 10))}
-                    className="mt-2 border p-2 rounded-lg w-20"
-                  />
-                </div>
-                <button
-                  onClick={() => handleEliminarInsumo(index)}
-                  className="bg-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-red-700"
-                >
-                  Eliminar
-                </button>
-              </li>
-            ))}
-          </ul>
+       <div className="grid grid-cols-2 gap-4">
+          <SectionWithInsumos
+              title="Servicios"
+              type="servicios"
+              onAddInsumo={handleAddInsumo}
+            />
+            <SectionWithInsumos
+              title="Paquetes"
+              type="paquetes"
+              onAddInsumo={handleAddInsumo}
+            />
         </div>
 
-
-        <div className="mt-6 flex justify-end">
-          <button
-            onClick={handleAgregarPaquetes}
-            className="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-blue-700"
-          >
-            Agregar Paquetes
-          </button>
-        </div>
-        {mostrarListaPaquetes && (
-          <div className="bg-gray-300 p-6 rounded-lg shadow-lg mt-4">
-            <h3 className="text-xl font-semibold mb-4">Seleccionar Paquetes</h3>
-            <div className="mb-4">
-              <input
-                type="text"
-                placeholder="Buscar paquete..."
-                value={paqueteBusqueda}
-                onChange={(e) => setPaqueteBusqueda(e.target.value)}
-                className="w-full p-2 border rounded"
-              />
-              <ul className="mt-2 bg-white p-2 rounded-lg shadow-md">
-                {paquetesAutocompletado
-                  .filter((paquete) =>
-                    paquete.nombre.toLowerCase().includes(paqueteBusqueda.toLowerCase())
-                  )
-                  .map((paquete, index) => (
-                    <li
-                      key={paquete.id}
-                      className="cursor-pointer hover:bg-gray-200 p-2 rounded"
-                      onClick={() => handleSeleccionarPaquete(paquete)}
-                    >
-                      {paquete.nombre}
-                    </li>
-                  ))}
-              </ul>
+                {/* Lista de insumos seleccionados */}
+                <div className="mt-6">
+          <h3 className="text-xl font-semibold mb-4">Insumos Seleccionados</h3>
+          {["materialAdicional", "materialExterno", "servicios", "paquetes"].map((type) => (
+            <div key={type} className="mb-4">
+              <h4 className="font-semibold text-gray-700 capitalize">
+                {type.replace(/([A-Z])/g, " $1")}
+              </h4>
+              {renderSelectedInsumos(type)}
             </div>
-          </div>
-        )}
+          ))}
+        </div>
+
 
         <div className="mt-6 flex justify-end">
           <button
