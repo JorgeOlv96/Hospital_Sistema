@@ -19,16 +19,11 @@ const SolicitudInsumosDetalle = () => {
     const fetchSolicitudData = async () => {
       try {
         const response = await axios.get(`${baseURL}/api/insumos/solicitudes-insumos/${appointmentId}`);
-        
-        // Agregar console.log para verificar la respuesta del endpoint
-        console.log("Datos del endpoint:", response.data);
-    
         setSolicitudData(response.data);
-    
         // Convertir los strings de insumos a un array de objetos
-        if (response.data.nombre_insumos && response.data.cantidades_insumos) {
-          const nombres = response.data.nombre_insumos.split(',');
-          const cantidades = response.data.cantidades_insumos.split(',');
+        if (response.data.material_adicional && response.data.cantidad_adicional) {
+          const nombres = response.data.material_adicional.split(',');
+          const cantidades = response.data.cantidad_adicional.split(',');
           const insumosIniciales = nombres.map((nombre, index) => ({
             id: index,
             nombre: nombre.trim(),
@@ -44,11 +39,9 @@ const SolicitudInsumosDetalle = () => {
         setLoading(false);
       }
     };
-    
-    fetchSolicitudData();
-    
-  }, [appointmentId, baseURL])
 
+    fetchSolicitudData();
+  }, [appointmentId, baseURL]);
 
   const handleInsumosSelect = (selectedOptions) => {
     const nuevosInsumos = selectedOptions.map(option => ({
@@ -91,8 +84,8 @@ const SolicitudInsumosDetalle = () => {
     try {
       // Convertir el array de objetos de vuelta a strings separados por comas
       const datosActualizados = {
-        nombre_insumos: insumos.map(i => i.nombre).join(','),
-        cantidades_insumos: insumos.map(i => i.cantidad).join(','),
+        material_adicional: insumos.map(i => i.nombre).join(','),
+        cantidad_adicional: insumos.map(i => i.cantidad).join(','),
         disponibilidad: insumos.map(i => i.disponible ? '1' : '0').join(',')
       };
   
@@ -113,8 +106,6 @@ const SolicitudInsumosDetalle = () => {
       setMensaje({ tipo: "error", texto: "Error al guardar los cambios" });
     }
   };
-  
-  
 
   if (loading) return <div>Cargando...</div>;
 
@@ -139,85 +130,44 @@ const SolicitudInsumosDetalle = () => {
                 </div>
                 <div className="w-full">
                   <label className="block font-semibold text-gray-700 mb-2">Estado:</label>
-                  <p className="bg-white p-3 rounded-lg">{solicitudData.estado || "N/A"}</p>
+                  <p className="bg-white p-3 rounded-lg">{solicitudData.estado_insumos || "N/A"}</p>
                 </div>
               </div>
 
               <div className="mb-6">
-  <h3 className="text-lg font-semibold mb-4">Material Adicional</h3>
-  <div className="space-y-4">
-    {insumos.map((insumo) => (
-      <div key={insumo.id} className="flex items-center space-x-4 bg-white p-3 rounded-lg">
-        <span className="flex-grow">{insumo.material_adicional}</span>
-        <input
-          type="number"
-          value={insumo.cantidad_adicional}
-          onChange={(e) => handleCantidadChange(insumo.id, e.target.value, 'cantidad_adicional')}
-          min="1"
-          className="w-24 p-2 border rounded"
-        />
-      </div>
-    ))}
-  </div>
-</div>
-
-<div className="mb-6">
-  <h3 className="text-lg font-semibold mb-4">Material Externo</h3>
-  <div className="space-y-4">
-    {insumos.map((insumo) => (
-      <div key={insumo.id} className="flex items-center space-x-4 bg-white p-3 rounded-lg">
-        <span className="flex-grow">{insumo.material_externo}</span>
-        <input
-          type="number"
-          value={insumo.cantidad_externo}
-          onChange={(e) => handleCantidadChange(insumo.id, e.target.value, 'cantidad_externo')}
-          min="1"
-          className="w-24 p-2 border rounded"
-        />
-      </div>
-    ))}
-  </div>
-</div>
-
-<div className="mb-6">
-  <h3 className="text-lg font-semibold mb-4">Servicios</h3>
-  <div className="space-y-4">
-    {insumos.map((insumo) => (
-      <div key={insumo.id} className="flex items-center space-x-4 bg-white p-3 rounded-lg">
-        <span className="flex-grow">{insumo.servicios}</span>
-        <input
-          type="number"
-          value={insumo.cantidad_servicios}
-          onChange={(e) => handleCantidadChange(insumo.id, e.target.value, 'cantidad_servicios')}
-          min="1"
-          className="w-24 p-2 border rounded"
-        />
-      </div>
-    ))}
-  </div>
-</div>
-
-<div className="mb-6">
-  <h3 className="text-lg font-semibold mb-4">Paquete</h3>
-  <div className="space-y-4">
-    {insumos.map((insumo) => (
-      <div key={insumo.id} className="flex items-center space-x-4 bg-white p-3 rounded-lg">
-        <span className="flex-grow">{insumo.nombre_paquete}</span>
-        <input
-          type="number"
-          value={insumo.cantidad_paquete}
-          onChange={(e) => handleCantidadChange(insumo.id, e.target.value, 'cantidad_paquete')}
-          min="1"
-          className="w-24 p-2 border rounded"
-        />
-      </div>
-    ))}
-  </div>
-</div>
-
+                <h3 className="text-lg font-semibold mb-4">Lista de Material Adicional</h3>
+                <div className="space-y-4">
+                  {insumos.map((insumo) => (
+                    <div key={insumo.id} className="flex items-center space-x-4 bg-white p-3 rounded-lg">
+                      <span className="flex-grow">{insumo.nombre}</span>
+                      <input
+                        type="number"
+                        value={insumo.cantidad}
+                        onChange={(e) => handleCantidadChange(insumo.id, e.target.value)}
+                        min="1"
+                        className="w-24 p-2 border rounded"
+                      />
+                      <div className="flex items-center space-x-2">
+                        <button
+                          onClick={() => toggleDisponibilidad(insumo.id)}
+                          className={`p-2 rounded ${insumo.disponible ? 'bg-green-100' : 'bg-red-100'}`}
+                        >
+                          {insumo.disponible ? <Check className="text-green-600" /> : <X className="text-red-600" />}
+                        </button>
+                        <button
+                          onClick={() => handleEliminarInsumo(insumo.id)}
+                          className="p-2 rounded bg-red-100 hover:bg-red-200"
+                        >
+                          <Trash2 className="text-red-600" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
 
               <div className="mb-6">
-                <h3 className="text-lg font-semibold mb-4">Agregar Nuevos Insumos</h3>
+                <h3 className="text-lg font-semibold mb-4">Agregar Nuevos Materiales</h3>
                 <InsumosSelect
                   onSelect={handleInsumosSelect}
                   selectedInsumos={selectedInsumos}

@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Layout from "../../Layout";
 import InsumosSelect from "./InsumosSelect";
+import MedicamentoSelect from "./MedicamentoSelect";
+import AdicionalSelect from "./AdicionalSelect"
 import { useParams } from "react-router-dom";
 
-const SectionWithInsumos = ({ title, type, onAddInsumo }) => {
+const SectionWithInsumos = ({ title, type, onAddInsumo, SelectComponent }) => {
   const [selectedInsumos, setSelectedInsumos] = useState([]);
 
   const handleSelectInsumo = (insumo) => {
@@ -29,7 +31,7 @@ const SectionWithInsumos = ({ title, type, onAddInsumo }) => {
   return (
     <div className="p-4 border rounded-lg shadow-sm bg-white">
       <h3 className="text-lg font-semibold mb-4">{title}</h3>
-      <InsumosSelect onSelect={handleSelectInsumo} />
+      <SelectComponent onSelect={handleSelectInsumo} />
 
       {selectedInsumos.length > 0 && (
         <div className="mt-4 space-y-4">
@@ -65,6 +67,7 @@ const SectionWithInsumos = ({ title, type, onAddInsumo }) => {
     </div>
   );
 };
+
 
 
 const SolicitudInsumosPaciente = () => {
@@ -342,30 +345,42 @@ const handleAddInsumo = (type, insumo) => {
     </div>
   </div>
   <div className="grid grid-cols-2 gap-4 mb-6">
-            <SectionWithInsumos
-            title="Material Adicional"
-            type="materialAdicional"
-            onAddInsumo={handleAddInsumo}
-          />
-          <SectionWithInsumos
-            title="Material Externo"
-            type="materialExterno"
-            onAddInsumo={handleAddInsumo}
-          />
+  <SectionWithInsumos
+          title="Material Adicional"
+          type="materialAdicional"
+          onAddInsumo={handleAddInsumo}
+          SelectComponent={AdicionalSelect}
+        />
+        <SectionWithInsumos
+          title="Material Externo"
+          type="materialExterno"
+          onAddInsumo={handleAddInsumo}
+          SelectComponent={InsumosSelect}
+        />
         </div>
 
        {/* Lista de insumos seleccionados */}
        <div className="grid grid-cols-2 gap-4">
-          <SectionWithInsumos
-              title="Servicios"
-              type="servicios"
-              onAddInsumo={handleAddInsumo}
-            />
-            <SectionWithInsumos
-              title="Paquetes"
-              type="paquetes"
-              onAddInsumo={handleAddInsumo}
-            />
+       <SectionWithInsumos
+          title="Servicios"
+          type="servicios"
+          onAddInsumo={handleAddInsumo}
+          SelectComponent={InsumosSelect}
+        />
+        <SectionWithInsumos
+          title="Paquetes"
+          type="paquetes"
+          onAddInsumo={handleAddInsumo}
+          SelectComponent={InsumosSelect}
+        />
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+        <SectionWithInsumos
+          title="Medicamentos"
+          type="medicamentos"
+          onAddInsumo={handleAddInsumo}
+          SelectComponent={MedicamentoSelect}
+        />
         </div>
 
                 {/* Lista de insumos seleccionados */}

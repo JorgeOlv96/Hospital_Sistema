@@ -2,45 +2,48 @@ import React, { useState, useEffect } from "react";
 import AsyncCreatableSelect from "react-select/async-creatable";
 import axios from "axios";
 
-const MedicamentoSelect = ({ onSelect, selectedInsumo }) => {
+const AdicionalSelect = ({ onSelect, selectedInsumo }) => {
   const [inputValue, setInputValue] = useState("");
   const [selectedOption, setSelectedOption] = useState(selectedInsumo || null);
-  const [insumos, setInsumos] = useState([]);
+  const [materialesAdicionales, setMaterialesAdicionales] = useState([]);
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
 
   useEffect(() => {
-    const fetchInsumos = async () => {
+    const fetchMaterialesAdicionales = async () => {
       try {
         const response = await axios.get(
-          `${baseURL}/api/insumos/insumos-disponibles`
+          `${baseURL}/api/insumos/medicamentos`
         );
-        setInsumos(response.data.insumos);
+        setMaterialesAdicionales(response.data); // Ajuste para el endpoint de materiales_adicionales
       } catch (error) {
-        console.error("Error al obtener insumos:", error);
+        console.error("Error al obtener materiales adicionales:", error);
       }
     };
-    fetchInsumos();
+    fetchMaterialesAdicionales();
   }, [baseURL]);
 
   const loadOptions = (inputValue, callback) => {
-    const filteredInsumos = insumos.filter((insumo) =>
-      insumo.descripcion.toLowerCase().includes(inputValue.toLowerCase()) ||
-      insumo.clave.toLowerCase().includes(inputValue.toLowerCase())
+    // Filtrar los materiales adicionales basados en el valor ingresado
+    const filteredMateriales = materialesAdicionales.filter((material) =>
+      material.descripcion.toLowerCase().includes(inputValue.toLowerCase()) ||
+      material.clave.toLowerCase().includes(inputValue.toLowerCase())
     );
 
-    const options = filteredInsumos.map((insumo) => ({
-      label: `${insumo.clave} - ${insumo.descripcion}`,
-      value: insumo.id_insumo,
-      clave: insumo.clave,
-      descripcion: insumo.descripcion
+    // Crear opciones para el selector
+    const options = filteredMateriales.map((material) => ({
+      label: `${material.clave} - ${material.descripcion}`,
+      value: material.clave, // Cambiado a clave como identificador
+      clave: material.clave,
+      descripcion: material.descripcion,
     }));
 
+    // Mostrar todas las opciones si no hay entrada
     if (!inputValue) {
-      const allOptions = insumos.map((insumo) => ({
-        label: `${insumo.clave} - ${insumo.descripcion}`,
-        value: insumo.id_insumo,
-        clave: insumo.clave,
-        descripcion: insumo.descripcion
+      const allOptions = materialesAdicionales.map((material) => ({
+        label: `${material.clave} - ${material.descripcion}`,
+        value: material.clave,
+        clave: material.clave,
+        descripcion: material.descripcion,
       }));
       callback(allOptions);
     } else {
@@ -55,14 +58,14 @@ const MedicamentoSelect = ({ onSelect, selectedInsumo }) => {
   const handleChange = (option) => {
     setSelectedOption(option);
     if (option) {
-      // Asegurarse de que todos los datos necesarios estén incluidos
-      const insumoCompleto = {
+      // Crear un objeto de material adicional completo
+      const materialCompleto = {
         ...option,
-        cantidad: 1,
+        cantidad: 1, // Por defecto, cantidad adicional es 1
         clave: option.clave,
-        descripcion: option.descripcion
+        descripcion: option.descripcion,
       };
-      onSelect(insumoCompleto);
+      onSelect(materialCompleto);
     } else {
       onSelect(null);
     }
@@ -73,17 +76,17 @@ const MedicamentoSelect = ({ onSelect, selectedInsumo }) => {
       <AsyncCreatableSelect
         cacheOptions
         loadOptions={loadOptions}
-        defaultOptions={insumos.map((insumo) => ({
-          label: `${insumo.clave} - ${insumo.descripcion}`,
-          value: insumo.id_insumo,
-          clave: insumo.clave,
-          descripcion: insumo.descripcion
+        defaultOptions={materialesAdicionales.map((material) => ({
+          label: `${material.clave} - ${material.descripcion}`,
+          value: material.clave,
+          clave: material.clave,
+          descripcion: material.descripcion,
         }))}
         onInputChange={handleInputChange}
         inputValue={inputValue}
         onChange={handleChange}
         value={selectedOption}
-        placeholder="Seleccionar o escribir insumo..."
+        placeholder="Seleccionar o escribir material adicional..."
         isClearable
         styles={{
           control: (provided, state) => ({
@@ -110,4 +113,4 @@ const MedicamentoSelect = ({ onSelect, selectedInsumo }) => {
   );
 };
 
-export default MedicamentoSelect;
+export default AdicionalSelect;
