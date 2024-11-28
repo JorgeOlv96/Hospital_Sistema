@@ -189,27 +189,9 @@ function AddAppointmentModalEvaluar({
   };
 
     // Nueva función para manejar la visualización de la solicitud de insumos
-    const handleViewInsumos = async () => {
-      if (!patientData.folio) {
-        alert("El folio no está disponible.");
-        return;
-      }
-  
-      try {
-        const response = await axios.get(
-          `${baseURL}/api/insumos/solicitudes-insumos/folio/${patientData.folio}`
-        );
-  
-        if (response.data.length > 0) {
-          const id = response.data[0].id; // Toma el ID del resultado
-          navigate(`/solicitudInsumosDetalle/${id}`); // Redirige al usuario
-        } else {
-          alert("No se encontró una solicitud de insumo con ese folio.");
-        }
-      } catch (error) {
-        console.error("Error al obtener el ID de la solicitud de insumos:", error);
-        alert("Hubo un problema al obtener la solicitud de insumos.");
-      }
+    const handleViewInsumos = () => {
+      // Redirigir a la página correspondiente
+      navigate(`/solicitudInsumosDetalle/${appointmentId.id_solicitud}`);
     };
   
   const formatDate = (dateString) => {

@@ -346,42 +346,54 @@ const handleAddInsumo = (type, insumo) => {
   </div>
   <div className="grid grid-cols-2 gap-4 mb-6">
   <SectionWithInsumos
-          title="Material Adicional"
-          type="materialAdicional"
-          onAddInsumo={handleAddInsumo}
-          SelectComponent={AdicionalSelect}
-        />
-        <SectionWithInsumos
-          title="Material Externo"
-          type="materialExterno"
-          onAddInsumo={handleAddInsumo}
-          SelectComponent={InsumosSelect}
-        />
-        </div>
+    title="Material Adicional"
+    type="materialAdicional"
+    onAddInsumo={handleAddInsumo}
+    SelectComponent={AdicionalSelect}
+  />
+  <SectionWithInsumos
+    title="Material Externo"
+    type="materialExterno"
+    onAddInsumo={handleAddInsumo}
+    SelectComponent={InsumosSelect}
+  />
+</div>
 
-       {/* Lista de insumos seleccionados */}
-       <div className="grid grid-cols-2 gap-4">
-       <SectionWithInsumos
-          title="Servicios"
-          type="servicios"
-          onAddInsumo={handleAddInsumo}
-          SelectComponent={InsumosSelect}
-        />
-        <SectionWithInsumos
-          title="Paquetes"
-          type="paquetes"
-          onAddInsumo={handleAddInsumo}
-          SelectComponent={InsumosSelect}
-        />
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-        <SectionWithInsumos
-          title="Medicamentos"
-          type="medicamentos"
-          onAddInsumo={handleAddInsumo}
-          SelectComponent={MedicamentoSelect}
-        />
-        </div>
+{/* Lista de insumos seleccionados */}
+<div className="grid grid-cols-2 gap-4 mb-6">
+  <SectionWithInsumos
+    title="Servicios"
+    type="servicios"
+    onAddInsumo={handleAddInsumo}
+    SelectComponent={InsumosSelect}
+  />
+  <SectionWithInsumos
+    title="Paquetes"
+    type="paquetes"
+    onAddInsumo={handleAddInsumo}
+    SelectComponent={InsumosSelect}
+  />
+</div>
+
+{/* Último div con margen superior agregado */}
+<div className="grid grid-cols-2 gap-4 mt-6">
+  <SectionWithInsumos
+    title="Medicamentos"
+    type="medicamentos"
+    onAddInsumo={handleAddInsumo}
+    SelectComponent={MedicamentoSelect}
+  />
+
+  {/* Resumen médico */}
+  <div>
+    <label className="block font-semibold text-gray-700 mb-2">Resumen médico:</label>
+    <input
+      type="text"
+      className="w-full p-3 border rounded bg-white"
+      placeholder="Escribe el resumen médico aquí"
+    />
+  </div>
+</div>
 
                 {/* Lista de insumos seleccionados */}
                 <div className="mt-6">
