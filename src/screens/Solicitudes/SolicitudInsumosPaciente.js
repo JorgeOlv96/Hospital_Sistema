@@ -85,11 +85,13 @@ const SolicitudInsumosPaciente = () => {
   const [paquetesAutocompletado, setPaquetesAutocompletado] = useState([]);
   const [insumoBusqueda, setInsumoBusqueda] = useState("");
   const [paqueteBusqueda, setPaqueteBusqueda] = useState("");
+  const [resumenMedico, setResumenMedico] = useState("");
   const [selectedInsumos, setSelectedInsumos] = useState({
     materialAdicional: [],
     materialExterno: [],
     servicios: [],
     paquetes: [],
+    medicanentos: [],
   });
 
 
@@ -197,6 +199,9 @@ const SolicitudInsumosPaciente = () => {
       cantidad_servicios: selectedInsumos.servicios.map(i => i.cantidad).join(", "),
       nombre_paquete: selectedInsumos.paquetes.map(i => `${i.clave} - ${i.descripcion}`).join(", "),
       cantidad_paquete: selectedInsumos.paquetes.map(i => i.cantidad).join(", "),
+      medicamentos: selectedInsumos.medicanentos.map(i => `${i.clave} - ${i.descripcion}`).join(", "),
+      cantidad_medicamento: selectedInsumos.medicanentos.map(i => i.cantidad).join(", "),
+      resumen_medico: resumenMedico,
       estado_insumos: "Sin solicitud"
     };
   
@@ -344,6 +349,21 @@ const handleAddInsumo = (type, insumo) => {
       <p className="bg-white p-3 rounded-lg">{patientData?.nombre_cirujano || "N/A"}</p>
     </div>
   </div>
+
+  <div className="w-full mb-4">
+  <label htmlFor="resumenMedico" className="block font-semibold text-gray-700 mb-2">
+    Resumen Médico:
+  </label>
+  <textarea
+    id="resumenMedico"
+    value={resumenMedico}
+    onChange={(e) => setResumenMedico(e.target.value)}
+    className="w-full p-3 border rounded-lg bg-white"
+    placeholder="Escribe el resumen médico aquí..."
+    rows="4"
+  ></textarea>
+</div>
+
   <div className="grid grid-cols-2 gap-4 mb-6">
   <SectionWithInsumos
     title="Material Adicional"
@@ -383,20 +403,10 @@ const handleAddInsumo = (type, insumo) => {
     onAddInsumo={handleAddInsumo}
     SelectComponent={MedicamentoSelect}
   />
-
-  {/* Resumen médico */}
-  <div>
-    <label className="block font-semibold text-gray-700 mb-2">Resumen médico:</label>
-    <input
-      type="text"
-      className="w-full p-3 border rounded bg-white"
-      placeholder="Escribe el resumen médico aquí"
-    />
-  </div>
 </div>
 
-                {/* Lista de insumos seleccionados */}
-                <div className="mt-6">
+      {/* Lista de insumos seleccionados */}
+        <div className="mt-6">
           <h3 className="text-xl font-semibold mb-4">Insumos Seleccionados</h3>
           {["materialAdicional", "materialExterno", "servicios", "paquetes"].map((type) => (
             <div key={type} className="mb-4">
