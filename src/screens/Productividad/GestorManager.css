@@ -401,3 +401,27 @@
   cursor: not-allowed;
 }
 
+.filter-container {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.filter-container label {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.9rem;
+}
+.filter-container button {
+  align-self: center;
+  padding: 0.5rem 1rem;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.filter-container button:hover {
+  background-color: #0056b3;
+}
+
+

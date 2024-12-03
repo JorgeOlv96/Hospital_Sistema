@@ -32,6 +32,7 @@ function GestorManager() {
   const [salasCount, setSalasCount] = useState([]);
   const [tiempoInactividadSalas, setTiempoInactividadSalas] = useState([]);
   const [salas, setSalas] = useState([]);
+  const [loginRecords, setLoginRecords] = useState([]);
 
   const [page, setPage] = useState(1);
   const itemsPerPage = 5;
@@ -107,6 +108,24 @@ function GestorManager() {
     fetchSalas();
     fetchTiempoInactividadSalas(); // Cargar datos de tiempo inactividad
   }, []);
+
+  const fetchLoginRecords = async () => {
+    try {
+      const response = await axios.get(`${baseURL}/api/auth/login-logs`);
+      // Ordenar los registros de más reciente a más antiguo
+      const sortedRecords = response.data.sort(
+        (a, b) => new Date(b.fecha_inicio) - new Date(a.fecha_inicio)
+      );
+      setLoginRecords(sortedRecords);
+    } catch (err) {
+      console.error("Error fetching login records:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchLoginRecords();
+  }, []);
+
 
   const countEspecialidades = (solicitudes) => {
     const countMap = solicitudes.reduce((acc, solicitud) => {
@@ -295,6 +314,10 @@ function GestorManager() {
       },
     },
   };
+  const paginatedLoginRecords = loginRecords.slice(
+    (page - 1) * itemsPerPage,
+    page * itemsPerPage
+  );
 
   const handleCardClick = (cardName) => {
     setExpandedCard(expandedCard === cardName ? null : cardName);
@@ -380,6 +403,57 @@ function GestorManager() {
           </div>
         </div>
       </div>
+
+            {/* Tarjeta para Inicios de Sesión */}
+            <div
+        className={`card ${expandedCard === "logins" ? "expanded" : ""}`}
+        onClick={(e) => {
+          // Evita cerrar el card si se hace clic en los botones de paginación
+          if (!e.target.closest(".pagination-buttons")) {
+            handleCardClick("logins");
+          }
+        }}
+      >
+        <h2 className="card-title">Histórico de Inicios de Sesión</h2>
+        <div
+          className={`card-content ${
+            expandedCard === "logins" ? "expanded" : ""
+          }`}
+        >
+          <table className="historico-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Usuario</th>
+                <th>Fecha y hora</th>
+              </tr>
+            </thead>
+            <tbody>
+              {paginatedLoginRecords.map((record, index) => (
+                <tr key={index}>
+                  <td>{record.id}</td>
+                  <td>{record.email}</td>
+                  <td>{new Date(record.timestamp).toLocaleString()}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          {/* Botones de navegación */}
+          <div className="pagination-buttons">
+            <button disabled={page === 1} onClick={() => setPage(page - 1)}>
+              Anterior
+            </button>
+            <button
+              disabled={page === Math.ceil(loginRecords.length / itemsPerPage)}
+              onClick={() => setPage(page + 1)}
+            >
+              Siguiente
+            </button>
+          </div>
+        </div>
+      </div>
+
 
       {/* Tarjeta para Conteo de Especialidades */}
       <div

@@ -164,20 +164,22 @@ const SolicitudInsumosDetalle = () => {
   );
 
   // Fetch data
-  useEffect(() => {
-    const fetchSolicitudData = async () => {
-      try {
-        const response = await axios.get(`${baseURL}/api/insumos/solicitudes-insumos/${appointmentId}`);
-        setSolicitudData(response.data);
-      } catch (error) {
-        console.error("Error fetching solicitud data:", error);
-        setMensaje({ tipo: "error", texto: "Error al cargar los datos" });
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchSolicitudData();
-  }, [appointmentId, baseURL]);
+useEffect(() => {
+  const fetchSolicitudData = async () => {
+    try {
+      const response = await axios.get(`${baseURL}/api/insumos/solicitudes-insumos/${appointmentId}`);
+      console.log(response.data); // Verifica el contenido aquí
+      setSolicitudData(response.data);
+    } catch (error) {
+      console.error("Error fetching solicitud data:", error);
+      setMensaje({ tipo: "error", texto: "Error al cargar los datos" });
+    } finally {
+      setLoading(false);
+    }
+  };
+  fetchSolicitudData();
+}, [appointmentId, baseURL]);
+  
 
   // Generic handler generator
   const createHandler = (index, handlerType) => {
