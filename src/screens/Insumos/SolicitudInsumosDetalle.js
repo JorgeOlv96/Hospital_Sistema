@@ -57,12 +57,12 @@ const InsumoBlock = ({
     },
     'paquetes': { 
       title: 'Paquetes', 
-      nombreField: 'paquetes',
+      nombreField: 'nombre_paquete',  // Cambié esto de 'paquetes' a 'nombre_paquete'
       cantidadField: 'cantidad_paquete'
     },
     'medicamentos': { 
       title: 'Medicamentos', 
-      nombreField: 'medicamentos',
+      nombreField: 'medicamentos',  // Nota el 'v' al final
       cantidadField: 'cantidad_medicamento'
     }
   };
@@ -71,19 +71,27 @@ const InsumoBlock = ({
 
   // Prepare initial insumos from solicitudData
   useEffect(() => {
-    if (solicitudData && solicitudData[currentType.nombreField] && solicitudData[currentType.cantidadField]) {
-      const nombres = solicitudData[currentType.nombreField].split(",");
-      const cantidades = solicitudData[currentType.cantidadField].split(",");
+    if (solicitudData && solicitudData[currentType.nombreField]) {
+      const nombres = solicitudData[currentType.nombreField]
+        .split(",")
+        .filter(nombre => nombre.trim() !== "");
+      const cantidades = solicitudData[currentType.cantidadField]
+        ? solicitudData[currentType.cantidadField].split(",").filter(cantidad => cantidad.trim() !== "")
+        : [];
+      
       const insumosIniciales = nombres.map((nombre, index) => ({
         id: index,
         nombre: nombre.trim(),
-        cantidad: parseInt(cantidades[index]) || 0,
+        cantidad: parseInt(cantidades[index] || "0") || 0,
         disponible: true,
       }));
-      setInsumos(insumosIniciales);
+  
+      if (insumosIniciales.length > 0) {
+        setInsumos(insumosIniciales);
+      }
     }
   }, [solicitudData, materialType]);
-
+  
   return (
     <div className="bg-gray-50 p-6 rounded-lg shadow-lg mb-6">
       {solicitudData ? (
@@ -163,22 +171,49 @@ const SolicitudInsumosDetalle = () => {
     materialTypes.map(() => [])
   );
 
-  // Fetch data
-useEffect(() => {
-  const fetchSolicitudData = async () => {
-    try {
-      const response = await axios.get(`${baseURL}/api/insumos/solicitudes-insumos/${appointmentId}`);
-      console.log(response.data); // Verifica el contenido aquí
-      setSolicitudData(response.data);
-    } catch (error) {
-      console.error("Error fetching solicitud data:", error);
-      setMensaje({ tipo: "error", texto: "Error al cargar los datos" });
-    } finally {
-      setLoading(false);
-    }
+  const separarInsumos = (data) => {
+    const tiposInsumos = {
+      material_adicional: [],
+      material_externo: [],
+      servicios: [],
+      paquetes: [],
+      medicamentos: [],
+    };
+  
+    Object.keys(tiposInsumos).forEach((tipo) => {
+      if (data[tipo]) {
+        const nombres = data[tipo].split(",").filter((nombre) => nombre.trim() !== "");
+        const cantidades = data[`cantidad_${tipo}`]?.split(",") || [];
+        tiposInsumos[tipo] = nombres.map((nombre, index) => ({
+          id: index,
+          nombre: nombre.trim(),
+          cantidad: parseInt(cantidades[index] || "0") || 0,
+          disponible: true,
+        }));
+      }
+    });
+  
+    return tiposInsumos;
   };
-  fetchSolicitudData();
-}, [appointmentId, baseURL]);
+  
+  // Uso en el useEffect:
+  useEffect(() => {
+    const fetchSolicitudData = async () => {
+      try {
+        const response = await axios.get(`${baseURL}/api/insumos/solicitudes-insumos/${appointmentId}`);
+        const datosSeparados = separarInsumos(response.data);
+        setInsumoStates(Object.values(datosSeparados)); // Asegúrate de usar el orden correcto
+      } catch (error) {
+        console.error('Error fetching solicitud data:', error);
+        setMensaje({ tipo: 'error', texto: 'Error al cargar los datos' });
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSolicitudData();
+  }, [appointmentId, baseURL]);
+  
+  
   
 
   // Generic handler generator
@@ -253,24 +288,25 @@ useEffect(() => {
         
         {/* Render blocks for each material type */}
         {materialTypes.map((materialType, index) => (
-          <InsumoBlock
-            key={materialType}
-            solicitudData={solicitudData}
-            materialType={materialType}
-            insumos={insumoStates[index]}
-            setInsumos={(newInsumos) => {
-              const newInsumoStates = [...insumoStates];
-              newInsumoStates[index] = newInsumos;
-              setInsumoStates(newInsumoStates);
-            }}
-            handleCantidadChange={createHandler(index, 'cantidad')}
-            toggleDisponibilidad={createHandler(index, 'disponibilidad')}
-            handleEliminarInsumo={createHandler(index, 'eliminar')}
-            handleGuardarCambios={createHandler(index, 'guardar')}
-            handleInsumosSelect={setSelectedInsumos}
-            selectedInsumos={selectedInsumos}
-          />
-        ))}
+  <InsumoBlock
+    key={materialType}
+    solicitudData={solicitudData}
+    materialType={materialType}
+    insumos={insumoStates[index]}
+    setInsumos={(newInsumos) => {
+      const newInsumoStates = [...insumoStates];
+      newInsumoStates[index] = newInsumos;
+      setInsumoStates(newInsumoStates);
+    }}
+    handleCantidadChange={createHandler(index, 'cantidad')}
+    toggleDisponibilidad={createHandler(index, 'disponibilidad')}
+    handleEliminarInsumo={createHandler(index, 'eliminar')}
+    handleGuardarCambios={createHandler(index, 'guardar')}
+    handleInsumosSelect={setSelectedInsumos}
+    selectedInsumos={selectedInsumos}
+  />
+))}
+
       </div>
     </Layout>
   );
