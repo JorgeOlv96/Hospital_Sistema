@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Layout from "../../Layout";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Check, X, Trash2 } from "lucide-react";
 import { Alert } from "../../components/ui/alert";
 import InsumosSelect from "../Solicitudes/InsumosSelect";
@@ -25,7 +25,6 @@ const PatientInfoBlock = ({ solicitudData }) => (
   </div>
 );
 
-
 const InsumoBlock = ({
   solicitudData,
   materialType,
@@ -34,11 +33,9 @@ const InsumoBlock = ({
   handleCantidadChange,
   toggleDisponibilidad,
   handleEliminarInsumo,
-  handleGuardarCambios,
   handleInsumosSelect,
   selectedInsumos,
 }) => {
-  // Define mapping for material types
   const materialTypeMap = {
     'material_adicional': { 
       title: 'Material Adicional', 
@@ -57,19 +54,18 @@ const InsumoBlock = ({
     },
     'paquetes': { 
       title: 'Paquetes', 
-      nombreField: 'nombre_paquete',  // Cambié esto de 'paquetes' a 'nombre_paquete'
+      nombreField: 'nombre_paquete',
       cantidadField: 'cantidad_paquete'
     },
     'medicamentos': { 
       title: 'Medicamentos', 
-      nombreField: 'medicamentos',  // Nota el 'v' al final
+      nombreField: 'medicamentos',
       cantidadField: 'cantidad_medicamento'
     }
   };
 
   const currentType = materialTypeMap[materialType];
 
-  // Prepare initial insumos from solicitudData
   useEffect(() => {
     if (solicitudData && solicitudData[currentType.nombreField]) {
       const nombres = solicitudData[currentType.nombreField]
@@ -132,15 +128,6 @@ const InsumoBlock = ({
             <h3 className="text-lg font-semibold mb-4">Agregar Nuevos {currentType.title}</h3>
             <InsumosSelect onSelect={handleInsumosSelect} selectedInsumos={selectedInsumos} />
           </div>
-
-          <div className="flex justify-end">
-            <button
-              onClick={handleGuardarCambios}
-              className="px-6 py-2 bg-green-500 text-white rounded hover:bg-green-600"
-            >
-              Guardar Cambios
-            </button>
-          </div>
         </>
       ) : (
         <p>No se encontró información para esta solicitud.</p>
@@ -152,12 +139,12 @@ const InsumoBlock = ({
 const SolicitudInsumosDetalle = () => {
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
   const { appointmentId } = useParams();
+  const navigate = useNavigate();
   const [solicitudData, setSolicitudData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [mensaje, setMensaje] = useState({ tipo: "", texto: "" });
   const [selectedInsumos, setSelectedInsumos] = useState([]);
 
-  // Material types array for rendering blocks
   const materialTypes = [
     'material_adicional', 
     'material_externo', 
@@ -166,7 +153,6 @@ const SolicitudInsumosDetalle = () => {
     'medicamentos'
   ];
 
-  // State for each insumo type
   const [insumoStates, setInsumoStates] = useState(
     materialTypes.map(() => [])
   );
@@ -196,27 +182,33 @@ const SolicitudInsumosDetalle = () => {
     return tiposInsumos;
   };
   
-  // Uso en el useEffect:
   useEffect(() => {
     const fetchSolicitudData = async () => {
       try {
+        setLoading(true);
+        setSolicitudData(null);
         const response = await axios.get(`${baseURL}/api/insumos/solicitudes-insumos/${appointmentId}`);
         const datosSeparados = separarInsumos(response.data);
-        setInsumoStates(Object.values(datosSeparados)); // Asegúrate de usar el orden correcto
+        setSolicitudData(response.data);
+        setInsumoStates(Object.values(datosSeparados));
       } catch (error) {
-        console.error('Error fetching solicitud data:', error);
-        setMensaje({ tipo: 'error', texto: 'Error al cargar los datos' });
+        console.error("Error fetching solicitud data:", error);
+        setMensaje({ tipo: "error", texto: "Error al cargar los datos" });
       } finally {
         setLoading(false);
       }
     };
+  
     fetchSolicitudData();
   }, [appointmentId, baseURL]);
   
-  
-  
+  useEffect(() => {
+    if (solicitudData) {
+      const datosSeparados = separarInsumos(solicitudData);
+      setInsumoStates(Object.values(datosSeparados));
+    }
+  }, [solicitudData]);
 
-  // Generic handler generator
   const createHandler = (index, handlerType) => {
     const handlers = {
       cantidad: (id, nuevaCantidad) => {
@@ -237,42 +229,47 @@ const SolicitudInsumosDetalle = () => {
           (insumo) => (insumo.id === id ? { ...insumo, disponible: !insumo.disponible } : insumo)
         );
         setInsumoStates(newInsumoStates);
-      },
-      guardar: async () => {
-        try {
-          // Map the correct field names based on material type
-          const materialTypeMap = [
-            'material_adicional',
-            'material_externo',
-            'servicios',
-            'paquetes',
-            'medicamentos'
-          ];
-          const cantidadTypeMap = [
-            'cantidad_adicional',
-            'cantidad_externo',
-            'cantidad_servicios',
-            'cantidad_paquete',
-            'cantidad_medicamento'
-          ];
-
-          const datosActualizados = {
-            [materialTypeMap[index]]: insumoStates[index].map((i) => i.nombre).join(","),
-            [cantidadTypeMap[index]]: insumoStates[index].map((i) => i.cantidad).join(","),
-            disponibilidad: insumoStates[index].map((i) => (i.disponible ? "1" : "0")).join(","),
-          };
-
-          const response = await axios.patch(`${baseURL}/api/insumos/solicitudes-insumos/${appointmentId}`, datosActualizados);
-
-          setSolicitudData((prev) => ({ ...prev, ...response.data.datos }));
-          setMensaje({ tipo: "success", texto: "Cambios guardados exitosamente" });
-        } catch (error) {
-          console.error("Error guardando cambios:", error);
-          setMensaje({ tipo: "error", texto: "Error al guardar los cambios" });
-        }
       }
     };
     return handlers[handlerType];
+  };
+
+  const guardarTodosCambios = async () => {
+    try {
+      const materialTypeMap = [
+        'material_adicional',
+        'material_externo',
+        'servicios',
+        'paquetes',
+        'medicamentos'
+      ];
+      const cantidadTypeMap = [
+        'cantidad_adicional',
+        'cantidad_externo',
+        'cantidad_servicios',
+        'cantidad_paquete',
+        'cantidad_medicamento'
+      ];
+
+      const datosActualizados = {};
+
+      materialTypeMap.forEach((tipo, index) => {
+        datosActualizados[tipo] = insumoStates[index].map((i) => i.nombre).join(",");
+        datosActualizados[cantidadTypeMap[index]] = insumoStates[index].map((i) => i.cantidad).join(",");
+        datosActualizados[`disponibilidad_${tipo}`] = insumoStates[index].map((i) => (i.disponible ? "1" : "0")).join(",");
+      });
+
+      const response = await axios.patch(`${baseURL}/api/insumos/solicitudes-insumos/${appointmentId}`, datosActualizados);
+
+      setSolicitudData((prev) => ({ ...prev, ...response.data.datos }));
+      setMensaje({ tipo: "success", texto: "Cambios guardados exitosamente" });
+      
+      // Navegar a la página anterior después de guardar
+      navigate(-1);
+    } catch (error) {
+      console.error("Error guardando cambios:", error);
+      setMensaje({ tipo: "error", texto: "Error al guardar los cambios" });
+    }
   };
 
   if (loading) return <div>Cargando...</div>;
@@ -283,30 +280,38 @@ const SolicitudInsumosDetalle = () => {
         <h2 className="text-2xl font-semibold mb-6">Detalle de Solicitud de Insumos</h2>
         {mensaje.texto && <Alert className={`mb-4 ${mensaje.tipo === "error" ? "bg-red-100" : "bg-green-100"}`}>{mensaje.texto}</Alert>}
         
-        {/* Patient Info Block */}
         {solicitudData && <PatientInfoBlock solicitudData={solicitudData} />}
         
-        {/* Render blocks for each material type */}
         {materialTypes.map((materialType, index) => (
-  <InsumoBlock
-    key={materialType}
-    solicitudData={solicitudData}
-    materialType={materialType}
-    insumos={insumoStates[index]}
-    setInsumos={(newInsumos) => {
-      const newInsumoStates = [...insumoStates];
-      newInsumoStates[index] = newInsumos;
-      setInsumoStates(newInsumoStates);
-    }}
-    handleCantidadChange={createHandler(index, 'cantidad')}
-    toggleDisponibilidad={createHandler(index, 'disponibilidad')}
-    handleEliminarInsumo={createHandler(index, 'eliminar')}
-    handleGuardarCambios={createHandler(index, 'guardar')}
-    handleInsumosSelect={setSelectedInsumos}
-    selectedInsumos={selectedInsumos}
-  />
-))}
+          <InsumoBlock
+            key={materialType}
+            solicitudData={solicitudData}
+            materialType={materialType}
+            insumos={insumoStates[index]}
+            setInsumos={(newInsumos) => {
+              const newInsumoStates = [...insumoStates];
+              newInsumoStates[index] = newInsumos;
+              setInsumoStates(newInsumoStates);
+            }}
+            handleCantidadChange={createHandler(index, 'cantidad')}
+            toggleDisponibilidad={createHandler(index, 'disponibilidad')}
+            handleEliminarInsumo={createHandler(index, 'eliminar')}
+            handleInsumosSelect={setSelectedInsumos}
+            selectedInsumos={selectedInsumos}
+          />
+        ))}
 
+        {/* Botón de Guardar Cambios al final de la página */}
+        <div className="fixed bottom-0 left-0 right-0 bg-white p-4 shadow-lg">
+          <div className="container mx-auto flex justify-end">
+            <button
+              onClick={guardarTodosCambios}
+              className="px-8 py-3 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+            >
+              Guardar Cambios
+            </button>
+          </div>
+        </div>
       </div>
     </Layout>
   );

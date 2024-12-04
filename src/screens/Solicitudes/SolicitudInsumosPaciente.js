@@ -13,19 +13,22 @@ const SectionWithInsumos = ({ title, type, onAddInsumo, SelectComponent }) => {
     if (insumo && !selectedInsumos.find((item) => item.value === insumo.value)) {
       const nuevoInsumo = { ...insumo, cantidad: 1 };
       setSelectedInsumos((prev) => [...prev, nuevoInsumo]);
-      onAddInsumo(type, nuevoInsumo); // Actualizar datos globales
+      onAddInsumo(type, nuevoInsumo);
     }
   };
 
   const handleQuantityChange = (index, newQuantity) => {
+    if (newQuantity < 1) return;
     const updatedInsumos = [...selectedInsumos];
     updatedInsumos[index].cantidad = newQuantity;
     setSelectedInsumos(updatedInsumos);
+    onAddInsumo(type, updatedInsumos[index]);
   };
 
   const handleRemoveInsumo = (index) => {
     const updatedInsumos = selectedInsumos.filter((_, i) => i !== index);
     setSelectedInsumos(updatedInsumos);
+    onAddInsumo(type, null, index); // Indicar que se eliminó un insumo
   };
 
   return (
@@ -37,7 +40,7 @@ const SectionWithInsumos = ({ title, type, onAddInsumo, SelectComponent }) => {
         <div className="mt-4 space-y-4">
           {selectedInsumos.map((insumo, index) => (
             <div
-              key={insumo.value}
+              key={insumo.value || index}
               className="flex items-center justify-between border rounded-lg p-2 bg-gray-100"
             >
               <div>
@@ -67,7 +70,6 @@ const SectionWithInsumos = ({ title, type, onAddInsumo, SelectComponent }) => {
     </div>
   );
 };
-
 
 
 const SolicitudInsumosPaciente = () => {
@@ -181,15 +183,6 @@ const SolicitudInsumosPaciente = () => {
   };
 
   const handleGuardarSolicitud = async () => {
-    const hasInsumos = Object.values(selectedInsumos).some(
-      (insumos) => insumos.length > 0
-    );
-  
-    if (!hasInsumos) {
-      alert("Debe seleccionar al menos un insumo antes de guardar.");
-      return;
-    }
-  
     const datosSolicitud = {
       material_adicional: selectedInsumos.materialAdicional.map(i => `${i.clave} - ${i.descripcion}`).join(", "),
       cantidad_adicional: selectedInsumos.materialAdicional.map(i => i.cantidad).join(", "),
@@ -204,7 +197,7 @@ const SolicitudInsumosPaciente = () => {
       resumen_medico: resumenMedico,
       estado_insumos: "Sin solicitud"
     };
-  
+
     try {
       await axios.patch(
         `${baseURL}/api/insumos/solicitudes-insumos/${appointmentId}`,
@@ -216,23 +209,23 @@ const SolicitudInsumosPaciente = () => {
       alert("Ocurrió un error al guardar la solicitud.");
     }
   };
-  
 
 
 // Actualizar la función handleAddInsumo
-const handleAddInsumo = (type, insumo) => {
-  if (insumo && insumo.clave && insumo.descripcion) {
-    setSelectedInsumos((prev) => ({
-      ...prev,
-      [type]: [...prev[type], {
-        ...insumo,
-        clave: insumo.clave,
-        descripcion: insumo.descripcion,
-        cantidad: insumo.cantidad || 1
-      }],
-    }));
-  }
+const handleAddInsumo = (type, insumo, removeIndex = null) => {
+  setSelectedInsumos((prev) => {
+    const updated = { ...prev };
+
+    if (removeIndex !== null) {
+      updated[type] = updated[type].filter((_, index) => index !== removeIndex);
+    } else if (insumo) {
+      updated[type] = [...updated[type], insumo];
+    }
+
+    return updated;
+  });
 };
+
   const renderSelectedInsumos = (type) => {
     return selectedInsumos[type].length === 0 ? (
       <p className="text-gray-500 italic">No hay insumos seleccionados</p>
