@@ -3,7 +3,8 @@ import axios from "axios";
 import Layout from "../../Layout";
 import InsumosSelect from "./InsumosSelect";
 import MedicamentoSelect from "./MedicamentoSelect";
-import AdicionalSelect from "./AdicionalSelect"
+import AdicionalSelect from "./AdicionalSelect";
+import PaquetesSelect from "./PaqueteSelect";
 import { useParams } from "react-router-dom";
 
 const SectionWithInsumos = ({ title, type, onAddInsumo, SelectComponent }) => {
@@ -384,7 +385,7 @@ const handleAddInsumo = (type, insumo, removeIndex = null) => {
     title="Paquetes"
     type="paquetes"
     onAddInsumo={handleAddInsumo}
-    SelectComponent={InsumosSelect}
+    SelectComponent={PaquetesSelect}
   />
 </div>
 

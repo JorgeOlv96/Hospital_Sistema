@@ -95,13 +95,13 @@ function SolicitudesInsumos() {
 
   const getEstadoColor = (estado) => {
     switch (estado.toLowerCase()) {
-      case "programada":
+      case "disponible":
         return "bg-green-400";
-      case "realizada":
+      case "solicitado":
         return "bg-blue-400";
       case "suspendida":
         return "bg-yellow-400";
-      case "pendiente":
+      case "sin solicitud":
         return "bg-orange-400";
       case "Pre-programada":
         return "bg-red-400";
@@ -114,13 +114,13 @@ function SolicitudesInsumos() {
 
   const getEstadoColorStyle = (estado) => {
     switch (estado.toLowerCase()) {
-      case "programada":
+      case "disponible":
         return { backgroundColor: "#68D391", color: "white" }; // Verde claro
-      case "realizada":
+      case "solicitado":
         return { backgroundColor: "#63B3ED", color: "white" }; // Azul claro
       case "suspendida":
         return { backgroundColor: "#F6E05E", color: "white" }; // Amarillo
-      case "pendiente":
+      case "sin solicitud":
         return { backgroundColor: "#E9972F", color: "white" }; // Rojo claro
       case "pre-programada":
         return { backgroundColor: "#06ABC9", color: "white" }; // Rosa claro
@@ -296,19 +296,6 @@ function SolicitudesInsumos() {
                       <thead className="bg-[#365b77] text-white">
                         <tr>
                           <th
-                            className="px-4 py-3 cursor-pointer"
-                            onClick={() => handleSort("id_solicitud")}
-                          >
-                            ID{" "}
-                            <span>
-                              {sortBy === "id_solicitud"
-                                ? sortOrder === "asc"
-                                  ? "▲"
-                                  : "▼"
-                                : ""}
-                            </span>
-                          </th>
-                          <th
                             className="px-4 py-2 cursor-pointer"
                             onClick={() => handleSort("folio")}
                           >
@@ -389,19 +376,6 @@ function SolicitudesInsumos() {
                           </th>
                           <th
                             className="px-4 py-2 cursor-pointer"
-                            onClick={() => handleSort("insumos")}
-                          >
-                            Insumos{" "}
-                            <span>
-                              {sortBy === "cama"
-                                ? sortOrder === "asc"
-                                  ? "▲"
-                                  : "▼"
-                                : ""}
-                            </span>
-                          </th>
-                          <th
-                            className="px-4 py-2 cursor-pointer"
                             onClick={() => handleSort("estado_solicitud")}
                           >
                             Estado{" "}
@@ -425,9 +399,6 @@ function SolicitudesInsumos() {
                               key={appointment.id}
                               className="bg-blue-50 hover:bg-blue-300"
                             >
-                              <td className="border px-6 py-4">
-                                {appointment.id_solicitud}
-                              </td>
                               <td className="border px-4 py-2">
                                 {appointment.folio}
                               </td>
@@ -454,17 +425,14 @@ function SolicitudesInsumos() {
                               <td className="border px-4 py-2 text-center align-middle">
                                 {appointment.sala_quirofano}
                               </td>
-                              <td className="border px-4 py-2 text-center align-middle">
-                                {appointment.req_insumo}
-                              </td>
                               <td className="border px-4 py-2">
                                 <div
                                   className={`inline-block px-1 py-1 rounded-lg ${getEstadoColor(
-                                    appointment.estado_solicitud
+                                    appointment.estado_insumos
                                   )}`}
                                   style={{
                                     ...getEstadoColorStyle(
-                                      appointment.estado_solicitud
+                                      appointment.estado_insumos
                                     ),
                                     display: "flex",
                                     justifyContent: "center",
@@ -474,7 +442,7 @@ function SolicitudesInsumos() {
                                     textAlign: "center",
                                   }}
                                 >
-                                  {appointment.estado_solicitud}
+                                  {appointment.estado_insumos}
                                 </div>
                               </td>
                               <td className="border px-4 py-2 flex justify-center">
@@ -509,7 +477,7 @@ function SolicitudesInsumos() {
                                 borderTopLeftRadius: "10px",
                                 borderBottomLeftRadius: "10px",
                                 ...getEstadoColorStyle(
-                                  appointment.estado_solicitud
+                                  appointment.estado_insumos
                                 ),
                               }}
                             ></div>
@@ -542,7 +510,7 @@ function SolicitudesInsumos() {
                                 {appointment.insumos}
                               </p>
                               <p className="text-sm text-gray-600">
-                                Estatus: {appointment.estado_solicitud}
+                                Estatus: {appointment.estado_insumos}
                               </p>
                             </div>
                           </div>

@@ -1,76 +1,113 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AsyncCreatableSelect from "react-select/async-creatable";
-import { FixedSizeList } from "react-window";
+import axios from "axios";
 
-const PaqueteSelect = ({ onChange, value }) => {
-  const [inputValue, setInputValue] = useState('');  // Para manejar el texto en el input
-  const [selectedOption, setSelectedOption] = useState(value);
-  const baseURL = process.env.REACT_APP_APP_BACK_SSQ || 'http://localhost:4000';
+const PaquetesSelect = ({ onSelect, selectedInsumo }) => {
+  const [inputValue, setInputValue] = useState("");
+  const [selectedOption, setSelectedOption] = useState(selectedInsumo || null);
+  const [paquetes, setPaquetes] = useState([]);
+  const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
+
+  useEffect(() => {
+    const fetchPaquetes = async () => {
+      try {
+        const response = await axios.get(`${baseURL}/api/insumos/paquetes`);
+        setPaquetes(response.data || []);
+      } catch (error) {
+        console.error("Error al obtener paquetes:", error);
+        setPaquetes([]); // Maneja errores con un valor por defecto
+      }
+    };
+    fetchPaquetes();
+  }, [baseURL]);
+  
 
   const loadOptions = (inputValue, callback) => {
-    fetch(`${baseURL}/api/solicitudes/procedimientos?q=${inputValue}`)
-      .then((res) => res.json())
-      .then((data) => {
-        const options = data.map((procedure) => ({
-          label: procedure.nombre_procedimiento,
-          value: procedure.nombre_procedimiento,
-        }));
-        callback(options);
-      });
+    const filteredPaquetes = paquetes.filter((paquete) =>
+      paquete.nombre.toLowerCase().includes(inputValue.toLowerCase()) ||
+    paquete.descripcion.toLowerCase().includes(inputValue.toLowerCase())
+    );
+
+    const options = filteredPaquetes.map((paquete) => ({
+      label: `${paquete.nombre} - ${paquete.descripcion}`,
+      value: paquete.id,
+      nombre: paquete.nombre,
+      descripcion: paquete.descripcion
+    }));
+
+    if (!inputValue) {
+      const allOptions = paquetes.map((paquete) => ({
+        label: `${paquete.nombre} - ${paquete.descripcion}`,
+        value: paquete.id,
+        nombre: paquete.nombre,
+        descripcion: paquete.descripcion
+      }));
+      callback(allOptions);
+    } else {
+      callback(options);
+    }
   };
 
   const handleInputChange = (newValue) => {
-    setInputValue(newValue);  // Actualiza el valor del input
+    setInputValue(newValue);
   };
 
   const handleChange = (option) => {
     setSelectedOption(option);
-    onChange(option);
-  };
-
-  const VirtualizedSelect = ({ children, ...props }) => {
-    const height = 35;
-    const rowCount = children.length;
-    return (
-      <FixedSizeList
-        height={height * Math.min(10, rowCount)}
-        itemCount={rowCount}
-        itemSize={height}
-      >
-        {({ index, style }) => <div style={style}>{children[index]}</div>}
-      </FixedSizeList>
-    );
+    if (option) {
+      // Asegurarse de que todos los datos necesarios estén incluidos
+      const paqueteCompleto = {
+        ...option,
+        cantidad: 1,
+        nombre: option.nombre,
+        descripcion: option.descripcion
+      };
+      onSelect(paqueteCompleto);
+    } else {
+      onSelect(null);
+    }
   };
 
   return (
-    <AsyncCreatableSelect
-      cacheOptions
-      loadOptions={loadOptions}
-      defaultOptions
-      onInputChange={handleInputChange} // Actualiza inputValue mientras escribes
-      inputValue={inputValue}  // Asocia el estado inputValue con el input
-      onChange={handleChange}
-      value={selectedOption}
-      components={{ MenuList: VirtualizedSelect }}
-      placeholder="Seleccionar o escribir procedimiento..."
-      isClearable
-      styles={{
-        control: (provided, state) => ({
-          ...provided,
-          backgroundColor: state.selectProps.value ? '#A8CBD5' : '#FFFFFF',
-          borderColor: state.isFocused ? '#4F638F' : provided.borderColor,
-          boxShadow: state.isFocused ? '0 0 0 1px #4F638F' : provided.boxShadow,
-          '&:hover': {
-            borderColor: '#4F638F',
-          },
-        }),
-        menu: (provided) => ({
-          ...provided,
-          zIndex: 9999,
-        }),
-      }}
-    />
+    <div>
+      <AsyncCreatableSelect
+        cacheOptions
+        loadOptions={loadOptions}
+        defaultOptions={paquetes.map((paquete) => ({
+          label: `${paquete.nombre} - ${paquete.descripcion}`,
+          value: paquete.id,
+          nombre: paquete.nombre,
+          descripcion: paquete.descripcion
+        }))}
+        onInputChange={handleInputChange}
+        inputValue={inputValue}
+        onChange={handleChange}
+        value={selectedOption}
+        placeholder="Seleccionar o escribir paquete..."
+        isClearable
+        styles={{
+          control: (provided, state) => ({
+            ...provided,
+            backgroundColor: "#FFFFFF",
+            borderColor: state.isFocused ? "#000" : provided.borderColor,
+            boxShadow: state.isFocused ? "0 0 0 1px #000" : provided.boxShadow,
+            "&:hover": {
+              borderColor: "#000",
+            },
+          }),
+          menu: (provided) => ({
+            ...provided,
+            zIndex: 9999,
+          }),
+          option: (provided) => ({
+            ...provided,
+            whiteSpace: "normal",
+            wordWrap: "break-word",
+          }),
+        }}
+      />
+    </div>
   );
 };
 
-export default PaqueteSelect;
+export default PaquetesSelect;

@@ -286,7 +286,9 @@ const SolicitudUrgencia = () => {
         key !== "comentarios" &&
         key !== "egreso" &&
         key !== "edad" &&
-        key !== "fecha_nacimiento"
+        key !== "fecha_nacimiento" &&
+        key !== "procedimientos_paciente" &&
+        key !== "diagnostico"
       ) {
         newErrors[key] = "Campo requerido";
       }
