@@ -29,7 +29,7 @@ const SectionWithInsumos = ({ title, type, onAddInsumo, SelectComponent }) => {
   const handleRemoveInsumo = (index) => {
     const updatedInsumos = selectedInsumos.filter((_, i) => i !== index);
     setSelectedInsumos(updatedInsumos);
-    onAddInsumo(type, null, index); // Indicar que se eliminó un insumo
+    onAddInsumo(type, null, index);
   };
 
   return (
@@ -96,7 +96,18 @@ const SolicitudInsumosPaciente = () => {
     paquetes: [],
     medicanentos: [],
   });
+  
+  // New state for managing insumo selection
+  const [currentInsumoTypes, setCurrentInsumoTypes] = useState([]);
+  const [showInsumoTypeModal, setShowInsumoTypeModal] = useState(false);
 
+  const insumoTypes = [
+    { type: "materialExterno", label: "Material Externo", component: InsumosSelect },
+    { type: "materialAdicional", label: "Material Adicional", component: AdicionalSelect },
+    { type: "servicios", label: "Servicio", component: InsumosSelect },
+    { type: "medicamentos", label: "Medicamento", component: MedicamentoSelect },
+    { type: "paquetes", label: "Paquete", component: PaquetesSelect }
+  ];
 
 
   useEffect(() => {
@@ -112,6 +123,23 @@ const SolicitudInsumosPaciente = () => {
     };
     fetchAppointmentData();
   }, [appointmentId, baseURL]);
+
+  const handleOpenInsumoTypeModal = () => {
+    setShowInsumoTypeModal(true);
+  };
+
+  const handleSelectInsumoType = (selectedType) => {
+    // Evitar tipos duplicados
+    if (!currentInsumoTypes.some(item => item.type === selectedType.type)) {
+      setCurrentInsumoTypes(prev => [...prev, selectedType]);
+    }
+    setShowInsumoTypeModal(false);
+  };
+
+  const handleCloseInsumoTypeModal = () => {
+    setCurrentInsumoTypes(null);
+    setShowInsumoTypeModal(false);
+  };
 
   const fetchInsumos = async () => {
     try {
@@ -161,6 +189,17 @@ const SolicitudInsumosPaciente = () => {
     }
   };
 
+  const handleRemoveInsumoType = (typeToRemove) => {
+    setCurrentInsumoTypes(prev => 
+      prev.filter(item => item.type !== typeToRemove)
+    );
+    // También eliminar los insumos de este tipo
+    setSelectedInsumos(prev => ({
+      ...prev,
+      [typeToRemove]: []
+    }));
+  };
+
   const handleSeleccionarInsumo = (insumo) => {
     setInsumosSeleccionados([...insumosSeleccionados, { ...insumo, cantidad: 1 }]);
     setMostrarListaInsumos(false);
@@ -185,20 +224,40 @@ const SolicitudInsumosPaciente = () => {
 
   const handleGuardarSolicitud = async () => {
     const datosSolicitud = {
-      material_adicional: selectedInsumos.materialAdicional.map(i => `${i.clave} - ${i.descripcion}`).join(", "),
-      cantidad_adicional: selectedInsumos.materialAdicional.map(i => i.cantidad).join(", "),
-      material_externo: selectedInsumos.materialExterno.map(i => `${i.clave} - ${i.descripcion}`).join(", "),
-      cantidad_externo: selectedInsumos.materialExterno.map(i => i.cantidad).join(", "),
-      servicios: selectedInsumos.servicios.map(i => `${i.clave} - ${i.descripcion}`).join(", "),
-      cantidad_servicios: selectedInsumos.servicios.map(i => i.cantidad).join(", "),
-      nombre_paquete: selectedInsumos.paquetes.map(i => `${i.clave} - ${i.descripcion}`).join(", "),
-      cantidad_paquete: selectedInsumos.paquetes.map(i => i.cantidad).join(", "),
-      medicamentos: selectedInsumos.medicanentos.map(i => `${i.clave} - ${i.descripcion}`).join(", "),
-      cantidad_medicamento: selectedInsumos.medicanentos.map(i => i.cantidad).join(", "),
+      material_adicional: selectedInsumos.materialAdicional 
+        ? selectedInsumos.materialAdicional.map(i => `${i.clave} - ${i.descripcion}`).join(", ") 
+        : "",
+      cantidad_adicional: selectedInsumos.materialAdicional 
+        ? selectedInsumos.materialAdicional.map(i => i.cantidad).join(", ") 
+        : "",
+      material_externo: selectedInsumos.materialExterno 
+        ? selectedInsumos.materialExterno.map(i => `${i.clave} - ${i.descripcion}`).join(", ") 
+        : "",
+      cantidad_externo: selectedInsumos.materialExterno 
+        ? selectedInsumos.materialExterno.map(i => i.cantidad).join(", ") 
+        : "",
+      servicios: selectedInsumos.servicios 
+        ? selectedInsumos.servicios.map(i => `${i.clave} - ${i.descripcion}`).join(", ") 
+        : "",
+      cantidad_servicios: selectedInsumos.servicios 
+        ? selectedInsumos.servicios.map(i => i.cantidad).join(", ") 
+        : "",
+      nombre_paquete: selectedInsumos.paquetes 
+        ? selectedInsumos.paquetes.map(i => `${i.clave} - ${i.descripcion}`).join(", ") 
+        : "",
+      cantidad_paquete: selectedInsumos.paquetes 
+        ? selectedInsumos.paquetes.map(i => i.cantidad).join(", ") 
+        : "",
+      medicamentos: selectedInsumos.medicamentos 
+        ? selectedInsumos.medicamentos.map(i => `${i.clave} - ${i.descripcion}`).join(", ") 
+        : "",
+      cantidad_medicamento: selectedInsumos.medicamentos 
+        ? selectedInsumos.medicamentos.map(i => i.cantidad).join(", ") 
+        : "",
       resumen_medico: resumenMedico,
       estado_insumos: "Sin solicitud"
     };
-
+  
     try {
       await axios.patch(
         `${baseURL}/api/insumos/solicitudes-insumos/${appointmentId}`,
@@ -212,20 +271,19 @@ const SolicitudInsumosPaciente = () => {
   };
 
 
-// Actualizar la función handleAddInsumo
-const handleAddInsumo = (type, insumo, removeIndex = null) => {
-  setSelectedInsumos((prev) => {
-    const updated = { ...prev };
+  const handleAddInsumo = (type, insumo, removeIndex = null) => {
+    setSelectedInsumos((prev) => {
+      const updated = { ...prev };
 
-    if (removeIndex !== null) {
-      updated[type] = updated[type].filter((_, index) => index !== removeIndex);
-    } else if (insumo) {
-      updated[type] = [...updated[type], insumo];
-    }
+      if (removeIndex !== null) {
+        updated[type] = updated[type].filter((_, index) => index !== removeIndex);
+      } else if (insumo) {
+        updated[type] = [...updated[type], insumo];
+      }
 
-    return updated;
-  });
-};
+      return updated;
+    });
+  };
 
   const renderSelectedInsumos = (type) => {
     return selectedInsumos[type].length === 0 ? (
@@ -250,7 +308,41 @@ const handleAddInsumo = (type, insumo, removeIndex = null) => {
     );
   };
 
+  const renderInsumoTypeModal = () => {
+    return showInsumoTypeModal && (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+        <div className="bg-white p-6 rounded-lg shadow-xl">
+          <h2 className="text-xl font-semibold mb-4">Seleccione el tipo de insumo</h2>
+          <div className="space-y-2">
+            {insumoTypes
+              .filter(type => 
+                !currentInsumoTypes.some(currentType => currentType.type === type.type)
+              )
+              .map((item) => (
+                <button
+                  key={item.type}
+                  onClick={() => handleSelectInsumoType(item)}
+                  className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600"
+                >
+                  {item.label}
+                </button>
+              ))}
+            <button
+              onClick={() => setShowInsumoTypeModal(false)}
+              className="w-full bg-red-500 text-white py-2 rounded hover:bg-red-600 mt-4"
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+
   if (loading) return <div>Cargando...</div>;
+
+  const CurrentSelect = currentInsumoTypes?.component;
 
   return (
     <Layout>
@@ -358,51 +450,33 @@ const handleAddInsumo = (type, insumo, removeIndex = null) => {
   ></textarea>
 </div>
 
-  <div className="grid grid-cols-2 gap-4 mb-6">
-  <SectionWithInsumos
-    title="Material Adicional"
-    type="materialAdicional"
-    onAddInsumo={handleAddInsumo}
-    SelectComponent={AdicionalSelect}
-  />
-  <SectionWithInsumos
-    title="Material Externo"
-    type="materialExterno"
-    onAddInsumo={handleAddInsumo}
-    SelectComponent={InsumosSelect}
-  />
-</div>
+<div className="mt-6 flex items-center space-x-4">
+          <button
+            onClick={handleOpenInsumoTypeModal}
+            className="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-blue-700"
+          >
+            Agregar Insumo
+          </button>
+        </div>
 
-{/* Lista de insumos seleccionados */}
-<div className="grid grid-cols-2 gap-4 mb-6">
-  <SectionWithInsumos
-    title="Servicios"
-    type="servicios"
-    onAddInsumo={handleAddInsumo}
-    SelectComponent={InsumosSelect}
-  />
-  <SectionWithInsumos
-    title="Paquetes"
-    type="paquetes"
-    onAddInsumo={handleAddInsumo}
-    SelectComponent={PaquetesSelect}
-  />
-</div>
-
-{/* Último div con margen superior agregado */}
-<div className="grid grid-cols-2 gap-4 mt-6">
-  <SectionWithInsumos
-    title="Medicamentos"
-    type="medicamentos"
-    onAddInsumo={handleAddInsumo}
-    SelectComponent={MedicamentoSelect}
-  />
-</div>
+        {currentInsumoTypes.map((insumoType) => {
+          const CurrentSelect = insumoType.component;
+          return (
+            <SectionWithInsumos
+              key={insumoType.type}
+              title={`Agregar ${insumoType.label}`}
+              type={insumoType.type}
+              onAddInsumo={handleAddInsumo}
+              SelectComponent={CurrentSelect}
+              onRemove={handleRemoveInsumoType}
+            />
+          );
+        })}
 
       {/* Lista de insumos seleccionados */}
-        <div className="mt-6">
+      <div className="mt-6">
           <h3 className="text-xl font-semibold mb-4">Insumos Seleccionados</h3>
-          {["materialAdicional", "materialExterno", "servicios", "paquetes"].map((type) => (
+          {Object.keys(selectedInsumos).map((type) => (
             <div key={type} className="mb-4">
               <h4 className="font-semibold text-gray-700 capitalize">
                 {type.replace(/([A-Z])/g, " $1")}
@@ -411,6 +485,7 @@ const handleAddInsumo = (type, insumo, removeIndex = null) => {
             </div>
           ))}
         </div>
+
 
 
         <div className="mt-6 flex justify-end">
@@ -422,8 +497,9 @@ const handleAddInsumo = (type, insumo, removeIndex = null) => {
           </button>
         </div>
 
-  </div>
-  </div>
+        {renderInsumoTypeModal()}
+      </div>
+      </div>
     </Layout>
   );
 };

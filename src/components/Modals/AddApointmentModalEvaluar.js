@@ -191,7 +191,7 @@ function AddAppointmentModalEvaluar({
     // Nueva función para manejar la visualización de la solicitud de insumos
     const handleViewInsumos = () => {
       // Redirigir a la página correspondiente
-      navigate(`/solicitudInsumosDetalle/${appointmentId.id_solicitud}`);
+      navigate(`/solicitudes/solicitud-insumos/${appointmentId}`);
     };
   
   const formatDate = (dateString) => {
