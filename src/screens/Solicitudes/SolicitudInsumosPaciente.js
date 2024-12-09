@@ -94,7 +94,7 @@ const SolicitudInsumosPaciente = () => {
     materialExterno: [],
     servicios: [],
     paquetes: [],
-    medicanentos: [],
+    medicamentos: [],
   });
   
   // New state for managing insumo selection

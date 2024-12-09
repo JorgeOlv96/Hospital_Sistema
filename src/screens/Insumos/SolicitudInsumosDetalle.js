@@ -173,8 +173,6 @@ const SolicitudInsumosDetalle = () => {
   const [loading, setLoading] = useState(true);
   const [mensaje, setMensaje] = useState({ tipo: "", texto: "" });
   const [selectedInsumos, setSelectedInsumos] = useState([]);
-  const [isEditing, setIsEditing] = useState(false);
-
 
   const materialTypes = [
     'material_adicional', 
@@ -220,6 +218,7 @@ const SolicitudInsumosDetalle = () => {
         setSolicitudData(null);
         const response = await axios.get(`${baseURL}/api/insumos/solicitudes-insumos/${appointmentId}`);
         const datosSeparados = separarInsumos(response.data);
+        console.log("Datos separados:", datosSeparados);
         setSolicitudData(response.data);
         setInsumoStates(Object.values(datosSeparados));
       } catch (error) {
@@ -430,9 +429,9 @@ const SolicitudInsumosDetalle = () => {
       const materiales = [
         { tipo: 'Adicional', items: patientData.material_adicional },
         { tipo: 'Externo', items: patientData.material_externo },
-        { tipo: 'Paquetes', items: patientData.material_paquetes },
-        { tipo: 'Servicios', items: patientData.material_servicios },
-        { tipo: 'Medicamentos', items: patientData.material_medicamentos },
+        { tipo: 'Paquetes', items: patientData.nombre_paquete },
+        { tipo: 'Servicios', items: patientData.servicios },
+        { tipo: 'Medicamentos', items: patientData.medicamentos },
       ];
   
       let currentY = 470;
@@ -512,44 +511,50 @@ const SolicitudInsumosDetalle = () => {
 
   if (loading) return <div>Cargando...</div>;
 
+  const activeMaterialTypes = materialTypes.filter((materialType, index) => 
+    insumoStates[index].length > 0
+  );
+
   return (
     <Layout>
       <div className="p-6">
         <h2 className="text-2xl font-semibold mb-6">Detalle de Solicitud de Insumos</h2>
 
         <button
-      onClick={() => generateDocument(solicitudData)}
-      className="bg-green-500 text-white text-sm p-4 rounded-lg font-light"
-      style={{ marginBottom: "8px" }}
-    >
-      Imprimir solicitud
-    </button>
+          onClick={() => generateDocument(solicitudData)}
+          className="bg-green-500 text-white text-sm p-4 rounded-lg font-light"
+          style={{ marginBottom: "8px" }}
+        >
+          Imprimir solicitud
+        </button>
 
         {mensaje.texto && <Alert className={`mb-4 ${mensaje.tipo === "error" ? "bg-red-100" : "bg-green-100"}`}>{mensaje.texto}</Alert>}
         
         {solicitudData && <PatientInfoBlock solicitudData={solicitudData} />}
         
-        {materialTypes.map((materialType, index) => (
-          <InsumoBlock
-            key={materialType}
-            solicitudData={solicitudData}
-            materialType={materialType}
-            insumos={insumoStates[index]}
-            setInsumos={(newInsumos) => {
-              const newInsumoStates = [...insumoStates];
-              newInsumoStates[index] = newInsumos;
-              setInsumoStates(newInsumoStates);
-            }}
-            handleCantidadChange={createHandler(index, 'cantidad')}
-            toggleDisponibilidad={createHandler(index, 'disponibilidad')}
-            handleEliminarInsumo={createHandler(index, 'eliminar')}
-            handleInsumosSelect={setSelectedInsumos}
-            selectedInsumos={selectedInsumos}
-          />
-        ))}
+        {activeMaterialTypes.map((materialType, index) => {
+          const originalIndex = materialTypes.indexOf(materialType);
+          return (
+            <InsumoBlock
+              key={materialType}
+              solicitudData={solicitudData}
+              materialType={materialType}
+              insumos={insumoStates[originalIndex]}
+              setInsumos={(newInsumos) => {
+                const newInsumoStates = [...insumoStates];
+                newInsumoStates[originalIndex] = newInsumos;
+                setInsumoStates(newInsumoStates);
+              }}
+              handleCantidadChange={createHandler(originalIndex, 'cantidad')}
+              toggleDisponibilidad={createHandler(originalIndex, 'disponibilidad')}
+              handleEliminarInsumo={createHandler(originalIndex, 'eliminar')}
+              handleInsumosSelect={setSelectedInsumos}
+              selectedInsumos={selectedInsumos}
+            />
+          );
+        })}
 
-        {/* Botón de Guardar Cambios al final de la página */}
-        <div className="fixed bottom-0 left-0 right-0 bg-white p-4 shadow-lg">
+<div className="fixed bottom-0 left-0 right-0 bg-white p-4 shadow-lg">
           <div className="container mx-auto flex justify-end">
             <button
               onClick={guardarTodosCambios}
