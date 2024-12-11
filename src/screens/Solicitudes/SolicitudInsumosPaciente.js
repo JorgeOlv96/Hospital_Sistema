@@ -243,7 +243,7 @@ const SolicitudInsumosPaciente = () => {
         ? selectedInsumos.servicios.map(i => i.cantidad).join(", ") 
         : "",
       nombre_paquete: selectedInsumos.paquetes 
-        ? selectedInsumos.paquetes.map(i => `${i.clave} - ${i.descripcion}`).join(", ") 
+        ? selectedInsumos.paquetes.map(i => `${i.nombre} - ${i.descripcion}`).join(", ") 
         : "",
       cantidad_paquete: selectedInsumos.paquetes 
         ? selectedInsumos.paquetes.map(i => i.cantidad).join(", ") 
