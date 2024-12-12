@@ -410,38 +410,23 @@ const SolicitudInsumosDetalle = () => {
       // Encabezado
       doc.setFont('Helvetica', 'bold');
       doc.setFontSize(12);
-      doc.text('Solicitud, Registro y Autorización de Intervención Quirúrgica', pageWidth / 2, 40, { align: 'center' });
+      doc.text('Trazabilidad de Insumos y Servicios para la Salud', pageWidth / 2, 40, { align: 'center' });
       doc.text('Nuevo Hospital General de Querétaro', pageWidth / 2, 60, { align: 'center' });
-  
-      // Autorización del Paciente
-      doc.setFont('Helvetica', 'normal');
-      doc.setFontSize(10);
-      doc.text('Autorización del Paciente:', 40, 100);
-  
-      const autorizacionTexto = 'Autorizo a los médicos de la presente unidad médica a cargo de los servicios de salud del estado de Querétaro, para que efectúen los tratamientos e intervenciones quirúrgicas necesarias para el alivio y/o curación de mi padecimiento, en inteligencia de que conozco los beneficios, riesgos y posibles complicaciones a los que estoy sujeto (a) por medio del procedimiento quirúrgico y anestésico a cual seré sometido(a).';
-      
-      doc.text(autorizacionTexto, 40, 120, { maxWidth: pageWidth - 80, align: 'justify' });
   
       // Nombre y firma del paciente
       const nombreCompleto = `${getValue(solicitudData.ap_paterno)} ${getValue(solicitudData.ap_materno)} ${getValue(solicitudData.nombre_paciente)}`;
-      doc.text(nombreCompleto, 40, 205);
-      doc.line(40, 210, pageWidth / 2 - 20, 210);
-      doc.text('Nombre del paciente o representante legal', 40, 225);
-  
-      doc.line(pageWidth / 2 + 20, 210, pageWidth - 40, 210);
-      doc.text('Firma del paciente o representante legal', pageWidth / 2 + 20, 225);
   
       // Línea divisoria
       doc.setLineWidth(1.5);
-      doc.line(40, 245, pageWidth - 40, 245);
+      doc.line(40, 100, pageWidth - 40, 100);
   
       // Datos del Paciente
       doc.setFont('Helvetica', 'bold');
       doc.setFontSize(10);
-      doc.text('DATOS DEL PACIENTE', pageWidth / 2, 275, { align: 'center' });
+      doc.text('DATOS DEL PACIENTE', pageWidth / 2, 135, { align: 'center' });
   
       // Función para calcular la posición Y
-      const getYPosition = (index) => 305 + (index * 30);
+      const getYPosition = (index) => 160 + (index * 30);
   
       // Ajustando las posiciones de los campos
       printFieldAndValue("Folio de Solicitud: ", solicitudData.folio, 40, getYPosition(0));
@@ -504,11 +489,11 @@ const SolicitudInsumosDetalle = () => {
       // Impresión de Materiales con tabla
       doc.setFont('Helvetica', 'bold');
       doc.setFontSize(10);
-      doc.text('MATERIALES REQUERIDOS', pageWidth / 2, 450, { align: 'center' });
+      doc.text('MATERIALES REQUERIDOS', pageWidth / 2, 335, { align: 'center' });
 
       // Configuración de la tabla
       const marginX = 40;
-      const tableTop = 470;
+      const tableTop = 350;
       const columnWidths = [100, 320, 60]; // Anchos de columnas: Clave, Descripción, Cantidad
       const rowHeight = 20;
       const tableHeaders = ['Clave', 'Descripción', 'Cantidad'];
