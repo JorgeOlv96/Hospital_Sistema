@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Layout from "../../Layout";
+import $ from 'jquery';
 import { useParams, useNavigate } from "react-router-dom";
 import { Check, X, Trash2, Package } from "lucide-react";
 import jsPDF from 'jspdf';
@@ -443,6 +444,25 @@ const SolicitudInsumosDetalle = () => {
         const formattedDate = new Date(date);
         return formattedDate.toLocaleDateString('es-MX');
       };
+
+      const fetchPackageInsumos = (nombrePaquete) => {
+        try {
+          // Usar una llamada síncrona con jQuery.ajax
+          const response = $.ajax({
+            url: `${baseURL}/api/insumos/paquete-insumos`,
+            data: { nombre_paquete: nombrePaquete },
+            method: 'GET',
+            async: false // Importante: llamada síncrona
+          });
+
+          // Procesar la respuesta
+          const paqueteInsumos = response.responseJSON;
+          return paqueteInsumos[0] || null;
+        } catch (error) {
+          console.error('Error al obtener insumos del paquete:', error);
+          return null;
+        }
+      };
   
       // Función para ajustar la posición de los campos
       const adjustPosition = (text, startX, y, maxWidth) => {
@@ -461,41 +481,30 @@ const SolicitudInsumosDetalle = () => {
         doc.line(x + fieldWidth + 5, y + 2, x + fieldWidth + 5 + doc.getStringUnitWidth(stringValue) * doc.internal.getFontSize() / doc.internal.scaleFactor, y + 2);
       };
   
-      const splitMaterialInfo = (materialString, packageInsumos) => {
+      const splitMaterialInfo = (materialString) => {
         if (!materialString) return [];
-        
         return materialString.split(',').map(item => {
           item = item.trim();
+          // Buscar un espacio seguido de un guion
+          const separatorMatch = item.match(/\s+-\s+/);
           
-          if (packageInsumos && packageInsumos.some(pkg => pkg.nombre_paquete === item)) {
-            // Si es un paquete, buscar los insumos del paquete
-            const paqueteSeleccionado = packageInsumos.find(pkg => pkg.nombre_paquete === item);
+          if (separatorMatch) {
+            // Si encuentra el patrón de espacio-guion-espacio, separa en consecuencia
+            const [clave, descripcion] = item.split(/\s+-\s+/);
             return {
-              clave: paqueteSeleccionado.nombre_paquete,
-              descripcion: paqueteSeleccionado.insumos.map(insumo => 
-                `${insumo.clave}-${insumo.descripcion}, ${insumo.cantidad_default}`
-              ).join('\n'),
-              isPackage: true,
-              packageInsumos: paqueteSeleccionado.insumos
+              clave: clave.trim(),
+              descripcion: descripcion.trim()
+            };
+          } else {
+            // Si no encuentra el patrón, considera todo como descripción
+            return {
+              clave: 'N/A',
+              descripcion: item
             };
           }
-          
-          // Manejar formato de insumo: 00000-000, descripcion de insumo, 1
-          const parts = item.split(',').map(part => part.trim());
-          if (parts.length === 3) {
-            return {
-              clave: parts[0],
-              descripcion: parts[1],
-              cantidad: parts[2]
-            };
-          }
-          
-          return {
-            clave: 'N/A',
-            descripcion: item
-          };
         });
       };
+  
       // Encabezado
       doc.setFont('Helvetica', 'bold');
       doc.setFontSize(12);
@@ -541,35 +550,43 @@ const SolicitudInsumosDetalle = () => {
       
       printFieldAndValue("Cama: ", solicitudData.cama, nextX, getYPosition(4));
       
-      // Procedimiento CIE-9 con manejo de texto largo
       const procedimientoPaciente = getValue(solicitudData.procedimientos_paciente);
-      const splitProcedimiento = doc.splitTextToSize(procedimientoPaciente, pageWidth - 80);
+      const maxWidth = pageWidth - 120; // Reducir el ancho máximo para asegurar márgenes
+      const splitProcedimiento = doc.splitTextToSize(procedimientoPaciente, maxWidth);
       printFieldAndValue("Procedimiento CIE-9: ", "", 40, getYPosition(5));
       splitProcedimiento.forEach((line, index) => {
-          doc.text(line, 40 + doc.getStringUnitWidth("Procedimiento CIE-9: ") * doc.internal.getFontSize() / doc.internal.scaleFactor + 10, 
-                   getYPosition(5) + (index * 15));
+          doc.text(line, 
+              40 + doc.getStringUnitWidth("Procedimiento CIE-9: ") * doc.internal.getFontSize() / doc.internal.scaleFactor + 10, 
+              getYPosition(5) + (index * 15)
+          );
       });
       
       // Diagnóstico con manejo de texto largo
       const diagnosticoPaciente = getValue(solicitudData.diagnostico);
-      const splitDiagnostico = doc.splitTextToSize(diagnosticoPaciente, pageWidth - 80);
-      printFieldAndValue("Diagnóstico: ", "", 40, getYPosition(5) + (splitProcedimiento.length * 15));
+      const splitDiagnostico = doc.splitTextToSize(diagnosticoPaciente, maxWidth);
+      const diagnosticoPosY = getYPosition(5) + (splitProcedimiento.length * 15);
+      printFieldAndValue("Diagnóstico: ", "", 40, diagnosticoPosY);
       splitDiagnostico.forEach((line, index) => {
-          doc.text(line, 40 + doc.getStringUnitWidth("Diagnóstico: ") * doc.internal.getFontSize() / doc.internal.scaleFactor + 10, 
-                   getYPosition(5) + (splitProcedimiento.length * 15) + (index * 15));
+          doc.text(line, 
+              40 + doc.getStringUnitWidth("Diagnóstico: ") * doc.internal.getFontSize() / doc.internal.scaleFactor + 10, 
+              diagnosticoPosY + (index * 15)
+          );
       });
       
       // Resumen médico con manejo de texto largo
       const resumenMedico = getValue(solicitudData.resumen_medico);
-      const splitResumenMedico = doc.splitTextToSize(resumenMedico, pageWidth - 80);
-      printFieldAndValue("Resumen médico: ", "", 40, getYPosition(5) + (splitProcedimiento.length * 15) + (splitDiagnostico.length * 15));
+      const splitResumenMedico = doc.splitTextToSize(resumenMedico, maxWidth);
+      const resumenPosY = diagnosticoPosY + (splitDiagnostico.length * 15);
+      printFieldAndValue("Resumen médico: ", "", 40, resumenPosY);
       splitResumenMedico.forEach((line, index) => {
-          doc.text(line, 40 + doc.getStringUnitWidth("Resumen médico: ") * doc.internal.getFontSize() / doc.internal.scaleFactor + 10, 
-                   getYPosition(5) + (splitProcedimiento.length * 15) + (splitDiagnostico.length * 15) + (index * 15));
+          doc.text(line, 
+              40 + doc.getStringUnitWidth("Resumen médico: ") * doc.internal.getFontSize() / doc.internal.scaleFactor + 10, 
+              resumenPosY + (index * 15)
+          );
       });
       
       // Ajustar la posición de la segunda línea divisoria
-      const nuevaSeccionY = getYPosition(5) + (splitProcedimiento.length * 15) + (splitDiagnostico.length * 15) + (splitResumenMedico.length * 15) + 20;
+      const nuevaSeccionY = resumenPosY + (splitResumenMedico.length * 15) + 20;
       doc.setLineWidth(1.5);
       doc.line(40, nuevaSeccionY, pageWidth - 40, nuevaSeccionY);
       // Preparación de materiales con el nuevo formato de tabla
@@ -584,11 +601,30 @@ const SolicitudInsumosDetalle = () => {
           items: splitMaterialInfo(solicitudData.material_externo),
           cantidades: solicitudData.cantidad_externo ? solicitudData.cantidad_externo.split(',').map(c => c.trim()) : []
         },
-        { 
-          tipo: 'Paquetes', 
-          items: splitMaterialInfo(solicitudData.nombre_paquete),
-          cantidades: solicitudData.cantidad_paquete ? solicitudData.cantidad_paquete.split(',').map(c => c.trim()) : []
-        },
+          { 
+            tipo: 'Paquetes', 
+            items: splitMaterialInfo(solicitudData.nombre_paquete).flatMap(paquete => {
+              // Buscar los insumos del paquete
+              const paqueteConInsumos = fetchPackageInsumos(paquete.descripcion);
+              
+              // Si se encuentran los insumos, expandir a múltiples filas
+              if (paqueteConInsumos && paqueteConInsumos.insumos) {
+                return paqueteConInsumos.insumos.map(insumo => ({
+                  clave: paquete.descripcion, // Nombre del paquete en la columna de clave
+                  descripcion: `${insumo.clave_insumo} - ${insumo.descripcion_insumo}`,
+                  cantidad: String(insumo.cantidad_default || '1') // Asegurar que sea un string
+                }));
+              }
+              
+              // Si no hay insumos, devolver el paquete original
+              return [{
+                clave: paquete.descripcion,
+                descripcion: 'Sin insumos definidos',
+                cantidad: '1' // Asegurar que sea un string
+              }];
+            }),
+            cantidades: [] // Las cantidades ahora están incluidas en cada insumo
+          },
         { 
           tipo: 'Servicios', 
           items: splitMaterialInfo(solicitudData.servicios),
@@ -634,6 +670,9 @@ doc.text('MATERIALES REQUERIDOS', pageWidth / 2, nuevaSeccionY + 15, { align: 'c
       // Función para dibujar fila de tabla
 // Función para dibujar fila de tabla
 const drawTableRow = (y, clave, descripcion, cantidad, doc, marginX, columnWidths, rowHeight) => {
+  // Convertir cantidad a string explícitamente
+  cantidad = String(cantidad || '1');
+  
   doc.setFont('Helvetica', 'normal');
   
   // Ajuste de texto para descripción con cálculo de altura
@@ -656,59 +695,60 @@ const drawTableRow = (y, clave, descripcion, cantidad, doc, marginX, columnWidth
   });
   
   // Cantidad centrada verticalmente
-  doc.text(cantidad || '0', marginX + columnWidths[0] + columnWidths[1] + 5, y + (dynamicRowHeight / 2) + 5);
+  doc.text(cantidad, marginX + columnWidths[0] + columnWidths[1] + 5, y + (dynamicRowHeight / 2) + 5);
   
   return dynamicRowHeight;
 };
 
-      let currentY = tableTop;
-      let pageNum = 1;
+let currentY = tableTop;
+let pageNum = 1;
+
+materialesSecciones.forEach(seccion => {
+  if (seccion.items.length > 0) {
+    // Agregar encabezado de sección con verificación de espacio
+    if (currentY + 40 > pageHeight - 150) { // Dejar espacio para firmas y pie de página
+      doc.addPage();
+      currentY = 40;
+      pageNum++;
+    }
+    doc.setFont('Helvetica', 'bold');
+    doc.text(`${seccion.tipo}:`, marginX, currentY);
+    currentY += 20;
+
+    // Dibujar encabezados de tabla
+    drawTableHeaders(currentY);
+    currentY += rowHeight;
+
+    // Dibujar filas
+    seccion.items.forEach((item) => {
+      // Verificación de espacio más estricta
+      if (currentY + 30 > pageHeight - 150) { // Dejar espacio para firmas
+        doc.addPage();
+        currentY = 40;
+        pageNum++;
+        drawTableHeaders(currentY);
+        currentY += rowHeight;
+      }
+
+      const dynamicRowHeight = drawTableRow(
+        currentY, 
+        item.clave, 
+        item.descripcion, 
+        item.cantidad, // Ahora ya es un string
+        doc,
+        marginX,
+        columnWidths,
+        rowHeight
+      );
       
-      materialesSecciones.forEach(seccion => {
-        if (seccion.items.length > 0) {
-          // Agregar encabezado de sección
-          if (currentY + 40 > pageHeight - 50) {
-            doc.addPage();
-            currentY = 40;
-            pageNum++;
-          }
-          doc.setFont('Helvetica', 'bold');
-          doc.text(`${seccion.tipo}:`, marginX, currentY);
-          currentY += 20;
-      
-          // Dibujar encabezados de tabla
-          drawTableHeaders(currentY);
-          currentY += rowHeight;
-      
-          // Dibujar filas
-          seccion.items.forEach((item, index) => {
-            // Agregar nueva página si se necesita
-            if (currentY + 30 > pageHeight - 50) {
-              doc.addPage();
-              currentY = 40;
-              pageNum++;
-              drawTableHeaders(currentY);
-              currentY += rowHeight;
-            }
-      
-            const dynamicRowHeight = drawTableRow(
-              currentY, 
-              item.clave, 
-              item.descripcion, 
-              seccion.cantidades[index] || '1',
-              doc,
-              marginX,
-              columnWidths,
-              rowHeight
-            );
-            
-            currentY += dynamicRowHeight + 5;
-          });
-      
-          // Espacio entre secciones
-          currentY += 10;
-        }
-      });
+      currentY += dynamicRowHeight + 5;
+    });
+
+    // Espacio entre secciones
+    currentY += 10;
+  }
+});
+
 
       // Asegurar que hay suficiente espacio antes de la línea divisoria final
       const minSpaceBeforeLine = 30;
