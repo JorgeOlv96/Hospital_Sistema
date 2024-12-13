@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Layout from "../../Layout";
 import { useParams, useNavigate } from "react-router-dom";
-import { Check, X, Trash2 } from "lucide-react";
+import { Check, X, Trash2, Package } from "lucide-react";
 import jsPDF from 'jspdf';
 import { Alert } from "../../components/ui/alert";
 import InsumosSelect from "../Solicitudes/InsumosSelect";
@@ -26,6 +26,47 @@ const PatientInfoBlock = ({ solicitudData }) => (
   </div>
 );
 
+const PackageInsumosModal = ({ packageName, packageInsumos, onClose }) => {
+  if (!packageInsumos) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+      <div className="bg-white p-8 rounded-lg max-w-3xl w-full max-h-[80vh] overflow-y-auto">
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-2xl font-semibold">Insumos del Paquete: {packageName}</h3>
+          <button 
+            onClick={onClose} 
+            className="text-gray-500 hover:text-gray-700"
+          >
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+        
+        {packageInsumos.length > 0 ? (
+          <div className="space-y-4">
+            {packageInsumos.map((insumo, index) => (
+              <div 
+                key={index} 
+                className="bg-gray-100 p-4 rounded-lg flex justify-between items-center"
+              >
+                <div>
+                  <p className="font-medium text-lg">{insumo.descripcion_insumo}</p>
+                  <p className="text-sm text-gray-600">Clave: {insumo.clave_insumo}</p>
+                </div>
+                <div className="font-semibold text-blue-600 text-lg">
+                  Cantidad: {insumo.cantidad_default}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <p className="text-center text-gray-500">No se encontraron insumos para este paquete.</p>
+        )}
+      </div>
+    </div>
+  );
+};
+
 const InsumoBlock = ({
   solicitudData,
   materialType,
@@ -37,7 +78,9 @@ const InsumoBlock = ({
   handleInsumosSelect,
   selectedInsumos,
   onAddSelectedInsumos,
+  packageInsumos,
 }) => {
+  const [showPackageModal, setShowPackageModal] = useState(false);
   const materialTypeMap = {
     'material_adicional': { 
       title: 'Material Adicional', 
@@ -126,6 +169,33 @@ const InsumoBlock = ({
             </div>
           </div>
 
+          {materialType === 'paquetes' && solicitudData.nombre_paquete && (
+            <div className="mb-4 bg-blue-50 p-4 rounded-lg flex items-center justify-between">
+              <div>
+                <h4 className="text-lg font-semibold flex items-center">
+                  <Package className="mr-2 text-blue-600" /> 
+                  Paquete Seleccionado: {solicitudData.nombre_paquete}
+                </h4>
+              </div>
+              {packageInsumos && (
+                <button
+                  onClick={() => setShowPackageModal(true)}
+                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 text-sm flex items-center"
+                >
+                  Ver Insumos del Paquete
+                </button>
+              )}
+            </div>
+          )}
+
+          {showPackageModal && (
+            <PackageInsumosModal 
+              packageName={solicitudData.nombre_paquete}
+              packageInsumos={packageInsumos}
+              onClose={() => setShowPackageModal(false)}
+            />
+          )}
+
           <div className="mb-6">
             <h3 className="text-lg font-semibold mb-4">Agregar Nuevos {currentType.title}</h3>
             <div className="flex space-x-4">
@@ -173,6 +243,7 @@ const SolicitudInsumosDetalle = () => {
   const [loading, setLoading] = useState(true);
   const [mensaje, setMensaje] = useState({ tipo: "", texto: "" });
   const [selectedInsumos, setSelectedInsumos] = useState([]);
+  const [packageInsumos, setPackageInsumos] = useState(null);
 
   const materialTypes = [
     'material_adicional', 
@@ -234,14 +305,21 @@ const SolicitudInsumosDetalle = () => {
         setSolicitudData(null);
         const response = await axios.get(`${baseURL}/api/insumos/solicitudes-insumos/${appointmentId}`);
         
-        // Añade este console.log para ver los datos exactos
-        console.log("Datos recibidos del backend:", response.data);
-        
         const datosSeparados = separarInsumos(response.data);
-        console.log("Datos separados:", datosSeparados);
         
         setSolicitudData(response.data);
         setInsumoStates(Object.values(datosSeparados));
+
+        // Fetch package insumos if a package is selected
+        if (response.data.nombre_paquete) {
+          const paqueteInsumosResponse = await axios.get(
+            `${baseURL}/api/insumos/paquete-insumos?nombre_paquete=${encodeURIComponent(response.data.nombre_paquete)}`
+          );
+          
+          // Assuming the backend returns the insumos for the specific package
+          // If the endpoint works differently, adjust this accordingly
+          setPackageInsumos(paqueteInsumosResponse.data[0]?.insumos || null);
+        }
       } catch (error) {
         console.error("Error fetching solicitud data:", error);
         setMensaje({ tipo: "error", texto: "Error al cargar los datos" });
@@ -383,30 +461,41 @@ const SolicitudInsumosDetalle = () => {
         doc.line(x + fieldWidth + 5, y + 2, x + fieldWidth + 5 + doc.getStringUnitWidth(stringValue) * doc.internal.getFontSize() / doc.internal.scaleFactor, y + 2);
       };
   
-      const splitMaterialInfo = (materialString) => {
+      const splitMaterialInfo = (materialString, packageInsumos) => {
         if (!materialString) return [];
+        
         return materialString.split(',').map(item => {
           item = item.trim();
-          // Buscar un espacio seguido de un guion
-          const separatorMatch = item.match(/\s+-\s+/);
           
-          if (separatorMatch) {
-            // Si encuentra el patrón de espacio-guion-espacio, separa en consecuencia
-            const [clave, descripcion] = item.split(/\s+-\s+/);
+          if (packageInsumos && packageInsumos.some(pkg => pkg.nombre_paquete === item)) {
+            // Si es un paquete, buscar los insumos del paquete
+            const paqueteSeleccionado = packageInsumos.find(pkg => pkg.nombre_paquete === item);
             return {
-              clave: clave.trim(),
-              descripcion: descripcion.trim()
-            };
-          } else {
-            // Si no encuentra el patrón, considera todo como descripción
-            return {
-              clave: 'N/A',
-              descripcion: item
+              clave: paqueteSeleccionado.nombre_paquete,
+              descripcion: paqueteSeleccionado.insumos.map(insumo => 
+                `${insumo.clave}-${insumo.descripcion}, ${insumo.cantidad_default}`
+              ).join('\n'),
+              isPackage: true,
+              packageInsumos: paqueteSeleccionado.insumos
             };
           }
+          
+          // Manejar formato de insumo: 00000-000, descripcion de insumo, 1
+          const parts = item.split(',').map(part => part.trim());
+          if (parts.length === 3) {
+            return {
+              clave: parts[0],
+              descripcion: parts[1],
+              cantidad: parts[2]
+            };
+          }
+          
+          return {
+            clave: 'N/A',
+            descripcion: item
+          };
         });
       };
-  
       // Encabezado
       doc.setFont('Helvetica', 'bold');
       doc.setFontSize(12);
@@ -442,7 +531,6 @@ const SolicitudInsumosDetalle = () => {
       printFieldAndValue("Edad: ", solicitudData.edad, 40, getYPosition(3));
       printFieldAndValue("Sexo: ", solicitudData.sexo, pageWidth / 2, getYPosition(3));
   
-      // Sala, Procedencia, Cama (ajustando posiciones)
       let nextX = 40;
       printFieldAndValue("Sala solicitada: ", `Sala ${getValue(solicitudData.sala_quirofano)}`, nextX, getYPosition(4));
       nextX = adjustPosition(`Sala solicitada: Sala ${getValue(solicitudData.sala_quirofano)}`, nextX, getYPosition(4), 200);
@@ -452,11 +540,38 @@ const SolicitudInsumosDetalle = () => {
       nextX = adjustPosition(`Procedencia del paciente: ${tipoAdmision === 'CONSULTA EXTERNA' ? 'C.E.' : tipoAdmision}`, nextX, getYPosition(4), 200);
       
       printFieldAndValue("Cama: ", solicitudData.cama, nextX, getYPosition(4));
-  
-      // Segunda línea divisoria
+      
+      // Procedimiento CIE-9 con manejo de texto largo
+      const procedimientoPaciente = getValue(solicitudData.procedimientos_paciente);
+      const splitProcedimiento = doc.splitTextToSize(procedimientoPaciente, pageWidth - 80);
+      printFieldAndValue("Procedimiento CIE-9: ", "", 40, getYPosition(5));
+      splitProcedimiento.forEach((line, index) => {
+          doc.text(line, 40 + doc.getStringUnitWidth("Procedimiento CIE-9: ") * doc.internal.getFontSize() / doc.internal.scaleFactor + 10, 
+                   getYPosition(5) + (index * 15));
+      });
+      
+      // Diagnóstico con manejo de texto largo
+      const diagnosticoPaciente = getValue(solicitudData.diagnostico);
+      const splitDiagnostico = doc.splitTextToSize(diagnosticoPaciente, pageWidth - 80);
+      printFieldAndValue("Diagnóstico: ", "", 40, getYPosition(5) + (splitProcedimiento.length * 15));
+      splitDiagnostico.forEach((line, index) => {
+          doc.text(line, 40 + doc.getStringUnitWidth("Diagnóstico: ") * doc.internal.getFontSize() / doc.internal.scaleFactor + 10, 
+                   getYPosition(5) + (splitProcedimiento.length * 15) + (index * 15));
+      });
+      
+      // Resumen médico con manejo de texto largo
+      const resumenMedico = getValue(solicitudData.resumen_medico);
+      const splitResumenMedico = doc.splitTextToSize(resumenMedico, pageWidth - 80);
+      printFieldAndValue("Resumen médico: ", "", 40, getYPosition(5) + (splitProcedimiento.length * 15) + (splitDiagnostico.length * 15));
+      splitResumenMedico.forEach((line, index) => {
+          doc.text(line, 40 + doc.getStringUnitWidth("Resumen médico: ") * doc.internal.getFontSize() / doc.internal.scaleFactor + 10, 
+                   getYPosition(5) + (splitProcedimiento.length * 15) + (splitDiagnostico.length * 15) + (index * 15));
+      });
+      
+      // Ajustar la posición de la segunda línea divisoria
+      const nuevaSeccionY = getYPosition(5) + (splitProcedimiento.length * 15) + (splitDiagnostico.length * 15) + (splitResumenMedico.length * 15) + 20;
       doc.setLineWidth(1.5);
-      doc.line(40, getYPosition(5), pageWidth - 40, getYPosition(5));
-  
+      doc.line(40, nuevaSeccionY, pageWidth - 40, nuevaSeccionY);
       // Preparación de materiales con el nuevo formato de tabla
       const materialesSecciones = [
         { 
@@ -489,11 +604,12 @@ const SolicitudInsumosDetalle = () => {
       // Impresión de Materiales con tabla
       doc.setFont('Helvetica', 'bold');
       doc.setFontSize(10);
-      doc.text('MATERIALES REQUERIDOS', pageWidth / 2, 335, { align: 'center' });
+// Modificar la línea que establece la posición de "MATERIALES REQUERIDOS"
+doc.text('MATERIALES REQUERIDOS', pageWidth / 2, nuevaSeccionY + 15, { align: 'center' });
 
       // Configuración de la tabla
       const marginX = 40;
-      const tableTop = 350;
+      const tableTop = nuevaSeccionY + 30;
       const columnWidths = [100, 320, 60]; // Anchos de columnas: Clave, Descripción, Cantidad
       const rowHeight = 20;
       const tableHeaders = ['Clave', 'Descripción', 'Cantidad'];
@@ -672,6 +788,7 @@ const drawTableRow = (y, clave, descripcion, cantidad, doc, marginX, columnWidth
               handleEliminarInsumo={createHandler(originalIndex, 'eliminar')}
               handleInsumosSelect={setSelectedInsumos}
               selectedInsumos={selectedInsumos}
+              packageInsumos={materialType === 'paquetes' ? packageInsumos : null}
             />
           );
         })}
