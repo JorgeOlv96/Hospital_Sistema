@@ -7,6 +7,8 @@ import { Check, X, Trash2, Package } from "lucide-react";
 import jsPDF from 'jspdf';
 import { Alert } from "../../components/ui/alert";
 import InsumosSelect from "../Solicitudes/InsumosSelect";
+import AdicionalSelect from "../Solicitudes/MedicamentoSelect";
+import PaquetesSelect from "../Solicitudes/PaqueteSelect";
 
 const PatientInfoBlock = ({ solicitudData }) => (
   <div className="bg-gray-50 p-6 rounded-lg shadow-lg mb-6">
@@ -20,8 +22,8 @@ const PatientInfoBlock = ({ solicitudData }) => (
         <p className="bg-white p-3 rounded-lg">{solicitudData.estado_insumos || "N/A"}</p>
       </div>
       <div className="w-full">
-        <label className="block font-semibold text-gray-700 mb-2">Resumen Médico:</label>
-        <p className="bg-white p-3 rounded-lg h-full">{solicitudData.resumen_medico || "N/A"}</p>
+        <label className="block font-semibold text-gray-700 mb-2">Resumen médico:</label>
+        <p className="bg-white p-3 rounded-lg">{solicitudData.resumen_medico || "N/A"}</p>
       </div>
     </div>
   </div>
@@ -82,81 +84,119 @@ const InsumoBlock = ({
   packageInsumos,
 }) => {
   const [showPackageModal, setShowPackageModal] = useState(false);
+
   const materialTypeMap = {
-    'material_adicional': { 
-      title: 'Material Adicional', 
-      nombreField: 'material_adicional',
-      cantidadField: 'cantidad_adicional'
+    material_adicional: {
+      title: "Material Adicional",
+      nombreField: "material_adicional",
+      cantidadField: "cantidad_adicional",
+      component: AdicionalSelect, // Componente específico para material adicional
     },
-    'material_externo': { 
-      title: 'Material Externo', 
-      nombreField: 'material_externo',
-      cantidadField: 'cantidad_externo'
+    material_externo: {
+      title: "Material Externo",
+      nombreField: "material_externo",
+      cantidadField: "cantidad_externo",
+      component: InsumosSelect, // Componente específico para material externo
     },
-    'servicios': { 
-      title: 'Servicios', 
-      nombreField: 'servicios',
-      cantidadField: 'cantidad_servicios'
+    servicios: {
+      title: "Servicios",
+      nombreField: "servicios",
+      cantidadField: "cantidad_servicios",
+      component: InsumosSelect, // Componente específico para servicios
     },
-    'paquetes': { 
-      title: 'Paquetes', 
-      nombreField: 'nombre_paquete',
-      cantidadField: 'cantidad_paquete'
+    paquetes: {
+      title: "Paquetes",
+      nombreField: "nombre_paquete",
+      cantidadField: "cantidad_paquete",
+      component: PaquetesSelect, // Componente específico para paquetes
     },
-    'medicamentos': { 
-      title: 'Medicamentos', 
-      nombreField: 'medicamentos',
-      cantidadField: 'cantidad_medicamento'
-    }
   };
 
   const currentType = materialTypeMap[materialType];
+  const SelectComponent = currentType?.component || null; 
 
   useEffect(() => {
     if (solicitudData && solicitudData[currentType.nombreField]) {
       const nombres = solicitudData[currentType.nombreField]
         .split(",")
-        .filter(nombre => nombre.trim() !== "");
+        .filter((nombre) => nombre.trim() !== "");
       const cantidades = solicitudData[currentType.cantidadField]
-        ? solicitudData[currentType.cantidadField].split(",").filter(cantidad => cantidad.trim() !== "")
+        ? solicitudData[currentType.cantidadField]
+            .split(",")
+            .filter((cantidad) => cantidad.trim() !== "")
         : [];
-      
+      const disponibilidades = solicitudData[`disponibilidad_${materialType}`]
+        ? solicitudData[`disponibilidad_${materialType}`]
+            .split(",")
+            .filter((disp) => disp.trim() !== "")
+        : [];
+  
       const insumosIniciales = nombres.map((nombre, index) => ({
         id: index,
         nombre: nombre.trim(),
         cantidad: parseInt(cantidades[index] || "0") || 0,
-        disponible: true,
+        disponible: disponibilidades[index] === "1", // true si es 1, false si es 0 o no definido
       }));
   
-      if (insumosIniciales.length > 0) {
-        setInsumos(insumosIniciales);
-      }
+      // Si no hay insumos en la solicitud, inicializar con disponibilidad en false (0)
+      const insumosConDefault = insumosIniciales.length > 0
+        ? insumosIniciales
+        : nombres.map((nombre, index) => ({
+            id: index,
+            nombre: nombre.trim(),
+            cantidad: parseInt(cantidades[index] || "0") || 0,
+            disponible: false, // Por default, todos no disponibles
+          }));
+  
+      setInsumos(insumosConDefault);
     }
   }, [solicitudData, materialType]);
   
+
   return (
     <div className="bg-gray-50 p-6 rounded-lg shadow-lg mb-6">
       {solicitudData ? (
         <>
           <div className="mb-6">
-            <h3 className="text-lg font-semibold mb-4">Lista de {currentType.title}</h3>
+            <h3 className="text-lg font-semibold mb-4">
+              Lista de {currentType.title}
+            </h3>
             <div className="space-y-4">
               {insumos.map((insumo) => (
-                <div key={insumo.id} className="flex items-center space-x-4 bg-white p-3 rounded-lg">
+                <div
+                  key={insumo.id}
+                  className="flex items-center space-x-4 bg-white p-3 rounded-lg"
+                >
                   <span className="flex-grow">{insumo.nombre}</span>
                   <input
                     type="number"
                     value={insumo.cantidad}
-                    onChange={(e) => handleCantidadChange(insumo.id, e.target.value)}
+                    onChange={(e) =>
+                      handleCantidadChange(insumo.id, e.target.value)
+                    }
                     min="1"
                     className="w-24 p-2 border rounded"
                   />
                   <div className="flex items-center space-x-2">
                     <button
-                      onClick={() => toggleDisponibilidad(insumo.id)}
-                      className={`p-2 rounded ${insumo.disponible ? "bg-green-100" : "bg-red-100"}`}
+                      onClick={() => toggleDisponibilidad(insumo.id, true)}
+                      className={`p-2 rounded ${
+                        insumo.disponible
+                          ? "bg-green-100 border border-green-500"
+                          : "bg-gray-200"
+                      }`}
                     >
-                      {insumo.disponible ? <Check className="text-green-600" /> : <X className="text-red-600" />}
+                      <Check className="text-green-600" />
+                    </button>
+                    <button
+                      onClick={() => toggleDisponibilidad(insumo.id, false)}
+                      className={`p-2 rounded ${
+                        !insumo.disponible
+                          ? "bg-red-100 border border-red-500"
+                          : "bg-gray-200"
+                      }`}
+                    >
+                      <X className="text-red-600" />
                     </button>
                     <button
                       onClick={() => handleEliminarInsumo(insumo.id)}
@@ -170,11 +210,11 @@ const InsumoBlock = ({
             </div>
           </div>
 
-          {materialType === 'paquetes' && solicitudData.nombre_paquete && (
+          {materialType === "paquetes" && solicitudData.nombre_paquete && (
             <div className="mb-4 bg-blue-50 p-4 rounded-lg flex items-center justify-between">
               <div>
                 <h4 className="text-lg font-semibold flex items-center">
-                  <Package className="mr-2 text-blue-600" /> 
+                  <Package className="mr-2 text-blue-600" />
                   Paquete Seleccionado: {solicitudData.nombre_paquete}
                 </h4>
               </div>
@@ -190,24 +230,28 @@ const InsumoBlock = ({
           )}
 
           {showPackageModal && (
-            <PackageInsumosModal 
+            <PackageInsumosModal
               packageName={solicitudData.nombre_paquete}
               packageInsumos={packageInsumos}
               onClose={() => setShowPackageModal(false)}
             />
           )}
 
-          <div className="mb-6">
-            <h3 className="text-lg font-semibold mb-4">Agregar Nuevos {currentType.title}</h3>
+<div className="mb-6">
+            <h3 className="text-lg font-semibold mb-4">
+              Agregar Nuevos {currentType.title}
+            </h3>
             <div className="flex space-x-4">
               <div className="flex-grow">
-                <InsumosSelect 
-                  onSelect={handleInsumosSelect} 
-                  selectedInsumos={selectedInsumos} 
-                />
+                {SelectComponent && (
+                  <SelectComponent
+                    onSelect={handleInsumosSelect}
+                    selectedInsumos={selectedInsumos}
+                  />
+                )}
               </div>
               {selectedInsumos.length > 0 && (
-                <button 
+                <button
                   onClick={onAddSelectedInsumos}
                   className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                 >
@@ -215,18 +259,6 @@ const InsumoBlock = ({
                 </button>
               )}
             </div>
-            {selectedInsumos.length > 0 && (
-              <div className="mt-4">
-                <h4 className="font-semibold mb-2">Insumos Seleccionados:</h4>
-                <div className="space-y-2">
-                  {selectedInsumos.map((insumo, index) => (
-                    <div key={index} className="bg-white p-2 rounded">
-                      {insumo.nombre}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         </>
       ) : (
@@ -235,6 +267,7 @@ const InsumoBlock = ({
     </div>
   );
 };
+
 
 const SolicitudInsumosDetalle = () => {
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
@@ -388,12 +421,27 @@ const SolicitudInsumosDetalle = () => {
             const cantidades = insumoStates[index].map((i) => i.cantidad).join(",");
             const disponibilidades = insumoStates[index].map((i) => (i.disponible ? "1" : "0")).join(",");
 
+            // Modificación: Si hay nombres, usa los datos de insumoStates
             if (nombres) {
                 datosActualizados[tipo] = nombres;
                 datosActualizados[cantidadTypeMap[index]] = cantidades;
                 datosActualizados[`disponibilidad_${tipo}`] = disponibilidades;
+            } 
+            // Modificación: Si no hay nombres, usa los datos originales de solicitudData
+            else if (solicitudData[tipo]) {
+                datosActualizados[tipo] = solicitudData[tipo];
+                datosActualizados[cantidadTypeMap[index]] = solicitudData[cantidadTypeMap[index]];
+                // Asume que necesitas manejar la disponibilidad de alguna manera
+                datosActualizados[`disponibilidad_${tipo}`] = solicitudData[`disponibilidad_${tipo}`] || '';
             }
         });
+
+        // Asegúrate de incluir los paquetes explícitamente
+        if (solicitudData.nombre_paquete) {
+            datosActualizados.nombre_paquete = solicitudData.nombre_paquete;
+            datosActualizados.cantidad_paquete = solicitudData.cantidad_paquete;
+            datosActualizados.disponibilidad_paquete = solicitudData.disponibilidad_paquete;
+        }
 
         // Log para verificar los datos después del filtro
         console.log("Datos enviados al backend después del filtro:", datosActualizados);

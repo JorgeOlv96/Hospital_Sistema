@@ -262,9 +262,9 @@ const SolicitudInsumosPaciente = () => {
       cantidad_servicios: selectedInsumos.servicios 
         ? selectedInsumos.servicios.map(i => i.cantidad).join(", ") 
         : "",
-        nombre_paquete: paquetesData.nombre_paquete,
-        cantidad_paquete: paquetesData.cantidad_paquete,
-        insumos_paquete: paquetesData.insumos_paquete,
+      nombre_paquete: paquetesData.nombre_paquete,
+      cantidad_paquete: paquetesData.cantidad_paquete,
+      insumos_paquete: paquetesData.insumos_paquete,
       medicamentos: selectedInsumos.medicamentos 
         ? selectedInsumos.medicamentos.map(i => `${i.clave} - ${i.descripcion}`).join(", ") 
         : "",
@@ -272,7 +272,19 @@ const SolicitudInsumosPaciente = () => {
         ? selectedInsumos.medicamentos.map(i => i.cantidad).join(", ") 
         : "",
       resumen_medico: resumenMedico,
-      estado_insumos: "Sin solicitud"
+      estado_insumos: "Sin solicitud",
+      
+      // Add availability columns with 0 or 1 based on material presence
+      disponibilidad_adicional: selectedInsumos.materialAdicional ? 
+        selectedInsumos.materialAdicional.map(() => 0).join(",") : "0",
+      disponibilidad_externo: selectedInsumos.materialExterno ? 
+        selectedInsumos.materialExterno.map(() => 0).join(",") : "0",
+      disponibilidad_servicio: selectedInsumos.servicios ? 
+        selectedInsumos.servicios.map(() => 0).join(",") : "0",
+      disponibilidad_paquete: selectedInsumos.paquetes ? 
+        selectedInsumos.paquetes.map(() => 0).join(",") : "0",
+      disponibilidad_medicamento: selectedInsumos.medicamentos ? 
+        selectedInsumos.medicamentos.map(() => 0).join(",") : "0"
     };
   
     try {
