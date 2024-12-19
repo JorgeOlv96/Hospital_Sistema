@@ -224,81 +224,62 @@ const SolicitudInsumosPaciente = () => {
   };
 
   const handleGuardarSolicitud = async () => {
+    const processInsumos = (insumos, tipo) => {
+      if (!insumos) return [];
+      return insumos.map((i) => ({
+        tipo_insumo: tipo || 'desconocido', // Cambiar 'tipo' por 'tipo_insumo'
+        id_solicitud: appointmentId,
+        insumo_id: i.value || null, // Agregar el ID del insumo
+        nombre_insumo: `${i.clave} - ${i.descripcion}`, // Usar nombre_insumo en lugar de descripcion
+        cantidad: i.cantidad,
+        disponibilidad: 0,
+        estado_insumos: 'Sin solicitud' // Agregar estado por defecto
+      }));
+    };
+    
     const processPaquetes = (paquetes) => {
-      if (!paquetes) return { nombre_paquete: "", cantidad_paquete: "" };
+      if (!paquetes) return [];
       
-      const nombresPaquetes = paquetes.map(p => p.label).join(", ");
-      const insumosPaquetes = paquetes.flatMap(p => 
-        p.insumos.map(i => `${i.clave} - ${i.descripcion}`)
-      ).join(", ");
-      const cantidadesPaquetes = paquetes.flatMap(p => 
-        p.insumos.map(i => i.cantidad)
-      ).join(", ");
-  
-      return {
-        nombre_paquete: nombresPaquetes,
-        cantidad_paquete: cantidadesPaquetes,
-        insumos_paquete: insumosPaquetes
-      };
+      return paquetes.flatMap((p) =>
+        p.insumos.map((i) => ({
+          tipo_insumo: 'paquete',
+          id_solicitud: appointmentId,
+          insumo_id: p.value || null, // ID del paquete
+          nombre_insumo: `${i.clave} - ${i.descripcion}`,
+          cantidad: i.cantidad,
+          disponibilidad: 0,
+          estado_insumos: 'Sin solicitud'
+        }))
+      );
     };
+    
+    
   
-    const paquetesData = processPaquetes(selectedInsumos.paquetes);
-    const datosSolicitud = {
-      material_adicional: selectedInsumos.materialAdicional 
-        ? selectedInsumos.materialAdicional.map(i => `${i.clave} - ${i.descripcion}`).join(", ") 
-        : "",
-      cantidad_adicional: selectedInsumos.materialAdicional 
-        ? selectedInsumos.materialAdicional.map(i => i.cantidad).join(", ") 
-        : "",
-      material_externo: selectedInsumos.materialExterno 
-        ? selectedInsumos.materialExterno.map(i => `${i.clave} - ${i.descripcion}`).join(", ") 
-        : "",
-      cantidad_externo: selectedInsumos.materialExterno 
-        ? selectedInsumos.materialExterno.map(i => i.cantidad).join(", ") 
-        : "",
-      servicios: selectedInsumos.servicios 
-        ? selectedInsumos.servicios.map(i => `${i.clave} - ${i.descripcion}`).join(", ") 
-        : "",
-      cantidad_servicios: selectedInsumos.servicios 
-        ? selectedInsumos.servicios.map(i => i.cantidad).join(", ") 
-        : "",
-      nombre_paquete: paquetesData.nombre_paquete,
-      cantidad_paquete: paquetesData.cantidad_paquete,
-      insumos_paquete: paquetesData.insumos_paquete,
-      medicamentos: selectedInsumos.medicamentos 
-        ? selectedInsumos.medicamentos.map(i => `${i.clave} - ${i.descripcion}`).join(", ") 
-        : "",
-      cantidad_medicamento: selectedInsumos.medicamentos 
-        ? selectedInsumos.medicamentos.map(i => i.cantidad).join(", ") 
-        : "",
-      resumen_medico: resumenMedico,
-      estado_insumos: "Sin solicitud",
-      
-      // Add availability columns with 0 or 1 based on material presence
-      disponibilidad_adicional: selectedInsumos.materialAdicional ? 
-        selectedInsumos.materialAdicional.map(() => 0).join(",") : "0",
-      disponibilidad_externo: selectedInsumos.materialExterno ? 
-        selectedInsumos.materialExterno.map(() => 0).join(",") : "0",
-      disponibilidad_servicio: selectedInsumos.servicios ? 
-        selectedInsumos.servicios.map(() => 0).join(",") : "0",
-      disponibilidad_paquete: selectedInsumos.paquetes ? 
-        selectedInsumos.paquetes.map(() => 0).join(",") : "0",
-      disponibilidad_medicamento: selectedInsumos.medicamentos ? 
-        selectedInsumos.medicamentos.map(() => 0).join(",") : "0"
-    };
+    const insumos = [
+      ...processInsumos(selectedInsumos.materialAdicional, "material_adicional"),
+      ...processInsumos(selectedInsumos.materialExterno, "material_externo"),
+      ...processInsumos(selectedInsumos.servicios, "servicio"),
+      ...processInsumos(selectedInsumos.medicamentos, "medicamento"),
+      ...processPaquetes(selectedInsumos.paquetes)
+    ];
+  
+    if (insumos.length === 0) {
+      alert("No se han seleccionado insumos para guardar.");
+      return;
+    }
   
     try {
-      await axios.patch(
-        `${baseURL}/api/insumos/solicitudes-insumos/${appointmentId}`,
-        datosSolicitud
-      );
+      await axios.post(`${baseURL}/api/insumos/solicitudes-insumos/${appointmentId}`, { 
+        insumos,
+        resumen_medico: resumenMedico // Incluimos el resumen médico
+      });
       alert("Solicitud guardada con éxito.");
     } catch (error) {
       console.error("Error al guardar solicitud:", error);
       alert("Ocurrió un error al guardar la solicitud.");
     }
   };
-
+  
 
   const handleAddInsumo = async (type, insumo, removeIndex = null) => {
     if (type === 'paquetes' && insumo) {
@@ -314,6 +295,7 @@ const SolicitudInsumosPaciente = () => {
           clave: insumo.clave_insumo,
           descripcion: insumo.descripcion_insumo,
           cantidad: insumo.cantidad_default,
+          tipo_insumo: 'paquete', // Agregar tipo_insumo
           paquete: {
             nombre: paqueteCompleto.nombre_paquete,
             descripcion: paqueteCompleto.descripcion_paquete
@@ -337,13 +319,19 @@ const SolicitudInsumosPaciente = () => {
         if (removeIndex !== null) {
           updated[type] = updated[type].filter((_, index) => index !== removeIndex);
         } else if (insumo) {
-          updated[type] = [...updated[type], insumo];
+          // Agregar tipo_insumo basado en el origen
+          const insumoConTipo = { 
+            ...insumo, 
+            tipo_insumo: type 
+          };
+          updated[type] = [...updated[type], insumoConTipo];
         }
   
         return updated;
       });
     }
   };
+  
   
 
   const renderSelectedInsumos = (type) => {
