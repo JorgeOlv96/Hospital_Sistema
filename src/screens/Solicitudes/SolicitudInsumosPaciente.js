@@ -290,15 +290,15 @@ const SolicitudInsumosPaciente = () => {
   const handleAddInsumo = async (type, insumo, removeIndex = null) => {
     if (type === 'paquetes' && insumo) {
       const paquetesConInsumos = await fetchPaqueteInsumos(); // Asegúrate de que este fetch funcione
+      const paqueteCompleto = paquetesConInsumos.find(
+        (p) => p.paquete_id === insumo.value
+      );
+  
       console.log('Paquete completo:', {
         id: paqueteCompleto.paquete_id,
         nombre: paqueteCompleto.nombre_paquete,
         descripcion: paqueteCompleto.descripcion_paquete
       });
-      const paqueteCompleto = paquetesConInsumos.find(
-        (p) => p.paquete_id === insumo.value
-      );
-  
       if (paqueteCompleto && Array.isArray(paqueteCompleto.insumos)) {
         const insumosDelPaquete = paqueteCompleto.insumos.map((insumo) => ({
           clave: insumo.clave_insumo,
