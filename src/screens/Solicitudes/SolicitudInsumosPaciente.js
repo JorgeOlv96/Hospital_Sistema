@@ -227,32 +227,37 @@ const SolicitudInsumosPaciente = () => {
     const processInsumos = (insumos, tipo) => {
       if (!insumos) return [];
       return insumos.map((i) => ({
-        tipo_insumo: tipo || 'desconocido', // Cambiar 'tipo' por 'tipo_insumo'
+        tipo_insumo: tipo || 'desconocido',
         id_solicitud: appointmentId,
-        insumo_id: i.value || null, // Agregar el ID del insumo
-        nombre_insumo: `${i.clave} - ${i.descripcion}`, // Usar nombre_insumo en lugar de descripcion
+        insumo_id: i.value || null,
+        nombre_insumo: `${i.clave} - ${i.descripcion}`,
         cantidad: i.cantidad,
         disponibilidad: 0,
-        estado_insumos: 'Sin solicitud' // Agregar estado por defecto
+        estado_insumos: 'Sin solicitud',
+        detalle_paquete: null // Insumos individuales no tienen detalle_paquete
       }));
     };
-    
+  
     const processPaquetes = (paquetes) => {
       if (!paquetes) return [];
-      
-      return paquetes.flatMap((p) =>
-        p.insumos.map((i) => ({
+    
+      return paquetes.flatMap((p) => {
+        if (!p.insumos || !Array.isArray(p.insumos)) {
+          console.error(`El paquete ${p.label || "desconocido"} no contiene insumos válidos.`);
+          return [];
+        }
+        return p.insumos.map((i) => ({
           tipo_insumo: 'paquete',
           id_solicitud: appointmentId,
-          insumo_id: p.value || null, // ID del paquete
+          insumo_id: i.value || null,
           nombre_insumo: `${i.clave} - ${i.descripcion}`,
-          cantidad: i.cantidad,
+          cantidad: i.cantidad || 1,
           disponibilidad: 0,
-          estado_insumos: 'Sin solicitud'
-        }))
-      );
+          estado_insumos: 'Sin solicitud',
+          detalle_paquete: `${p.label} - ${p.descripcion}` // Quitamos los fallbacks ya que ahora deberíamos tener ambos valores
+        }));
+      });
     };
-    
     
   
     const insumos = [
@@ -269,7 +274,7 @@ const SolicitudInsumosPaciente = () => {
     }
   
     try {
-      await axios.post(`${baseURL}/api/insumos/solicitudes-insumos/${appointmentId}`, { 
+      await axios.post(`${baseURL}/api/insumos/solicitudes-insumos/${appointmentId}`, {
         insumos,
         resumen_medico: resumenMedico // Incluimos el resumen médico
       });
@@ -280,36 +285,46 @@ const SolicitudInsumosPaciente = () => {
     }
   };
   
+  
 
   const handleAddInsumo = async (type, insumo, removeIndex = null) => {
     if (type === 'paquetes' && insumo) {
-      // Obtener los detalles completos del paquete, incluyendo sus insumos
-      const paquetesConInsumos = await fetchPaqueteInsumos();
+      const paquetesConInsumos = await fetchPaqueteInsumos(); // Asegúrate de que este fetch funcione
+      console.log('Paquete completo:', {
+        id: paqueteCompleto.paquete_id,
+        nombre: paqueteCompleto.nombre_paquete,
+        descripcion: paqueteCompleto.descripcion_paquete
+      });
       const paqueteCompleto = paquetesConInsumos.find(
-        p => p.paquete_id === insumo.value
+        (p) => p.paquete_id === insumo.value
       );
   
-      if (paqueteCompleto) {
-        // Transformar los insumos del paquete
-        const insumosDelPaquete = paqueteCompleto.insumos.map(insumo => ({
+      if (paqueteCompleto && Array.isArray(paqueteCompleto.insumos)) {
+        const insumosDelPaquete = paqueteCompleto.insumos.map((insumo) => ({
           clave: insumo.clave_insumo,
           descripcion: insumo.descripcion_insumo,
-          cantidad: insumo.cantidad_default,
-          tipo_insumo: 'paquete', // Agregar tipo_insumo
+          cantidad: insumo.cantidad_default || 1,
+          tipo_insumo: 'paquete',
           paquete: {
-            nombre: paqueteCompleto.nombre_paquete,
-            descripcion: paqueteCompleto.descripcion_paquete
+            nombre: paqueteCompleto.nombre,
+            descripcion: paqueteCompleto.descripcion
           }
         }));
-  
+      
         setSelectedInsumos((prev) => ({
           ...prev,
-          [type]: [...prev[type], {
-            value: paqueteCompleto.paquete_id,
-            label: paqueteCompleto.nombre_paquete,
-            insumos: insumosDelPaquete
-          }]
+          [type]: [
+            ...prev[type],
+            {
+              value: paqueteCompleto.paquete_id,
+              label: paqueteCompleto.nombre_paquete,
+              descripcion: paqueteCompleto.descripcion_paquete, // Agregamos la descripción del paquete
+              insumos: insumosDelPaquete
+            }
+          ]
         }));
+      } else {
+        console.error('El paquete seleccionado no tiene insumos o es inválido:', insumo);
       }
     } else {
       // Lógica original para otros tipos de insumos
@@ -319,11 +334,7 @@ const SolicitudInsumosPaciente = () => {
         if (removeIndex !== null) {
           updated[type] = updated[type].filter((_, index) => index !== removeIndex);
         } else if (insumo) {
-          // Agregar tipo_insumo basado en el origen
-          const insumoConTipo = { 
-            ...insumo, 
-            tipo_insumo: type 
-          };
+          const insumoConTipo = { ...insumo, tipo_insumo: type };
           updated[type] = [...updated[type], insumoConTipo];
         }
   
