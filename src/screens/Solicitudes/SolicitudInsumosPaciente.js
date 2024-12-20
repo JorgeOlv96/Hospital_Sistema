@@ -224,107 +224,110 @@ const SolicitudInsumosPaciente = () => {
   };
 
   const handleGuardarSolicitud = async () => {
-    const processInsumos = (insumos, tipo) => {
-      if (!insumos) return [];
-      return insumos.map((i) => ({
-        tipo_insumo: tipo || 'desconocido',
-        id_solicitud: appointmentId,
-        insumo_id: i.value || null,
-        nombre_insumo: `${i.clave} - ${i.descripcion}`,
-        cantidad: i.cantidad,
-        disponibilidad: 0,
-        estado_insumos: 'Sin solicitud',
-        detalle_paquete: null // Insumos individuales no tienen detalle_paquete
-      }));
-    };
-  
     const processPaquetes = (paquetes) => {
-      if (!paquetes) return [];
-    
-      return paquetes.flatMap((p) => {
-        if (!p.insumos || !Array.isArray(p.insumos)) {
-          console.error(`El paquete ${p.label || "desconocido"} no contiene insumos válidos.`);
-          return [];
-        }
-        return p.insumos.map((i) => ({
-          tipo_insumo: 'paquete',
-          id_solicitud: appointmentId,
-          insumo_id: i.value || null,
-          nombre_insumo: `${i.clave} - ${i.descripcion}`,
-          cantidad: i.cantidad || 1,
-          disponibilidad: 0,
-          estado_insumos: 'Sin solicitud',
-          detalle_paquete: `${p.label} - ${p.descripcion}` // Quitamos los fallbacks ya que ahora deberíamos tener ambos valores
-        }));
-      });
+      if (!paquetes) return { nombre_paquete: "", cantidad_paquete: "" };
+      
+      const nombresPaquetes = paquetes.map(p => p.label).join(", ");
+      const insumosPaquetes = paquetes.flatMap(p => 
+        p.insumos.map(i => `${i.clave} - ${i.descripcion}`)
+      ).join(", ");
+      const cantidadesPaquetes = paquetes.flatMap(p => 
+        p.insumos.map(i => i.cantidad)
+      ).join(", ");
+  
+      return {
+        nombre_paquete: nombresPaquetes,
+        cantidad_paquete: cantidadesPaquetes,
+        insumos_paquete: insumosPaquetes
+      };
     };
-    
   
-    const insumos = [
-      ...processInsumos(selectedInsumos.materialAdicional, "material_adicional"),
-      ...processInsumos(selectedInsumos.materialExterno, "material_externo"),
-      ...processInsumos(selectedInsumos.servicios, "servicio"),
-      ...processInsumos(selectedInsumos.medicamentos, "medicamento"),
-      ...processPaquetes(selectedInsumos.paquetes)
-    ];
-  
-    if (insumos.length === 0) {
-      alert("No se han seleccionado insumos para guardar.");
-      return;
-    }
+    const paquetesData = processPaquetes(selectedInsumos.paquetes);
+    const datosSolicitud = {
+      material_adicional: selectedInsumos.materialAdicional 
+        ? selectedInsumos.materialAdicional.map(i => `${i.clave} - ${i.descripcion}`).join(", ") 
+        : "",
+      cantidad_adicional: selectedInsumos.materialAdicional 
+        ? selectedInsumos.materialAdicional.map(i => i.cantidad).join(", ") 
+        : "",
+      material_externo: selectedInsumos.materialExterno 
+        ? selectedInsumos.materialExterno.map(i => `${i.clave} - ${i.descripcion}`).join(", ") 
+        : "",
+      cantidad_externo: selectedInsumos.materialExterno 
+        ? selectedInsumos.materialExterno.map(i => i.cantidad).join(", ") 
+        : "",
+      servicios: selectedInsumos.servicios 
+        ? selectedInsumos.servicios.map(i => `${i.clave} - ${i.descripcion}`).join(", ") 
+        : "",
+      cantidad_servicios: selectedInsumos.servicios 
+        ? selectedInsumos.servicios.map(i => i.cantidad).join(", ") 
+        : "",
+      nombre_paquete: paquetesData.nombre_paquete,
+      cantidad_paquete: paquetesData.cantidad_paquete,
+      insumos_paquete: paquetesData.insumos_paquete,
+      medicamentos: selectedInsumos.medicamentos 
+        ? selectedInsumos.medicamentos.map(i => `${i.clave} - ${i.descripcion}`).join(", ") 
+        : "",
+      cantidad_medicamento: selectedInsumos.medicamentos 
+        ? selectedInsumos.medicamentos.map(i => i.cantidad).join(", ") 
+        : "",
+      resumen_medico: resumenMedico,
+      estado_insumos: "Sin solicitud",
+      
+      // Add availability columns with 0 or 1 based on material presence
+      disponibilidad_adicional: selectedInsumos.materialAdicional ? 
+        selectedInsumos.materialAdicional.map(() => 0).join(",") : "0",
+      disponibilidad_externo: selectedInsumos.materialExterno ? 
+        selectedInsumos.materialExterno.map(() => 0).join(",") : "0",
+      disponibilidad_servicio: selectedInsumos.servicios ? 
+        selectedInsumos.servicios.map(() => 0).join(",") : "0",
+      disponibilidad_paquete: selectedInsumos.paquetes ? 
+        selectedInsumos.paquetes.map(() => 0).join(",") : "0",
+      disponibilidad_medicamento: selectedInsumos.medicamentos ? 
+        selectedInsumos.medicamentos.map(() => 0).join(",") : "0"
+    };
   
     try {
-      await axios.post(`${baseURL}/api/insumos/solicitudes-insumos/${appointmentId}`, {
-        insumos,
-        resumen_medico: resumenMedico // Incluimos el resumen médico
-      });
+      await axios.patch(
+        `${baseURL}/api/insumos/solicitudes-insumos/${appointmentId}`,
+        datosSolicitud
+      );
       alert("Solicitud guardada con éxito.");
     } catch (error) {
       console.error("Error al guardar solicitud:", error);
       alert("Ocurrió un error al guardar la solicitud.");
     }
   };
-  
-  
+
 
   const handleAddInsumo = async (type, insumo, removeIndex = null) => {
     if (type === 'paquetes' && insumo) {
-      const paquetesConInsumos = await fetchPaqueteInsumos(); // Asegúrate de que este fetch funcione
-      console.log('Paquete completo:', {
-        id: paqueteCompleto.paquete_id,
-        nombre: paqueteCompleto.nombre_paquete,
-        descripcion: paqueteCompleto.descripcion_paquete
-      });
+      // Obtener los detalles completos del paquete, incluyendo sus insumos
+      const paquetesConInsumos = await fetchPaqueteInsumos();
       const paqueteCompleto = paquetesConInsumos.find(
-        (p) => p.paquete_id === insumo.value
+        p => p.paquete_id === insumo.value
       );
   
-      if (paqueteCompleto && Array.isArray(paqueteCompleto.insumos)) {
-        const insumosDelPaquete = paqueteCompleto.insumos.map((insumo) => ({
+      if (paqueteCompleto) {
+        // Transformar los insumos del paquete
+        const insumosDelPaquete = paqueteCompleto.insumos.map(insumo => ({
           clave: insumo.clave_insumo,
           descripcion: insumo.descripcion_insumo,
-          cantidad: insumo.cantidad_default || 1,
-          tipo_insumo: 'paquete',
+          cantidad: insumo.cantidad_default,
           paquete: {
-            nombre: paqueteCompleto.nombre,
-            descripcion: paqueteCompleto.descripcion
+            nombre: paqueteCompleto.nombre_paquete,
+            descripcion: paqueteCompleto.descripcion_paquete
           }
         }));
-      
+  
         setSelectedInsumos((prev) => ({
           ...prev,
-          [type]: [
-            ...prev[type],
-            {
-              value: paqueteCompleto.paquete_id,
-              label: paqueteCompleto.nombre_paquete,
-              descripcion: paqueteCompleto.descripcion_paquete, // Agregamos la descripción del paquete
-              insumos: insumosDelPaquete
-            }
-          ]
+          [type]: [...prev[type], {
+            value: paqueteCompleto.paquete_id,
+            label: paqueteCompleto.nombre_paquete,
+            insumos: insumosDelPaquete
+          }]
         }));
-      } else {
-        console.error('El paquete seleccionado no tiene insumos o es inválido:', insumo);
       }
     } else {
       // Lógica original para otros tipos de insumos
@@ -334,15 +337,13 @@ const SolicitudInsumosPaciente = () => {
         if (removeIndex !== null) {
           updated[type] = updated[type].filter((_, index) => index !== removeIndex);
         } else if (insumo) {
-          const insumoConTipo = { ...insumo, tipo_insumo: type };
-          updated[type] = [...updated[type], insumoConTipo];
+          updated[type] = [...updated[type], insumo];
         }
   
         return updated;
       });
     }
   };
-  
   
 
   const renderSelectedInsumos = (type) => {

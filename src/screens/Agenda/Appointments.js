@@ -602,7 +602,8 @@ ${todaysAnesthesiologists
           cirujano: solicitud.nombre_cirujano,
           procedimientos_extra: solicitud.procedimientos_extra,
           estado_solicitud: solicitud.estado_solicitud,
-          Motivo_suspesion: solicitud.motivo_suspension
+          Motivo_suspesion: solicitud.motivo_suspension,
+          egreso: solicitud.egreso
           // Añade cualquier otro campo que desees
         };
       });

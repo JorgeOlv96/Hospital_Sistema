@@ -132,22 +132,26 @@ function CrearSolicitud() {
 
     // Filtrar especialidades según el usuario
     const getFilteredEspecialidades = () => {
-      // Ocultar "Trauma y Ortopedia" solo si el usuario es uno de los correos especificados
+      // Ocultar "Trauma y Ortopedia" y "Columna" solo si el usuario es uno de los correos especificados
       const emailsToExclude = [
         "jefaturaquirofanohgq@gmail.com",
         "JCORONAS@SESEQRO.GOB.MX"
       ];
-  
-      // Si el usuario está en la lista, excluir la especialidad
+      
+      // Especialidades a excluir
+      const especialidadesToExclude = ["Trauma y Ortopedia", "Columna"];
+      
+      // Si el usuario está en la lista, excluir las especialidades especificadas
       if (user && emailsToExclude.includes(user.email)) {
         return Object.keys(especialidadToClave).filter(
-          (especialidad) => especialidad !== "Trauma y Ortopedia"
+          (especialidad) => !especialidadesToExclude.includes(especialidad)
         );
       }
-  
+    
       // Devolver todas las especialidades si no se debe excluir ninguna
       return Object.keys(especialidadToClave);
     };
+
 
     // Verificar si el usuario tiene una especialidad asignada
     useEffect(() => {
@@ -418,11 +422,16 @@ function CrearSolicitud() {
             const data = await response.json();
             console.log("Formulario válido y enviado:", formData);
             setIsLoading(false); // Detener el estado de carga después de enviar la solicitud
-            if (formData.req_insumo === "Si") {
-              // Abrir una nueva pestaña con SolicitudInsumosPaciente
-              const newWindow = window.open('', '_blank');
-              newWindow.location.href = `/solicitudes/solicitud-insumos/${data.id}`;
+            
+            // Lista de correos que pueden abrir la pestaña
+            const allowedEmails = ["polen451@gmail.com", "ing.hcruz0925@gmail.com"];
+
+            // Abrir una nueva pestaña solo si req_insumo = "Si" y el correo está permitido
+            if (formData.req_insumo === "Si" && user && allowedEmails.includes(user.email)) {
+                const newWindow = window.open('', '_blank');
+                newWindow.location.href = `/solicitudes/solicitud-insumos/${data.id}`;
             }
+
             navigate("/solicitudes");
         } catch (error) {
             console.error("Error en la solicitud:", error);
@@ -432,6 +441,7 @@ function CrearSolicitud() {
         console.log("Formulario inválido");
     }
 };
+
 
 
   const getTurnColor = (turno_anestesio) => {
