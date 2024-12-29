@@ -90,30 +90,30 @@ const InsumoBlock = ({
       title: "Material Adicional",
       nombreField: "material_adicional",
       cantidadField: "cantidad_adicional",
-      component: AdicionalSelect, // Componente específico para material adicional
+      component: AdicionalSelect,
     },
     material_externo: {
       title: "Material Externo",
       nombreField: "material_externo",
       cantidadField: "cantidad_externo",
-      component: InsumosSelect, // Componente específico para material externo
+      component: InsumosSelect,
     },
     servicios: {
       title: "Servicios",
       nombreField: "servicios",
       cantidadField: "cantidad_servicios",
-      component: InsumosSelect, // Componente específico para servicios
+      component: InsumosSelect,
     },
     paquetes: {
       title: "Paquetes",
       nombreField: "nombre_paquete",
       cantidadField: "cantidad_paquete",
-      component: PaquetesSelect, // Componente específico para paquetes
+      component: PaquetesSelect,
     },
   };
 
   const currentType = materialTypeMap[materialType];
-  const SelectComponent = currentType?.component || null; 
+  const SelectComponent = currentType?.component || null;
 
   useEffect(() => {
     if (solicitudData && solicitudData[currentType.nombreField]) {
@@ -134,21 +134,11 @@ const InsumoBlock = ({
       const insumosIniciales = nombres.map((nombre, index) => ({
         id: index,
         nombre: nombre.trim(),
-        cantidad: parseInt(cantidades[index] || "0") || 0,
-        disponible: disponibilidades[index] === "1", // true si es 1, false si es 0 o no definido
+        cantidad: cantidades[index] ? parseInt(cantidades[index]) : 0,
+        disponible: disponibilidades[index] === "1",
       }));
   
-      // Si no hay insumos en la solicitud, inicializar con disponibilidad en false (0)
-      const insumosConDefault = insumosIniciales.length > 0
-        ? insumosIniciales
-        : nombres.map((nombre, index) => ({
-            id: index,
-            nombre: nombre.trim(),
-            cantidad: parseInt(cantidades[index] || "0") || 0,
-            disponible: false, // Por default, todos no disponibles
-          }));
-  
-      setInsumos(insumosConDefault);
+      setInsumos(insumosIniciales.length > 0 ? insumosIniciales : []);
     }
   }, [solicitudData, materialType]);
   
@@ -804,29 +794,54 @@ materialesSecciones.forEach(seccion => {
         currentY = pageHeight - 80 - minSpaceBeforeLine;
       }
 
+      const espacioNecesario = 180;
+      if (currentY + espacioNecesario > pageHeight - 200) {
+        doc.addPage();
+        currentY = 40;
+      }
+
       // Línea divisoria final
       doc.setLineWidth(1.5);
-      doc.line(40, pageHeight - 80, pageWidth - 40, pageHeight - 80);
+      doc.line(40, pageHeight - 180, pageWidth - 40, pageHeight - 180);
 
+      // Configuración de cajas
+      const boxPadding = 10;
+      const boxHeight = 100;
+      const boxWidth = 200;
+      
+      // Posicionamiento del texto y líneas
+      const boxY = pageHeight - 150;
+      const textY = boxY + boxHeight - 30;
+      const lineY = textY + 15;
+      
       // Cirujano responsable
       doc.setFont('Helvetica', 'bold');
       const cirujanoLabel = 'Cirujano responsable:';
       const cirujanoX = 40;
-      const cirujanoY = pageHeight - 40;
-      doc.text(cirujanoLabel, cirujanoX, cirujanoY);
-
-      // Calcular la posición para la línea
-      const cirujanoLineX = cirujanoX + doc.getStringUnitWidth(cirujanoLabel) * doc.internal.getFontSize() / doc.internal.scaleFactor + 10;
-      doc.line(cirujanoLineX, pageHeight - 35, cirujanoLineX + 100, pageHeight - 35);
+      
+      // Dibujar cuadro para cirujano
+      doc.rect(cirujanoX, boxY, boxWidth, boxHeight);
+      doc.text(cirujanoLabel, cirujanoX + boxPadding, textY);
+      doc.line(
+        cirujanoX + boxPadding, 
+        lineY, 
+        cirujanoX + boxWidth - boxPadding, 
+        lineY
+      );
 
       // Firma y sello
       const firmaLabel = 'Firma y sello:';
-      const firmaX = pageWidth / 2;
-      doc.text(firmaLabel, firmaX, cirujanoY);
-
-      // Calcular la posición para la línea de firma
-      const firmaLineX = firmaX + doc.getStringUnitWidth(firmaLabel) * doc.internal.getFontSize() / doc.internal.scaleFactor + 10;
-      doc.line(firmaLineX, pageHeight - 35, firmaLineX + 100, pageHeight - 35);
+      const firmaX = pageWidth - boxWidth - 40;
+      
+      // Dibujar cuadro para firma
+      doc.rect(firmaX, boxY, boxWidth, boxHeight);
+      doc.text(firmaLabel, firmaX + boxPadding, textY);
+      doc.line(
+        firmaX + boxPadding, 
+        lineY, 
+        firmaX + boxWidth - boxPadding, 
+        lineY
+      );
 
       // Guardar el PDF
       doc.save(`Solicitud_${getValue(solicitudData.folio)}.pdf`);

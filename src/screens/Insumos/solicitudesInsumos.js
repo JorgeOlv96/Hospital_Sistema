@@ -113,6 +113,9 @@ function SolicitudesInsumos() {
   };
 
   const getEstadoColorStyle = (estado) => {
+    // Si estado es null o undefined, retornar un estilo por defecto
+    if (!estado) return { backgroundColor: "#gray", color: "white" }; // O el estilo que prefieras para casos nulos
+    
     switch (estado.toLowerCase()) {
       case "disponible":
         return { backgroundColor: "#68D391", color: "white" }; // Verde claro

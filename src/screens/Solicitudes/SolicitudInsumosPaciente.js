@@ -18,12 +18,16 @@ const SectionWithInsumos = ({ title, type, onAddInsumo, SelectComponent }) => {
     }
   };
 
+
   const handleQuantityChange = (index, newQuantity) => {
     if (newQuantity < 1) return;
     const updatedInsumos = [...selectedInsumos];
-    updatedInsumos[index].cantidad = newQuantity;
+    updatedInsumos[index] = {
+      ...updatedInsumos[index],
+      cantidad: newQuantity
+    };
     setSelectedInsumos(updatedInsumos);
-    onAddInsumo(type, updatedInsumos[index]);
+    onAddInsumo(type, updatedInsumos[index], index, true);
   };
 
   const handleRemoveInsumo = (index) => {
@@ -300,16 +304,15 @@ const SolicitudInsumosPaciente = () => {
   };
 
 
-  const handleAddInsumo = async (type, insumo, removeIndex = null) => {
+  const handleAddInsumo = async (type, insumo, removeIndex = null, isQuantityUpdate = false) => {
     if (type === 'paquetes' && insumo) {
-      // Obtener los detalles completos del paquete, incluyendo sus insumos
+      // Handle packages (unchanged)
       const paquetesConInsumos = await fetchPaqueteInsumos();
       const paqueteCompleto = paquetesConInsumos.find(
         p => p.paquete_id === insumo.value
       );
   
       if (paqueteCompleto) {
-        // Transformar los insumos del paquete
         const insumosDelPaquete = paqueteCompleto.insumos.map(insumo => ({
           clave: insumo.clave_insumo,
           descripcion: insumo.descripcion_insumo,
@@ -330,14 +333,22 @@ const SolicitudInsumosPaciente = () => {
         }));
       }
     } else {
-      // Lógica original para otros tipos de insumos
       setSelectedInsumos((prev) => {
         const updated = { ...prev };
   
-        if (removeIndex !== null) {
+        if (removeIndex !== null && !isQuantityUpdate) {
+          // Remove insumo
           updated[type] = updated[type].filter((_, index) => index !== removeIndex);
-        } else if (insumo) {
-          updated[type] = [...updated[type], insumo];
+        } else if (insumo && !isQuantityUpdate) {
+          // Add new insumo
+          if (!updated[type].some(item => item.value === insumo.value)) {
+            updated[type] = [...updated[type], insumo];
+          }
+        } else if (isQuantityUpdate && insumo) {
+          // Update quantity only
+          updated[type] = updated[type].map((item, index) => 
+            index === removeIndex ? { ...item, cantidad: insumo.cantidad } : item
+          );
         }
   
         return updated;
