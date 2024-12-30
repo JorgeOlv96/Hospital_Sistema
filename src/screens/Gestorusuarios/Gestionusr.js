@@ -74,7 +74,7 @@ function Gestionusuarios() {
     2: "Enfermería",
     3: "Anestesiología",
     4: "Médico",
-    5: "Analista de producción",
+    5: "Gestor de insumos",
     6: "Admin",
     7: "Admin Enfermería"
   };

@@ -1,6 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import axios from "axios";
 import Modal from "./Modal";
+import { AuthContext } from "../../AuthContext"; 
 
 function SuspendidaEnf({
   closeModal,
@@ -9,6 +10,7 @@ function SuspendidaEnf({
   onSuspendAppointment,
   onDeleteAppointment
 }) {
+  const { user } = useContext(AuthContext);
   const [patientData, setPatientData] = useState({
     hora_asignada: "",
     turno: "",
@@ -160,6 +162,17 @@ function SuspendidaEnf({
         </div>
       ) : (
         <div className="p-4">
+          {(user?.rol_user === 6 || user?.rol_user === 7) && (
+            <div className="flex justify-center">
+              <button
+                onClick={handleReprogramar}
+                className="bg-[#001B58] bg-opacity-20 text-[#001B58] text-sm p-4 rounded-lg font-light w-40 h-12 mb-2"
+              >
+                Reprogramar cita
+              </button>
+            </div>
+          )}
+
           <div className="mr-4 w-full mb-2">
             <label className="block font-semibold text-gray-700 mb-2">
               Folio:

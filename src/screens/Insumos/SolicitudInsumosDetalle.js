@@ -10,24 +10,65 @@ import InsumosSelect from "../Solicitudes/InsumosSelect";
 import AdicionalSelect from "../Solicitudes/MedicamentoSelect";
 import PaquetesSelect from "../Solicitudes/PaqueteSelect";
 
-const PatientInfoBlock = ({ solicitudData }) => (
-  <div className="bg-gray-50 p-6 rounded-lg shadow-lg mb-6">
-    <div className="grid grid-cols-3 gap-4">
-      <div className="w-full">
-        <label className="block font-semibold text-gray-700 mb-2">Folio:</label>
-        <p className="bg-white p-3 rounded-lg">{solicitudData.folio || "N/A"}</p>
+const PatientInfoBlock = ({ solicitudData,  onCommentChange  }) => {
+  const [showResumen, setShowResumen] = React.useState(false);
+
+  return (
+    <div className="mb-6">
+      {/* Información del paciente */}
+      <div className="bg-gray-50 p-6 rounded-lg shadow-lg mb-6">
+        <div className="grid grid-cols-3 gap-4">
+          <div className="w-full">
+            <label className="block font-semibold text-gray-700 mb-2">Folio:</label>
+            <p className="bg-white p-3 rounded-lg">{solicitudData.folio || "N/A"}</p>
+          </div>
+          <div className="w-full">
+            <label className="block font-semibold text-gray-700 mb-2">Estado:</label>
+            <p className="bg-white p-3 rounded-lg">{solicitudData.estado_insumos || "N/A"}</p>
+          </div>
+          <div className="w-full">
+            <label className="block font-semibold text-gray-700 mb-2">Fecha de solicitud:</label>
+            <p className="bg-white p-3 rounded-lg">{solicitudData.fecha_solicitud || "N/A"}</p>
+          </div>
+        </div>
       </div>
-      <div className="w-full">
-        <label className="block font-semibold text-gray-700 mb-2">Estado:</label>
-        <p className="bg-white p-3 rounded-lg">{solicitudData.estado_insumos || "N/A"}</p>
+
+      {/* Resumen médico */}
+      <div className="bg-gray-50 p-6 rounded-lg shadow-lg">
+        <button
+          onClick={() => setShowResumen(!showResumen)}
+          className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+        >
+          {showResumen ? "Ocultar Resumen Médico" : "Mostrar Resumen Médico"}
+        </button>
+
+        {showResumen && (
+          <div className="mt-4">
+            <label className="block font-semibold text-gray-700 mb-2">Resumen médico:</label>
+            <textarea
+              className="bg-gray-200 p-3 rounded-lg w-full resize-none"
+              value={solicitudData.resumen_medico || "N/A"}
+              readOnly
+              rows={5}
+            />
+          </div>
+        )}
       </div>
-      <div className="w-full">
-        <label className="block font-semibold text-gray-700 mb-2">Resumen médico:</label>
-        <p className="bg-white p-3 rounded-lg">{solicitudData.resumen_medico || "N/A"}</p>
+
+      <div className="bg-gray-50 p-6 rounded-lg shadow-lg mb-6">
+        <label className="block font-semibold text-gray-700 mb-2">Comentarios adicionales:</label>
+        <textarea
+          className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          rows={3}
+          placeholder="Agregar comentarios sobre los insumos..."
+          value={solicitudData.comentarios_insumos || ""}
+          onChange={(e) => onCommentChange(e.target.value)}
+        />
       </div>
+
     </div>
-  </div>
-);
+  );
+};
 
 const PackageInsumosModal = ({ packageName, packageInsumos, onClose }) => {
   if (!packageInsumos) return null;
@@ -90,30 +131,30 @@ const InsumoBlock = ({
       title: "Material Adicional",
       nombreField: "material_adicional",
       cantidadField: "cantidad_adicional",
-      component: AdicionalSelect, // Componente específico para material adicional
+      component: AdicionalSelect,
     },
     material_externo: {
       title: "Material Externo",
       nombreField: "material_externo",
       cantidadField: "cantidad_externo",
-      component: InsumosSelect, // Componente específico para material externo
+      component: InsumosSelect,
     },
     servicios: {
       title: "Servicios",
       nombreField: "servicios",
       cantidadField: "cantidad_servicios",
-      component: InsumosSelect, // Componente específico para servicios
+      component: InsumosSelect,
     },
     paquetes: {
       title: "Paquetes",
       nombreField: "nombre_paquete",
       cantidadField: "cantidad_paquete",
-      component: PaquetesSelect, // Componente específico para paquetes
+      component: PaquetesSelect,
     },
   };
 
   const currentType = materialTypeMap[materialType];
-  const SelectComponent = currentType?.component || null; 
+  const SelectComponent = currentType?.component || null;
 
   useEffect(() => {
     if (solicitudData && solicitudData[currentType.nombreField]) {
@@ -134,21 +175,11 @@ const InsumoBlock = ({
       const insumosIniciales = nombres.map((nombre, index) => ({
         id: index,
         nombre: nombre.trim(),
-        cantidad: parseInt(cantidades[index] || "0") || 0,
-        disponible: disponibilidades[index] === "1", // true si es 1, false si es 0 o no definido
+        cantidad: cantidades[index] ? parseInt(cantidades[index]) : 0,
+        disponible: disponibilidades[index] === "1",
       }));
   
-      // Si no hay insumos en la solicitud, inicializar con disponibilidad en false (0)
-      const insumosConDefault = insumosIniciales.length > 0
-        ? insumosIniciales
-        : nombres.map((nombre, index) => ({
-            id: index,
-            nombre: nombre.trim(),
-            cantidad: parseInt(cantidades[index] || "0") || 0,
-            disponible: false, // Por default, todos no disponibles
-          }));
-  
-      setInsumos(insumosConDefault);
+      setInsumos(insumosIniciales.length > 0 ? insumosIniciales : []);
     }
   }, [solicitudData, materialType]);
   
@@ -279,6 +310,13 @@ const SolicitudInsumosDetalle = () => {
   const [selectedInsumos, setSelectedInsumos] = useState([]);
   const [packageInsumos, setPackageInsumos] = useState(null);
 
+  const handleCommentChange = (value) => {
+    setSolicitudData(prev => ({
+      ...prev,
+      comentarios_insumos: value
+    }));
+  };
+
   const materialTypes = [
     'material_adicional', 
     'material_externo', 
@@ -371,6 +409,7 @@ const SolicitudInsumosDetalle = () => {
       setInsumoStates(Object.values(datosSeparados));
     }
   }, [solicitudData]);
+  
 
   const createHandler = (index, handlerType) => {
     const handlers = {
@@ -397,7 +436,7 @@ const SolicitudInsumosDetalle = () => {
     return handlers[handlerType];
   };
 
-  const guardarTodosCambios = async () => {
+const guardarTodosCambios = async () => {
     try {
         const materialTypeMap = [
             'material_adicional',
@@ -414,36 +453,33 @@ const SolicitudInsumosDetalle = () => {
             'cantidad_medicamento'
         ];
 
-        let datosActualizados = {};
+        let datosActualizados = {
+            comentarios_insumos: solicitudData.comentarios_insumos || '' // Add comments to the update
+        };
 
         materialTypeMap.forEach((tipo, index) => {
             const nombres = insumoStates[index].map((i) => i.nombre).join(",");
             const cantidades = insumoStates[index].map((i) => i.cantidad).join(",");
             const disponibilidades = insumoStates[index].map((i) => (i.disponible ? "1" : "0")).join(",");
 
-            // Modificación: Si hay nombres, usa los datos de insumoStates
             if (nombres) {
                 datosActualizados[tipo] = nombres;
                 datosActualizados[cantidadTypeMap[index]] = cantidades;
                 datosActualizados[`disponibilidad_${tipo}`] = disponibilidades;
             } 
-            // Modificación: Si no hay nombres, usa los datos originales de solicitudData
             else if (solicitudData[tipo]) {
                 datosActualizados[tipo] = solicitudData[tipo];
                 datosActualizados[cantidadTypeMap[index]] = solicitudData[cantidadTypeMap[index]];
-                // Asume que necesitas manejar la disponibilidad de alguna manera
                 datosActualizados[`disponibilidad_${tipo}`] = solicitudData[`disponibilidad_${tipo}`] || '';
             }
         });
 
-        // Asegúrate de incluir los paquetes explícitamente
         if (solicitudData.nombre_paquete) {
             datosActualizados.nombre_paquete = solicitudData.nombre_paquete;
             datosActualizados.cantidad_paquete = solicitudData.cantidad_paquete;
             datosActualizados.disponibilidad_paquete = solicitudData.disponibilidad_paquete;
         }
 
-        // Log para verificar los datos después del filtro
         console.log("Datos enviados al backend después del filtro:", datosActualizados);
 
         const response = await axios.patch(`${baseURL}/api/insumos/insumos-disponibles/${appointmentId}`, datosActualizados);
@@ -451,14 +487,12 @@ const SolicitudInsumosDetalle = () => {
         setSolicitudData((prev) => ({ ...prev, ...response.data.datos }));
         setMensaje({ tipo: "success", texto: "Cambios guardados exitosamente" });
 
-        navigate(-1); // Navegar a la página anterior
+        navigate(-1);
     } catch (error) {
         console.error("Error guardando cambios:", error);
         setMensaje({ tipo: "error", texto: "Error al guardar los cambios" });
     }
 };
-
-
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
@@ -622,7 +656,7 @@ const SolicitudInsumosDetalle = () => {
       });
       
       // Resumen médico con manejo de texto largo
-      const resumenMedico = getValue(solicitudData.resumen_medico);
+      const resumenMedico = getValue(solicitudData.comentarios_insumos);
       const splitResumenMedico = doc.splitTextToSize(resumenMedico, maxWidth);
       const resumenPosY = diagnosticoPosY + (splitDiagnostico.length * 15);
       printFieldAndValue("Resumen médico: ", "", 40, resumenPosY);
@@ -804,29 +838,54 @@ materialesSecciones.forEach(seccion => {
         currentY = pageHeight - 80 - minSpaceBeforeLine;
       }
 
+      const espacioNecesario = 180;
+      if (currentY + espacioNecesario > pageHeight - 200) {
+        doc.addPage();
+        currentY = 40;
+      }
+
       // Línea divisoria final
       doc.setLineWidth(1.5);
-      doc.line(40, pageHeight - 80, pageWidth - 40, pageHeight - 80);
+      doc.line(40, pageHeight - 180, pageWidth - 40, pageHeight - 180);
 
+      // Configuración de cajas
+      const boxPadding = 10;
+      const boxHeight = 100;
+      const boxWidth = 200;
+      
+      // Posicionamiento del texto y líneas
+      const boxY = pageHeight - 150;
+      const textY = boxY + boxHeight - 30;
+      const lineY = textY + 15;
+      
       // Cirujano responsable
       doc.setFont('Helvetica', 'bold');
       const cirujanoLabel = 'Cirujano responsable:';
       const cirujanoX = 40;
-      const cirujanoY = pageHeight - 40;
-      doc.text(cirujanoLabel, cirujanoX, cirujanoY);
-
-      // Calcular la posición para la línea
-      const cirujanoLineX = cirujanoX + doc.getStringUnitWidth(cirujanoLabel) * doc.internal.getFontSize() / doc.internal.scaleFactor + 10;
-      doc.line(cirujanoLineX, pageHeight - 35, cirujanoLineX + 100, pageHeight - 35);
+      
+      // Dibujar cuadro para cirujano
+      doc.rect(cirujanoX, boxY, boxWidth, boxHeight);
+      doc.text(cirujanoLabel, cirujanoX + boxPadding, textY);
+      doc.line(
+        cirujanoX + boxPadding, 
+        lineY, 
+        cirujanoX + boxWidth - boxPadding, 
+        lineY
+      );
 
       // Firma y sello
       const firmaLabel = 'Firma y sello:';
-      const firmaX = pageWidth / 2;
-      doc.text(firmaLabel, firmaX, cirujanoY);
-
-      // Calcular la posición para la línea de firma
-      const firmaLineX = firmaX + doc.getStringUnitWidth(firmaLabel) * doc.internal.getFontSize() / doc.internal.scaleFactor + 10;
-      doc.line(firmaLineX, pageHeight - 35, firmaLineX + 100, pageHeight - 35);
+      const firmaX = pageWidth - boxWidth - 40;
+      
+      // Dibujar cuadro para firma
+      doc.rect(firmaX, boxY, boxWidth, boxHeight);
+      doc.text(firmaLabel, firmaX + boxPadding, textY);
+      doc.line(
+        firmaX + boxPadding, 
+        lineY, 
+        firmaX + boxWidth - boxPadding, 
+        lineY
+      );
 
       // Guardar el PDF
       doc.save(`Solicitud_${getValue(solicitudData.folio)}.pdf`);
@@ -834,6 +893,52 @@ materialesSecciones.forEach(seccion => {
       console.error('Error generating PDF:', error);
     }
   };
+
+  // Añade esta función junto a tus otras funciones
+const generateMedicalSummaryPDF = (solicitudData) => {
+  if (!solicitudData || !solicitudData.resumen_medico) return;
+
+  // Crear nuevo documento PDF
+  const doc = new jsPDF();
+  
+  // Configurar fuente
+  doc.setFont("helvetica");
+  doc.setFontSize(10);
+
+  // Configurar márgenes y ancho disponible (en mm)
+  const margin = 20;
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const textWidth = pageWidth - (2 * margin);
+
+  // Dividir el texto respetando saltos de línea originales
+  const lines = solicitudData.resumen_medico.split('\n');
+
+  // Posición inicial Y
+  let y = margin;
+
+  lines.forEach(line => {
+    // Dividir cada línea según el ancho disponible
+    const splitLine = doc.splitTextToSize(line, textWidth);
+    
+    // Verificar si necesitamos una nueva página
+    if (y + (splitLine.length * 5) > doc.internal.pageSize.getHeight() - margin) {
+      doc.addPage();
+      y = margin;
+    }
+
+    // Agregar cada parte de la línea dividida
+    splitLine.forEach(text => {
+      doc.text(text, margin, y, { align: 'justify' });
+      y += 5; // Espacio entre líneas
+    });
+
+    // Añadir un espacio adicional después de cada salto de línea original
+    y += 2;
+  });
+
+  // Guardar el PDF
+  doc.save(`resumen_medico_${solicitudData.folio || 'sin_folio'}.pdf`);
+};
 
   if (loading) return <div>Cargando...</div>;
 
@@ -847,16 +952,27 @@ materialesSecciones.forEach(seccion => {
         <h2 className="text-2xl font-semibold mb-6">Detalle de Solicitud de Insumos</h2>
 
         <button
-          onClick={() => generateDocument(solicitudData)}
-          className="bg-green-500 text-white text-sm p-4 rounded-lg font-light"
-          style={{ marginBottom: "8px" }}
-        >
-          Imprimir solicitud
-        </button>
+  onClick={() => generateDocument(solicitudData)}
+  className="bg-green-500 text-white text-sm p-4 rounded-lg font-light mr-4" // Agregado margen derecho
+  style={{ marginBottom: "8px" }}
+>
+  Imprimir solicitud
+</button>
+
+<button
+  onClick={() => generateMedicalSummaryPDF(solicitudData)}
+  className="bg-blue-500 text-white text-sm p-4 rounded-lg font-light mt-2" // Agregado margen superior
+>
+  Imprimir resumen médico
+</button>
+
 
         {mensaje.texto && <Alert className={`mb-4 ${mensaje.tipo === "error" ? "bg-red-100" : "bg-green-100"}`}>{mensaje.texto}</Alert>}
         
-        {solicitudData && <PatientInfoBlock solicitudData={solicitudData} />}
+        {solicitudData && <PatientInfoBlock 
+          solicitudData={solicitudData} 
+          onCommentChange={handleCommentChange} 
+        />}
         
         {activeMaterialTypes.map((materialType, index) => {
           const originalIndex = materialTypes.indexOf(materialType);

@@ -173,7 +173,7 @@ const handleSaveChanges = async (e) => {
               <option value="2">(2) Enfermería</option>
               <option value="3">(3) Anestesiología</option>
               <option value="4">(4) Médico</option>
-              <option value="5">(5) Analista de producción</option>
+              <option value="5">(5) Gestor de insumos</option>
               <option value="6">(6) Admin</option>
             </select>
           </div>
