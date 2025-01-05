@@ -329,46 +329,36 @@ const SolicitudInsumosDetalle = () => {
     materialTypes.map(() => [])
   );
 
-  const separarInsumos = (data) => {
-    const tiposInsumos = {
-      material_adicional: [],
-      material_externo: [],
-      servicios: [],
-      paquetes: [],
-      medicamentos: [],
-    };
-  
-    Object.keys(tiposInsumos).forEach((tipo) => {
-      // Usa un mapeo específico para los campos de paquetes
-      const nombreField = tipo === 'paquetes' ? 'nombre_paquete' : tipo;
-      const cantidadField = tipo === 'paquetes' ? 'cantidad_paquete' : `cantidad_${tipo}`;
-  
-      // Verifica si el campo existe y no está vacío
-      if (data[nombreField]) {
-        // Para paquetes, usa split solo si hay múltiples paquetes
-        const nombres = (data[nombreField].includes(',') 
-          ? data[nombreField].split(",") 
-          : [data[nombreField]])
-          .filter(nombre => nombre.trim() !== "");
-        
-        const cantidades = data[cantidadField]
-          ? (data[cantidadField].includes(',') 
-              ? data[cantidadField].split(",") 
-              : [data[cantidadField]])
-            .filter(cantidad => cantidad.trim() !== "")
-          : [];
-        
-        tiposInsumos[tipo] = nombres.map((nombre, index) => ({
-          id: index,
-          nombre: nombre.trim(),
-          cantidad: parseInt(cantidades[index] || "1") || 1,
-          disponible: true,
-        }));
-      }
-    });
-  
-    return tiposInsumos;
+const separarInsumos = (data) => {
+  const tiposInsumos = {
+    material_adicional: [],
+    material_externo: [],
+    servicios: [],
+    paquetes: [],
+    medicamentos: [],
   };
+
+  Object.keys(tiposInsumos).forEach((tipo) => {
+    const nombreField = tipo === 'paquetes' ? 'nombre_paquete' : tipo;
+    const cantidadField = tipo === 'paquetes' ? 'cantidad_paquete' : `cantidad_${tipo}`;
+    const disponibilidadField = `disponibilidad_${tipo}`;
+
+    if (data[nombreField]) {
+      const nombres = data[nombreField].split(",").filter(nombre => nombre.trim() !== "");
+      const cantidades = data[cantidadField]?.split(",").filter(cantidad => cantidad.trim() !== "") || [];
+      const disponibilidades = data[disponibilidadField]?.split(",").filter(disp => disp.trim() !== "") || [];
+
+      tiposInsumos[tipo] = nombres.map((nombre, index) => ({
+        id: index,
+        nombre: nombre.trim(),
+        cantidad: parseInt(cantidades[index]) || 1,
+        disponible: disponibilidades[index] === "1"
+      }));
+    }
+  });
+
+  return tiposInsumos;
+};
   
   useEffect(() => {
     const fetchSolicitudData = async () => {
@@ -438,13 +428,13 @@ const SolicitudInsumosDetalle = () => {
 
 const guardarTodosCambios = async () => {
     try {
-        const materialTypeMap = [
-            'material_adicional',
-            'material_externo',
-            'servicios',
-            'paquetes',
-            'medicamentos'
-        ];
+      const materialTypeMap = [
+        'material_adicional',
+        'material_externo',
+        'servicios',
+        'nombre_paquete', // Cambiado de 'paquetes' a 'nombre_paquete'
+        'medicamentos'
+    ];
         const cantidadTypeMap = [
             'cantidad_adicional',
             'cantidad_externo',
@@ -458,27 +448,30 @@ const guardarTodosCambios = async () => {
         };
 
         materialTypeMap.forEach((tipo, index) => {
-            const nombres = insumoStates[index].map((i) => i.nombre).join(",");
-            const cantidades = insumoStates[index].map((i) => i.cantidad).join(",");
-            const disponibilidades = insumoStates[index].map((i) => (i.disponible ? "1" : "0")).join(",");
-
-            if (nombres) {
-                datosActualizados[tipo] = nombres;
-                datosActualizados[cantidadTypeMap[index]] = cantidades;
-                datosActualizados[`disponibilidad_${tipo}`] = disponibilidades;
-            } 
-            else if (solicitudData[tipo]) {
-                datosActualizados[tipo] = solicitudData[tipo];
-                datosActualizados[cantidadTypeMap[index]] = solicitudData[cantidadTypeMap[index]];
-                datosActualizados[`disponibilidad_${tipo}`] = solicitudData[`disponibilidad_${tipo}`] || '';
-            }
-        });
-
-        if (solicitudData.nombre_paquete) {
-            datosActualizados.nombre_paquete = solicitudData.nombre_paquete;
-            datosActualizados.cantidad_paquete = solicitudData.cantidad_paquete;
-            datosActualizados.disponibilidad_paquete = solicitudData.disponibilidad_paquete;
-        }
+          const nombres = insumoStates[index].map((i) => i.nombre).join(",");
+          const cantidades = insumoStates[index].map((i) => i.cantidad).join(",");
+          const disponibilidades = insumoStates[index].map((i) => (i.disponible ? "1" : "0")).join(",");
+      
+          if (nombres) {
+              datosActualizados[tipo] = nombres;
+              datosActualizados[cantidadTypeMap[index]] = cantidades;
+              // Manejo especial para paquetes
+              if (tipo === 'nombre_paquete') {
+                  datosActualizados.disponibilidad_paquetes = disponibilidades;
+              } else {
+                  datosActualizados[`disponibilidad_${tipo}`] = disponibilidades;
+              }
+          } 
+          else if (solicitudData[tipo]) {
+              datosActualizados[tipo] = solicitudData[tipo];
+              datosActualizados[cantidadTypeMap[index]] = solicitudData[cantidadTypeMap[index]];
+              if (tipo === 'nombre_paquete') {
+                  datosActualizados.disponibilidad_paquetes = solicitudData.disponibilidad_paquetes || '';
+              } else {
+                  datosActualizados[`disponibilidad_${tipo}`] = solicitudData[`disponibilidad_${tipo}`] || '';
+              }
+          }
+      });
 
         console.log("Datos enviados al backend después del filtro:", datosActualizados);
 
