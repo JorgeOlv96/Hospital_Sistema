@@ -173,10 +173,23 @@ function Bitacoraenfermeria() {
     return matchesName && matchesSpecialty && matchesDate;
   });
 
+  const getTurnoColor = (turno) => {
+    switch (turno) {
+      case "Matutino":
+        return "rgba(129, 164, 255, 0.43)";
+      case "Vespertino":
+        return "rgba(109, 255, 19, 0.43)";
+      case "Nocturno":
+        return "rgba(255, 169, 89, 0.43)";
+      default:
+        return "transparent";
+    }
+  };
+
   const orderedAppointments = useMemo(() => {
     return filteredAppointments
       .sort((a, b) => {
-        // Ordenar por turno solicitado primero
+        // Ordenar primero por turno
         const turnoOrder = ["Matutino", "Vespertino", "Nocturno", "Especial"];
         const turnoDiff =
           turnoOrder.indexOf(a.turno_asignado) - turnoOrder.indexOf(b.turno_asignado);
@@ -433,7 +446,13 @@ function Bitacoraenfermeria() {
                                   appointment.fecha_programada
                                 )}
                         </td>
-                        <td className="border px-4 py-2 justify-center">
+                        <td 
+                          className="border px-4 py-2 justify-center"
+                          style={{
+                            backgroundColor: getTurnoColor(appointment.turno),
+                            borderRadius: '8px',
+                          }}
+                        >
                           {appointment.turno}
                         </td>
                         <td className="border px-4 py-2 justify-center">

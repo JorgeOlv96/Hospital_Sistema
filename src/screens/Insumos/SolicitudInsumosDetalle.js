@@ -13,28 +13,65 @@ import PaquetesSelect from "../Solicitudes/PaqueteSelect";
 const PatientInfoBlock = ({ solicitudData,  onCommentChange  }) => {
   const [showResumen, setShowResumen] = React.useState(false);
 
+  const patientData = Array.isArray(solicitudData) ? solicitudData[0] : solicitudData;
+
   return (
     <div className="mb-6">
       {/* Información del paciente */}
       <div className="bg-gray-50 p-6 rounded-lg shadow-lg mb-6">
+        <h3 className="text-xl font-semibold mb-4">Información del Paciente</h3>
         <div className="grid grid-cols-3 gap-4">
           <div className="w-full">
             <label className="block font-semibold text-gray-700 mb-2">Folio:</label>
             <p className="bg-white p-3 rounded-lg">{solicitudData.folio || "N/A"}</p>
           </div>
           <div className="w-full">
-            <label className="block font-semibold text-gray-700 mb-2">Estado:</label>
-            <p className="bg-white p-3 rounded-lg">{solicitudData.estado_insumos || "N/A"}</p>
+            <label className="block font-semibold text-gray-700 mb-2">Nombre:</label>
+            <p className="bg-white p-3 rounded-lg">
+              {`${solicitudData.nombre_paciente || ""} ${solicitudData.ap_paterno || ""} ${solicitudData.ap_materno || ""}`}
+            </p>
           </div>
           <div className="w-full">
-            <label className="block font-semibold text-gray-700 mb-2">Fecha de solicitud:</label>
-            <p className="bg-white p-3 rounded-lg">{solicitudData.fecha_solicitud || "N/A"}</p>
+            <label className="block font-semibold text-gray-700 mb-2">Sexo:</label>
+            <p className="bg-white p-3 rounded-lg">{solicitudData.sexo || "N/A"}</p>
+          </div>
+          <div className="w-full">
+            <label className="block font-semibold text-gray-700 mb-2">Tipo de Admisión:</label>
+            <p className="bg-white p-3 rounded-lg">{solicitudData.tipo_admision || "N/A"}</p>
+          </div>
+          <div className="w-full">
+            <label className="block font-semibold text-gray-700 mb-2">Tipo de Intervención:</label>
+            <p className="bg-white p-3 rounded-lg">{solicitudData.tipo_intervencion || "N/A"}</p>
+          </div>
+          <div className="w-full">
+            <label className="block font-semibold text-gray-700 mb-2">Especialidad:</label>
+            <p className="bg-white p-3 rounded-lg">{solicitudData.nombre_especialidad || "N/A"}</p>
+          </div>
+          <div className="w-full">
+            <label className="block font-semibold text-gray-700 mb-2">Fecha Solicitada:</label>
+            <p className="bg-white p-3 rounded-lg">{solicitudData.fecha_solicitada || "N/A"}</p>
+          </div>
+          <div className="w-full">
+            <label className="block font-semibold text-gray-700 mb-2">Hora Solicitada:</label>
+            <p className="bg-white p-3 rounded-lg">{solicitudData.hora_solicitada || "N/A"}</p>
+          </div>
+          <div className="w-full">
+            <label className="block font-semibold text-gray-700 mb-2">Sala/Quirófano:</label>
+            <p className="bg-white p-3 rounded-lg">{solicitudData.sala_quirofano || "N/A"}</p>
+          </div>
+          <div className="w-full">
+            <label className="block font-semibold text-gray-700 mb-2">Cirujano:</label>
+            <p className="bg-white p-3 rounded-lg">{solicitudData.nombre_cirujano || "N/A"}</p>
+          </div>
+          <div className="w-full">
+            <label className="block font-semibold text-gray-700 mb-2">Estado:</label>
+            <p className="bg-white p-3 rounded-lg">{solicitudData.estado_insumos || "N/A"}</p>
           </div>
         </div>
       </div>
 
-      {/* Resumen médico */}
-      <div className="bg-gray-50 p-6 rounded-lg shadow-lg">
+
+      <div className="bg-gray-50 p-6 rounded-lg shadow-lg mb-6">
         <button
           onClick={() => setShowResumen(!showResumen)}
           className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
@@ -51,11 +88,18 @@ const PatientInfoBlock = ({ solicitudData,  onCommentChange  }) => {
               readOnly
               rows={5}
             />
+            <label className="block font-semibold text-gray-700 mt-4 mb-2">Procedimientos:</label>
+            <textarea
+              className="bg-gray-200 p-3 rounded-lg w-full resize-none"
+              value={solicitudData.procedimientos_paciente || "N/A"}
+              readOnly
+              rows={3}
+            />
           </div>
         )}
       </div>
 
-      <div className="bg-gray-50 p-6 rounded-lg shadow-lg mb-6">
+      <div className="bg-gray-50 p-6 rounded-lg shadow-lg">
         <label className="block font-semibold text-gray-700 mb-2">Comentarios adicionales:</label>
         <textarea
           className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -65,7 +109,6 @@ const PatientInfoBlock = ({ solicitudData,  onCommentChange  }) => {
           onChange={(e) => onCommentChange(e.target.value)}
         />
       </div>
-
     </div>
   );
 };
@@ -125,30 +168,23 @@ const InsumoBlock = ({
   packageInsumos,
 }) => {
   const [showPackageModal, setShowPackageModal] = useState(false);
+  const [showAddNew, setShowAddNew] = useState(false);
 
   const materialTypeMap = {
     material_adicional: {
       title: "Material Adicional",
-      nombreField: "material_adicional",
-      cantidadField: "cantidad_adicional",
       component: AdicionalSelect,
     },
     material_externo: {
       title: "Material Externo",
-      nombreField: "material_externo",
-      cantidadField: "cantidad_externo",
       component: InsumosSelect,
     },
     servicios: {
       title: "Servicios",
-      nombreField: "servicios",
-      cantidadField: "cantidad_servicios",
       component: InsumosSelect,
     },
     paquetes: {
       title: "Paquetes",
-      nombreField: "nombre_paquete",
-      cantidadField: "cantidad_paquete",
       component: PaquetesSelect,
     },
   };
@@ -156,33 +192,10 @@ const InsumoBlock = ({
   const currentType = materialTypeMap[materialType];
   const SelectComponent = currentType?.component || null;
 
-  useEffect(() => {
-    if (solicitudData && solicitudData[currentType.nombreField]) {
-      const nombres = solicitudData[currentType.nombreField]
-        .split(",")
-        .filter((nombre) => nombre.trim() !== "");
-      const cantidades = solicitudData[currentType.cantidadField]
-        ? solicitudData[currentType.cantidadField]
-            .split(",")
-            .filter((cantidad) => cantidad.trim() !== "")
-        : [];
-      const disponibilidades = solicitudData[`disponibilidad_${materialType}`]
-        ? solicitudData[`disponibilidad_${materialType}`]
-            .split(",")
-            .filter((disp) => disp.trim() !== "")
-        : [];
-  
-      const insumosIniciales = nombres.map((nombre, index) => ({
-        id: index,
-        nombre: nombre.trim(),
-        cantidad: cantidades[index] ? parseInt(cantidades[index]) : 0,
-        disponible: disponibilidades[index] === "1",
-      }));
-  
-      setInsumos(insumosIniciales.length > 0 ? insumosIniciales : []);
-    }
-  }, [solicitudData, materialType]);
-  
+  // Group insumos by type
+  const filteredInsumos = insumos.filter(insumo => 
+    insumo.tipo_insumo === materialType
+  );
 
   return (
     <div className="bg-gray-50 p-6 rounded-lg shadow-lg mb-6">
@@ -193,26 +206,26 @@ const InsumoBlock = ({
               Lista de {currentType.title}
             </h3>
             <div className="space-y-4">
-              {insumos.map((insumo) => (
+              {filteredInsumos.map((insumo) => (
                 <div
-                  key={insumo.id}
+                  key={insumo.insumo_id || insumo.id}
                   className="flex items-center space-x-4 bg-white p-3 rounded-lg"
                 >
-                  <span className="flex-grow">{insumo.nombre}</span>
+                  <span className="flex-grow">{insumo.nombre_insumo || insumo.nombre}</span>
                   <input
                     type="number"
                     value={insumo.cantidad}
                     onChange={(e) =>
-                      handleCantidadChange(insumo.id, e.target.value)
+                      handleCantidadChange(insumo.insumo_id || insumo.id, e.target.value)
                     }
                     min="1"
                     className="w-24 p-2 border rounded"
                   />
                   <div className="flex items-center space-x-2">
                     <button
-                      onClick={() => toggleDisponibilidad(insumo.id, true)}
+                      onClick={() => toggleDisponibilidad(insumo.insumo_id || insumo.id, true)}
                       className={`p-2 rounded ${
-                        insumo.disponible
+                        insumo.disponibilidad === 1 || insumo.disponible
                           ? "bg-green-100 border border-green-500"
                           : "bg-gray-200"
                       }`}
@@ -220,9 +233,9 @@ const InsumoBlock = ({
                       <Check className="text-green-600" />
                     </button>
                     <button
-                      onClick={() => toggleDisponibilidad(insumo.id, false)}
+                      onClick={() => toggleDisponibilidad(insumo.insumo_id || insumo.id, false)}
                       className={`p-2 rounded ${
-                        !insumo.disponible
+                        insumo.disponibilidad === 0 || !insumo.disponible
                           ? "bg-red-100 border border-red-500"
                           : "bg-gray-200"
                       }`}
@@ -230,7 +243,7 @@ const InsumoBlock = ({
                       <X className="text-red-600" />
                     </button>
                     <button
-                      onClick={() => handleEliminarInsumo(insumo.id)}
+                      onClick={() => handleEliminarInsumo(insumo.insumo_id || insumo.id)}
                       className="p-2 rounded bg-red-100 hover:bg-red-200"
                     >
                       <Trash2 className="text-red-600" />
@@ -241,56 +254,62 @@ const InsumoBlock = ({
             </div>
           </div>
 
-          {materialType === "paquetes" && solicitudData.nombre_paquete && (
+          {materialType === "paquetes" && packageInsumos && (
             <div className="mb-4 bg-blue-50 p-4 rounded-lg flex items-center justify-between">
               <div>
                 <h4 className="text-lg font-semibold flex items-center">
                   <Package className="mr-2 text-blue-600" />
-                  Paquete Seleccionado: {solicitudData.nombre_paquete}
+                  Contenido del Paquete
                 </h4>
               </div>
-              {packageInsumos && (
-                <button
-                  onClick={() => setShowPackageModal(true)}
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 text-sm flex items-center"
-                >
-                  Ver Insumos del Paquete
-                </button>
-              )}
+              <button
+                onClick={() => setShowPackageModal(true)}
+                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 text-sm flex items-center"
+              >
+                Ver Insumos del Paquete
+              </button>
             </div>
           )}
 
-          {showPackageModal && (
+          {showPackageModal && packageInsumos && (
             <PackageInsumosModal
-              packageName={solicitudData.nombre_paquete}
               packageInsumos={packageInsumos}
               onClose={() => setShowPackageModal(false)}
             />
           )}
 
-<div className="mb-6">
-            <h3 className="text-lg font-semibold mb-4">
-              Agregar Nuevos {currentType.title}
-            </h3>
-            <div className="flex space-x-4">
-              <div className="flex-grow">
-                {SelectComponent && (
-                  <SelectComponent
-                    onSelect={handleInsumosSelect}
-                    selectedInsumos={selectedInsumos}
-                  />
+          <button
+            onClick={() => setShowAddNew(!showAddNew)}
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-4"
+          >
+            {showAddNew ? "Cancelar" : `Agregar Nuevo ${currentType.title}`}
+          </button>
+
+          {showAddNew && (
+            <div className="mb-6">
+              <div className="flex space-x-4">
+                <div className="flex-grow">
+                  {SelectComponent && (
+                    <SelectComponent
+                      onSelect={handleInsumosSelect}
+                      selectedInsumos={selectedInsumos}
+                    />
+                  )}
+                </div>
+                {selectedInsumos.length > 0 && (
+                  <button
+                    onClick={() => {
+                      onAddSelectedInsumos();
+                      setShowAddNew(false);
+                    }}
+                    className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+                  >
+                    Agregar Seleccionados
+                  </button>
                 )}
               </div>
-              {selectedInsumos.length > 0 && (
-                <button
-                  onClick={onAddSelectedInsumos}
-                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                >
-                  Agregar Seleccionados
-                </button>
-              )}
             </div>
-          </div>
+          )}
         </>
       ) : (
         <p>No se encontró información para esta solicitud.</p>
@@ -309,6 +328,8 @@ const SolicitudInsumosDetalle = () => {
   const [mensaje, setMensaje] = useState({ tipo: "", texto: "" });
   const [selectedInsumos, setSelectedInsumos] = useState([]);
   const [packageInsumos, setPackageInsumos] = useState(null);
+  const [insumosAgrupados, setInsumosAgrupados] = useState({});
+
 
   const handleCommentChange = (value) => {
     setSolicitudData(prev => ({
@@ -360,38 +381,50 @@ const separarInsumos = (data) => {
   return tiposInsumos;
 };
   
-  useEffect(() => {
-    const fetchSolicitudData = async () => {
-      try {
-        setLoading(true);
-        setSolicitudData(null);
-        const response = await axios.get(`${baseURL}/api/insumos/solicitudes-insumos/${appointmentId}`);
-        
-        const datosSeparados = separarInsumos(response.data);
-        
-        setSolicitudData(response.data);
-        setInsumoStates(Object.values(datosSeparados));
-
-        // Fetch package insumos if a package is selected
-        if (response.data.nombre_paquete) {
-          const paqueteInsumosResponse = await axios.get(
-            `${baseURL}/api/insumos/paquete-insumos?nombre_paquete=${encodeURIComponent(response.data.nombre_paquete)}`
-          );
-          
-          // Assuming the backend returns the insumos for the specific package
-          // If the endpoint works differently, adjust this accordingly
-          setPackageInsumos(paqueteInsumosResponse.data[0]?.insumos || null);
+useEffect(() => {
+  const fetchSolicitudData = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${baseURL}/api/insumos/solicitudes-insumos/${appointmentId}`);
+      
+      // Agrupar insumos por tipo
+      const insumosAgrupados = response.data.reduce((acc, item) => {
+        const tipo = item.tipo_insumo;
+        if (!acc[tipo]) {
+          acc[tipo] = [];
         }
-      } catch (error) {
-        console.error("Error fetching solicitud data:", error);
-        setMensaje({ tipo: "error", texto: "Error al cargar los datos" });
-      } finally {
-        setLoading(false);
+        
+        acc[tipo].push({
+          id: item.insumo_id,
+          nombre: item.nombre_insumo,
+          cantidad: item.cantidad || 1,
+          disponible: item.disponibilidad === 1
+        });
+        
+        return acc;
+      }, {});
+
+      setInsumosAgrupados(insumosAgrupados);
+      setSolicitudData(response.data[0]); // Para la información del paciente
+
+      // Si hay paquetes, obtener los insumos del paquete
+      const paquete = response.data.find(item => item.tipo_insumo === 'paquetes');
+      if (paquete) {
+        const paqueteResponse = await axios.get(
+          `${baseURL}/api/insumos/paquete-insumos?nombre_paquete=${encodeURIComponent(paquete.nombre_insumo)}`
+        );
+        setPackageInsumos(paqueteResponse.data[0]?.insumos || null);
       }
-    };
-  
-    fetchSolicitudData();
-  }, [appointmentId, baseURL]);
+    } catch (error) {
+      console.error("Error fetching solicitud data:", error);
+      setMensaje({ tipo: "error", texto: "Error al cargar los datos" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchSolicitudData();
+}, [appointmentId, baseURL]);
   
   useEffect(() => {
     if (solicitudData) {
@@ -944,64 +977,69 @@ const generateMedicalSummaryPDF = (solicitudData) => {
       <div className="p-6">
         <h2 className="text-2xl font-semibold mb-6">Detalle de Solicitud de Insumos</h2>
 
-        <button
-  onClick={() => generateDocument(solicitudData)}
-  className="bg-green-500 text-white text-sm p-4 rounded-lg font-light mr-4" // Agregado margen derecho
-  style={{ marginBottom: "8px" }}
->
-  Imprimir solicitud
-</button>
+                <button
+          onClick={() => generateDocument(solicitudData)}
+          className="bg-green-500 text-white text-sm p-4 rounded-lg font-light mr-4" // Agregado margen derecho
+          style={{ marginBottom: "8px" }}
+        >
+          Imprimir solicitud
+        </button>
 
-<button
-  onClick={() => generateMedicalSummaryPDF(solicitudData)}
-  className="bg-blue-500 text-white text-sm p-4 rounded-lg font-light mt-2" // Agregado margen superior
->
-  Imprimir resumen médico
-</button>
+        <button
+          onClick={() => generateMedicalSummaryPDF(solicitudData)}
+          className="bg-blue-500 text-white text-sm p-4 rounded-lg font-light mt-2" // Agregado margen superior
+        >
+          Imprimir resumen médico
+        </button>
 
 
         {mensaje.texto && <Alert className={`mb-4 ${mensaje.tipo === "error" ? "bg-red-100" : "bg-green-100"}`}>{mensaje.texto}</Alert>}
         
-        {solicitudData && <PatientInfoBlock 
-          solicitudData={solicitudData} 
+        {solicitudData && <PatientInfoBlock solicitudData={solicitudData} 
           onCommentChange={handleCommentChange} 
         />}
         
-        {activeMaterialTypes.map((materialType, index) => {
-          const originalIndex = materialTypes.indexOf(materialType);
-          return (
-            <InsumoBlock
-              key={materialType}
-              solicitudData={solicitudData}
-              materialType={materialType}
-              insumos={insumoStates[originalIndex]}
-              setInsumos={(newInsumos) => {
-                const newInsumoStates = [...insumoStates];
-                newInsumoStates[originalIndex] = newInsumos;
-                setInsumoStates(newInsumoStates);
-              }}
-              handleCantidadChange={createHandler(originalIndex, 'cantidad')}
-              toggleDisponibilidad={createHandler(originalIndex, 'disponibilidad')}
-              handleEliminarInsumo={createHandler(originalIndex, 'eliminar')}
-              handleInsumosSelect={setSelectedInsumos}
-              selectedInsumos={selectedInsumos}
-              packageInsumos={materialType === 'paquetes' ? packageInsumos : null}
-            />
-          );
-        })}
-
-<div className="fixed bottom-0 left-0 right-0 bg-white p-4 shadow-lg">
-          <div className="container mx-auto flex justify-end">
-            <button
-              onClick={guardarTodosCambios}
-              className="px-8 py-3 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
-            >
-              Guardar Cambios
-            </button>
-          </div>
-        </div>
-      </div>
-    </Layout>
+        {Object.entries(insumosAgrupados).map(([tipo, insumosArray]) => (
+        <InsumoBlock
+          key={tipo}
+          solicitudData={solicitudData}
+          materialType={tipo}
+          insumos={insumosArray}
+          setInsumos={(newInsumos) => {
+            setInsumosAgrupados(prev => ({
+              ...prev,
+              [tipo]: newInsumos
+            }));
+          }}
+          handleCantidadChange={(id, cantidad) => {
+            setInsumosAgrupados(prev => ({
+              ...prev,
+              [tipo]: prev[tipo].map(insumo =>
+                insumo.id === id ? { ...insumo, cantidad: parseInt(cantidad) || 0 } : insumo
+              )
+            }));
+          }}
+          toggleDisponibilidad={(id) => {
+            setInsumosAgrupados(prev => ({
+              ...prev,
+              [tipo]: prev[tipo].map(insumo =>
+                insumo.id === id ? { ...insumo, disponible: !insumo.disponible } : insumo
+              )
+            }));
+          }}
+          handleEliminarInsumo={(id) => {
+            setInsumosAgrupados(prev => ({
+              ...prev,
+              [tipo]: prev[tipo].filter(insumo => insumo.id !== id)
+            }));
+          }}
+          handleInsumosSelect={setSelectedInsumos}
+          selectedInsumos={selectedInsumos}
+          packageInsumos={tipo === 'paquetes' ? packageInsumos : null}
+        />
+      ))}
+    </div>
+  </Layout>
   );
 };
 

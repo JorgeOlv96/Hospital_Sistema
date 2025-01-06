@@ -437,8 +437,7 @@ const handleExport = async () => {
                     const sortedRegistrations = todaysRegistrations
                       .filter((appointment) => {
                         const hour = moment(
-                          appointment.hora_asignada,
-                          "HH:mm"
+                          appointment.hora_asignada || appointment.hora_entrada, "HH:mm"
                         ).hour();
                         if (turno === "Matutino") return hour >= 8 && hour < 15;
                         if (turno === "Vespertino")
@@ -466,8 +465,8 @@ const handleExport = async () => {
                         if (salaA !== salaB) {
                           return salaA - salaB;
                         }
-                        const horaA = moment(a.hora_asignada, "HH:mm");
-                        const horaB = moment(b.hora_asignada, "HH:mm");
+                        const horaA = moment(a.hora_asignada || a.hora_entrada, "HH:mm");
+                        const horaB = moment(b.hora_asignada || b.hora_entrada, "HH:mm");
                         return horaA - horaB;
                       });
 

@@ -147,6 +147,8 @@ const SolicitudUrgencia = () => {
     setFormData((prevFormData) => ({
       ...prevFormData,
       [name]: value,
+      // Si el campo modificado es fecha_solicitud, actualizar también fecha_programada
+      ...(name === "fecha_solicitud" && { fecha_programada: value }),
     }));
   
     if (name === "fecha_nacimiento") {
@@ -180,6 +182,7 @@ const SolicitudUrgencia = () => {
       }
     }
   };
+  
   
 
   const handleNombreEspecialidadChange = (e) => {
@@ -687,23 +690,6 @@ const SolicitudUrgencia = () => {
                 id="fecha_programada"
                 name="fecha_programada"
                 value={formData.fecha_programada}
-                onChange={handleInputChange}
-                className="border-[#C59494] rounded-lg px-3 py-2 w-full bg-white"
-              />
-            </div>
-
-            <div className="w-full mr-4">
-              <label
-                htmlFor="hora_asignada"
-                className="block font-semibold text-white mb-1"
-              >
-                Hr. Cirugía:
-              </label>
-              <input
-                type="time"
-                id="hora_asignada"
-                name="hora_asignada"
-                value={formData.hora_asignada}
                 onChange={handleInputChange}
                 className="border-[#C59494] rounded-lg px-3 py-2 w-full bg-white"
               />

@@ -116,7 +116,6 @@ function App() {
             <Route path="/solicitudesInsumos" element={<SolicitudesInsumos />} />
             <Route path="/solicitudInsumosDetalle/:appointmentId" element={<SolicitudInsumosDetalle />} />
             <Route path="/bitacoraanestesio" element={<Bitacoraanestesio />} />
-            <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
       </BrowserRouter>
