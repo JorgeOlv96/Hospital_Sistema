@@ -19,56 +19,78 @@ const PatientInfoBlock = ({ solicitudData,  onCommentChange  }) => {
     <div className="mb-6">
       {/* Información del paciente */}
       <div className="bg-gray-50 p-6 rounded-lg shadow-lg mb-6">
-        <h3 className="text-xl font-semibold mb-4">Información del Paciente</h3>
-        <div className="grid grid-cols-3 gap-4">
-          <div className="w-full">
-            <label className="block font-semibold text-gray-700 mb-2">Folio:</label>
-            <p className="bg-white p-3 rounded-lg">{solicitudData.folio || "N/A"}</p>
-          </div>
-          <div className="w-full">
-            <label className="block font-semibold text-gray-700 mb-2">Nombre:</label>
-            <p className="bg-white p-3 rounded-lg">
-              {`${solicitudData.nombre_paciente || ""} ${solicitudData.ap_paterno || ""} ${solicitudData.ap_materno || ""}`}
-            </p>
-          </div>
-          <div className="w-full">
-            <label className="block font-semibold text-gray-700 mb-2">Sexo:</label>
-            <p className="bg-white p-3 rounded-lg">{solicitudData.sexo || "N/A"}</p>
-          </div>
-          <div className="w-full">
-            <label className="block font-semibold text-gray-700 mb-2">Tipo de Admisión:</label>
-            <p className="bg-white p-3 rounded-lg">{solicitudData.tipo_admision || "N/A"}</p>
-          </div>
-          <div className="w-full">
-            <label className="block font-semibold text-gray-700 mb-2">Tipo de Intervención:</label>
-            <p className="bg-white p-3 rounded-lg">{solicitudData.tipo_intervencion || "N/A"}</p>
-          </div>
-          <div className="w-full">
-            <label className="block font-semibold text-gray-700 mb-2">Especialidad:</label>
-            <p className="bg-white p-3 rounded-lg">{solicitudData.nombre_especialidad || "N/A"}</p>
-          </div>
-          <div className="w-full">
-            <label className="block font-semibold text-gray-700 mb-2">Fecha Solicitada:</label>
-            <p className="bg-white p-3 rounded-lg">{solicitudData.fecha_solicitada || "N/A"}</p>
-          </div>
-          <div className="w-full">
-            <label className="block font-semibold text-gray-700 mb-2">Hora Solicitada:</label>
-            <p className="bg-white p-3 rounded-lg">{solicitudData.hora_solicitada || "N/A"}</p>
-          </div>
-          <div className="w-full">
-            <label className="block font-semibold text-gray-700 mb-2">Sala/Quirófano:</label>
-            <p className="bg-white p-3 rounded-lg">{solicitudData.sala_quirofano || "N/A"}</p>
-          </div>
-          <div className="w-full">
-            <label className="block font-semibold text-gray-700 mb-2">Cirujano:</label>
-            <p className="bg-white p-3 rounded-lg">{solicitudData.nombre_cirujano || "N/A"}</p>
-          </div>
-          <div className="w-full">
-            <label className="block font-semibold text-gray-700 mb-2">Estado:</label>
-            <p className="bg-white p-3 rounded-lg">{solicitudData.estado_insumos || "N/A"}</p>
-          </div>
-        </div>
-      </div>
+  <h3 className="text-xl font-semibold mb-4">Información del Paciente</h3>
+  <div className="grid grid-cols-3 gap-4">
+    <div className="w-full">
+      <label className="block font-semibold text-gray-700 mb-2">Folio:</label>
+      <p className="bg-white p-3 rounded-lg">{patientData?.folio || "N/A"}</p>
+    </div>
+    <div className="w-full">
+      <label className="block font-semibold text-gray-700 mb-2">Nombre:</label>
+      <p className="bg-white p-3 rounded-lg">
+        {`${patientData?.nombre_paciente || ""} ${patientData?.ap_paterno || ""} ${patientData?.ap_materno || ""}`}
+      </p>
+    </div>
+    <div className="w-full">
+      <label className="block font-semibold text-gray-700 mb-2">Sexo:</label>
+      <p className="bg-white p-3 rounded-lg">{patientData?.sexo || "N/A"}</p>
+    </div>
+    <div className="w-full">
+      <label className="block font-semibold text-gray-700 mb-2">Tipo de Admisión:</label>
+      <p className="bg-white p-3 rounded-lg">{patientData?.tipo_admision || "N/A"}</p>
+    </div>
+    <div className="w-full">
+      <label className="block font-semibold text-gray-700 mb-2">Tipo de Intervención:</label>
+      <p className="bg-white p-3 rounded-lg">{patientData?.tipo_intervencion || "N/A"}</p>
+    </div>
+    <div className="w-full">
+      <label className="block font-semibold text-gray-700 mb-2">Especialidad:</label>
+      <p className="bg-white p-3 rounded-lg">{patientData?.nombre_especialidad || "N/A"}</p>
+    </div>
+    <div className="w-full">
+      <label className="block font-semibold text-gray-700 mb-2">Fecha Solicitada:</label>
+      <p className="bg-white p-3 rounded-lg">{patientData?.fecha_solicitada || "N/A"}</p>
+    </div>
+    <div className="w-full">
+      <label className="block font-semibold text-gray-700 mb-2">Hora Solicitada:</label>
+      <p className="bg-white p-3 rounded-lg">{patientData?.hora_solicitada || "N/A"}</p>
+    </div>
+    <div className="w-full">
+      <label className="block font-semibold text-gray-700 mb-2">Sala/Quirófano:</label>
+      <p className="bg-white p-3 rounded-lg">{patientData?.sala_quirofano || "N/A"}</p>
+    </div>
+    <div className="w-full">
+      <label className="block font-semibold text-gray-700 mb-2">Cirujano:</label>
+      <p className="bg-white p-3 rounded-lg">{patientData?.nombre_cirujano || "N/A"}</p>
+    </div>
+    <div className="w-full">
+      <label className="block font-semibold text-gray-700 mb-2">Estado:</label>
+      <p className="bg-white p-3 rounded-lg">{patientData?.estado_insumos || "N/A"}</p>
+    </div>
+  </div>
+
+  {/* Procedimiento principal en un solo "renglón" */}
+  <div className="mt-4">
+    <label className="block font-semibold text-gray-700 mb-2">Procedimiento principal planeado (CIE-9):</label>
+    <textarea
+      className="bg-white p-3 rounded-lg w-full cursor-default"
+      readOnly
+      rows={2}
+      value={patientData?.procedimientos_paciente || "N/A"}
+    ></textarea>
+  </div>
+
+  {/* Diagnóstico en un solo "renglón" */}
+  <div className="mt-4">
+    <label className="block font-semibold text-gray-700 mb-2">Diagnóstico:</label>
+    <textarea
+      className="bg-white p-3 rounded-lg w-full cursor-default"
+      readOnly
+      rows={2}
+      value={patientData?.diagnostico || "N/A"}
+    ></textarea>
+  </div>
+</div>
 
 
       <div className="bg-gray-50 p-6 rounded-lg shadow-lg mb-6">
@@ -83,17 +105,10 @@ const PatientInfoBlock = ({ solicitudData,  onCommentChange  }) => {
           <div className="mt-4">
             <label className="block font-semibold text-gray-700 mb-2">Resumen médico:</label>
             <textarea
-              className="bg-gray-200 p-3 rounded-lg w-full resize-none"
-              value={solicitudData.resumen_medico || "N/A"}
+              className="bg-gray-200 p-3 rounded-lg w-full"
+              value={patientData?.resumen_medico || "N/A"}
               readOnly
               rows={5}
-            />
-            <label className="block font-semibold text-gray-700 mt-4 mb-2">Procedimientos:</label>
-            <textarea
-              className="bg-gray-200 p-3 rounded-lg w-full resize-none"
-              value={solicitudData.procedimientos_paciente || "N/A"}
-              readOnly
-              rows={3}
             />
           </div>
         )}
@@ -105,7 +120,7 @@ const PatientInfoBlock = ({ solicitudData,  onCommentChange  }) => {
           className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           rows={3}
           placeholder="Agregar comentarios sobre los insumos..."
-          value={solicitudData.comentarios_insumos || ""}
+          value={patientData?.comentarios_insumos || ""}
           onChange={(e) => onCommentChange(e.target.value)}
         />
       </div>
@@ -155,168 +170,94 @@ const PackageInsumosModal = ({ packageName, packageInsumos, onClose }) => {
 };
 
 const InsumoBlock = ({
-  solicitudData,
-  materialType,
-  insumos,
-  setInsumos,
+  insumos = [],
   handleCantidadChange,
   toggleDisponibilidad,
   handleEliminarInsumo,
-  handleInsumosSelect,
-  selectedInsumos,
-  onAddSelectedInsumos,
-  packageInsumos,
+  title,
+  showPackageInfo = false,
+  packageInsumos = null,
+  packageName = "",
 }) => {
   const [showPackageModal, setShowPackageModal] = useState(false);
-  const [showAddNew, setShowAddNew] = useState(false);
-
-  const materialTypeMap = {
-    material_adicional: {
-      title: "Material Adicional",
-      component: AdicionalSelect,
-    },
-    material_externo: {
-      title: "Material Externo",
-      component: InsumosSelect,
-    },
-    servicios: {
-      title: "Servicios",
-      component: InsumosSelect,
-    },
-    paquetes: {
-      title: "Paquetes",
-      component: PaquetesSelect,
-    },
-  };
-
-  const currentType = materialTypeMap[materialType];
-  const SelectComponent = currentType?.component || null;
-
-  // Group insumos by type
-  const filteredInsumos = insumos.filter(insumo => 
-    insumo.tipo_insumo === materialType
-  );
 
   return (
     <div className="bg-gray-50 p-6 rounded-lg shadow-lg mb-6">
-      {solicitudData ? (
-        <>
-          <div className="mb-6">
-            <h3 className="text-lg font-semibold mb-4">
-              Lista de {currentType.title}
-            </h3>
-            <div className="space-y-4">
-              {filteredInsumos.map((insumo) => (
-                <div
-                  key={insumo.insumo_id || insumo.id}
-                  className="flex items-center space-x-4 bg-white p-3 rounded-lg"
+      <div className="mb-6">
+        <h3 className="text-lg font-semibold mb-4">{title}</h3>
+        <div className="space-y-4">
+          {insumos.map((insumo) => (
+            <div
+              key={insumo.id}
+              className="flex items-center space-x-4 bg-white p-3 rounded-lg"
+            >
+              <span className="flex-grow">{insumo.nombre}</span>
+              <input
+                type="number"
+                value={insumo.cantidad}
+                onChange={(e) => handleCantidadChange(insumo.id, e.target.value)}
+                min="1"
+                className="w-24 p-2 border rounded"
+              />
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => toggleDisponibilidad(insumo.id, true)}
+                  className={`p-2 rounded ${
+                    insumo.disponible ? "bg-green-100 border border-green-500" : "bg-gray-200"
+                  }`}
                 >
-                  <span className="flex-grow">{insumo.nombre_insumo || insumo.nombre}</span>
-                  <input
-                    type="number"
-                    value={insumo.cantidad}
-                    onChange={(e) =>
-                      handleCantidadChange(insumo.insumo_id || insumo.id, e.target.value)
-                    }
-                    min="1"
-                    className="w-24 p-2 border rounded"
-                  />
-                  <div className="flex items-center space-x-2">
-                    <button
-                      onClick={() => toggleDisponibilidad(insumo.insumo_id || insumo.id, true)}
-                      className={`p-2 rounded ${
-                        insumo.disponibilidad === 1 || insumo.disponible
-                          ? "bg-green-100 border border-green-500"
-                          : "bg-gray-200"
-                      }`}
-                    >
-                      <Check className="text-green-600" />
-                    </button>
-                    <button
-                      onClick={() => toggleDisponibilidad(insumo.insumo_id || insumo.id, false)}
-                      className={`p-2 rounded ${
-                        insumo.disponibilidad === 0 || !insumo.disponible
-                          ? "bg-red-100 border border-red-500"
-                          : "bg-gray-200"
-                      }`}
-                    >
-                      <X className="text-red-600" />
-                    </button>
-                    <button
-                      onClick={() => handleEliminarInsumo(insumo.insumo_id || insumo.id)}
-                      className="p-2 rounded bg-red-100 hover:bg-red-200"
-                    >
-                      <Trash2 className="text-red-600" />
-                    </button>
-                  </div>
-                </div>
-              ))}
+                  <Check className="text-green-600" />
+                </button>
+                <button
+                  onClick={() => toggleDisponibilidad(insumo.id, false)}
+                  className={`p-2 rounded ${
+                    !insumo.disponible ? "bg-red-100 border border-red-500" : "bg-gray-200"
+                  }`}
+                >
+                  <X className="text-red-600" />
+                </button>
+                <button
+                  onClick={() => handleEliminarInsumo(insumo.id)}
+                  className="p-2 rounded bg-red-100 hover:bg-red-200"
+                >
+                  <Trash2 className="text-red-600" />
+                </button>
+              </div>
             </div>
+          ))}
+        </div>
+      </div>
+
+      {showPackageInfo && packageName && (
+        <div className="mb-4 bg-blue-50 p-4 rounded-lg flex items-center justify-between">
+          <div>
+            <h4 className="text-lg font-semibold flex items-center">
+              <Package className="mr-2 text-blue-600" />
+              Paquete Seleccionado: {packageName}
+            </h4>
           </div>
-
-          {materialType === "paquetes" && packageInsumos && (
-            <div className="mb-4 bg-blue-50 p-4 rounded-lg flex items-center justify-between">
-              <div>
-                <h4 className="text-lg font-semibold flex items-center">
-                  <Package className="mr-2 text-blue-600" />
-                  Contenido del Paquete
-                </h4>
-              </div>
-              <button
-                onClick={() => setShowPackageModal(true)}
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 text-sm flex items-center"
-              >
-                Ver Insumos del Paquete
-              </button>
-            </div>
+          {packageInsumos && (
+            <button
+              onClick={() => setShowPackageModal(true)}
+              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 text-sm flex items-center"
+            >
+              Ver Insumos del Paquete
+            </button>
           )}
+        </div>
+      )}
 
-          {showPackageModal && packageInsumos && (
-            <PackageInsumosModal
-              packageInsumos={packageInsumos}
-              onClose={() => setShowPackageModal(false)}
-            />
-          )}
-
-          <button
-            onClick={() => setShowAddNew(!showAddNew)}
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mb-4"
-          >
-            {showAddNew ? "Cancelar" : `Agregar Nuevo ${currentType.title}`}
-          </button>
-
-          {showAddNew && (
-            <div className="mb-6">
-              <div className="flex space-x-4">
-                <div className="flex-grow">
-                  {SelectComponent && (
-                    <SelectComponent
-                      onSelect={handleInsumosSelect}
-                      selectedInsumos={selectedInsumos}
-                    />
-                  )}
-                </div>
-                {selectedInsumos.length > 0 && (
-                  <button
-                    onClick={() => {
-                      onAddSelectedInsumos();
-                      setShowAddNew(false);
-                    }}
-                    className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-                  >
-                    Agregar Seleccionados
-                  </button>
-                )}
-              </div>
-            </div>
-          )}
-        </>
-      ) : (
-        <p>No se encontró información para esta solicitud.</p>
+      {showPackageModal && (
+        <PackageInsumosModal
+          packageName={packageName}
+          packageInsumos={packageInsumos}
+          onClose={() => setShowPackageModal(false)}
+        />
       )}
     </div>
   );
 };
+
 
 
 const SolicitudInsumosDetalle = () => {
@@ -326,10 +267,9 @@ const SolicitudInsumosDetalle = () => {
   const [solicitudData, setSolicitudData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [mensaje, setMensaje] = useState({ tipo: "", texto: "" });
+  const [insumos, setInsumos] = useState({});
   const [selectedInsumos, setSelectedInsumos] = useState([]);
   const [packageInsumos, setPackageInsumos] = useState(null);
-  const [insumosAgrupados, setInsumosAgrupados] = useState({});
-
 
   const handleCommentChange = (value) => {
     setSolicitudData(prev => ({
@@ -350,81 +290,158 @@ const SolicitudInsumosDetalle = () => {
     materialTypes.map(() => [])
   );
 
-const separarInsumos = (data) => {
-  const tiposInsumos = {
+  const procesarDatosInsumos = (data) => {
+    const insumosAgrupados = data.reduce((acc, item) => {
+      const tipo = item.tipo_insumo;
+      if (!acc[tipo]) {
+        acc[tipo] = [];
+      }
+      
+      acc[tipo].push({
+        id: item.insumo_id,
+        nombre: item.nombre_insumo,
+        cantidad: item.cantidad,
+        disponible: item.disponibilidad === 1
+      });
+      
+      return acc;
+    }, {});
+
+    return insumosAgrupados;
+  };
+
+  const separarInsumos = (data) => {
+    const tiposInsumos = {
+      material_adicional: [],
+      material_externo: [],
+      servicios: [],
+      paquetes: [],
+      medicamentos: [],
+    };
+  
+    Object.keys(tiposInsumos).forEach((tipo) => {
+      // Usa un mapeo específico para los campos de paquetes
+      const nombreField = tipo === 'paquetes' ? 'nombre_paquete' : tipo;
+      const cantidadField = tipo === 'paquetes' ? 'cantidad_paquete' : `cantidad_${tipo}`;
+  
+      // Verifica si el campo existe y no está vacío
+      if (data[nombreField]) {
+        // Para paquetes, usa split solo si hay múltiples paquetes
+        const nombres = (data[nombreField].includes(',') 
+          ? data[nombreField].split(",") 
+          : [data[nombreField]])
+          .filter(nombre => nombre.trim() !== "");
+        
+        const cantidades = data[cantidadField]
+          ? (data[cantidadField].includes(',') 
+              ? data[cantidadField].split(",") 
+              : [data[cantidadField]])
+            .filter(cantidad => cantidad.trim() !== "")
+          : [];
+        
+        tiposInsumos[tipo] = nombres.map((nombre, index) => ({
+          id: index,
+          nombre: nombre.trim(),
+          cantidad: parseInt(cantidades[index] || "1") || 1,
+          disponible: true,
+        }));
+      }
+    });
+  
+    return tiposInsumos;
+  };
+  
+
+  const [insumosPorTipo, setInsumosPorTipo] = useState({
     material_adicional: [],
     material_externo: [],
     servicios: [],
     paquetes: [],
-    medicamentos: [],
-  };
-
-  Object.keys(tiposInsumos).forEach((tipo) => {
-    const nombreField = tipo === 'paquetes' ? 'nombre_paquete' : tipo;
-    const cantidadField = tipo === 'paquetes' ? 'cantidad_paquete' : `cantidad_${tipo}`;
-    const disponibilidadField = `disponibilidad_${tipo}`;
-
-    if (data[nombreField]) {
-      const nombres = data[nombreField].split(",").filter(nombre => nombre.trim() !== "");
-      const cantidades = data[cantidadField]?.split(",").filter(cantidad => cantidad.trim() !== "") || [];
-      const disponibilidades = data[disponibilidadField]?.split(",").filter(disp => disp.trim() !== "") || [];
-
-      tiposInsumos[tipo] = nombres.map((nombre, index) => ({
-        id: index,
-        nombre: nombre.trim(),
-        cantidad: parseInt(cantidades[index]) || 1,
-        disponible: disponibilidades[index] === "1"
-      }));
-    }
+    medicamentos: []
   });
-
-  return tiposInsumos;
-};
   
-useEffect(() => {
-  const fetchSolicitudData = async () => {
-    try {
-      setLoading(true);
-      const response = await axios.get(`${baseURL}/api/insumos/solicitudes-insumos/${appointmentId}`);
-      
-      // Agrupar insumos por tipo
-      const insumosAgrupados = response.data.reduce((acc, item) => {
-        const tipo = item.tipo_insumo;
-        if (!acc[tipo]) {
-          acc[tipo] = [];
-        }
-        
-        acc[tipo].push({
-          id: item.insumo_id,
-          nombre: item.nombre_insumo,
-          cantidad: item.cantidad || 1,
-          disponible: item.disponibilidad === 1
-        });
-        
-        return acc;
-      }, {});
-
-      setInsumosAgrupados(insumosAgrupados);
-      setSolicitudData(response.data[0]); // Para la información del paciente
-
-      // Si hay paquetes, obtener los insumos del paquete
-      const paquete = response.data.find(item => item.tipo_insumo === 'paquetes');
-      if (paquete) {
-        const paqueteResponse = await axios.get(
-          `${baseURL}/api/insumos/paquete-insumos?nombre_paquete=${encodeURIComponent(paquete.nombre_insumo)}`
-        );
-        setPackageInsumos(paqueteResponse.data[0]?.insumos || null);
+  useEffect(() => {
+    const fetchSolicitudData = async () => {
+      if (!appointmentId) {
+        setLoading(false);
+        return;
       }
-    } catch (error) {
-      console.error("Error fetching solicitud data:", error);
-      setMensaje({ tipo: "error", texto: "Error al cargar los datos" });
-    } finally {
-      setLoading(false);
-    }
+
+      try {
+        setLoading(true);
+        const response = await axios.get(`${baseURL}/api/insumos/solicitudes-insumos/${appointmentId}`);
+        
+        if (!response.data || response.data.length === 0) {
+          setMensaje({ tipo: "error", texto: "No se encontraron datos" });
+          setLoading(false);
+          return;
+        }
+
+        // Procesamiento de insumos
+        const insumosAgrupados = response.data.reduce((acc, item) => {
+          const tipo = item.tipo_insumo?.toLowerCase() || 'otros';
+          if (!acc[tipo]) acc[tipo] = [];
+          
+          acc[tipo].push({
+            id: item.insumo_id,
+            nombre: item.nombre_insumo,
+            cantidad: parseInt(item.cantidad) || 1,
+            disponible: item.disponibilidad === 1,
+            clave: item.clave_insumo
+          });
+          return acc;
+        }, {});
+
+        setSolicitudData(response.data[0]); // Asumiendo que queremos el primer registro
+        setInsumos(insumosAgrupados);
+
+        // Procesamiento de paquetes si existen
+        if (insumosAgrupados.paquetes?.length > 0) {
+          const paquetesPromises = insumosAgrupados.paquetes.map(paquete => 
+            axios.get(`${baseURL}/api/insumos/paquete-insumos`, {
+              params: { nombre_paquete: paquete.nombre }
+            })
+          );
+
+          const paquetesResults = await Promise.all(paquetesPromises);
+          setPackageInsumos(paquetesResults.map(res => res.data[0]?.insumos || []));
+        }
+
+      } catch (error) {
+        console.error("Error al cargar los datos:", error);
+        setMensaje({ tipo: "error", texto: "Error al cargar los datos" });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSolicitudData();
+  }, [appointmentId]);
+
+  const handleCantidadChange = (tipo, id, nuevaCantidad) => {
+    setInsumos(prev => ({
+      ...prev,
+      [tipo]: prev[tipo].map(insumo => 
+        insumo.id === id ? { ...insumo, cantidad: parseInt(nuevaCantidad) || 0 } : insumo
+      )
+    }));
   };
 
-  fetchSolicitudData();
-}, [appointmentId, baseURL]);
+  const toggleDisponibilidad = (tipo, id, value) => {
+    setInsumos(prev => ({
+      ...prev,
+      [tipo]: prev[tipo].map(insumo => 
+        insumo.id === id ? { ...insumo, disponible: value } : insumo
+      )
+    }));
+  };
+
+  const handleEliminarInsumo = (tipo, id) => {
+    setInsumos(prev => ({
+      ...prev,
+      [tipo]: prev[tipo].filter(insumo => insumo.id !== id)
+    }));
+  };
   
   useEffect(() => {
     if (solicitudData) {
@@ -459,66 +476,28 @@ useEffect(() => {
     return handlers[handlerType];
   };
 
-const guardarTodosCambios = async () => {
+  const guardarTodosCambios = async () => {
     try {
-      const materialTypeMap = [
-        'material_adicional',
-        'material_externo',
-        'servicios',
-        'nombre_paquete', // Cambiado de 'paquetes' a 'nombre_paquete'
-        'medicamentos'
-    ];
-        const cantidadTypeMap = [
-            'cantidad_adicional',
-            'cantidad_externo',
-            'cantidad_servicios',
-            'cantidad_paquete',
-            'cantidad_medicamento'
-        ];
+      // Preparar los datos para enviar al backend
+      const datosActualizados = Object.entries(insumos).map(([tipo, insumosArray]) => 
+        insumosArray.map(insumo => ({
+          id_solicitud: appointmentId,
+          tipo_insumo: tipo,
+          insumo_id: insumo.id,
+          nombre_insumo: insumo.nombre,
+          cantidad: insumo.cantidad,
+          disponibilidad: insumo.disponible ? 1 : 0
+        }))
+      ).flat();
 
-        let datosActualizados = {
-            comentarios_insumos: solicitudData.comentarios_insumos || '' // Add comments to the update
-        };
-
-        materialTypeMap.forEach((tipo, index) => {
-          const nombres = insumoStates[index].map((i) => i.nombre).join(",");
-          const cantidades = insumoStates[index].map((i) => i.cantidad).join(",");
-          const disponibilidades = insumoStates[index].map((i) => (i.disponible ? "1" : "0")).join(",");
-      
-          if (nombres) {
-              datosActualizados[tipo] = nombres;
-              datosActualizados[cantidadTypeMap[index]] = cantidades;
-              // Manejo especial para paquetes
-              if (tipo === 'nombre_paquete') {
-                  datosActualizados.disponibilidad_paquetes = disponibilidades;
-              } else {
-                  datosActualizados[`disponibilidad_${tipo}`] = disponibilidades;
-              }
-          } 
-          else if (solicitudData[tipo]) {
-              datosActualizados[tipo] = solicitudData[tipo];
-              datosActualizados[cantidadTypeMap[index]] = solicitudData[cantidadTypeMap[index]];
-              if (tipo === 'nombre_paquete') {
-                  datosActualizados.disponibilidad_paquetes = solicitudData.disponibilidad_paquetes || '';
-              } else {
-                  datosActualizados[`disponibilidad_${tipo}`] = solicitudData[`disponibilidad_${tipo}`] || '';
-              }
-          }
-      });
-
-        console.log("Datos enviados al backend después del filtro:", datosActualizados);
-
-        const response = await axios.patch(`${baseURL}/api/insumos/insumos-disponibles/${appointmentId}`, datosActualizados);
-
-        setSolicitudData((prev) => ({ ...prev, ...response.data.datos }));
-        setMensaje({ tipo: "success", texto: "Cambios guardados exitosamente" });
-
-        navigate(-1);
+      await axios.patch(`${baseURL}/api/insumos/insumos-disponibles/${appointmentId}`, datosActualizados);
+      setMensaje({ tipo: "success", texto: "Cambios guardados exitosamente" });
+      navigate(-1);
     } catch (error) {
-        console.error("Error guardando cambios:", error);
-        setMensaje({ tipo: "error", texto: "Error al guardar los cambios" });
+      console.error("Error guardando cambios:", error);
+      setMensaje({ tipo: "error", texto: "Error al guardar los cambios" });
     }
-};
+  };
 
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
@@ -921,8 +900,8 @@ materialesSecciones.forEach(seccion => {
   };
 
   // Añade esta función junto a tus otras funciones
-const generateMedicalSummaryPDF = (solicitudData) => {
-  if (!solicitudData || !solicitudData.resumen_medico) return;
+const generateMedicalSummaryPDF = (patientData) => {
+  if (!patientData || !patientData.resumen_medico) return;
 
   // Crear nuevo documento PDF
   const doc = new jsPDF();
@@ -937,7 +916,7 @@ const generateMedicalSummaryPDF = (solicitudData) => {
   const textWidth = pageWidth - (2 * margin);
 
   // Dividir el texto respetando saltos de línea originales
-  const lines = solicitudData.resumen_medico.split('\n');
+  const lines = patientData.resumen_medico.split('\n');
 
   // Posición inicial Y
   let y = margin;
@@ -966,6 +945,14 @@ const generateMedicalSummaryPDF = (solicitudData) => {
   doc.save(`resumen_medico_${solicitudData.folio || 'sin_folio'}.pdf`);
 };
 
+const tiposInsumo = {
+  material_adicional: "Material Adicional",
+  material_externo: "Material Externo",
+  servicios: "Servicios",
+  paquetes: "Paquetes",
+  medicamentos: "Medicamentos"
+};
+
   if (loading) return <div>Cargando...</div>;
 
   const activeMaterialTypes = materialTypes.filter((materialType, index) => 
@@ -977,69 +964,56 @@ const generateMedicalSummaryPDF = (solicitudData) => {
       <div className="p-6">
         <h2 className="text-2xl font-semibold mb-6">Detalle de Solicitud de Insumos</h2>
 
-                <button
-          onClick={() => generateDocument(solicitudData)}
-          className="bg-green-500 text-white text-sm p-4 rounded-lg font-light mr-4" // Agregado margen derecho
-          style={{ marginBottom: "8px" }}
-        >
-          Imprimir solicitud
-        </button>
-
         <button
-          onClick={() => generateMedicalSummaryPDF(solicitudData)}
-          className="bg-blue-500 text-white text-sm p-4 rounded-lg font-light mt-2" // Agregado margen superior
-        >
-          Imprimir resumen médico
-        </button>
+  onClick={() => generateDocument(solicitudData)}
+  className="bg-green-500 text-white text-sm p-4 rounded-lg font-light mr-4" // Agregado margen derecho
+  style={{ marginBottom: "8px" }}
+>
+  Imprimir solicitud
+</button>
+
+<button
+  onClick={() => generateMedicalSummaryPDF(solicitudData)}
+  className="bg-blue-500 text-white text-sm p-4 rounded-lg font-light mt-2" // Agregado margen superior
+>
+  Imprimir resumen médico
+</button>
 
 
         {mensaje.texto && <Alert className={`mb-4 ${mensaje.tipo === "error" ? "bg-red-100" : "bg-green-100"}`}>{mensaje.texto}</Alert>}
         
-        {solicitudData && <PatientInfoBlock solicitudData={solicitudData} 
+        {solicitudData && <PatientInfoBlock 
+          solicitudData={solicitudData} 
           onCommentChange={handleCommentChange} 
         />}
+
         
-        {Object.entries(insumosAgrupados).map(([tipo, insumosArray]) => (
-        <InsumoBlock
-          key={tipo}
-          solicitudData={solicitudData}
-          materialType={tipo}
-          insumos={insumosArray}
-          setInsumos={(newInsumos) => {
-            setInsumosAgrupados(prev => ({
-              ...prev,
-              [tipo]: newInsumos
-            }));
-          }}
-          handleCantidadChange={(id, cantidad) => {
-            setInsumosAgrupados(prev => ({
-              ...prev,
-              [tipo]: prev[tipo].map(insumo =>
-                insumo.id === id ? { ...insumo, cantidad: parseInt(cantidad) || 0 } : insumo
-              )
-            }));
-          }}
-          toggleDisponibilidad={(id) => {
-            setInsumosAgrupados(prev => ({
-              ...prev,
-              [tipo]: prev[tipo].map(insumo =>
-                insumo.id === id ? { ...insumo, disponible: !insumo.disponible } : insumo
-              )
-            }));
-          }}
-          handleEliminarInsumo={(id) => {
-            setInsumosAgrupados(prev => ({
-              ...prev,
-              [tipo]: prev[tipo].filter(insumo => insumo.id !== id)
-            }));
-          }}
-          handleInsumosSelect={setSelectedInsumos}
-          selectedInsumos={selectedInsumos}
-          packageInsumos={tipo === 'paquetes' ? packageInsumos : null}
-        />
-      ))}
-    </div>
-  </Layout>
+        {Object.entries(insumos).map(([tipo, insumosArray]) => (
+          <InsumoBlock
+            key={tipo}
+            title={tiposInsumo[tipo]}
+            insumos={insumosArray}
+            handleCantidadChange={(id, cantidad) => handleCantidadChange(tipo, id, cantidad)}
+            toggleDisponibilidad={(id, value) => toggleDisponibilidad(tipo, id, value)}
+            handleEliminarInsumo={(id) => handleEliminarInsumo(tipo, id)}
+            showPackageInfo={tipo === 'paquetes'}
+            packageInsumos={tipo === 'paquetes' ? packageInsumos : null}
+            packageName={tipo === 'paquetes' && insumosArray[0]?.nombre}
+          />
+        ))}
+
+<div className="fixed bottom-0 left-0 right-0 bg-white p-4 shadow-lg">
+          <div className="container mx-auto flex justify-end">
+            <button
+              onClick={guardarTodosCambios}
+              className="px-8 py-3 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
+            >
+              Guardar Cambios
+            </button>
+          </div>
+        </div>
+      </div>
+    </Layout>
   );
 };
 
