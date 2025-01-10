@@ -32,7 +32,7 @@ const AdicionalSelect = ({ onSelect, selectedInsumo }) => {
     // Crear opciones para el selector
     const options = filteredMateriales.map((material) => ({
       label: `${material.clave} - ${material.descripcion}`,
-      value: material.clave, // Cambiado a clave como identificador
+      value: material.id, // Cambiado a clave como identificador
       clave: material.clave,
       descripcion: material.descripcion,
     }));
@@ -41,7 +41,7 @@ const AdicionalSelect = ({ onSelect, selectedInsumo }) => {
     if (!inputValue) {
       const allOptions = materialesAdicionales.map((material) => ({
         label: `${material.clave} - ${material.descripcion}`,
-        value: material.clave,
+        value: material.id,
         clave: material.clave,
         descripcion: material.descripcion,
       }));
@@ -78,7 +78,7 @@ const AdicionalSelect = ({ onSelect, selectedInsumo }) => {
         loadOptions={loadOptions}
         defaultOptions={materialesAdicionales.map((material) => ({
           label: `${material.clave} - ${material.descripcion}`,
-          value: material.clave,
+          value: material.id,
           clave: material.clave,
           descripcion: material.descripcion,
         }))}
