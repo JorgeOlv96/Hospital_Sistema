@@ -272,7 +272,7 @@ const PackageBlock = ({
         <div>
           <h4 className="text-lg font-semibold flex items-center">
             <Package className="mr-2 text-blue-600" />
-            Paquete: {packageData.detalle_paquete}
+            Paquete: {packageData.nombre}
           </h4>
         </div>
         <button
@@ -283,53 +283,44 @@ const PackageBlock = ({
         </button>
       </div>
 
-      {showInsumos && (
-        <div className="space-y-4">
-          {packageData.insumos && packageData.insumos.map((insumo) => (
-            <div
-              key={`${packageData.id}-${insumo.insumo_id}`}
-              className="flex items-center space-x-4 bg-white p-3 rounded-lg"
-            >
-              <span className="flex-grow">{insumo.nombre_insumo}</span>
-              <input
-                type="number"
-                value={insumo.cantidad || insumo.cantidad}
-                onChange={(e) => onInsumoCantidadChange(packageData.id, insumo.insumo_id, e.target.value)}
-                min="1"
-                className="w-24 p-2 border rounded"
-              />
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => onInsumoDisponibilidadChange(packageData.id, insumo.insumo_id, true)}
-                  className={`p-2 rounded ${
-                    insumo.disponible ? "bg-green-100 border border-green-500" : "bg-gray-200"
-                  }`}
-                >
-                  <Check className="text-green-600" />
-                </button>
-                <button
-                  onClick={() => onInsumoDisponibilidadChange(packageData.id, insumo.insumo_id, false)}
-                  className={`p-2 rounded ${
-                    !insumo.disponible ? "bg-red-100 border border-red-500" : "bg-gray-200"
-                  }`}
-                >
-                  <X className="text-red-600" />
-                </button>
-                <button
-                  onClick={() => onInsumoEliminar(packageData.id, insumo.insumo_id)}
-                  className="p-2 rounded bg-red-100 hover:bg-red-200"
-                >
-                  <Trash2 className="text-red-600" />
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+      {showInsumos && (packageData.insumos || []).map((insumo) => (
+  <div
+    key={insumo.id}
+    className="flex items-center space-x-4 bg-white p-3 rounded-lg"
+  >
+    <span className="flex-grow">{insumo.nombre}</span>
+    <input
+      type="number"
+      value={insumo.cantidad}
+      onChange={(e) => onInsumoCantidadChange(packageData.id, insumo.id, e.target.value)}
+      min="1"
+      className="w-24 p-2 border rounded"
+    />
+    <div className="flex items-center space-x-2">
+      <button
+        onClick={() => onInsumoDisponibilidadChange(packageData.id, insumo.id, true)}
+        className={`p-2 rounded ${insumo.disponible ? "bg-green-100 border border-green-500" : "bg-gray-200"}`}
+      >
+        <Check className="text-green-600" />
+      </button>
+      <button
+        onClick={() => onInsumoDisponibilidadChange(packageData.id, insumo.id, false)}
+        className={`p-2 rounded ${!insumo.disponible ? "bg-red-100 border border-red-500" : "bg-gray-200"}`}
+      >
+        <X className="text-red-600" />
+      </button>
+      <button
+        onClick={() => onInsumoEliminar(packageData.id, insumo.id)}
+        className="p-2 rounded bg-red-100 hover:bg-red-200"
+      >
+        <Trash2 className="text-red-600" />
+      </button>
+    </div>
+  </div>
+))}
     </div>
   );
 };
-
 
 const SolicitudInsumosDetalle = () => {
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
@@ -339,6 +330,7 @@ const SolicitudInsumosDetalle = () => {
   const [loading, setLoading] = useState(true);
   const [mensaje, setMensaje] = useState({ tipo: "", texto: "" });
   const [insumos, setInsumos] = useState({});
+  const [paquetes, setPaquetes] = useState({});
   const [selectedInsumos, setSelectedInsumos] = useState([]);
   const [paquetesInsumos, setPaquetesInsumos] = useState({});
   const [insumosEliminados, setInsumosEliminados] = useState([]);
@@ -442,28 +434,51 @@ const SolicitudInsumosDetalle = () => {
         setLoading(true);
         const response = await axios.get(`${baseURL}/api/insumos/solicitudes-insumos/${appointmentId}`);
         
+        console.log('Datos recibidos:', response.data);
+  
         if (!response.data || response.data.length === 0) {
           setMensaje({ tipo: "error", texto: "No se encontraron datos" });
           setLoading(false);
           return;
         }
   
-        // Procesamiento de insumos
-        const insumosAgrupados = response.data.reduce((acc, item) => {
-          const tipo = item.tipo_insumo?.toLowerCase() || 'otros';
-          if (!acc[tipo]) acc[tipo] = [];
-          
-          acc[tipo].push({
-            id: item.insumo_id,
-            nombre: item.nombre_insumo,
-            cantidad: parseInt(item.cantidad) || 1,
-            disponible: item.disponibilidad === 1
-          });
-          return acc;
-        }, {});
+        // Agrupar los insumos por paquete
+        const paquetes = {};
+        const otrosInsumos = {};
   
-        setSolicitudData(response.data[0]); // Para los datos del paciente
-        setInsumos(insumosAgrupados);
+        response.data.forEach(item => {
+          const tipo = item.tipo_insumo?.toLowerCase() || 'otros';
+          
+          if (item.tipo_insumo === 'paquete') {
+            const paqueteId = item.detalle_paquete;
+            if (!paquetes[paqueteId]) {
+              paquetes[paqueteId] = {
+                id: paqueteId,
+                nombre: item.detalle_paquete,
+                insumos: [] // Asegúrate de inicializar 'insumos' como un array vacío
+              };
+            }
+            
+            paquetes[paqueteId].insumos.push({
+              id: item.insumo_id,
+              nombre: item.nombre_insumo,
+              cantidad: parseInt(item.cantidad) || 1,
+              disponible: item.disponibilidad === 1
+            });        
+          } else {
+            if (!otrosInsumos[tipo]) otrosInsumos[tipo] = [];
+            otrosInsumos[tipo].push({
+              id: item.insumo_id,
+              nombre: item.nombre_insumo,
+              cantidad: parseInt(item.cantidad) || 1,
+              disponible: item.disponibilidad === 1
+            });
+          }
+        });
+  
+        setSolicitudData(response.data[0]);
+        setInsumos(otrosInsumos);
+        setPaquetesInsumos(paquetes);
         setLoading(false);
   
       } catch (error) {
@@ -501,41 +516,40 @@ const SolicitudInsumosDetalle = () => {
       [tipo]: prev[tipo].filter(insumo => insumo.id !== id)
     }));
   };
-
-    // Funciones específicas para manejar los insumos dentro de paquetes
-    const handlePaqueteInsumoCantidad = (paqueteId, insumoId, nuevaCantidad) => {
-      setPaquetesInsumos(prev => ({
-        ...prev,
-        [paqueteId]: prev[paqueteId].map(insumo => 
-          insumo.insumo_id === insumoId 
-            ? { ...insumo, cantidad: parseInt(nuevaCantidad) || 0 }
-            : insumo
-        )
-      }));
-    };
   
-    const handlePaqueteInsumoDisponibilidad = (paqueteId, insumoId, value) => {
-      setPaquetesInsumos(prev => ({
-        ...prev,
-        [paqueteId]: prev[paqueteId].map(insumo => 
-          insumo.insumo_id === insumoId 
-            ? { ...insumo, disponible: value }
-            : insumo
+  const handlePaqueteInsumoCantidad = (paqueteId, insumoId, nuevaCantidad) => {
+    setPaquetes(prev => ({
+      ...prev,
+      [paqueteId]: {
+        ...prev[paqueteId],
+        insumos: prev[paqueteId].insumos.map(insumo => 
+          insumo.id === insumoId ? { ...insumo, cantidad: parseInt(nuevaCantidad) || 0 } : insumo
         )
-      }));
-    };
+      }
+    }));
+  };
   
-    const handlePaqueteInsumoEliminar = (paqueteId, insumoId) => {
-      setPaquetesInsumos(prev => ({
-        ...prev,
-        [paqueteId]: prev[paqueteId].filter(insumo => insumo.insumo_id !== insumoId)
-      }));
-      setInsumosEliminados(prev => [...prev, { 
-        tipo: 'paquete',
-        paquete_id: paqueteId,
-        insumo_id: insumoId
-      }]);
-    };
+  const handlePaqueteInsumoDisponibilidad = (paqueteId, insumoId, disponible) => {
+    setPaquetes(prev => ({
+      ...prev,
+      [paqueteId]: {
+        ...prev[paqueteId],
+        insumos: prev[paqueteId].insumos.map(insumo => 
+          insumo.id === insumoId ? { ...insumo, disponible } : insumo
+        )
+      }
+    }));
+  };
+  
+  const handlePaqueteInsumoEliminar = (paqueteId, insumoId) => {
+    setPaquetes(prev => ({
+      ...prev,
+      [paqueteId]: {
+        ...prev[paqueteId],
+        insumos: prev[paqueteId].insumos.filter(insumo => insumo.id !== insumoId)
+      }
+    }));
+  };
   
   useEffect(() => {
     if (solicitudData) {
@@ -619,7 +633,7 @@ const SolicitudInsumosDetalle = () => {
     return `${day}-${month}-${year}`;
   };
 
-  const generateDocument = async (solicitudData) => {
+    const generateDocument = async (solicitudData) => {
     try {
       const doc = new jsPDF('p', 'pt', 'letter');
       const pageWidth = doc.internal.pageSize.width;
@@ -1095,32 +1109,30 @@ const tiposInsumo = {
           solicitudData={solicitudData} 
           onCommentChange={handleCommentChange} 
         />}
-      {Object.entries(insumos).map(([tipo, insumosArray]) => (
-        tipo === 'paquete' ? (
-          // Renderizar PackageBlock para paquetes
-          <PackageBlock
-            key={`package-${tipo}`}
-            packageData={{
-              id: tipo,
-              nombre: "Paquete de Insumos",
-              insumos: insumosArray
-            }}
-            onInsumoCantidadChange={handleCantidadChange.bind(null, tipo)}
-            onInsumoDisponibilidadChange={toggleDisponibilidad.bind(null, tipo)}
-            onInsumoEliminar={handleEliminarInsumo.bind(null, tipo)}
-          />
-        ) : (
-          // Renderizar InsumoBlock para otros tipos
-          <InsumoBlock
-            key={`insumo-${tipo}`}
-            title={tiposInsumo[tipo]}
-            insumos={insumosArray}
-            handleCantidadChange={(id, cantidad) => handleCantidadChange(tipo, id, cantidad)}
-            toggleDisponibilidad={(id, value) => toggleDisponibilidad(tipo, id, value)}
-            handleEliminarInsumo={(id) => handleEliminarInsumo(tipo, id)}
-          />
-        )
-      ))}
+      {/* Primero renderizar los insumos normales */}
+{Object.entries(insumos).map(([tipo, insumosArray]) => (
+  tipo !== 'paquete' && (
+    <InsumoBlock
+      key={`insumo-${tipo}`}
+      title={tiposInsumo[tipo]}
+      insumos={insumosArray}
+      handleCantidadChange={(id, cantidad) => handleCantidadChange(tipo, id, cantidad)}
+      toggleDisponibilidad={(id, value) => toggleDisponibilidad(tipo, id, value)}
+      handleEliminarInsumo={(id) => handleEliminarInsumo(tipo, id)}
+    />
+  )
+))}
+
+{/* Luego renderizar los paquetes */}
+{Object.values(paquetesInsumos).map(paquete => (
+  <PackageBlock
+    key={`package-${paquete.id}`}
+    packageData={paquete}
+    onInsumoCantidadChange={handlePaqueteInsumoCantidad}
+    onInsumoDisponibilidadChange={handlePaqueteInsumoDisponibilidad}
+    onInsumoEliminar={handlePaqueteInsumoEliminar}
+  />
+))}
 
 <div className="fixed bottom-0 left-0 right-0 bg-white p-4 shadow-lg">
           <div className="container mx-auto flex justify-end">
