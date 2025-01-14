@@ -231,12 +231,12 @@ const SolicitudInsumosPaciente = () => {
       return insumos.map((i) => ({
         tipo_insumo: tipo || 'desconocido',
         id_solicitud: appointmentId,
-        insumo_id: i.value || null,
-        nombre_insumo: `${i.clave} - ${i.descripcion}`,
+        insumo_id: i.id_insumo || i.value, // Ahora manejamos ambos casos
+        nombre_insumo: i.clave ? `${i.clave} - ${i.descripcion}` : i.label,
         cantidad: i.cantidad,
         disponibilidad: 0,
         estado_insumos: 'Sin solicitud',
-        detalle_paquete: null // Insumos individuales no tienen detalle_paquete
+        detalle_paquete: null
       }));
     };
   
@@ -248,15 +248,18 @@ const SolicitudInsumosPaciente = () => {
           console.error(`El paquete ${p.label || "desconocido"} no contiene insumos válidos.`);
           return [];
         }
+        
         return p.insumos.map((i) => ({
           tipo_insumo: 'paquete',
           id_solicitud: appointmentId,
-          insumo_id: i.value || null,
-          nombre_insumo: `${i.clave} - ${i.descripcion}`,
+          insumo_id: i.id_insumo || i.value, // Aseguramos que se use el id_insumo del insumo
+          nombre_insumo: i.clave ? `${i.clave} - ${i.descripcion}` : i.label,
           cantidad: i.cantidad || 1,
           disponibilidad: 0,
           estado_insumos: 'Sin solicitud',
-          detalle_paquete: `${p.label} - ${p.descripcion}` // Quitamos los fallbacks ya que ahora deberíamos tener ambos valores
+          detalle_paquete: p.label 
+            ? `${p.label}${p.descripcion ? ` - ${p.descripcion}` : ''}`
+            : null
         }));
       });
     };
@@ -287,50 +290,56 @@ const SolicitudInsumosPaciente = () => {
     }
   };
   
-  
-
   const handleAddInsumo = async (type, insumo, removeIndex = null, isQuantityUpdate = false) => {
     if (type === 'paquetes' && insumo) {
-      // Handle packages (unchanged)
-      const paquetesConInsumos = await fetchPaqueteInsumos();
-      const paqueteCompleto = paquetesConInsumos.find(
-        p => p.paquete_id === insumo.value
-      );
+      try {
+        const paquetesConInsumos = await fetchPaqueteInsumos();
+        const paqueteCompleto = paquetesConInsumos.find(
+          p => p.paquete_id === insumo.value
+        );
   
-      if (paqueteCompleto) {
-        const insumosDelPaquete = paqueteCompleto.insumos.map(insumo => ({
-          clave: insumo.clave_insumo,
-          descripcion: insumo.descripcion_insumo,
-          cantidad: insumo.cantidad_default,
-          paquete: {
-            nombre: paqueteCompleto.nombre_paquete,
-            descripcion: paqueteCompleto.descripcion_paquete
-          }
-        }));
+        if (paqueteCompleto) {
+          const insumosDelPaquete = paqueteCompleto.insumos.map(insumo => ({
+            value: insumo.insumo_id, // Guardamos el ID como value también
+            id_insumo: insumo.insumo_id,
+            clave: insumo.clave_insumo,
+            descripcion: insumo.descripcion_insumo,
+            cantidad: insumo.cantidad_default,
+            paquete: {
+              id: paqueteCompleto.paquete_id,
+              nombre: paqueteCompleto.nombre_paquete,
+              descripcion: paqueteCompleto.descripcion_paquete
+            }
+          }));
   
-        setSelectedInsumos((prev) => ({
-          ...prev,
-          [type]: [...prev[type], {
-            value: paqueteCompleto.paquete_id,
-            label: paqueteCompleto.nombre_paquete,
-            insumos: insumosDelPaquete
-          }]
-        }));
+          setSelectedInsumos(prev => ({
+            ...prev,
+            [type]: [...prev[type], {
+              value: paqueteCompleto.paquete_id,
+              id_insumo: paqueteCompleto.paquete_id,
+              label: paqueteCompleto.nombre_paquete,
+              descripcion: paqueteCompleto.descripcion_paquete,
+              insumos: insumosDelPaquete
+            }]
+          }));
+        }
+      } catch (error) {
+        console.error("Error al cargar los detalles del paquete:", error);
       }
     } else {
       setSelectedInsumos((prev) => {
         const updated = { ...prev };
   
         if (removeIndex !== null && !isQuantityUpdate) {
-          // Remove insumo
           updated[type] = updated[type].filter((_, index) => index !== removeIndex);
         } else if (insumo && !isQuantityUpdate) {
-          // Add new insumo
           if (!updated[type].some(item => item.value === insumo.value)) {
-            updated[type] = [...updated[type], insumo];
+            updated[type] = [...updated[type], {
+              ...insumo,
+              id_insumo: insumo.value // Aseguramos que id_insumo siempre esté presente
+            }];
           }
         } else if (isQuantityUpdate && insumo) {
-          // Update quantity only
           updated[type] = updated[type].map((item, index) => 
             index === removeIndex ? { ...item, cantidad: insumo.cantidad } : item
           );

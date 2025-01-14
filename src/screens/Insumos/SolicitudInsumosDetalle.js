@@ -266,6 +266,13 @@ const PackageBlock = ({
 }) => {
   const [showInsumos, setShowInsumos] = useState(false);
 
+  // Función para cambiar la disponibilidad de todos los insumos del paquete
+  const handleChangeAllDisponibilidad = (disponible) => {
+    packageData.insumos.forEach((insumo) => {
+      onInsumoDisponibilidadChange(packageData.id, insumo.id, disponible);
+    });
+  };
+
   return (
     <div className="bg-gray-50 p-6 rounded-lg shadow-lg mb-6">
       <div className="mb-4 bg-blue-50 p-4 rounded-lg flex items-center justify-between">
@@ -275,52 +282,69 @@ const PackageBlock = ({
             Paquete: {packageData.nombre}
           </h4>
         </div>
-        <button
-          onClick={() => setShowInsumos(!showInsumos)}
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 text-sm"
-        >
-          {showInsumos ? "Ocultar Insumos" : "Ver Insumos"}
-        </button>
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={() => setShowInsumos(!showInsumos)}
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 text-sm"
+          >
+            {showInsumos ? "Ocultar Insumos" : "Ver Insumos"}
+          </button>
+          {/* Botón para marcar todos los insumos como disponibles */}
+          <button
+            onClick={() => handleChangeAllDisponibilidad(true)}
+            className="p-2 rounded bg-green-100 hover:bg-green-200 border border-green-500"
+          >
+            <Check className="text-green-600" />
+          </button>
+          {/* Botón para marcar todos los insumos como no disponibles */}
+          <button
+            onClick={() => handleChangeAllDisponibilidad(false)}
+            className="p-2 rounded bg-red-100 hover:bg-red-200 border border-red-500"
+          >
+            <X className="text-red-600" />
+          </button>
+        </div>
       </div>
 
-      {showInsumos && (packageData.insumos || []).map((insumo) => (
-  <div
-    key={insumo.id}
-    className="flex items-center space-x-4 bg-white p-3 rounded-lg"
-  >
-    <span className="flex-grow">{insumo.nombre}</span>
-    <input
-      type="number"
-      value={insumo.cantidad}
-      onChange={(e) => onInsumoCantidadChange(packageData.id, insumo.id, e.target.value)}
-      min="1"
-      className="w-24 p-2 border rounded"
-    />
-    <div className="flex items-center space-x-2">
-      <button
-        onClick={() => onInsumoDisponibilidadChange(packageData.id, insumo.id, true)}
-        className={`p-2 rounded ${insumo.disponible ? "bg-green-100 border border-green-500" : "bg-gray-200"}`}
-      >
-        <Check className="text-green-600" />
-      </button>
-      <button
-        onClick={() => onInsumoDisponibilidadChange(packageData.id, insumo.id, false)}
-        className={`p-2 rounded ${!insumo.disponible ? "bg-red-100 border border-red-500" : "bg-gray-200"}`}
-      >
-        <X className="text-red-600" />
-      </button>
-      <button
-        onClick={() => onInsumoEliminar(packageData.id, insumo.id)}
-        className="p-2 rounded bg-red-100 hover:bg-red-200"
-      >
-        <Trash2 className="text-red-600" />
-      </button>
-    </div>
-  </div>
-))}
+      {showInsumos && packageData.insumos.map((insumo) => (
+        <div
+          key={insumo.id}
+          className="flex items-center space-x-4 bg-white p-3 rounded-lg mb-2"
+        >
+          <span className="flex-grow">{insumo.nombre}</span>
+          <input
+            type="number"
+            value={insumo.cantidad_default}
+            onChange={(e) => onInsumoCantidadChange(packageData.id, insumo.id, e.target.value)}
+            min="1"
+            className="w-24 p-2 border rounded"
+          />
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => onInsumoDisponibilidadChange(packageData.id, insumo.id, true)}
+              className={`p-2 rounded ${insumo.disponible ? "bg-green-100 border border-green-500" : "bg-gray-200"}`}
+            >
+              <Check className="text-green-600" />
+            </button>
+            <button
+              onClick={() => onInsumoDisponibilidadChange(packageData.id, insumo.id, false)}
+              className={`p-2 rounded ${!insumo.disponible ? "bg-red-100 border border-red-500" : "bg-gray-200"}`}
+            >
+              <X className="text-red-600" />
+            </button>
+            <button
+              onClick={() => onInsumoEliminar(packageData.id, insumo.id)}
+              className="p-2 rounded bg-red-100 hover:bg-red-200"
+            >
+              <Trash2 className="text-red-600" />
+            </button>
+          </div>
+        </div>
+      ))}
     </div>
   );
 };
+
 
 const SolicitudInsumosDetalle = () => {
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
@@ -445,7 +469,7 @@ const SolicitudInsumosDetalle = () => {
         // Agrupar los insumos por paquete
         const paquetes = {};
         const otrosInsumos = {};
-  
+      
         response.data.forEach(item => {
           const tipo = item.tipo_insumo?.toLowerCase() || 'otros';
           
@@ -455,15 +479,15 @@ const SolicitudInsumosDetalle = () => {
               paquetes[paqueteId] = {
                 id: paqueteId,
                 nombre: item.detalle_paquete,
-                insumos: [] // Asegúrate de inicializar 'insumos' como un array vacío
+                insumos: []
               };
-            }
-            
+            }       
             paquetes[paqueteId].insumos.push({
               id: item.insumo_id,
               nombre: item.nombre_insumo,
               cantidad: parseInt(item.cantidad) || 1,
-              disponible: item.disponibilidad === 1
+              disponible: item.disponibilidad === 1,
+              cantidad_default: parseInt(item.cantidad_default) || 1
             });        
           } else {
             if (!otrosInsumos[tipo]) otrosInsumos[tipo] = [];
@@ -518,37 +542,46 @@ const SolicitudInsumosDetalle = () => {
   };
   
   const handlePaqueteInsumoCantidad = (paqueteId, insumoId, nuevaCantidad) => {
-    setPaquetes(prev => ({
+    setPaquetesInsumos(prev => ({
       ...prev,
       [paqueteId]: {
         ...prev[paqueteId],
         insumos: prev[paqueteId].insumos.map(insumo => 
-          insumo.id === insumoId ? { ...insumo, cantidad: parseInt(nuevaCantidad) || 0 } : insumo
+          insumo.id === insumoId 
+            ? { ...insumo, cantidad_default: parseInt(nuevaCantidad) || 0 }
+            : insumo
         )
       }
     }));
   };
   
   const handlePaqueteInsumoDisponibilidad = (paqueteId, insumoId, disponible) => {
-    setPaquetes(prev => ({
+    setPaquetesInsumos(prev => ({
       ...prev,
       [paqueteId]: {
         ...prev[paqueteId],
         insumos: prev[paqueteId].insumos.map(insumo => 
-          insumo.id === insumoId ? { ...insumo, disponible } : insumo
+          insumo.id === insumoId 
+            ? { ...insumo, disponible }
+            : insumo
         )
       }
     }));
   };
   
   const handlePaqueteInsumoEliminar = (paqueteId, insumoId) => {
-    setPaquetes(prev => ({
+    setPaquetesInsumos(prev => ({
       ...prev,
       [paqueteId]: {
         ...prev[paqueteId],
         insumos: prev[paqueteId].insumos.filter(insumo => insumo.id !== insumoId)
       }
     }));
+    setInsumosEliminados(prev => [...prev, { 
+      tipo: 'paquete', 
+      id: insumoId,
+      paquete_id: paqueteId 
+    }]);
   };
   
   useEffect(() => {
@@ -633,7 +666,7 @@ const SolicitudInsumosDetalle = () => {
     return `${day}-${month}-${year}`;
   };
 
-    const generateDocument = async (solicitudData) => {
+  const generateDocument = async (solicitudData) => {
     try {
       const doc = new jsPDF('p', 'pt', 'letter');
       const pageWidth = doc.internal.pageSize.width;
