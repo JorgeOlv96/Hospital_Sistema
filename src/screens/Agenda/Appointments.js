@@ -304,85 +304,63 @@ function Appointments() {
       
 
       const printableContent = `
-      <html>
-        <head>
-          <style>
-            body {
-              background-color: #ffffff;
-              font-family: Arial, sans-serif;
-              font-size: 10px !important;
-              margin: 10px;
-              padding: 5px;
-            }
-            .header {
-              display: flex;
-              align-items: center;
-              justify-content: space-between;
-              margin-bottom: 10px;
-            }
-            .header img {
-              max-width: 150px;
-              height: auto;
-              margin-right: 5px;
-            }
-            .header .date {
-              font-size: 10px !important;
-              text-align: left;
-              margin-right: 5px;
-            }
-            .header h1 {
-              font-size: 10px !important;
-              margin: 5px;
-              flex-grow: 2;
-              text-align: right;
-            }
-            table {
-              width: 100%;
-              border-collapse: collapse;
-              margin-top: 10px;
-              font-size: 8px !important;
-            }
-            th, td {
-              border: 1px solid black;
-              padding: 3px !important;
-              text-align: left;
-              white-space: nowrap;
-            }
-            .turno-section {
-              background-color: #d3d3d3;
-              text-align: left;
-              font-weight: bold;
-              padding: 5px;
-              border-top: 2px solid black;
-              border-bottom: 2px solid black;
-            }
-          </style>
-        </head>
-        <body>
-          <div class="header" style="
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            background-color: #f4f4f4;
-          ">
-            <h4 style="margin: 0;">Solicitudes Programadas</h4>
-            <div style="
-              display: flex;
-              align-items: center;
-              text-align: right;
-            ">
-              <h1 style="
-                margin: 0;
-                font-size: 1em;
-                line-height: 1;
-              ">Hoja de impresión APROBADA:</h1>
-              <div class="date" style="
-                margin-left: 10px;
-                font-size: 1em;
-              ">${moment(printDate).format("DD-MM-YYYY")}</div>
-            </div>
-          </div>
+    <html>
+  <head>
+    <style>
+      body {
+        background-color: #ffffff;
+        font-family: Arial, sans-serif;
+        font-size: 10px !important;
+        margin: 10px;
+        padding: 5px;
+      }
+      .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
+      }
+      .header img {
+        max-width: 150px;
+        height: auto;
+        margin-right: 10px;
+      }
+      .header .center-text {
+        text-align: center;
+        font-weight: bold;
+      }
+      .header .right-text {
+        text-align: right;
+        font-weight: bold;
+        font-size: 12px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        font-size: 8px !important;
+      }
+      th, td {
+        border: 1px solid black;
+        padding: 3px !important;
+        text-align: left;
+        white-space: nowrap;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <img src="/seseq.png" alt="Logo SESEQ" />
+      <div class="center-text">
+        Secretaría de Salud<br />
+        Servicios de Salud de Querétaro<br />
+        Hospital General de Querétaro
+      </div>
+      <div class="right-text">
+        Hoja de programación quirúrgica:<br />
+        ${moment(printDate).format("DD-MM-YYYY")}
+      </div>
+    </div>
       
           <table>
             <thead>
