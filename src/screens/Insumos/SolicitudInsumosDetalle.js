@@ -620,38 +620,51 @@ const SolicitudInsumosDetalle = () => {
   const guardarTodosCambios = async () => {
     try {
       const datosActualizados = [
-        // Mantener los insumos individuales
+        // Insumos individuales
         ...Object.entries(insumos).flatMap(([tipo, insumosArray]) => 
           tipo !== 'paquete' ? insumosArray.map(insumo => ({
             id_solicitud: appointmentId,
             insumo_id: insumo.id,
+            tipo_insumo: tipo,
             cantidad: insumo.cantidad,
             disponibilidad: insumo.disponible ? 1 : 0
           })) : []
         ),
-        // Agregar los insumos de paquetes
-        ...Object.entries(paquetesInsumos).flatMap(([paqueteId, insumos]) => 
-          insumos.map(insumo => ({
+        // Insumos de paquetes
+        ...Object.entries(paquetesInsumos).flatMap(([paqueteId, paquete]) => 
+          paquete.insumos.map(insumo => ({
             id_solicitud: appointmentId,
-            paquete_id: paqueteId,
-            insumo_id: insumo.insumo_id,
-            cantidad: insumo.cantidad,
+            insumo_id: insumo.id,
+            tipo_insumo: 'paquete',
+            detalle_paquete: paqueteId,
+            cantidad: insumo.cantidad_default || insumo.cantidad,
             disponibilidad: insumo.disponible ? 1 : 0
           }))
         ),
-        // Mantener los insumos eliminados
+        // Insumos eliminados
         ...insumosEliminados.map(insumo => ({
           id_solicitud: appointmentId,
-          ...insumo,
+          insumo_id: insumo.id,
+          tipo_insumo: insumo.tipo,
           eliminar: true
         }))
       ];
-
-      await axios.patch(`${baseURL}/api/insumos/insumos-disponibles/${appointmentId}`, datosActualizados);
-      setMensaje({ tipo: "success", texto: "Cambios guardados exitosamente" });
-      navigate(-1);
+  
+      const response = await axios.patch(
+        `${baseURL}/api/insumos/insumos-disponibles/${appointmentId}`, 
+        datosActualizados
+      );
+      
+      if(response.data.message) {
+        setMensaje({ tipo: "success", texto: "Cambios guardados exitosamente" });
+        navigate(-1);
+      }
     } catch (error) {
-      setMensaje({ tipo: "error", texto: "Error al guardar los cambios" });
+      console.error("Error al guardar:", error);
+      setMensaje({ 
+        tipo: "error", 
+        texto: "Error al guardar los cambios: " + (error.response?.data?.error || error.message)
+      });
     }
   };
 
@@ -687,25 +700,6 @@ const SolicitudInsumosDetalle = () => {
         const formattedDate = new Date(date);
         return formattedDate.toLocaleDateString('es-MX');
       };
-
-      const fetchPackageInsumos = (nombrePaquete) => {
-        try {
-          // Usar una llamada síncrona con jQuery.ajax
-          const response = $.ajax({
-            url: `${baseURL}/api/insumos/paquete-insumos`,
-            data: { nombre_paquete: nombrePaquete },
-            method: 'GET',
-            async: false // Importante: llamada síncrona
-          });
-
-          // Procesar la respuesta
-          const paqueteInsumos = response.responseJSON;
-          return paqueteInsumos[0] || null;
-        } catch (error) {
-          console.error('Error al obtener insumos del paquete:', error);
-          return null;
-        }
-      };
   
       // Función para ajustar la posición de los campos
       const adjustPosition = (text, startX, y, maxWidth) => {
@@ -722,30 +716,6 @@ const SolicitudInsumosDetalle = () => {
         const stringValue = getValue(value);
         doc.text(stringValue, x + fieldWidth + 5, y);
         doc.line(x + fieldWidth + 5, y + 2, x + fieldWidth + 5 + doc.getStringUnitWidth(stringValue) * doc.internal.getFontSize() / doc.internal.scaleFactor, y + 2);
-      };
-  
-      const splitMaterialInfo = (materialString) => {
-        if (!materialString) return [];
-        return materialString.split(',').map(item => {
-          item = item.trim();
-          // Buscar un espacio seguido de un guion
-          const separatorMatch = item.match(/\s+-\s+/);
-          
-          if (separatorMatch) {
-            // Si encuentra el patrón de espacio-guion-espacio, separa en consecuencia
-            const [clave, descripcion] = item.split(/\s+-\s+/);
-            return {
-              clave: clave.trim(),
-              descripcion: descripcion.trim()
-            };
-          } else {
-            // Si no encuentra el patrón, considera todo como descripción
-            return {
-              clave: 'N/A',
-              descripcion: item
-            };
-          }
-        });
       };
   
       // Encabezado
@@ -815,70 +785,81 @@ const SolicitudInsumosDetalle = () => {
               diagnosticoPosY + (index * 15)
           );
       });
-      
-      // Resumen médico con manejo de texto largo
+
+            // Resumen médico con manejo de texto largo
       const resumenMedico = getValue(solicitudData.comentarios_insumos);
       const splitResumenMedico = doc.splitTextToSize(resumenMedico, maxWidth);
       const resumenPosY = diagnosticoPosY + (splitDiagnostico.length * 15);
-      printFieldAndValue("Resumen médico: ", "", 40, resumenPosY);
+      printFieldAndValue("Comentarios adicionales: ", "", 40, resumenPosY);
       splitResumenMedico.forEach((line, index) => {
           doc.text(line, 
-              40 + doc.getStringUnitWidth("Resumen médico: ") * doc.internal.getFontSize() / doc.internal.scaleFactor + 10, 
+              40 + doc.getStringUnitWidth("Comentarios adicionales: ") * doc.internal.getFontSize() / doc.internal.scaleFactor + 10, 
               resumenPosY + (index * 15)
           );
       });
-      
       // Ajustar la posición de la segunda línea divisoria
       const nuevaSeccionY = resumenPosY + (splitResumenMedico.length * 15) + 20;
       doc.setLineWidth(1.5);
       doc.line(40, nuevaSeccionY, pageWidth - 40, nuevaSeccionY);
       // Preparación de materiales con el nuevo formato de tabla
-      const materialesSecciones = [
-        { 
-          tipo: 'Material Adicional', 
-          items: splitMaterialInfo(solicitudData.material_adicional),
-          cantidades: solicitudData.cantidad_adicional ? solicitudData.cantidad_adicional.split(',').map(c => c.trim()) : []
-        },
-        { 
-          tipo: 'Material Externo', 
-          items: splitMaterialInfo(solicitudData.material_externo),
-          cantidades: solicitudData.cantidad_externo ? solicitudData.cantidad_externo.split(',').map(c => c.trim()) : []
-        },
-          { 
-            tipo: 'Paquetes', 
-            items: splitMaterialInfo(solicitudData.nombre_paquete).flatMap(paquete => {
-              // Buscar los insumos del paquete
-              const paqueteConInsumos = fetchPackageInsumos(paquete.descripcion);
-              
-              // Si se encuentran los insumos, expandir a múltiples filas
-              if (paqueteConInsumos && paqueteConInsumos.insumos) {
-                return paqueteConInsumos.insumos.map(insumo => ({
-                  clave: paquete.descripcion, // Nombre del paquete en la columna de clave
-                  descripcion: `${insumo.clave_insumo} - ${insumo.descripcion_insumo}`,
-                  cantidad: String(insumo.cantidad_default || '1') // Asegurar que sea un string
-                }));
-              }
-              
-              // Si no hay insumos, devolver el paquete original
-              return [{
-                clave: paquete.descripcion,
-                descripcion: 'Sin insumos definidos',
-                cantidad: '1' // Asegurar que sea un string
-              }];
-            }),
-            cantidades: [] // Las cantidades ahora están incluidas en cada insumo
-          },
-        { 
-          tipo: 'Servicios', 
-          items: splitMaterialInfo(solicitudData.servicios),
-          cantidades: solicitudData.cantidad_servicios ? solicitudData.cantidad_servicios.split(',').map(c => c.trim()) : []
-        },
-        { 
-          tipo: 'Medicamentos', 
-          items: splitMaterialInfo(solicitudData.medicamentos),
-          cantidades: solicitudData.cantidad_medicamento ? solicitudData.cantidad_medicamento.split(',').map(c => c.trim()) : []
-        }
-      ];
+
+// Función para separar clave y descripción del nombre_insumo
+const splitInsumoInfo = (nombreInsumo) => {
+  if (!nombreInsumo) return { clave: 'N/A', descripcion: 'N/A' };
+  const [clave, ...descripcionParts] = nombreInsumo.split('-');
+  return {
+    clave: clave.trim(),
+    descripcion: descripcionParts.join('-').trim()
+  };
+};
+
+// Preparación de materiales
+const materialesSecciones = [];
+const tiposInsumo = [
+  'material_adicional',
+  'material_externo',
+  'paquetes',
+  'servicios',
+  'medicamentos'
+];
+
+// Mapeo de tipos de insumo a nombres mostrados
+const tiposMostrados = {
+  'material_adicional': 'Material Adicional',
+  'material_externo': 'Material Externo',
+  'paquetes': 'Paquetes',
+  'servicios': 'Servicios',
+  'medicamentos': 'Medicamentos'
+};
+
+// Asegurarnos que insumos existe
+if (solicitudData.insumos && Array.isArray(solicitudData.insumos)) {
+  // Agrupar insumos por tipo
+  tiposInsumo.forEach(tipo => {
+    const insumosDelTipo = solicitudData.insumos.filter(insumo => insumo.tipo_insumo === tipo);
+    
+    if (insumosDelTipo.length > 0) {
+      materialesSecciones.push({
+        tipo: tiposMostrados[tipo],
+        items: insumosDelTipo.map(insumo => {
+          const { clave, descripcion } = splitInsumoInfo(insumo.nombre_insumo);
+          return {
+            clave: clave,
+            descripcion: descripcion,
+            cantidad: insumo.cantidad.toString()
+          };
+        })
+      });
+    }
+  });
+} else {
+  console.warn('No se encontraron insumos en solicitudData');
+  // Podríamos agregar un manejo por defecto si lo necesitas
+  materialesSecciones.push({
+    tipo: 'Sin insumos',
+    items: []
+  });
+}
 
       // Impresión de Materiales con tabla
       doc.setFont('Helvetica', 'bold');
