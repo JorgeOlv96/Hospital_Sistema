@@ -700,7 +700,7 @@ const SolicitudInsumosDetalle = () => {
         const formattedDate = new Date(date);
         return formattedDate.toLocaleDateString('es-MX');
       };
-  
+
       // Función para ajustar la posición de los campos
       const adjustPosition = (text, startX, y, maxWidth) => {
         const textWidth = doc.getStringUnitWidth(text) * doc.internal.getFontSize() / doc.internal.scaleFactor;
@@ -802,64 +802,33 @@ const SolicitudInsumosDetalle = () => {
       doc.setLineWidth(1.5);
       doc.line(40, nuevaSeccionY, pageWidth - 40, nuevaSeccionY);
       // Preparación de materiales con el nuevo formato de tabla
-
-// Función para separar clave y descripción del nombre_insumo
-const splitInsumoInfo = (nombreInsumo) => {
-  if (!nombreInsumo) return { clave: 'N/A', descripcion: 'N/A' };
-  const [clave, ...descripcionParts] = nombreInsumo.split('-');
-  return {
-    clave: clave.trim(),
-    descripcion: descripcionParts.join('-').trim()
-  };
-};
-
-// Preparación de materiales
-const materialesSecciones = [];
-const tiposInsumo = [
-  'material_adicional',
-  'material_externo',
-  'paquetes',
-  'servicios',
-  'medicamentos'
-];
-
-// Mapeo de tipos de insumo a nombres mostrados
-const tiposMostrados = {
-  'material_adicional': 'Material Adicional',
-  'material_externo': 'Material Externo',
-  'paquetes': 'Paquetes',
-  'servicios': 'Servicios',
-  'medicamentos': 'Medicamentos'
-};
-
-// Asegurarnos que insumos existe
-if (solicitudData.insumos && Array.isArray(solicitudData.insumos)) {
-  // Agrupar insumos por tipo
-  tiposInsumo.forEach(tipo => {
-    const insumosDelTipo = solicitudData.insumos.filter(insumo => insumo.tipo_insumo === tipo);
-    
-    if (insumosDelTipo.length > 0) {
-      materialesSecciones.push({
-        tipo: tiposMostrados[tipo],
-        items: insumosDelTipo.map(insumo => {
-          const { clave, descripcion } = splitInsumoInfo(insumo.nombre_insumo);
-          return {
-            clave: clave,
-            descripcion: descripcion,
-            cantidad: insumo.cantidad.toString()
-          };
-        })
-      });
-    }
-  });
-} else {
-  console.warn('No se encontraron insumos en solicitudData');
-  // Podríamos agregar un manejo por defecto si lo necesitas
-  materialesSecciones.push({
-    tipo: 'Sin insumos',
-    items: []
-  });
-}
+      const materialesSecciones = [
+        { 
+          tipo: 'Material Adicional', 
+          items: insumos['material_adicional'] || [],
+        },
+        { 
+          tipo: 'Material Externo', 
+          items: insumos['material_externo'] || [],
+        },
+        { 
+          tipo: 'Paquetes', 
+          items: Object.values(paquetesInsumos).flatMap(paquete => ({
+            id: paquete.id,
+            nombre: paquete.nombre,
+            insumos: paquete.insumos
+          }))
+        },
+        { 
+          tipo: 'Servicios', 
+          items: insumos['servicios'] || [],
+        },
+        { 
+          tipo: 'Medicamentos', 
+          items: insumos['medicamentos'] || [],
+        }
+      ];
+      
 
       // Impresión de Materiales con tabla
       doc.setFont('Helvetica', 'bold');
@@ -894,32 +863,34 @@ doc.text('MATERIALES REQUERIDOS', pageWidth / 2, nuevaSeccionY + 15, { align: 'c
       // Función para dibujar fila de tabla
 // Función para dibujar fila de tabla
 const drawTableRow = (y, clave, descripcion, cantidad, doc, marginX, columnWidths, rowHeight) => {
-  // Convertir cantidad a string explícitamente
-  cantidad = String(cantidad || '1');
+  // Convertir todos los valores a string y manejar valores nulos/undefined
+  const claveStr = String(clave || 'N/A');
+  const descripcionStr = String(descripcion || 'N/A');
+  const cantidadStr = String(cantidad || '1');
   
   doc.setFont('Helvetica', 'normal');
   
-  // Ajuste de texto para descripción con cálculo de altura
-  const maxWidth = columnWidths[1] - 10; // Margen interno
-  const splitDescription = doc.splitTextToSize(descripcion || 'N/A', maxWidth);
+  // Ajuste de texto para descripción
+  const maxWidth = columnWidths[1] - 10;
+  const splitDescription = doc.splitTextToSize(descripcionStr, maxWidth);
   const descriptionHeight = splitDescription.length * 12;
   const dynamicRowHeight = Math.max(rowHeight, descriptionHeight + 10);
   
-  // Dibujar rectángulos de las celdas con altura dinámica
+  // Dibujar rectángulos
   doc.rect(marginX, y, columnWidths[0], dynamicRowHeight);
   doc.rect(marginX + columnWidths[0], y, columnWidths[1], dynamicRowHeight);
   doc.rect(marginX + columnWidths[0] + columnWidths[1], y, columnWidths[2], dynamicRowHeight);
   
   // Texto de la clave
-  doc.text(clave || 'N/A', marginX + 5, y + 15);
+  doc.text(claveStr, marginX + 5, y + 15);
   
-  // Dibujar descripción con múltiples líneas si es necesario
+  // Descripción con múltiples líneas
   splitDescription.forEach((line, index) => {
     doc.text(line, marginX + columnWidths[0] + 5, y + 15 + (index * 12));
   });
   
-  // Cantidad centrada verticalmente
-  doc.text(cantidad, marginX + columnWidths[0] + columnWidths[1] + 5, y + (dynamicRowHeight / 2) + 5);
+  // Cantidad centrada
+  doc.text(cantidadStr, marginX + columnWidths[0] + columnWidths[1] + 5, y + (dynamicRowHeight / 2) + 5);
   
   return dynamicRowHeight;
 };
@@ -928,51 +899,117 @@ let currentY = tableTop;
 let pageNum = 1;
 
 materialesSecciones.forEach(seccion => {
-  if (seccion.items.length > 0) {
-    // Agregar encabezado de sección con verificación de espacio
-    if (currentY + 40 > pageHeight - 150) { // Dejar espacio para firmas y pie de página
+  if (seccion.items && seccion.items.length > 0) {
+    if (currentY + 40 > pageHeight - 150) {
       doc.addPage();
       currentY = 40;
       pageNum++;
     }
+    
     doc.setFont('Helvetica', 'bold');
     doc.text(`${seccion.tipo}:`, marginX, currentY);
     currentY += 20;
 
-    // Dibujar encabezados de tabla
-    drawTableHeaders(currentY);
-    currentY += rowHeight;
+    if (seccion.tipo === 'Paquetes') {
+      // Manejar cada paquete individualmente
+      seccion.items.forEach(paquete => {
+        // Verificar espacio para el título del paquete
+        if (currentY + 40 > pageHeight - 150) {
+          doc.addPage();
+          currentY = 40;
+          pageNum++;
+        }
 
-    // Dibujar filas
-    seccion.items.forEach((item) => {
-      // Verificación de espacio más estricta
-      if (currentY + 30 > pageHeight - 150) { // Dejar espacio para firmas
-        doc.addPage();
-        currentY = 40;
-        pageNum++;
+        // Imprimir el detalle del paquete
+        doc.setFont('Helvetica', 'bold');
+        doc.text(`Detalle Paquete: ${paquete.nombre}`, marginX, currentY);
+        currentY += 20;
+
+        // Dibujar encabezados de tabla para este paquete
         drawTableHeaders(currentY);
         currentY += rowHeight;
-      }
 
-      const dynamicRowHeight = drawTableRow(
-        currentY, 
-        item.clave, 
-        item.descripcion, 
-        item.cantidad, // Ahora ya es un string
-        doc,
-        marginX,
-        columnWidths,
-        rowHeight
-      );
-      
-      currentY += dynamicRowHeight + 5;
-    });
+        // Procesar cada insumo del paquete
+        paquete.insumos.forEach(insumo => {
+          // Verificar si necesitamos una nueva página
+          if (currentY + 30 > pageHeight - 150) {
+            doc.addPage();
+            currentY = 40;
+            pageNum++;
+            // Repetir el título del paquete en la nueva página
+            doc.setFont('Helvetica', 'bold');
+            doc.text(`Detalle Paquete: ${paquete.nombre} (continuación)`, marginX, currentY);
+            currentY += 20;
+            drawTableHeaders(currentY);
+            currentY += rowHeight;
+          }
 
-    // Espacio entre secciones
+          // Separar clave y descripción
+          let clave = 'N/A';
+          let descripcion = String(insumo.nombre || '');
+          
+          // Buscar el patrón "clave - descripción"
+          const match = descripcion.match(/^(.*?)\s*-\s*(.*)$/);
+          if (match) {
+            clave = match[1].trim();
+            descripcion = match[2].trim();
+          }
+
+          const dynamicRowHeight = drawTableRow(
+            currentY,
+            clave,
+            descripcion,
+            String(insumo.cantidad || '1'),
+            doc,
+            marginX,
+            columnWidths,
+            rowHeight
+          );
+          currentY += dynamicRowHeight + 5;
+        });
+
+        // Agregar espacio entre paquetes
+        currentY += 20;
+      });
+    } else {
+      // Código existente para otras secciones
+      drawTableHeaders(currentY);
+      currentY += rowHeight;
+
+      seccion.items.forEach(item => {
+        if (currentY + 30 > pageHeight - 150) {
+          doc.addPage();
+          currentY = 40;
+          pageNum++;
+          drawTableHeaders(currentY);
+          currentY += rowHeight;
+        }
+
+        let clave = 'N/A';
+        let descripcion = String(item.nombre || '');
+        
+        const match = descripcion.match(/^(.*?)\s*-\s*(.*)$/);
+        if (match) {
+          clave = match[1].trim();
+          descripcion = match[2].trim();
+        }
+
+        const dynamicRowHeight = drawTableRow(
+          currentY,
+          clave,
+          descripcion,
+          String(item.cantidad || '1'),
+          doc,
+          marginX,
+          columnWidths,
+          rowHeight
+        );
+        currentY += dynamicRowHeight + 5;
+      });
+    }
     currentY += 10;
   }
 });
-
 
       // Asegurar que hay suficiente espacio antes de la línea divisoria final
       const minSpaceBeforeLine = 30;
