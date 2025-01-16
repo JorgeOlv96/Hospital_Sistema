@@ -688,25 +688,6 @@ const SolicitudInsumosDetalle = () => {
         return formattedDate.toLocaleDateString('es-MX');
       };
 
-      const fetchPackageInsumos = (nombrePaquete) => {
-        try {
-          // Usar una llamada síncrona con jQuery.ajax
-          const response = $.ajax({
-            url: `${baseURL}/api/insumos/paquete-insumos`,
-            data: { nombre_paquete: nombrePaquete },
-            method: 'GET',
-            async: false // Importante: llamada síncrona
-          });
-
-          // Procesar la respuesta
-          const paqueteInsumos = response.responseJSON;
-          return paqueteInsumos[0] || null;
-        } catch (error) {
-          console.error('Error al obtener insumos del paquete:', error);
-          return null;
-        }
-      };
-  
       // Función para ajustar la posición de los campos
       const adjustPosition = (text, startX, y, maxWidth) => {
         const textWidth = doc.getStringUnitWidth(text) * doc.internal.getFontSize() / doc.internal.scaleFactor;
@@ -836,49 +817,30 @@ const SolicitudInsumosDetalle = () => {
       const materialesSecciones = [
         { 
           tipo: 'Material Adicional', 
-          items: splitMaterialInfo(solicitudData.material_adicional),
-          cantidades: solicitudData.cantidad_adicional ? solicitudData.cantidad_adicional.split(',').map(c => c.trim()) : []
+          items: insumos['material_adicional'] || [],
         },
         { 
           tipo: 'Material Externo', 
-          items: splitMaterialInfo(solicitudData.material_externo),
-          cantidades: solicitudData.cantidad_externo ? solicitudData.cantidad_externo.split(',').map(c => c.trim()) : []
+          items: insumos['material_externo'] || [],
         },
-          { 
-            tipo: 'Paquetes', 
-            items: splitMaterialInfo(solicitudData.nombre_paquete).flatMap(paquete => {
-              // Buscar los insumos del paquete
-              const paqueteConInsumos = fetchPackageInsumos(paquete.descripcion);
-              
-              // Si se encuentran los insumos, expandir a múltiples filas
-              if (paqueteConInsumos && paqueteConInsumos.insumos) {
-                return paqueteConInsumos.insumos.map(insumo => ({
-                  clave: paquete.descripcion, // Nombre del paquete en la columna de clave
-                  descripcion: `${insumo.clave_insumo} - ${insumo.descripcion_insumo}`,
-                  cantidad: String(insumo.cantidad_default || '1') // Asegurar que sea un string
-                }));
-              }
-              
-              // Si no hay insumos, devolver el paquete original
-              return [{
-                clave: paquete.descripcion,
-                descripcion: 'Sin insumos definidos',
-                cantidad: '1' // Asegurar que sea un string
-              }];
-            }),
-            cantidades: [] // Las cantidades ahora están incluidas en cada insumo
-          },
+        { 
+          tipo: 'Paquetes', 
+          items: Object.values(paquetesInsumos).flatMap(paquete => ({
+            id: paquete.id,
+            nombre: paquete.nombre,
+            insumos: paquete.insumos
+          }))
+        },
         { 
           tipo: 'Servicios', 
-          items: splitMaterialInfo(solicitudData.servicios),
-          cantidades: solicitudData.cantidad_servicios ? solicitudData.cantidad_servicios.split(',').map(c => c.trim()) : []
+          items: insumos['servicios'] || [],
         },
         { 
           tipo: 'Medicamentos', 
-          items: splitMaterialInfo(solicitudData.medicamentos),
-          cantidades: solicitudData.cantidad_medicamento ? solicitudData.cantidad_medicamento.split(',').map(c => c.trim()) : []
+          items: insumos['medicamentos'] || [],
         }
       ];
+      
 
       // Impresión de Materiales con tabla
       doc.setFont('Helvetica', 'bold');
@@ -913,32 +875,34 @@ doc.text('MATERIALES REQUERIDOS', pageWidth / 2, nuevaSeccionY + 15, { align: 'c
       // Función para dibujar fila de tabla
 // Función para dibujar fila de tabla
 const drawTableRow = (y, clave, descripcion, cantidad, doc, marginX, columnWidths, rowHeight) => {
-  // Convertir cantidad a string explícitamente
-  cantidad = String(cantidad || '1');
+  // Convertir todos los valores a string y manejar valores nulos/undefined
+  const claveStr = String(clave || 'N/A');
+  const descripcionStr = String(descripcion || 'N/A');
+  const cantidadStr = String(cantidad || '1');
   
   doc.setFont('Helvetica', 'normal');
   
-  // Ajuste de texto para descripción con cálculo de altura
-  const maxWidth = columnWidths[1] - 10; // Margen interno
-  const splitDescription = doc.splitTextToSize(descripcion || 'N/A', maxWidth);
+  // Ajuste de texto para descripción
+  const maxWidth = columnWidths[1] - 10;
+  const splitDescription = doc.splitTextToSize(descripcionStr, maxWidth);
   const descriptionHeight = splitDescription.length * 12;
   const dynamicRowHeight = Math.max(rowHeight, descriptionHeight + 10);
   
-  // Dibujar rectángulos de las celdas con altura dinámica
+  // Dibujar rectángulos
   doc.rect(marginX, y, columnWidths[0], dynamicRowHeight);
   doc.rect(marginX + columnWidths[0], y, columnWidths[1], dynamicRowHeight);
   doc.rect(marginX + columnWidths[0] + columnWidths[1], y, columnWidths[2], dynamicRowHeight);
   
   // Texto de la clave
-  doc.text(clave || 'N/A', marginX + 5, y + 15);
+  doc.text(claveStr, marginX + 5, y + 15);
   
-  // Dibujar descripción con múltiples líneas si es necesario
+  // Descripción con múltiples líneas
   splitDescription.forEach((line, index) => {
     doc.text(line, marginX + columnWidths[0] + 5, y + 15 + (index * 12));
   });
   
-  // Cantidad centrada verticalmente
-  doc.text(cantidad, marginX + columnWidths[0] + columnWidths[1] + 5, y + (dynamicRowHeight / 2) + 5);
+  // Cantidad centrada
+  doc.text(cantidadStr, marginX + columnWidths[0] + columnWidths[1] + 5, y + (dynamicRowHeight / 2) + 5);
   
   return dynamicRowHeight;
 };
@@ -947,51 +911,117 @@ let currentY = tableTop;
 let pageNum = 1;
 
 materialesSecciones.forEach(seccion => {
-  if (seccion.items.length > 0) {
-    // Agregar encabezado de sección con verificación de espacio
-    if (currentY + 40 > pageHeight - 150) { // Dejar espacio para firmas y pie de página
+  if (seccion.items && seccion.items.length > 0) {
+    if (currentY + 40 > pageHeight - 150) {
       doc.addPage();
       currentY = 40;
       pageNum++;
     }
+    
     doc.setFont('Helvetica', 'bold');
     doc.text(`${seccion.tipo}:`, marginX, currentY);
     currentY += 20;
 
-    // Dibujar encabezados de tabla
-    drawTableHeaders(currentY);
-    currentY += rowHeight;
+    if (seccion.tipo === 'Paquetes') {
+      // Manejar cada paquete individualmente
+      seccion.items.forEach(paquete => {
+        // Verificar espacio para el título del paquete
+        if (currentY + 40 > pageHeight - 150) {
+          doc.addPage();
+          currentY = 40;
+          pageNum++;
+        }
 
-    // Dibujar filas
-    seccion.items.forEach((item) => {
-      // Verificación de espacio más estricta
-      if (currentY + 30 > pageHeight - 150) { // Dejar espacio para firmas
-        doc.addPage();
-        currentY = 40;
-        pageNum++;
+        // Imprimir el detalle del paquete
+        doc.setFont('Helvetica', 'bold');
+        doc.text(`Detalle Paquete: ${paquete.nombre}`, marginX, currentY);
+        currentY += 20;
+
+        // Dibujar encabezados de tabla para este paquete
         drawTableHeaders(currentY);
         currentY += rowHeight;
-      }
 
-      const dynamicRowHeight = drawTableRow(
-        currentY, 
-        item.clave, 
-        item.descripcion, 
-        item.cantidad, // Ahora ya es un string
-        doc,
-        marginX,
-        columnWidths,
-        rowHeight
-      );
-      
-      currentY += dynamicRowHeight + 5;
-    });
+        // Procesar cada insumo del paquete
+        paquete.insumos.forEach(insumo => {
+          // Verificar si necesitamos una nueva página
+          if (currentY + 30 > pageHeight - 150) {
+            doc.addPage();
+            currentY = 40;
+            pageNum++;
+            // Repetir el título del paquete en la nueva página
+            doc.setFont('Helvetica', 'bold');
+            doc.text(`Detalle Paquete: ${paquete.nombre} (continuación)`, marginX, currentY);
+            currentY += 20;
+            drawTableHeaders(currentY);
+            currentY += rowHeight;
+          }
 
-    // Espacio entre secciones
+          // Separar clave y descripción
+          let clave = 'N/A';
+          let descripcion = String(insumo.nombre || '');
+          
+          // Buscar el patrón "clave - descripción"
+          const match = descripcion.match(/^(.*?)\s*-\s*(.*)$/);
+          if (match) {
+            clave = match[1].trim();
+            descripcion = match[2].trim();
+          }
+
+          const dynamicRowHeight = drawTableRow(
+            currentY,
+            clave,
+            descripcion,
+            String(insumo.cantidad || '1'),
+            doc,
+            marginX,
+            columnWidths,
+            rowHeight
+          );
+          currentY += dynamicRowHeight + 5;
+        });
+
+        // Agregar espacio entre paquetes
+        currentY += 20;
+      });
+    } else {
+      // Código existente para otras secciones
+      drawTableHeaders(currentY);
+      currentY += rowHeight;
+
+      seccion.items.forEach(item => {
+        if (currentY + 30 > pageHeight - 150) {
+          doc.addPage();
+          currentY = 40;
+          pageNum++;
+          drawTableHeaders(currentY);
+          currentY += rowHeight;
+        }
+
+        let clave = 'N/A';
+        let descripcion = String(item.nombre || '');
+        
+        const match = descripcion.match(/^(.*?)\s*-\s*(.*)$/);
+        if (match) {
+          clave = match[1].trim();
+          descripcion = match[2].trim();
+        }
+
+        const dynamicRowHeight = drawTableRow(
+          currentY,
+          clave,
+          descripcion,
+          String(item.cantidad || '1'),
+          doc,
+          marginX,
+          columnWidths,
+          rowHeight
+        );
+        currentY += dynamicRowHeight + 5;
+      });
+    }
     currentY += 10;
   }
 });
-
 
       // Asegurar que hay suficiente espacio antes de la línea divisoria final
       const minSpaceBeforeLine = 30;
