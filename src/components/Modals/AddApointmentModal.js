@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import Modal from "./Modal";
 import axios from "axios";
 import PatientMedicineServiceModal from "./PatientMedicineServiceModal";
+import { useParams, useNavigate } from "react-router-dom";
 
 function AddAppointmentModal({
   closeModal,
@@ -13,6 +14,7 @@ function AddAppointmentModal({
   const [patientData, setPatientData] = useState({});
   const [loading, setLoading] = useState(true);
   const modalRef = useRef(null);
+    const navigate = useNavigate();
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
 
   const [reload] = useState(1);
@@ -63,6 +65,12 @@ function AddAppointmentModal({
     }
   };
 
+      // Nueva función para manejar la visualización de la solicitud de insumos
+      const handleViewInsumos = () => {
+        // Redirigir a la página correspondiente
+        navigate(`/solicitudes/solicitud-insumos/${appointmentId}`);
+      };
+
   return (
     <Modal
       ref={modalRef}
@@ -98,6 +106,16 @@ function AddAppointmentModal({
             >
               Cerrar
             </button>
+
+            {patientData.req_insumo === "SI" && (
+      <button
+        onClick={handleViewInsumos}
+        className="bg-[#06ABC9] bg-opacity-20 text-[#001B58] text-sm p-3 rounded-lg font-light"
+        style={{ marginBottom: "8px" }}
+      >
+        Ver solicitud de insumos
+      </button>
+    )}
 
             {patientData?.estado_solicitud === "Pendiente" && (
               <button

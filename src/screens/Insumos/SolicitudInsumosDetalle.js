@@ -172,14 +172,45 @@ const PackageInsumosModal = ({ packageName, packageInsumos, onClose }) => {
 const InsumoBlock = ({
   insumos = [],
   handleCantidadChange,
+  handleAgregarInsumo,
   toggleDisponibilidad,
   handleEliminarInsumo,
   title,
   showPackageInfo = false,
   packageInsumos = null,
   packageName = "",
+  tipo_insumo // Nuevo prop para identificar el tipo de insumo
 }) => {
   const [showPackageModal, setShowPackageModal] = useState(false);
+  const [showAddInsumo, setShowAddInsumo] = useState(false);
+
+  const handleInsumoSelect = (selectedInsumo) => {
+    const nuevoInsumo = {
+      id: selectedInsumo.value, // Cambiar id por value
+      nombre: `${selectedInsumo.clave} - ${selectedInsumo.descripcion}`, // Construir el nombre con clave y descripción
+      cantidad: 1,
+      disponible: true
+    };
+    
+    handleAgregarInsumo(tipo_insumo, nuevoInsumo);
+    setShowAddInsumo(false);
+  };
+
+  const renderSelectComponent = () => {
+    switch (tipo_insumo) {
+      case 'material_adicional':
+        return <AdicionalSelect onSelect={handleInsumoSelect} />;
+      case 'material_externo':
+      case 'servicios':
+        return <InsumosSelect onSelect={handleInsumoSelect} />;
+      case 'paquete':
+        return <PaquetesSelect onSelect={handleInsumoSelect} />;
+      case 'medicamentos':
+        return <AdicionalSelect onSelect={handleInsumoSelect} />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className="bg-gray-50 p-6 rounded-lg shadow-lg mb-6">
@@ -228,6 +259,20 @@ const InsumoBlock = ({
         </div>
       </div>
 
+      <button
+        onClick={() => setShowAddInsumo(!showAddInsumo)}
+        className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+      >
+        {showAddInsumo ? "Cancelar" : "Agregar insumo adicional"}
+      </button>
+
+      {/* Componente de selección cuando showAddInsumo es true */}
+      {showAddInsumo && (
+        <div className="mt-4">
+          {renderSelectComponent()}
+        </div>
+      )}
+
       {showPackageInfo && packageName && (
         <div className="mb-4 bg-blue-50 p-4 rounded-lg flex items-center justify-between">
           <div>
@@ -265,6 +310,22 @@ const PackageBlock = ({
   onInsumoEliminar
 }) => {
   const [showInsumos, setShowInsumos] = useState(false);
+  const [showAddInsumo, setShowAddInsumo] = useState(false);
+
+  const handleInsumoSelect = (selectedInsumo) => {
+    const nuevoInsumo = {
+      id: selectedInsumo.value,
+      nombre: `${selectedInsumo.clave} - ${selectedInsumo.descripcion}`,
+      cantidad_default: 1,
+      disponible: true
+    };
+    const paqueteActualizado = {
+      ...packageData,
+      insumos: [...packageData.insumos, nuevoInsumo]
+    };
+    onInsumoCantidadChange(packageData.id, nuevoInsumo.id, 1);
+    setShowAddInsumo(false);
+  };
 
   // Función para cambiar la disponibilidad de todos los insumos del paquete
   const handleChangeAllDisponibilidad = (disponible) => {
@@ -303,44 +364,57 @@ const PackageBlock = ({
           >
             <X className="text-red-600" />
           </button>
+          
         </div>
       </div>
 
       {showInsumos && packageData.insumos.map((insumo) => (
-        <div
-          key={insumo.id}
-          className="flex items-center space-x-4 bg-white p-3 rounded-lg mb-2"
-        >
-          <span className="flex-grow">{insumo.nombre}</span>
-          <input
-            type="number"
-            value={insumo.cantidad_default}
-            onChange={(e) => onInsumoCantidadChange(packageData.id, insumo.id, e.target.value)}
-            min="1"
-            className="w-24 p-2 border rounded"
-          />
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={() => onInsumoDisponibilidadChange(packageData.id, insumo.id, true)}
-              className={`p-2 rounded ${insumo.disponible ? "bg-green-100 border border-green-500" : "bg-gray-200"}`}
-            >
-              <Check className="text-green-600" />
-            </button>
-            <button
-              onClick={() => onInsumoDisponibilidadChange(packageData.id, insumo.id, false)}
-              className={`p-2 rounded ${!insumo.disponible ? "bg-red-100 border border-red-500" : "bg-gray-200"}`}
-            >
-              <X className="text-red-600" />
-            </button>
-            <button
-              onClick={() => onInsumoEliminar(packageData.id, insumo.id)}
-              className="p-2 rounded bg-red-100 hover:bg-red-200"
-            >
-              <Trash2 className="text-red-600" />
-            </button>
-          </div>
+  <div
+    key={insumo.id}
+    className="flex items-center space-x-4 bg-white p-3 rounded-lg mb-2"
+  >
+    <span className="flex-grow">{insumo.nombre}</span>
+    <input
+      type="number"
+      value={insumo.cantidad_default}
+      onChange={(e) => onInsumoCantidadChange(packageData.id, insumo.id, e.target.value)}
+      min="1"
+      className="w-24 p-2 border rounded"
+    />
+    <div className="flex items-center space-x-2">
+      <button
+        onClick={() => onInsumoDisponibilidadChange(packageData.id, insumo.id, true)}
+        className={`p-2 rounded ${insumo.disponible ? "bg-green-100 border border-green-500" : "bg-gray-200"}`}
+      >
+        <Check className="text-green-600" />
+      </button>
+      <button
+        onClick={() => onInsumoDisponibilidadChange(packageData.id, insumo.id, false)}
+        className={`p-2 rounded ${!insumo.disponible ? "bg-red-100 border border-red-500" : "bg-gray-200"}`}
+      >
+        <X className="text-red-600" />
+      </button>
+      <button
+        onClick={() => onInsumoEliminar(packageData.id, insumo.id)}
+        className="p-2 rounded bg-red-100 hover:bg-red-200"
+      >
+        <Trash2 className="text-red-600" />
+      </button>
+    </div>
+  </div>
+))}
+      <button
+        onClick={() => setShowAddInsumo(!showAddInsumo)}
+        className="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+      >
+        {showAddInsumo ? "Cancelar" : "Agregar insumo al paquete"}
+      </button>
+
+      {showAddInsumo && (
+        <div className="mt-4">
+          <InsumosSelect onSelect={handleInsumoSelect} />
         </div>
-      ))}
+      )}
     </div>
   );
 };
@@ -358,6 +432,7 @@ const SolicitudInsumosDetalle = () => {
   const [selectedInsumos, setSelectedInsumos] = useState([]);
   const [paquetesInsumos, setPaquetesInsumos] = useState({});
   const [insumosEliminados, setInsumosEliminados] = useState([]);
+  const [nuevosInsumos, setNuevosInsumos] = useState([]);
 
   const handleCommentChange = (value) => {
     setSolicitudData(prev => ({
@@ -365,6 +440,14 @@ const SolicitudInsumosDetalle = () => {
       comentarios_insumos: value
     }));
   };
+
+  const handleAgregarInsumo = (tipo, nuevoInsumo) => {
+    setInsumos(prev => ({
+      ...prev,
+      [tipo]: [...(prev[tipo] || []), nuevoInsumo]
+    }));
+  };
+
 
   const materialTypes = [
     'material_adicional', 
@@ -620,6 +703,30 @@ const SolicitudInsumosDetalle = () => {
   const guardarTodosCambios = async () => {
     try {
       const datosActualizados = [
+
+        ...Object.entries(insumos).flatMap(([tipo, insumosArray]) =>
+          insumosArray
+            .filter(insumo => !insumo.existente) // Solo nuevos insumos
+            .map(insumo => ({
+              id_solicitud: appointmentId,
+              insumo_id: insumo.id,
+              tipo_insumo: tipo,
+              cantidad: insumo.cantidad,
+              disponibilidad: insumo.disponible ? 1 : 0
+            }))
+        ),
+        // Insumos existentes
+        ...Object.entries(insumos).flatMap(([tipo, insumosArray]) =>
+          insumosArray
+            .filter(insumo => insumo.existente) // Solo insumos existentes
+            .map(insumo => ({
+              id_solicitud: appointmentId,
+              insumo_id: insumo.id,
+              tipo_insumo: tipo,
+              cantidad: insumo.cantidad,
+              disponibilidad: insumo.disponible ? 1 : 0
+            }))
+        ),
         // Insumos individuales
         ...Object.entries(insumos).flatMap(([tipo, insumosArray]) => 
           tipo !== 'paquete' ? insumosArray.map(insumo => ({
@@ -641,6 +748,19 @@ const SolicitudInsumosDetalle = () => {
             disponibilidad: insumo.disponible ? 1 : 0
           }))
         ),
+
+        ...Object.entries(insumos).flatMap(([tipo, insumosArray]) =>
+          insumosArray
+            .filter(insumo => !insumo.existente) // Solo nuevos insumos
+            .map(insumo => ({
+              id_solicitud: appointmentId,
+              insumo_id: insumo.id,
+              tipo_insumo: tipo,
+              cantidad: insumo.cantidad,
+              disponibilidad: insumo.disponible ? 1 : 0
+            }))
+        ),
+
         // Insumos eliminados
         ...insumosEliminados.map(insumo => ({
           id_solicitud: appointmentId,
@@ -661,8 +781,8 @@ const SolicitudInsumosDetalle = () => {
       }
     } catch (error) {
       console.error("Error al guardar:", error);
-      setMensaje({ 
-        tipo: "error", 
+      setMensaje({
+        tipo: "error",
         texto: "Error al guardar los cambios: " + (error.response?.data?.error || error.message)
       });
     }
@@ -1139,19 +1259,19 @@ const tiposInsumo = {
         <h2 className="text-2xl font-semibold mb-6">Detalle de Solicitud de Insumos</h2>
 
         <button
-  onClick={() => generateDocument(solicitudData)}
-  className="bg-green-500 text-white text-sm p-4 rounded-lg font-light mr-4" // Agregado margen derecho
-  style={{ marginBottom: "8px" }}
->
-  Imprimir solicitud
-</button>
+            onClick={() => generateDocument(solicitudData)}
+            className="bg-green-500 text-white text-sm p-4 rounded-lg font-light mr-4" // Agregado margen derecho
+            style={{ marginBottom: "8px" }}
+          >
+            Imprimir solicitud
+          </button>
 
-<button
-  onClick={() => generateMedicalSummaryPDF(solicitudData)}
-  className="bg-blue-500 text-white text-sm p-4 rounded-lg font-light mt-2" // Agregado margen superior
->
-  Imprimir resumen médico
-</button>
+          <button
+            onClick={() => generateMedicalSummaryPDF(solicitudData)}
+            className="bg-blue-500 text-white text-sm p-4 rounded-lg font-light mt-2" // Agregado margen superior
+          >
+            Imprimir resumen médico
+          </button>
 
 
         {mensaje.texto && <Alert className={`mb-4 ${mensaje.tipo === "error" ? "bg-red-100" : "bg-green-100"}`}>{mensaje.texto}</Alert>}
@@ -1161,19 +1281,20 @@ const tiposInsumo = {
           onCommentChange={handleCommentChange} 
         />}
       {/* Primero renderizar los insumos normales */}
-{Object.entries(insumos).map(([tipo, insumosArray]) => (
-  tipo !== 'paquete' && (
-    <InsumoBlock
-      key={`insumo-${tipo}`}
-      title={tiposInsumo[tipo]}
-      insumos={insumosArray}
-      handleCantidadChange={(id, cantidad) => handleCantidadChange(tipo, id, cantidad)}
-      toggleDisponibilidad={(id, value) => toggleDisponibilidad(tipo, id, value)}
-      handleEliminarInsumo={(id) => handleEliminarInsumo(tipo, id)}
-    />
-  )
-))}
-
+      {Object.entries(insumos).map(([tipo, insumosArray]) => (
+          tipo !== 'paquete' && (
+            <InsumoBlock
+              key={`insumo-${tipo}`}
+              title={tiposInsumo[tipo]}
+              insumos={insumosArray}
+              handleCantidadChange={(id, cantidad) => handleCantidadChange(tipo, id, cantidad)}
+              toggleDisponibilidad={(id, value) => toggleDisponibilidad(tipo, id, value)}
+              handleEliminarInsumo={(id) => handleEliminarInsumo(tipo, id)}
+              tipo_insumo={tipo}
+              handleAgregarInsumo={handleAgregarInsumo}
+            />
+          )
+        ))}
 {/* Luego renderizar los paquetes */}
 {Object.values(paquetesInsumos).map(paquete => (
   <PackageBlock

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { Link } from "react-router-dom";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import Modal from "./Modal";
@@ -188,10 +189,9 @@ function AddAppointmentModalEvaluar({
     }
   };
 
-    // Nueva función para manejar la visualización de la solicitud de insumos
-    const handleViewInsumos = () => {
+    const handleViewSolicitudInsumos = () => {
       // Redirigir a la página correspondiente
-      navigate(`/solicitudes/solicitud-insumos/${appointmentId}`);
+      navigate(`/solicitudInsumosDetalle/${appointmentId}`);
     };
   
   const formatDate = (dateString) => {
@@ -432,16 +432,15 @@ const generateDocument = async (patientData) => {
       Pre-programar
     </button>
 
-
-{/*     {patientData.req_insumo === "SI" && (
+{patientData.req_insumo === "SI" && (
       <button
-        onClick={handleViewInsumos}
+        onClick={handleViewSolicitudInsumos}
         className="bg-[#06ABC9] bg-opacity-20 text-[#001B58] text-sm p-3 rounded-lg font-light"
         style={{ marginBottom: "8px" }}
       >
         Ver solicitud de insumos
       </button>
-    )} */}
+    )}
   </div>
 
           <div className="mr-4 w-full mb-2">
