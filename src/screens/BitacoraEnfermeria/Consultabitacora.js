@@ -102,11 +102,26 @@ const Consultabitacora = () => {
 
   const checkIfWithinShift = useCallback((shift) => {
     const currentHour = new Date().getHours();
+    const currentDay = new Date().getDay(); // 0 = Domingo, 1 = Lunes, 6 = Sábado
+    
+    // Función auxiliar para verificar si es fin de semana o lunes
+    const isWeekendOrMonday = () => {
+      return currentDay === 0 || currentDay === 1 || currentDay === 6;
+    };
+  
     switch (shift) {
-      case 'matutino': return currentHour >= 7 && currentHour < 14;
-      case 'vespertino': return currentHour >= 14 && currentHour < 21;
-      case 'nocturno': return currentHour >= 21 || currentHour < 7;
-      default: return true; // If no shift is assigned, allow editing
+      case 'matutino': 
+        return currentHour >= 7 && currentHour < 14;
+      case 'vespertino': 
+        return currentHour >= 14 && currentHour < 21;
+      case 'nocturno': 
+        return currentHour >= 21 || currentHour < 7;
+      case 'especial diurno':
+        return isWeekendOrMonday() && currentHour >= 7 && currentHour < 19;
+      case 'especial nocturno':
+        return isWeekendOrMonday() && (currentHour >= 19 || currentHour < 7);
+      default: 
+        return true; // Si no hay turno asignado, permite edición
     }
   }, []);
 

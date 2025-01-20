@@ -12,6 +12,7 @@ import PaquetesSelect from "../Solicitudes/PaqueteSelect";
 
 const PatientInfoBlock = ({ solicitudData,  onCommentChange  }) => {
   const [showResumen, setShowResumen] = React.useState(false);
+  const [comentarios, setComentarios] = React.useState('');
 
   const patientData = Array.isArray(solicitudData) ? solicitudData[0] : solicitudData;
 
@@ -114,16 +115,16 @@ const PatientInfoBlock = ({ solicitudData,  onCommentChange  }) => {
         )}
       </div>
 
-      <div className="bg-gray-50 p-6 rounded-lg shadow-lg">
-        <label className="block font-semibold text-gray-700 mb-2">Comentarios adicionales:</label>
-        <textarea
-          className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          rows={3}
-          placeholder="Agregar comentarios sobre los insumos..."
-          value={patientData?.comentarios_insumos || ""}
-          onChange={(e) => onCommentChange(e.target.value)}
-        />
-      </div>
+    <div className="bg-gray-50 p-6 rounded-lg shadow-lg">
+      <label className="block font-semibold text-gray-700 mb-2">Comentarios adicionales:</label>
+      <textarea
+        className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        rows={3}
+        placeholder="Agregar comentarios sobre los insumos..."
+        value={comentarios}
+        onChange={onCommentChange}
+      />
+    </div>
     </div>
   );
 };
@@ -186,11 +187,10 @@ const InsumoBlock = ({
 
   const handleInsumoSelect = (selectedInsumo) => {
     const nuevoInsumo = {
-      id: selectedInsumo.id, // Usar id en lugar de value
-      nombre: `${selectedInsumo.clave} - ${selectedInsumo.descripcion}`, // Mantener el formato actual
+      id: selectedInsumo.value, // Cambiar id por value
+      nombre: `${selectedInsumo.clave} - ${selectedInsumo.descripcion}`, // Construir el nombre con clave y descripción
       cantidad: 1,
-      disponible: true,
-      esNuevo: true // Marcar como nuevo insumo
+      disponible: true
     };
     
     handleAgregarInsumo(tipo_insumo, nuevoInsumo);
@@ -308,29 +308,23 @@ const PackageBlock = ({
   packageData,
   onInsumoCantidadChange,
   onInsumoDisponibilidadChange,
-  onInsumoEliminar,
-  setPaquetesInsumos
+  onInsumoEliminar
 }) => {
   const [showInsumos, setShowInsumos] = useState(false);
   const [showAddInsumo, setShowAddInsumo] = useState(false);
 
   const handleInsumoSelect = (selectedInsumo) => {
     const nuevoInsumo = {
-      id: selectedInsumo.id, // Usar id en lugar de value
+      id: selectedInsumo.value,
       nombre: `${selectedInsumo.clave} - ${selectedInsumo.descripcion}`,
       cantidad_default: 1,
-      disponible: true,
-      esNuevo: true // Marcar como nuevo insumo
+      disponible: true
     };
-  
-    setPaquetesInsumos(prev => ({
-      ...prev,
-      [packageData.id]: {
-        ...prev[packageData.id],
-        insumos: [...prev[packageData.id].insumos, nuevoInsumo]
-      }
-    }));
-    
+    const paqueteActualizado = {
+      ...packageData,
+      insumos: [...packageData.insumos, nuevoInsumo]
+    };
+    onInsumoCantidadChange(packageData.id, nuevoInsumo.id, 1);
     setShowAddInsumo(false);
   };
 
@@ -660,28 +654,17 @@ const SolicitudInsumosDetalle = () => {
   };
   
   const handlePaqueteInsumoEliminar = (paqueteId, insumoId) => {
-    setPaquetesInsumos(prev => {
-      // Crear una copia del estado actual
-      const newState = { ...prev };
-      
-      // Asegurarse de que el paquete existe
-      if (newState[paqueteId]) {
-        // Filtrar el insumo
-        newState[paqueteId] = {
-          ...newState[paqueteId],
-          insumos: newState[paqueteId].insumos.filter(insumo => insumo.id !== insumoId)
-        };
+    setPaquetesInsumos(prev => ({
+      ...prev,
+      [paqueteId]: {
+        ...prev[paqueteId],
+        insumos: prev[paqueteId].insumos.filter(insumo => insumo.id !== insumoId)
       }
-      
-      return newState;
-    });
-  
-    // Agregar el insumo a la lista de eliminados con toda la información necesaria
+    }));
     setInsumosEliminados(prev => [...prev, { 
       tipo: 'paquete', 
       id: insumoId,
-      paquete_id: paqueteId,
-      operacion: 'eliminar'  // Agregar explícitamente la operación
+      paquete_id: paqueteId 
     }]);
   };
   
@@ -718,98 +701,68 @@ const SolicitudInsumosDetalle = () => {
     return handlers[handlerType];
   };
 
-  const verificarEstadoGeneral = () => {
-    let totalInsumos = 0;
-    let insumosDisponibles = 0;
-  
-    // Contar insumos regulares
-    Object.values(insumos).forEach(insumosArray => {
-      insumosArray.forEach(insumo => {
-        totalInsumos++;
-        if (insumo.disponible) insumosDisponibles++;
-      });
-    });
-  
-    // Contar insumos de paquetes
-    Object.values(paquetesInsumos).forEach(paquete => {
-      paquete.insumos.forEach(insumo => {
-        totalInsumos++;
-        if (insumo.disponible) insumosDisponibles++;
-      });
-    });
-  
-    if (totalInsumos === 0) return "Sin solicitud";
-    if (totalInsumos === insumosDisponibles) return "Disponible";
-    if (insumosDisponibles > 0) return "Solicitado";
-    return "Sin solicitud";
-  };
-  
   const guardarTodosCambios = async () => {
     try {
-      const estadoGeneral = verificarEstadoGeneral();
-      const datosActualizados = [
-        // Nuevos insumos (no paquetes)
-        ...Object.entries(insumos).flatMap(([tipo, insumosArray]) =>
-          insumosArray
-            .filter(insumo => insumo.esNuevo)
-            .map(insumo => ({
+      // Preparar los datos de insumos
+      const datosActualizados = {
+        comentarios_insumos: solicitudData?.comentarios_insumos || '', // Agregamos los comentarios
+        insumos: [
+          // Insumos nuevos
+          ...Object.entries(insumos).flatMap(([tipo, insumosArray]) =>
+            insumosArray
+              .filter(insumo => !insumo.existente)
+              .map(insumo => ({
+                operacion: 'insertar',
+                id_solicitud: appointmentId,
+                insumo_id: insumo.id,
+                tipo_insumo: tipo,
+                cantidad: insumo.cantidad,
+                disponibilidad: insumo.disponible ? 1 : 0
+              }))
+          ),
+          // Insumos existentes
+          ...Object.entries(insumos).flatMap(([tipo, insumosArray]) =>
+            insumosArray
+              .filter(insumo => insumo.existente)
+              .map(insumo => ({
+                operacion: 'actualizar',
+                id_solicitud: appointmentId,
+                insumo_id: insumo.id,
+                tipo_insumo: tipo,
+                cantidad: insumo.cantidad,
+                disponibilidad: insumo.disponible ? 1 : 0
+              }))
+          ),
+          // Insumos de paquetes
+          ...Object.entries(paquetesInsumos).flatMap(([paqueteId, paquete]) => 
+            paquete.insumos.map(insumo => ({
+              operacion: 'actualizar',
               id_solicitud: appointmentId,
-              tipo_insumo: tipo,
               insumo_id: insumo.id,
-              nombre_insumo: insumo.nombre,
-              cantidad: insumo.cantidad,
-              disponibilidad: insumo.disponible ? 1 : 0,
-              operacion: 'insertar'
+              tipo_insumo: 'paquete',
+              detalle_paquete: paqueteId,
+              cantidad: insumo.cantidad_default || insumo.cantidad,
+              disponibilidad: insumo.disponible ? 1 : 0
             }))
-        ),
-  
-        // Insumos existentes (no paquetes)
-        ...Object.entries(insumos).flatMap(([tipo, insumosArray]) =>
-          insumosArray
-            .filter(insumo => !insumo.esNuevo)
-            .map(insumo => ({
-              id_solicitud: appointmentId,
-              tipo_insumo: tipo,
-              insumo_id: insumo.id,
-              cantidad: insumo.cantidad,
-              disponibilidad: insumo.disponible ? 1 : 0,
-              operacion: 'actualizar'
-            }))
-        ),
-  
-        // Insumos de paquetes
-        ...Object.entries(paquetesInsumos).flatMap(([paqueteId, paquete]) => 
-          paquete.insumos.map(insumo => ({
+          ),
+          // Insumos eliminados
+          ...insumosEliminados.map(insumo => ({
+            operacion: 'eliminar',
             id_solicitud: appointmentId,
-            tipo_insumo: 'paquete',
             insumo_id: insumo.id,
-            nombre_insumo: insumo.nombre,
-            cantidad: insumo.cantidad_default,
-            disponibilidad: insumo.disponible ? 1 : 0,
-            detalle_paquete: paqueteId,
-            operacion: insumo.esNuevo ? 'insertar' : 'actualizar'
+            tipo_insumo: insumo.tipo,
+            detalle_paquete: insumo.paquete_id || null
           }))
-        ),
-      // Insumos eliminados (incluyendo los de paquetes)
-      ...insumosEliminados.map(insumo => ({
-        id_solicitud: appointmentId,
-        insumo_id: insumo.id,
-        tipo_insumo: insumo.tipo,
-        detalle_paquete: insumo.tipo === 'paquete' ? insumo.paquete_id : null,
-        operacion: 'eliminar'
-      }))
-    ];
-  
+        ]
+      };
+
       const response = await axios.patch(
         `${baseURL}/api/insumos/insumos-disponibles/${appointmentId}`, 
         datosActualizados
       );
       
       if(response.data.message) {
-        setMensaje({ 
-          tipo: "success", 
-          texto: `Cambios guardados exitosamente. Estado actual: ${response.data.nuevo_estado}` 
-        });
+        setMensaje({ tipo: "success", texto: "Cambios guardados exitosamente" });
         navigate(-1);
       }
     } catch (error) {
@@ -820,6 +773,7 @@ const SolicitudInsumosDetalle = () => {
       });
     }
   };
+
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
   
@@ -1227,67 +1181,49 @@ materialesSecciones.forEach(seccion => {
 
   // Añade esta función junto a tus otras funciones
   const generateMedicalSummaryPDF = (patientData) => {
-    if (!patientData || !patientData.resumen_medico) return;
+  if (!patientData || !patientData.resumen_medico) return;
+
+  // Crear nuevo documento PDF
+  const doc = new jsPDF();
   
-    // Crear nuevo documento PDF
-    const doc = new jsPDF();
-  
-    // Configurar fuente y tamaño para el encabezado
-    doc.setFont("helvetica", "bold");
-    doc.setFontSize(12);
-  
-    // Ancho de la página y márgenes
-    const margin = 20;
-    const pageWidth = doc.internal.pageSize.getWidth();
-  
-    // Encabezado centrado
-    const title = "Resumen Médico";
-    const solicitudText = `Solicitud: ${patientData?.folio || "N/A"}`;
-    const pacienteText = `Paciente: ${`${patientData?.nombre_paciente || ""} ${patientData?.ap_paterno || ""} ${patientData?.ap_materno || ""}`.trim()}`;
-  
-    doc.text(title, pageWidth / 2, 20, { align: "center" });
-    doc.text(solicitudText, pageWidth / 2, 30, { align: "center" });
-    doc.text(pacienteText, pageWidth / 2, 40, { align: "center" });
-  
-    // Línea divisoria
-    doc.setLineWidth(0.5);
-    doc.line(margin, 50, pageWidth - margin, 50);
-  
-    // Configurar fuente para el contenido
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
-  
-    // Configurar ancho de texto y posición inicial
-    const textWidth = pageWidth - (2 * margin);
-    let y = 60; // Debajo de la línea divisoria
-  
-    // Dividir el texto respetando saltos de línea originales
-    const lines = patientData.resumen_medico.split("\n");
-  
-    lines.forEach((line) => {
-      // Dividir cada línea según el ancho disponible
-      const splitLine = doc.splitTextToSize(line, textWidth);
-  
-      // Verificar si necesitamos una nueva página
-      if (y + splitLine.length * 5 > doc.internal.pageSize.getHeight() - margin) {
-        doc.addPage();
-        y = margin;
-      }
-  
-      // Agregar cada parte de la línea dividida
-      splitLine.forEach((text) => {
-        doc.text(text, margin, y, { align: "justify" });
-        y += 5; // Espacio entre líneas
-      });
-  
-      // Añadir un espacio adicional después de cada salto de línea original
-      y += 2;
+  // Configurar fuente
+  doc.setFont("helvetica");
+  doc.setFontSize(10);
+
+  // Configurar márgenes y ancho disponible (en mm)
+  const margin = 20;
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const textWidth = pageWidth - (2 * margin);
+
+  // Dividir el texto respetando saltos de línea originales
+  const lines = patientData.resumen_medico.split('\n');
+
+  // Posición inicial Y
+  let y = margin;
+
+  lines.forEach(line => {
+    // Dividir cada línea según el ancho disponible
+    const splitLine = doc.splitTextToSize(line, textWidth);
+    
+    // Verificar si necesitamos una nueva página
+    if (y + (splitLine.length * 5) > doc.internal.pageSize.getHeight() - margin) {
+      doc.addPage();
+      y = margin;
+    }
+
+    // Agregar cada parte de la línea dividida
+    splitLine.forEach(text => {
+      doc.text(text, margin, y, { align: 'justify' });
+      y += 5; // Espacio entre líneas
     });
-  
-    // Guardar el PDF
-    doc.save(`resumen_medico_${patientData?.folio || "sin_folio"}.pdf`);
-  };
-  
+
+    // Añadir un espacio adicional después de cada salto de línea original
+    y += 2;
+  });
+
+  // Guardar el PDF
+  doc.save(`resumen_medico_${solicitudData.folio || 'sin_folio'}.pdf`);
+};
 
 const tiposInsumo = {
   material_adicional: "Material Adicional",
@@ -1353,7 +1289,6 @@ const tiposInsumo = {
     onInsumoCantidadChange={handlePaqueteInsumoCantidad}
     onInsumoDisponibilidadChange={handlePaqueteInsumoDisponibilidad}
     onInsumoEliminar={handlePaqueteInsumoEliminar}
-    setPaquetesInsumos={setPaquetesInsumos}  // Pasamos el setState directamente
   />
 ))}
 
