@@ -186,10 +186,11 @@ const InsumoBlock = ({
 
   const handleInsumoSelect = (selectedInsumo) => {
     const nuevoInsumo = {
-      id: selectedInsumo.value, // Cambiar id por value
-      nombre: `${selectedInsumo.clave} - ${selectedInsumo.descripcion}`, // Construir el nombre con clave y descripción
+      id: selectedInsumo.id, // Usar id en lugar de value
+      nombre: `${selectedInsumo.clave} - ${selectedInsumo.descripcion}`, // Mantener el formato actual
       cantidad: 1,
-      disponible: true
+      disponible: true,
+      esNuevo: true // Marcar como nuevo insumo
     };
     
     handleAgregarInsumo(tipo_insumo, nuevoInsumo);
@@ -307,23 +308,29 @@ const PackageBlock = ({
   packageData,
   onInsumoCantidadChange,
   onInsumoDisponibilidadChange,
-  onInsumoEliminar
+  onInsumoEliminar,
+  setPaquetesInsumos
 }) => {
   const [showInsumos, setShowInsumos] = useState(false);
   const [showAddInsumo, setShowAddInsumo] = useState(false);
 
   const handleInsumoSelect = (selectedInsumo) => {
     const nuevoInsumo = {
-      id: selectedInsumo.value,
+      id: selectedInsumo.id, // Usar id en lugar de value
       nombre: `${selectedInsumo.clave} - ${selectedInsumo.descripcion}`,
       cantidad_default: 1,
-      disponible: true
+      disponible: true,
+      esNuevo: true // Marcar como nuevo insumo
     };
-    const paqueteActualizado = {
-      ...packageData,
-      insumos: [...packageData.insumos, nuevoInsumo]
-    };
-    onInsumoCantidadChange(packageData.id, nuevoInsumo.id, 1);
+  
+    setPaquetesInsumos(prev => ({
+      ...prev,
+      [packageData.id]: {
+        ...prev[packageData.id],
+        insumos: [...prev[packageData.id].insumos, nuevoInsumo]
+      }
+    }));
+    
     setShowAddInsumo(false);
   };
 
@@ -653,17 +660,28 @@ const SolicitudInsumosDetalle = () => {
   };
   
   const handlePaqueteInsumoEliminar = (paqueteId, insumoId) => {
-    setPaquetesInsumos(prev => ({
-      ...prev,
-      [paqueteId]: {
-        ...prev[paqueteId],
-        insumos: prev[paqueteId].insumos.filter(insumo => insumo.id !== insumoId)
+    setPaquetesInsumos(prev => {
+      // Crear una copia del estado actual
+      const newState = { ...prev };
+      
+      // Asegurarse de que el paquete existe
+      if (newState[paqueteId]) {
+        // Filtrar el insumo
+        newState[paqueteId] = {
+          ...newState[paqueteId],
+          insumos: newState[paqueteId].insumos.filter(insumo => insumo.id !== insumoId)
+        };
       }
-    }));
+      
+      return newState;
+    });
+  
+    // Agregar el insumo a la lista de eliminados con toda la información necesaria
     setInsumosEliminados(prev => [...prev, { 
       tipo: 'paquete', 
       id: insumoId,
-      paquete_id: paqueteId 
+      paquete_id: paqueteId,
+      operacion: 'eliminar'  // Agregar explícitamente la operación
     }]);
   };
   
@@ -700,75 +718,87 @@ const SolicitudInsumosDetalle = () => {
     return handlers[handlerType];
   };
 
+  const verificarEstadoGeneral = () => {
+    let totalInsumos = 0;
+    let insumosDisponibles = 0;
+  
+    // Contar insumos regulares
+    Object.values(insumos).forEach(insumosArray => {
+      insumosArray.forEach(insumo => {
+        totalInsumos++;
+        if (insumo.disponible) insumosDisponibles++;
+      });
+    });
+  
+    // Contar insumos de paquetes
+    Object.values(paquetesInsumos).forEach(paquete => {
+      paquete.insumos.forEach(insumo => {
+        totalInsumos++;
+        if (insumo.disponible) insumosDisponibles++;
+      });
+    });
+  
+    if (totalInsumos === 0) return "Sin solicitud";
+    if (totalInsumos === insumosDisponibles) return "Disponible";
+    if (insumosDisponibles > 0) return "Solicitado";
+    return "Sin solicitud";
+  };
+  
   const guardarTodosCambios = async () => {
     try {
+      const estadoGeneral = verificarEstadoGeneral();
       const datosActualizados = [
-
+        // Nuevos insumos (no paquetes)
         ...Object.entries(insumos).flatMap(([tipo, insumosArray]) =>
           insumosArray
-            .filter(insumo => !insumo.existente) // Solo nuevos insumos
+            .filter(insumo => insumo.esNuevo)
             .map(insumo => ({
               id_solicitud: appointmentId,
-              insumo_id: insumo.id,
               tipo_insumo: tipo,
+              insumo_id: insumo.id,
+              nombre_insumo: insumo.nombre,
               cantidad: insumo.cantidad,
-              disponibilidad: insumo.disponible ? 1 : 0
+              disponibilidad: insumo.disponible ? 1 : 0,
+              operacion: 'insertar'
             }))
         ),
-        // Insumos existentes
+  
+        // Insumos existentes (no paquetes)
         ...Object.entries(insumos).flatMap(([tipo, insumosArray]) =>
           insumosArray
-            .filter(insumo => insumo.existente) // Solo insumos existentes
+            .filter(insumo => !insumo.esNuevo)
             .map(insumo => ({
               id_solicitud: appointmentId,
-              insumo_id: insumo.id,
               tipo_insumo: tipo,
+              insumo_id: insumo.id,
               cantidad: insumo.cantidad,
-              disponibilidad: insumo.disponible ? 1 : 0
+              disponibilidad: insumo.disponible ? 1 : 0,
+              operacion: 'actualizar'
             }))
         ),
-        // Insumos individuales
-        ...Object.entries(insumos).flatMap(([tipo, insumosArray]) => 
-          tipo !== 'paquete' ? insumosArray.map(insumo => ({
-            id_solicitud: appointmentId,
-            insumo_id: insumo.id,
-            tipo_insumo: tipo,
-            cantidad: insumo.cantidad,
-            disponibilidad: insumo.disponible ? 1 : 0
-          })) : []
-        ),
+  
         // Insumos de paquetes
         ...Object.entries(paquetesInsumos).flatMap(([paqueteId, paquete]) => 
           paquete.insumos.map(insumo => ({
             id_solicitud: appointmentId,
-            insumo_id: insumo.id,
             tipo_insumo: 'paquete',
+            insumo_id: insumo.id,
+            nombre_insumo: insumo.nombre,
+            cantidad: insumo.cantidad_default,
+            disponibilidad: insumo.disponible ? 1 : 0,
             detalle_paquete: paqueteId,
-            cantidad: insumo.cantidad_default || insumo.cantidad,
-            disponibilidad: insumo.disponible ? 1 : 0
+            operacion: insumo.esNuevo ? 'insertar' : 'actualizar'
           }))
         ),
-
-        ...Object.entries(insumos).flatMap(([tipo, insumosArray]) =>
-          insumosArray
-            .filter(insumo => !insumo.existente) // Solo nuevos insumos
-            .map(insumo => ({
-              id_solicitud: appointmentId,
-              insumo_id: insumo.id,
-              tipo_insumo: tipo,
-              cantidad: insumo.cantidad,
-              disponibilidad: insumo.disponible ? 1 : 0
-            }))
-        ),
-
-        // Insumos eliminados
-        ...insumosEliminados.map(insumo => ({
-          id_solicitud: appointmentId,
-          insumo_id: insumo.id,
-          tipo_insumo: insumo.tipo,
-          eliminar: true
-        }))
-      ];
+      // Insumos eliminados (incluyendo los de paquetes)
+      ...insumosEliminados.map(insumo => ({
+        id_solicitud: appointmentId,
+        insumo_id: insumo.id,
+        tipo_insumo: insumo.tipo,
+        detalle_paquete: insumo.tipo === 'paquete' ? insumo.paquete_id : null,
+        operacion: 'eliminar'
+      }))
+    ];
   
       const response = await axios.patch(
         `${baseURL}/api/insumos/insumos-disponibles/${appointmentId}`, 
@@ -776,7 +806,10 @@ const SolicitudInsumosDetalle = () => {
       );
       
       if(response.data.message) {
-        setMensaje({ tipo: "success", texto: "Cambios guardados exitosamente" });
+        setMensaje({ 
+          tipo: "success", 
+          texto: `Cambios guardados exitosamente. Estado actual: ${response.data.nuevo_estado}` 
+        });
         navigate(-1);
       }
     } catch (error) {
@@ -787,7 +820,6 @@ const SolicitudInsumosDetalle = () => {
       });
     }
   };
-
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
   
@@ -1303,6 +1335,7 @@ const tiposInsumo = {
     onInsumoCantidadChange={handlePaqueteInsumoCantidad}
     onInsumoDisponibilidadChange={handlePaqueteInsumoDisponibilidad}
     onInsumoEliminar={handlePaqueteInsumoEliminar}
+    setPaquetesInsumos={setPaquetesInsumos}  // Pasamos el setState directamente
   />
 ))}
 
