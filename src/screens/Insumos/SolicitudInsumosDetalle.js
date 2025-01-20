@@ -1227,49 +1227,67 @@ materialesSecciones.forEach(seccion => {
 
   // Añade esta función junto a tus otras funciones
   const generateMedicalSummaryPDF = (patientData) => {
-  if (!patientData || !patientData.resumen_medico) return;
-
-  // Crear nuevo documento PDF
-  const doc = new jsPDF();
+    if (!patientData || !patientData.resumen_medico) return;
   
-  // Configurar fuente
-  doc.setFont("helvetica");
-  doc.setFontSize(10);
-
-  // Configurar márgenes y ancho disponible (en mm)
-  const margin = 20;
-  const pageWidth = doc.internal.pageSize.getWidth();
-  const textWidth = pageWidth - (2 * margin);
-
-  // Dividir el texto respetando saltos de línea originales
-  const lines = patientData.resumen_medico.split('\n');
-
-  // Posición inicial Y
-  let y = margin;
-
-  lines.forEach(line => {
-    // Dividir cada línea según el ancho disponible
-    const splitLine = doc.splitTextToSize(line, textWidth);
-    
-    // Verificar si necesitamos una nueva página
-    if (y + (splitLine.length * 5) > doc.internal.pageSize.getHeight() - margin) {
-      doc.addPage();
-      y = margin;
-    }
-
-    // Agregar cada parte de la línea dividida
-    splitLine.forEach(text => {
-      doc.text(text, margin, y, { align: 'justify' });
-      y += 5; // Espacio entre líneas
+    // Crear nuevo documento PDF
+    const doc = new jsPDF();
+  
+    // Configurar fuente y tamaño para el encabezado
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(12);
+  
+    // Ancho de la página y márgenes
+    const margin = 20;
+    const pageWidth = doc.internal.pageSize.getWidth();
+  
+    // Encabezado centrado
+    const title = "Resumen Médico";
+    const solicitudText = `Solicitud: ${patientData?.folio || "N/A"}`;
+    const pacienteText = `Paciente: ${`${patientData?.nombre_paciente || ""} ${patientData?.ap_paterno || ""} ${patientData?.ap_materno || ""}`.trim()}`;
+  
+    doc.text(title, pageWidth / 2, 20, { align: "center" });
+    doc.text(solicitudText, pageWidth / 2, 30, { align: "center" });
+    doc.text(pacienteText, pageWidth / 2, 40, { align: "center" });
+  
+    // Línea divisoria
+    doc.setLineWidth(0.5);
+    doc.line(margin, 50, pageWidth - margin, 50);
+  
+    // Configurar fuente para el contenido
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+  
+    // Configurar ancho de texto y posición inicial
+    const textWidth = pageWidth - (2 * margin);
+    let y = 60; // Debajo de la línea divisoria
+  
+    // Dividir el texto respetando saltos de línea originales
+    const lines = patientData.resumen_medico.split("\n");
+  
+    lines.forEach((line) => {
+      // Dividir cada línea según el ancho disponible
+      const splitLine = doc.splitTextToSize(line, textWidth);
+  
+      // Verificar si necesitamos una nueva página
+      if (y + splitLine.length * 5 > doc.internal.pageSize.getHeight() - margin) {
+        doc.addPage();
+        y = margin;
+      }
+  
+      // Agregar cada parte de la línea dividida
+      splitLine.forEach((text) => {
+        doc.text(text, margin, y, { align: "justify" });
+        y += 5; // Espacio entre líneas
+      });
+  
+      // Añadir un espacio adicional después de cada salto de línea original
+      y += 2;
     });
-
-    // Añadir un espacio adicional después de cada salto de línea original
-    y += 2;
-  });
-
-  // Guardar el PDF
-  doc.save(`resumen_medico_${solicitudData.folio || 'sin_folio'}.pdf`);
-};
+  
+    // Guardar el PDF
+    doc.save(`resumen_medico_${patientData?.folio || "sin_folio"}.pdf`);
+  };
+  
 
 const tiposInsumo = {
   material_adicional: "Material Adicional",
