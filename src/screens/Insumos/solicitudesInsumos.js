@@ -107,12 +107,11 @@ function SolicitudesInsumos() {
     }
   };
 
-  const formatFechaSolicitada = (fecha) => {
-    if (!fecha) return "";
-    const [year, month, day] = fecha.split("-");
-    return `${day}-${month}-${year}`;
+  const formatFecha = (fecha) => {
+    if (!fecha) return "N/A"; // Maneja fechas nulas o indefinidas
+    const date = new Date(fecha);
+    return date.toLocaleDateString("es-MX", { day: "2-digit", month: "2-digit", year: "numeric" });
   };
-
   const handleSort = (column) => {
     if (sortBy === column) {
       setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -252,6 +251,12 @@ function SolicitudesInsumos() {
                       <FaThLarge size={24} />
                     </button>
                   </div>
+                  <Link
+                    to="/bitacora/appointmentsenf"
+                    className="bg-[#365b77] hover:bg-[#365b77] text-white py-2 px-4 rounded-lg inline-flex items-center"
+                  >
+                    <span>Ver agenda</span>
+                  </Link>
                 </div>
 
                 {filteredAppointments.length === 0 ? (
@@ -404,7 +409,7 @@ function SolicitudesInsumos() {
                                 {appointment.clave_esp}
                               </td>
                               <td className="border px-4 py-2">
-                              {formatFechaSolicitada(
+                              {formatFecha(
                                   appointment.fecha_solicitada
                                 )}
                               </td>

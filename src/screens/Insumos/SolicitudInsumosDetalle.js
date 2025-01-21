@@ -9,10 +9,12 @@ import { Alert } from "../../components/ui/alert";
 import InsumosSelect from "../Solicitudes/InsumosSelect";
 import AdicionalSelect from "../Solicitudes/MedicamentoSelect";
 import PaquetesSelect from "../Solicitudes/PaqueteSelect";
+import { AuthContext } from "../../AuthContext";
+import { useContext } from "react";
 
-const PatientInfoBlock = ({ solicitudData,  onCommentChange  }) => {
+const PatientInfoBlock = ({ solicitudData,  onCommentChange,  canEditCommentsInsumos, canEditCommentsCompras }) => {
   const [showResumen, setShowResumen] = React.useState(false);
-  const [comentarios, setComentarios] = React.useState('');
+
 
   const patientData = Array.isArray(solicitudData) ? solicitudData[0] : solicitudData;
 
@@ -115,16 +117,29 @@ const PatientInfoBlock = ({ solicitudData,  onCommentChange  }) => {
         )}
       </div>
 
-    <div className="bg-gray-50 p-6 rounded-lg shadow-lg">
-      <label className="block font-semibold text-gray-700 mb-2">Comentarios adicionales:</label>
-      <textarea
-        className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-        rows={3}
-        placeholder="Agregar comentarios sobre los insumos..."
-        value={comentarios}
-        onChange={onCommentChange}
-      />
-    </div>
+      <div className="bg-gray-50 p-6 rounded-lg shadow-lg">
+        <label className="block font-semibold text-gray-700 mb-2">Comentarios administración:</label>
+        <textarea
+          className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          rows={3}
+          placeholder="Agregar comentarios sobre los insumos..."
+          value={solicitudData?.comentarios_insumos || ''}
+          onChange={(e) => onCommentChange('comentarios_insumos', e.target.value)}
+          disabled={!canEditCommentsInsumos}
+        />
+      </div>
+
+      <div className="bg-gray-50 p-6 rounded-lg shadow-lg">
+        <label className="block font-semibold text-gray-700 mb-2">Comentarios de compras:</label>
+        <textarea
+          className="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          rows={3}
+          placeholder="Agregar comentarios sobre las compras..."
+          value={solicitudData?.comentarios_compras || ''}
+          onChange={(e) => onCommentChange('comentarios_compras', e.target.value)}
+          disabled={!canEditCommentsCompras}
+        />
+      </div>
     </div>
   );
 };
@@ -180,7 +195,11 @@ const InsumoBlock = ({
   showPackageInfo = false,
   packageInsumos = null,
   packageName = "",
-  tipo_insumo // Nuevo prop para identificar el tipo de insumo
+  tipo_insumo, // Nuevo prop para identificar el tipo de insumo
+  isViewOnly,
+  canModifyAll,
+  canUsePalomaEquis,
+  canDelete
 }) => {
   const [showPackageModal, setShowPackageModal] = useState(false);
   const [showAddInsumo, setShowAddInsumo] = useState(false);
@@ -230,30 +249,31 @@ const InsumoBlock = ({
                 onChange={(e) => handleCantidadChange(insumo.id, e.target.value)}
                 min="1"
                 className="w-24 p-2 border rounded"
+                disabled={isViewOnly && !canModifyAll}
               />
               <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => toggleDisponibilidad(insumo.id, true)}
-                  className={`p-2 rounded ${
-                    insumo.disponible ? "bg-green-100 border border-green-500" : "bg-gray-200"
-                  }`}
-                >
-                  <Check className="text-green-600" />
-                </button>
-                <button
-                  onClick={() => toggleDisponibilidad(insumo.id, false)}
-                  className={`p-2 rounded ${
-                    !insumo.disponible ? "bg-red-100 border border-red-500" : "bg-gray-200"
-                  }`}
-                >
-                  <X className="text-red-600" />
-                </button>
+              <button
+                onClick={() => toggleDisponibilidad(insumo.id, true)}
+                className={`p-2 rounded ${insumo.disponible ? "bg-green-100 border border-green-500" : "bg-gray-200"}`}
+                disabled={!canUsePalomaEquis}
+              >
+                <Check className="text-green-600" />
+              </button>
+              <button
+                onClick={() => toggleDisponibilidad(insumo.id, false)}
+                className={`p-2 rounded ${!insumo.disponible ? "bg-red-100 border border-red-500" : "bg-gray-200"}`}
+                disabled={!canUsePalomaEquis}
+              >
+                <X className="text-red-600" />
+              </button>
+              {canDelete && (
                 <button
                   onClick={() => handleEliminarInsumo(insumo.id)}
                   className="p-2 rounded bg-red-100 hover:bg-red-200"
                 >
                   <Trash2 className="text-red-600" />
                 </button>
+              )}
               </div>
             </div>
           ))}
@@ -308,7 +328,9 @@ const PackageBlock = ({
   packageData,
   onInsumoCantidadChange,
   onInsumoDisponibilidadChange,
-  onInsumoEliminar
+  onInsumoEliminar,
+  canUsePalomaEquis,
+  canDelete
 }) => {
   const [showInsumos, setShowInsumos] = useState(false);
   const [showAddInsumo, setShowAddInsumo] = useState(false);
@@ -382,7 +404,9 @@ const PackageBlock = ({
       min="1"
       className="w-24 p-2 border rounded"
     />
-    <div className="flex items-center space-x-2">
+<div className="flex items-center space-x-2">
+  {canUsePalomaEquis && (
+    <>
       <button
         onClick={() => onInsumoDisponibilidadChange(packageData.id, insumo.id, true)}
         className={`p-2 rounded ${insumo.disponible ? "bg-green-100 border border-green-500" : "bg-gray-200"}`}
@@ -395,13 +419,17 @@ const PackageBlock = ({
       >
         <X className="text-red-600" />
       </button>
-      <button
-        onClick={() => onInsumoEliminar(packageData.id, insumo.id)}
-        className="p-2 rounded bg-red-100 hover:bg-red-200"
-      >
-        <Trash2 className="text-red-600" />
-      </button>
-    </div>
+    </>
+  )}
+  {canDelete && (
+    <button
+      onClick={() => onInsumoEliminar(packageData.id, insumo.id)}
+      className="p-2 rounded bg-red-100 hover:bg-red-200"
+    >
+      <Trash2 className="text-red-600" />
+    </button>
+  )}
+</div>
   </div>
 ))}
       <button
@@ -434,13 +462,26 @@ const SolicitudInsumosDetalle = () => {
   const [paquetesInsumos, setPaquetesInsumos] = useState({});
   const [insumosEliminados, setInsumosEliminados] = useState([]);
   const [nuevosInsumos, setNuevosInsumos] = useState([]);
+  const { user } = useContext(AuthContext);
 
-  const handleCommentChange = (value) => {
+  const userRole = user?.rol_user || 0;
+
+  // Define los permisos
+  const isViewOnly = [1, 2, 3, 4].includes(userRole);
+  const canEditCommentsInsumos = [5, 6].includes(userRole);
+  const canEditCommentsCompras = [8, 6].includes(userRole);
+  const canUsePalomaEquis = [8, 6].includes(userRole);
+  const canModifyAll = userRole === 6;
+
+  
+
+  const handleCommentChange = (field, value) => {
     setSolicitudData(prev => ({
       ...prev,
-      comentarios_insumos: value
+      [field]: value
     }));
   };
+
 
   const handleAgregarInsumo = (tipo, nuevoInsumo) => {
     setInsumos(prev => ({
@@ -701,68 +742,98 @@ const SolicitudInsumosDetalle = () => {
     return handlers[handlerType];
   };
 
+  const verificarEstadoGeneral = () => {
+    let totalInsumos = 0;
+    let insumosDisponibles = 0;
+  
+    // Contar insumos regulares
+    Object.values(insumos).forEach(insumosArray => {
+      insumosArray.forEach(insumo => {
+        totalInsumos++;
+        if (insumo.disponible) insumosDisponibles++;
+      });
+    });
+  
+    // Contar insumos de paquetes
+    Object.values(paquetesInsumos).forEach(paquete => {
+      paquete.insumos.forEach(insumo => {
+        totalInsumos++;
+        if (insumo.disponible) insumosDisponibles++;
+      });
+    });
+  
+    if (totalInsumos === 0) return "Sin solicitud";
+    if (totalInsumos === insumosDisponibles) return "Disponible";
+    if (insumosDisponibles > 0) return "Solicitado";
+    return "Sin solicitud";
+  };
+
   const guardarTodosCambios = async () => {
     try {
-      // Preparar los datos de insumos
-      const datosActualizados = {
-        comentarios_insumos: solicitudData?.comentarios_insumos || '', // Agregamos los comentarios
-        insumos: [
-          // Insumos nuevos
-          ...Object.entries(insumos).flatMap(([tipo, insumosArray]) =>
-            insumosArray
-              .filter(insumo => !insumo.existente)
-              .map(insumo => ({
-                operacion: 'insertar',
-                id_solicitud: appointmentId,
-                insumo_id: insumo.id,
-                tipo_insumo: tipo,
-                cantidad: insumo.cantidad,
-                disponibilidad: insumo.disponible ? 1 : 0
-              }))
-          ),
-          // Insumos existentes
-          ...Object.entries(insumos).flatMap(([tipo, insumosArray]) =>
-            insumosArray
-              .filter(insumo => insumo.existente)
-              .map(insumo => ({
-                operacion: 'actualizar',
-                id_solicitud: appointmentId,
-                insumo_id: insumo.id,
-                tipo_insumo: tipo,
-                cantidad: insumo.cantidad,
-                disponibilidad: insumo.disponible ? 1 : 0
-              }))
-          ),
-          // Insumos de paquetes
-          ...Object.entries(paquetesInsumos).flatMap(([paqueteId, paquete]) => 
-            paquete.insumos.map(insumo => ({
-              operacion: 'actualizar',
+      const estadoGeneral = verificarEstadoGeneral();
+      const datosActualizados = [
+        // Nuevos insumos (no paquetes)
+        ...Object.entries(insumos).flatMap(([tipo, insumosArray]) =>
+          insumosArray
+            .filter(insumo => insumo.esNuevo)
+            .map(insumo => ({
               id_solicitud: appointmentId,
+              tipo_insumo: tipo,
               insumo_id: insumo.id,
-              tipo_insumo: 'paquete',
-              detalle_paquete: paqueteId,
-              cantidad: insumo.cantidad_default || insumo.cantidad,
-              disponibilidad: insumo.disponible ? 1 : 0
+              nombre_insumo: insumo.nombre,
+              cantidad: insumo.cantidad,
+              disponibilidad: insumo.disponible ? 1 : 0,
+              operacion: 'insertar'
             }))
-          ),
-          // Insumos eliminados
-          ...insumosEliminados.map(insumo => ({
-            operacion: 'eliminar',
+        ),
+  
+        // Insumos existentes (no paquetes)
+        ...Object.entries(insumos).flatMap(([tipo, insumosArray]) =>
+          insumosArray
+            .filter(insumo => !insumo.esNuevo)
+            .map(insumo => ({
+              id_solicitud: appointmentId,
+              tipo_insumo: tipo,
+              insumo_id: insumo.id,
+              cantidad: insumo.cantidad,
+              disponibilidad: insumo.disponible ? 1 : 0,
+              operacion: 'actualizar'
+            }))
+        ),
+  
+        // Insumos de paquetes
+        ...Object.entries(paquetesInsumos).flatMap(([paqueteId, paquete]) => 
+          paquete.insumos.map(insumo => ({
             id_solicitud: appointmentId,
+            tipo_insumo: 'paquete',
             insumo_id: insumo.id,
-            tipo_insumo: insumo.tipo,
-            detalle_paquete: insumo.paquete_id || null
+            nombre_insumo: insumo.nombre,
+            cantidad: insumo.cantidad_default,
+            disponibilidad: insumo.disponible ? 1 : 0,
+            detalle_paquete: paqueteId,
+            operacion: insumo.esNuevo ? 'insertar' : 'actualizar'
           }))
-        ]
-      };
-
+        ),
+      // Insumos eliminados (incluyendo los de paquetes)
+      ...insumosEliminados.map(insumo => ({
+        id_solicitud: appointmentId,
+        insumo_id: insumo.id,
+        tipo_insumo: insumo.tipo,
+        detalle_paquete: insumo.tipo === 'paquete' ? insumo.paquete_id : null,
+        operacion: 'eliminar'
+      }))
+    ];
+  
       const response = await axios.patch(
         `${baseURL}/api/insumos/insumos-disponibles/${appointmentId}`, 
         datosActualizados
       );
       
       if(response.data.message) {
-        setMensaje({ tipo: "success", texto: "Cambios guardados exitosamente" });
+        setMensaje({ 
+          tipo: "success", 
+          texto: `Cambios guardados exitosamente. Estado actual: ${response.data.nuevo_estado}` 
+        });
         navigate(-1);
       }
     } catch (error) {
@@ -773,7 +844,6 @@ const SolicitudInsumosDetalle = () => {
       });
     }
   };
-
   const formatDate = (dateString) => {
     if (!dateString) return "N/A";
   
@@ -1245,27 +1315,32 @@ const tiposInsumo = {
         <h2 className="text-2xl font-semibold mb-6">Detalle de Solicitud de Insumos</h2>
 
         <button
-            onClick={() => generateDocument(solicitudData)}
-            className="bg-green-500 text-white text-sm p-4 rounded-lg font-light mr-4" // Agregado margen derecho
-            style={{ marginBottom: "8px" }}
-          >
-            Imprimir solicitud
-          </button>
+          onClick={() => generateDocument(solicitudData)}
+          className={`bg-green-500 text-white text-sm p-4 rounded-lg font-light mr-4 ${isViewOnly ? "hidden" : ""}`}
+          disabled={!canModifyAll && isViewOnly}
+        >
+          Imprimir solicitud
+        </button>
+        <button
+          onClick={() => generateMedicalSummaryPDF(solicitudData)}
+          className={`bg-blue-500 text-white text-sm p-4 rounded-lg font-light mt-2 ${isViewOnly ? "hidden" : ""}`}
+          disabled={!canModifyAll && isViewOnly}
+        >
+          Imprimir resumen médico
+        </button>
 
-          <button
-            onClick={() => generateMedicalSummaryPDF(solicitudData)}
-            className="bg-blue-500 text-white text-sm p-4 rounded-lg font-light mt-2" // Agregado margen superior
-          >
-            Imprimir resumen médico
-          </button>
 
 
         {mensaje.texto && <Alert className={`mb-4 ${mensaje.tipo === "error" ? "bg-red-100" : "bg-green-100"}`}>{mensaje.texto}</Alert>}
         
-        {solicitudData && <PatientInfoBlock 
-          solicitudData={solicitudData} 
-          onCommentChange={handleCommentChange} 
-        />}
+        {solicitudData && (
+          <PatientInfoBlock 
+            solicitudData={solicitudData} 
+            onCommentChange={handleCommentChange}
+            canEditCommentsInsumos={canEditCommentsInsumos}
+            canEditCommentsCompras={canEditCommentsCompras} 
+          />
+        )}
       {/* Primero renderizar los insumos normales */}
       {Object.entries(insumos).map(([tipo, insumosArray]) => (
           tipo !== 'paquete' && (
@@ -1278,6 +1353,10 @@ const tiposInsumo = {
               handleEliminarInsumo={(id) => handleEliminarInsumo(tipo, id)}
               tipo_insumo={tipo}
               handleAgregarInsumo={handleAgregarInsumo}
+              isViewOnly={isViewOnly}
+              canModifyAll={canModifyAll}
+              canUsePalomaEquis={canUsePalomaEquis}
+              canDelete={[5, 6].includes(userRole)}
             />
           )
         ))}
@@ -1289,17 +1368,20 @@ const tiposInsumo = {
     onInsumoCantidadChange={handlePaqueteInsumoCantidad}
     onInsumoDisponibilidadChange={handlePaqueteInsumoDisponibilidad}
     onInsumoEliminar={handlePaqueteInsumoEliminar}
+    canUsePalomaEquis={canUsePalomaEquis}
+    canDelete={[5, 6].includes(userRole)}
   />
 ))}
 
 <div className="fixed bottom-0 left-0 right-0 bg-white p-4 shadow-lg">
           <div className="container mx-auto flex justify-end">
-            <button
-              onClick={guardarTodosCambios}
-              className="px-8 py-3 bg-green-500 text-white rounded hover:bg-green-600 transition-colors"
-            >
-              Guardar Cambios
-            </button>
+          <button
+            onClick={guardarTodosCambios}
+            className={`px-8 py-3 bg-green-500 text-white rounded hover:bg-green-600 transition-colors ${isViewOnly ? "hidden" : ""}`}
+            disabled={isViewOnly && !canModifyAll}
+          >
+            Guardar Cambios
+          </button>
           </div>
         </div>
       </div>
