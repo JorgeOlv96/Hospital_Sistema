@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import Layout from "../../Layout";
 import InsumosSelect from "./InsumosSelect";
@@ -6,6 +6,7 @@ import MedicamentoSelect from "./MedicamentoSelect";
 import AdicionalSelect from "./AdicionalSelect";
 import PaquetesSelect from "./PaqueteSelect";
 import { useParams } from "react-router-dom";
+import { AuthContext } from "../../AuthContext";
 
 const SectionWithInsumos = ({ title, type, onAddInsumo, SelectComponent }) => {
   const [selectedInsumos, setSelectedInsumos] = useState([]);
@@ -91,6 +92,8 @@ const SolicitudInsumosPaciente = () => {
   const [insumoBusqueda, setInsumoBusqueda] = useState("");
   const [paqueteBusqueda, setPaqueteBusqueda] = useState("");
   const [resumenMedico, setResumenMedico] = useState("");
+  const [solicitudGuardada, setSolicitudGuardada] = useState(false);
+  const { user } = useContext(AuthContext);
   const [selectedInsumos, setSelectedInsumos] = useState({
     materialAdicional: [],
     materialExterno: [],
@@ -104,12 +107,18 @@ const SolicitudInsumosPaciente = () => {
   const [showInsumoTypeModal, setShowInsumoTypeModal] = useState(false);
 
   const insumoTypes = [
-    { type: "materialExterno", label: "Material Externo", component: InsumosSelect },
-    { type: "materialAdicional", label: "Material Adicional", component: AdicionalSelect },
-    { type: "servicios", label: "Servicio", component: InsumosSelect },
-    { type: "medicamentos", label: "Medicamento", component: MedicamentoSelect },
-    { type: "paquetes", label: "Paquete", component: PaquetesSelect }
+    { type: "materialExterno", label: "Material Externo (Especialidad)", component: InsumosSelect },
+    { type: "materialAdicional", label: "Material Adicional (General)", component: AdicionalSelect },
+/*     { type: "servicios", label: "Servicio", component: InsumosSelect },
+    { type: "medicamentos", label: "Medicamento", component: MedicamentoSelect }, */
+    { type: "paquetes", label: "Paquete (Especialidad)", component: PaquetesSelect }
   ];
+
+  const puedeEditar = () => {
+    if (!user || !user.rol_user) return true; // Si no hay usuario o rol, permitir edición por defecto
+    const rol = parseInt(user.rol_user);
+    return rol === 6 || rol > 8 || rol < 1;
+  };
 
 
   useEffect(() => {
@@ -124,6 +133,77 @@ const SolicitudInsumosPaciente = () => {
       }
     };
     fetchAppointmentData();
+  }, [appointmentId, baseURL]);
+
+  useEffect(() => {
+    const verificarSolicitudExistente = async () => {
+      try {
+        const response = await axios.get(`${baseURL}/api/insumos/solicitudes-insumos/${appointmentId}`);
+        if (response.data && response.data.length > 0) {
+          // Organizamos los insumos por tipo
+          const insumosOrganizados = {
+            materialAdicional: [],
+            materialExterno: [],
+            servicios: [],
+            paquetes: [],
+            medicamentos: []
+          };
+
+          response.data.forEach(insumo => {
+            // Convertimos el tipo_insumo a la clave correspondiente en nuestro objeto
+            let tipo;
+            switch(insumo.tipo_insumo) {
+              case 'material_adicional':
+                tipo = 'materialAdicional';
+                break;
+              case 'material_externo':
+                tipo = 'materialExterno';
+                break;
+              case 'servicio':
+                tipo = 'servicios';
+                break;
+              case 'medicamento':
+                tipo = 'medicamentos';
+                break;
+              case 'paquete':
+                tipo = 'paquetes';
+                break;
+              default:
+                tipo = 'materialExterno'; // Por defecto
+            }
+
+            // Formateamos el insumo para que coincida con la estructura esperada
+            const insumoFormateado = {
+              value: insumo.insumo_id,
+              label: insumo.nombre_insumo,
+              cantidad: insumo.cantidad,
+              clave: insumo.nombre_insumo.split(' - ')[0],
+              descripcion: insumo.nombre_insumo.split(' - ')[1] || insumo.nombre_insumo
+            };
+
+            // Si es un paquete, agregamos la información del paquete
+            if (tipo === 'paquetes' && insumo.detalle_paquete) {
+              insumoFormateado.insumos = [{
+                value: insumo.insumo_id,
+                clave: insumo.nombre_insumo.split(' - ')[0],
+                descripcion: insumo.nombre_insumo.split(' - ')[1] || insumo.nombre_insumo,
+                cantidad: insumo.cantidad
+              }];
+            }
+
+            insumosOrganizados[tipo].push(insumoFormateado);
+          });
+
+          setSelectedInsumos(insumosOrganizados);
+          setResumenMedico(response.data[0]?.resumen_medico || "");
+          setSolicitudGuardada(true);
+        }
+      } catch (error) {
+        console.error("Error al verificar solicitud existente:", error);
+      }
+    };
+
+    verificarSolicitudExistente();
   }, [appointmentId, baseURL]);
 
   const handleOpenInsumoTypeModal = () => {
@@ -226,6 +306,21 @@ const SolicitudInsumosPaciente = () => {
   };
 
   const handleGuardarSolicitud = async () => {
+
+    if (!resumenMedico.trim()) {
+      alert("El resumen médico es obligatorio. Por favor, complete este campo antes de guardar.");
+      return;
+    }
+
+    const confirmar = window.confirm(
+      "Por favor, verifique cuidadosamente la información antes de enviarla al área de administración. " +
+      "Una vez guardada, no podrá modificar esta solicitud.\n\n" +
+      "¿Está seguro de que desea guardar la solicitud?"
+    );
+
+    if (!confirmar) return;
+
+    
     const processInsumos = (insumos, tipo) => {
       if (!insumos) return [];
       return insumos.map((i) => ({
@@ -352,45 +447,49 @@ const SolicitudInsumosPaciente = () => {
   
   
 
-  const renderSelectedInsumos = (type) => {
+const renderSelectedInsumos = (type) => {
+    const insumos = selectedInsumos[type] || [];
+    
     if (type === 'paquetes') {
-      return selectedInsumos[type].length === 0 ? (
+      return insumos.length === 0 ? (
         <p className="text-gray-500 italic">No hay paquetes seleccionados</p>
       ) : (
         <div className="space-y-4">
-          {selectedInsumos[type].map((paquete, paqueteIndex) => (
+          {insumos.map((paquete, paqueteIndex) => (
             <div key={paqueteIndex} className="bg-gray-100 rounded-lg p-4">
               <div className="mb-3">
                 <h5 className="text-lg font-semibold">{paquete.label}</h5>
-                <p className="text-sm text-gray-600">Insumos incluidos:</p>
+                {paquete.insumos && <p className="text-sm text-gray-600">Insumos incluidos:</p>}
               </div>
-              <div className="space-y-2">
-                {paquete.insumos.map((insumo, insumoIndex) => (
-                  <div 
-                    key={insumoIndex} 
-                    className="flex justify-between items-center bg-white p-2 rounded"
-                  >
-                    <div>
-                      <p className="font-medium">{insumo.clave} - {insumo.descripcion}</p>
-                      <p className="text-sm text-gray-600">Cantidad: {insumo.cantidad}</p>
+              {paquete.insumos && (
+                <div className="space-y-2">
+                  {paquete.insumos.map((insumo, insumoIndex) => (
+                    <div 
+                      key={insumoIndex} 
+                      className="flex justify-between items-center bg-white p-2 rounded"
+                    >
+                      <div>
+                        <p className="font-medium">{insumo.clave} - {insumo.descripcion}</p>
+                        <p className="text-sm text-gray-600">Cantidad: {insumo.cantidad}</p>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           ))}
         </div>
       );
     }
 
-    return selectedInsumos[type].length === 0 ? (
+    return insumos.length === 0 ? (
       <p className="text-gray-500 italic">No hay insumos seleccionados</p>
     ) : (
       <div className="space-y-2">
-        {selectedInsumos[type].map((insumo, index) => (
+        {insumos.map((insumo, index) => (
           <div key={index} className="flex items-center justify-between bg-gray-100 p-3 rounded-lg">
             <div>
-              <p className="font-medium">{insumo.clave} - {insumo.descripcion}</p>
+              <p className="font-medium">{insumo.label}</p>
               <p className="text-sm text-gray-600">Cantidad: {insumo.cantidad}</p>
             </div>
             <button
@@ -444,7 +543,9 @@ const SolicitudInsumosPaciente = () => {
   return (
     <Layout>
       <div className="p-6">
-        <h2 className="text-2xl font-semibold mb-6">Solicitud de Insumos para Paciente</h2>
+      <h2 className="text-2xl font-semibold mb-6">
+          {solicitudGuardada ? "Resumen de Solicitud de Insumos" : "Solicitud de Insumos para Paciente"}
+        </h2>
 
         {/* Información del paciente */}
         <div className="bg-gray-400 p-6 rounded-lg shadow-lg mb-4">
@@ -534,27 +635,34 @@ const SolicitudInsumosPaciente = () => {
   </div>
 
   <div className="w-full mb-4">
-  <label htmlFor="resumenMedico" className="block font-semibold text-gray-700 mb-2">
-    Resumen Médico:
-  </label>
-  <textarea
-    id="resumenMedico"
-    value={resumenMedico}
-    onChange={(e) => setResumenMedico(e.target.value)}
-    className="w-full p-3 border rounded-lg bg-white"
-    placeholder="Escribe el resumen médico aquí..."
-    rows="4"
-  ></textarea>
-</div>
-
-<div className="mt-6 flex items-center space-x-4">
-          <button
-            onClick={handleOpenInsumoTypeModal}
-            className="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-blue-700"
-          >
-            Agregar Insumo
-          </button>
+          <label htmlFor="resumenMedico" className="block font-semibold text-gray-700 mb-2">
+            Resumen Médico: <span className="text-red-500">*</span>
+          </label>
+          {solicitudGuardada || !puedeEditar() ? (
+            <p className="bg-gray-100 p-3 rounded-lg">{resumenMedico}</p>
+          ) : (
+            <textarea
+              id="resumenMedico"
+              value={resumenMedico}
+              onChange={(e) => setResumenMedico(e.target.value)}
+              className="w-full p-3 border rounded-lg"
+              placeholder="Escribe el resumen médico aquí... (Campo obligatorio)"
+              rows="4"
+              required
+            ></textarea>
+          )}
         </div>
+
+        {!solicitudGuardada && puedeEditar() && (
+          <>
+            <div className="mt-6 flex items-center space-x-4">
+              <button
+                onClick={handleOpenInsumoTypeModal}
+                className="bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-blue-700"
+              >
+                Agregar Insumo
+              </button>
+            </div>
 
         {currentInsumoTypes.map((insumoType) => {
           const CurrentSelect = insumoType.component;
@@ -570,8 +678,24 @@ const SolicitudInsumosPaciente = () => {
           );
         })}
 
-      {/* Lista de insumos seleccionados */}
-      <div className="mt-6">
+
+
+<div className="mt-6 flex justify-end">
+              <button
+                onClick={handleGuardarSolicitud}
+                className="bg-green-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-green-700"
+              >
+                Guardar Solicitud
+              </button>
+            </div>
+
+            {renderInsumoTypeModal()}
+          </>
+        )}
+        </div>
+
+            {/* Lista de insumos seleccionados */}
+            <div className="mt-6">
           <h3 className="text-xl font-semibold mb-4">Insumos Seleccionados</h3>
           {Object.keys(selectedInsumos).map((type) => (
             <div key={type} className="mb-4">
@@ -582,20 +706,6 @@ const SolicitudInsumosPaciente = () => {
             </div>
           ))}
         </div>
-
-
-
-        <div className="mt-6 flex justify-end">
-          <button
-            onClick={handleGuardarSolicitud}
-            className="bg-green-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md hover:bg-green-700"
-          >
-            Guardar Solicitud
-          </button>
-        </div>
-
-        {renderInsumoTypeModal()}
-      </div>
       </div>
     </Layout>
   );

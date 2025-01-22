@@ -2,12 +2,11 @@ import React, { useState, useEffect, useContext } from "react";
 import Layout from "../../Layout";
 import AddAppointmentModalInsumos from "../../components/Modals/AddApointmentModalInsumos";
 import axios from "axios";
-import { Link } from "react-router-dom";
 import { AuthContext } from "../../AuthContext";
 import { FaTable, FaThLarge } from "react-icons/fa"; // Asegúrate de tener esta biblioteca instalada
 
 
-function SolicitudesInsumos() {
+function SolicitudesInsumosTodos() {
   const [pendingAppointments, setPendingAppointments] = useState([]);
   const [selectedAppointment, setSelectedAppointment] = useState(null);
   const [open, setOpen] = useState(false);
@@ -49,23 +48,37 @@ function SolicitudesInsumos() {
 
   const fetchPendingAppointments = async () => {
     try {
-      const response = await axios.get(`${baseURL}/api/insumos/solicitudes-insumos`);
+      const response = await axios.get(`${baseURL}/api/solicitudes`);
+  
+      // No necesitas hacer `response.json()` porque Axios ya maneja eso.
       const data = response.data;
   
-      console.log('Datos originales:', data);
+      // Filtrar las solicitudes que requieren insumo
+      const filteredData = data.filter(
+        (solicitud) =>
+          solicitud.req_insumo && solicitud.req_insumo.trim().toLowerCase() === "si" &&
+          solicitud.estado_solicitud !== "Eliminada"
+      );
   
-      // Aquí NO hacemos el mapeo que estaba sobreescribiendo el id_solicitud
-      const sortedData = data
+      // Filtrar por especialidad
+      const specialtyFilteredData = filteredData.filter(
+        (solicitud) =>
+          userSpecialty === "" || solicitud.nombre_especialidad === userSpecialty
+      );
+      
+      // Ordenar los datos por fecha solicitada (más próxima al inicio) y por ID de solicitud de manera descendente
+      const sortedData = specialtyFilteredData
         .sort((a, b) => new Date(a.fecha_solicitada) - new Date(b.fecha_solicitada))
-        .sort((a, b) => b.id - a.id);
+        .sort((a, b) => b.id_solicitud - a.id_solicitud);
   
-      console.log('Datos procesados:', sortedData);
       setPendingAppointments(sortedData);
     } catch (error) {
       console.error("Error fetching pending appointments:", error);
     }
   };
   
+
+
   const handleViewModal = (appointment) => {
     setSelectedAppointment(appointment);
     setOpen(true);
@@ -80,38 +93,51 @@ function SolicitudesInsumos() {
   };
 
   const getEstadoColor = (estado) => {
-    switch (estado?.toLowerCase()) {
-      case "disponible":
+    switch (estado.toLowerCase()) {
+      case "programada":
         return "bg-green-400";
-      case "solicitado":
+      case "realizada":
         return "bg-blue-400";
-      case "sin solicitud":
+      case "suspendida":
+        return "bg-yellow-400";
+      case "pendiente":
         return "bg-orange-400";
+      case "Pre-programada":
+        return "bg-red-400";
+      case "Urgencia":
+        return "bg-red-400";
       default:
         return "";
     }
   };
-  
+
   const getEstadoColorStyle = (estado) => {
-    if (!estado) return { backgroundColor: "#gray", color: "white" };
-    
     switch (estado.toLowerCase()) {
-      case "disponible":
-        return { backgroundColor: "#68D391", color: "white" }; // Verde
-      case "solicitado":
+      case "programada":
+        return { backgroundColor: "#68D391", color: "white" }; // Verde claro
+      case "realizada":
         return { backgroundColor: "#63B3ED", color: "white" }; // Azul claro
-      case "sin solicitud":
-        return { backgroundColor: "#E9972F", color: "white" }; // Naranja
+      case "suspendida":
+        return { backgroundColor: "#F6E05E", color: "white" }; // Amarillo
+      case "pendiente":
+        return { backgroundColor: "#E9972F", color: "white" }; // Rojo claro
+      case "pre-programada":
+        return { backgroundColor: "#06ABC9", color: "white" }; // Rosa claro
+      case "urgencia":
+        return { backgroundColor: "#FC8181", color: "white" }; // Rosa claro
       default:
+        // Aquí puedes manejar el caso por defecto
+
         return {};
     }
   };
 
-  const formatFecha = (fecha) => {
-    if (!fecha) return "N/A"; // Maneja fechas nulas o indefinidas
-    const date = new Date(fecha);
-    return date.toLocaleDateString("es-MX", { day: "2-digit", month: "2-digit", year: "numeric" });
+  const formatFechaSolicitada = (fecha) => {
+    if (!fecha) return "";
+    const [year, month, day] = fecha.split("-");
+    return `${day}-${month}-${year}`;
   };
+
   const handleSort = (column) => {
     if (sortBy === column) {
       setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -145,8 +171,8 @@ function SolicitudesInsumos() {
       ? new Date(appointment.fecha_solicitada).toISOString().slice(0, 10) ===
         dateFilter
       : true;
-      const matchesEstado = filter.estado
-      ? appointment.estado_insumos
+    const matchesEstado = filter.estado
+      ? appointment.estado_solicitud
           .toLowerCase()
           .includes(filter.estado.toLowerCase())
       : true;
@@ -250,20 +276,6 @@ function SolicitudesInsumos() {
                     >
                       <FaThLarge size={24} />
                     </button>
-                  </div>
-                  <div className="flex space-x-2">
-                    <Link
-                      to="/solicitudesInsumosTodos"
-                      className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded-lg inline-flex items-center"
-                    >
-                      <span>Ver tabla de solicitudes</span>
-                    </Link>
-                    <Link
-                      to="/bitacora/appointmentsenf"
-                      className="bg-[#365b77] hover:bg-[#7498b6] text-white py-2 px-4 rounded-lg inline-flex items-center"
-                    >
-                      <span>Ver agenda</span>
-                    </Link>
                   </div>
                 </div>
 
@@ -376,18 +388,32 @@ function SolicitudesInsumos() {
                           </th>
                           <th
                             className="px-4 py-2 cursor-pointer"
-                            onClick={() => handleSort("estado_insumos")}
+                            onClick={() => handleSort("insumos")}
                           >
-                            Estado Insumos{" "}
+                            Insumos{" "}
                             <span>
-                              {sortBy === "estado_insumos"
+                              {sortBy === "cama"
                                 ? sortOrder === "asc"
                                   ? "▲"
                                   : "▼"
                                 : ""}
                             </span>
                           </th>
-                          <th className="px-4 py-3">Acciones</th>        
+                          <th
+                            className="px-4 py-2 cursor-pointer"
+                            onClick={() => handleSort("estado_solicitud")}
+                          >
+                            Estado{" "}
+                            <span>
+                              {sortBy === "estado_solicitud"
+                                ? sortOrder === "asc"
+                                  ? "▲"
+                                  : "▼"
+                                : ""}
+                            </span>
+                          </th>
+                          <th className="px-4 py-3">Acciones</th>
+                        
                         </tr>
                       </thead>
                       <tbody>
@@ -417,7 +443,7 @@ function SolicitudesInsumos() {
                                 {appointment.clave_esp}
                               </td>
                               <td className="border px-4 py-2">
-                              {formatFecha(
+                              {formatFechaSolicitada(
                                   appointment.fecha_solicitada
                                 )}
                               </td>
@@ -427,14 +453,17 @@ function SolicitudesInsumos() {
                               <td className="border px-4 py-2 text-center align-middle">
                                 {appointment.sala_quirofano}
                               </td>
+                              <td className="border px-4 py-2 text-center align-middle">
+                                {appointment.req_insumo}
+                              </td>
                               <td className="border px-4 py-2">
                                 <div
                                   className={`inline-block px-1 py-1 rounded-lg ${getEstadoColor(
-                                    appointment.estado_insumos
+                                    appointment.estado_solicitud
                                   )}`}
                                   style={{
                                     ...getEstadoColorStyle(
-                                      appointment.estado_insumos
+                                      appointment.estado_solicitud
                                     ),
                                     display: "flex",
                                     justifyContent: "center",
@@ -444,20 +473,16 @@ function SolicitudesInsumos() {
                                     textAlign: "center",
                                   }}
                                 >
-                                  {appointment.estado_insumos}
+                                  {appointment.estado_solicitud}
                                 </div>
                               </td>
                               <td className="border px-4 py-2 flex justify-center">
-                                {console.log('Valores de la solicitud:', {
-                                  id: appointment.id,
-                                  id_solicitud: appointment.id_solicitud,
-                                })}
-                                <Link
-                                  to={`/solicitudInsumosDetalle/${appointment.id_solicitud}`}
+                                <button
+                                  onClick={() => handleViewModal(appointment)}
                                   className="bg-[#365b77] text-white px-5 py-2 rounded-md hover:bg-blue-800"
                                 >
                                   Ver
-                                </Link>
+                                </button>
                               </td>
                             </tr>
                           ))}
@@ -562,4 +587,4 @@ function SolicitudesInsumos() {
   );
 }
 
-export default SolicitudesInsumos;
+export default SolicitudesInsumosTodos;
