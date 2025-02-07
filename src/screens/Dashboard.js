@@ -109,14 +109,20 @@ function Dashboard() {
         );
 
         const processData = (data) => {
+          // Primero filtramos las solicitudes eliminadas
+          const solicitudesActivas = data.filter(solicitud => 
+            solicitud.estado_solicitud !== 'Eliminada'
+          );
+          
+          // Luego aplicamos el filtro por especialidad si existe
           if (user?.especialidad) {
-            return data.filter(solicitud => 
+            return solicitudesActivas.filter(solicitud => 
               solicitud.nombre_especialidad === user.especialidad
             );
           }
-          return data;
+          return solicitudesActivas;
         };
-
+        
         const [
           totalesResponse,
           preprogramadasResponse,
@@ -124,8 +130,8 @@ function Dashboard() {
           suspendidasResponse,
           realizadasMesResponse,
         ] = responses;
-
-        // Aplicar filtro por especialidad si el usuario tiene una asignada
+        
+        // Aplicar filtros
         const totalesFiltradas = processData(totalesResponse.data);
         const preprogramadasFiltradas = processData(preprogramadasResponse.data);
         const realizadasFiltradas = processData(realizadasResponse.data);

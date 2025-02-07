@@ -200,14 +200,6 @@ function AddAppointmentModalProgramado({
         <div className="p-4">
           <div className="flex justify-between">
             <button
-              onClick={handleSuspend}
-              className="bg-red-500 bg-opacity-20 text-red-500 text-sm p-4 rounded-lg font-light"
-              style={{ marginBottom: "8px" }}
-            >
-              Suspender cita
-            </button>
-
-            <button
               onClick={handleSaveChanges}
               className="bg-green-500 bg-opacity-20 text-green-500 text-sm p-4 rounded-lg font-light"
               style={{ marginBottom: "8px" }}

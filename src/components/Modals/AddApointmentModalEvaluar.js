@@ -432,7 +432,7 @@ const generateDocument = async (patientData) => {
       Pre-programar
     </button>
 
-{/* {patientData.req_insumo === "SI" && (
+{patientData.req_insumo === "SI" && (
       <button
         onClick={handleViewSolicitudInsumos}
         className="bg-[#06ABC9] bg-opacity-20 text-[#001B58] text-sm p-3 rounded-lg font-light"
@@ -440,7 +440,7 @@ const generateDocument = async (patientData) => {
       >
         Ver solicitud de insumos
       </button>
-    )} */}
+    )}
   </div>
 
           <div className="mr-4 w-full mb-2">

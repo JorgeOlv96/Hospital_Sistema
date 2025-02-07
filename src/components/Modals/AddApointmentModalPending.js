@@ -138,20 +138,39 @@ function AddAppointmentModalPending({
       [name]: value,
     }));
 
-    if (name === "hora_asignada") {
-      const [hours, minutes] = value.split(":").map(Number);
-      if (!isNaN(hours)) {
+    if (name === "hora_asignada" || name === "fecha_programada") {
+      const horaAsignada = name === "hora_asignada" ? value : patientData.hora_asignada;
+      const fechaProgramada = name === "fecha_programada" ? value : patientData.fecha_programada;
+    
+      if (horaAsignada && fechaProgramada) {
+        const [hours, minutes] = horaAsignada.split(":").map(Number);
+        const [year, month, day] = fechaProgramada.split('-').map(Number);
+        const fecha = new Date(Date.UTC(year, month - 1, day));
+        const diaSemana = fecha.getUTCDay();
+    
+        console.log('Fecha UTC:', fecha.toISOString());
+        console.log('Día de la semana UTC:', diaSemana);
+        
         let turno = "";
-        if (hours >= 7 && hours < 14) {
-          turno = "Matutino";
-        } else if (hours >= 14 && hours < 21) {
-          turno = "Vespertino";
+        if (diaSemana === 6 || diaSemana === 0) { // 6 = Sábado, 0 = Domingo
+          if (hours >= 7 && hours < 19) {
+            turno = "Especial Diurno";
+          } else {
+            turno = "Especial Nocturno";
+          }
         } else {
-          turno = "Nocturno";
+          if (hours >= 7 && hours < 14) {
+            turno = "Matutino";
+          } else if (hours >= 14 && hours < 21) {
+            turno = "Vespertino";
+          } else {
+            turno = "Nocturno";
+          }
         }
+    
         setPatientData((prevData) => ({ ...prevData, turno }));
         await fetchAnestesiologo(
-          patientData.fecha_programada,
+          fechaProgramada,
           turno,
           patientData.sala_quirofano
         );
@@ -679,6 +698,8 @@ function AddAppointmentModalPending({
                   <option value="Vespertino">Vespertino</option>
                   <option value="Nocturno">Nocturno</option>
                   <option value="Especial">Especial</option>
+                  <option value="Especial Diurno">Especial Diurno</option>
+                  <option value="Especial Nocturno">Especial Nocturno</option>
                 </select>
               </div>
             </div>

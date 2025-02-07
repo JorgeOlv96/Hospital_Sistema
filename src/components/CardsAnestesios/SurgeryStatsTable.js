@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { AuthContext } from '../../AuthContext';
 import axios from 'axios';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, HelpCircle } from 'lucide-react';
 
 const SurgeryStatsTable = () => {
   const [statsData, setStatsData] = useState(null);
@@ -11,6 +11,46 @@ const SurgeryStatsTable = () => {
   const [showUrgencias, setShowUrgencias] = useState(false);
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
   const { user } = useContext(AuthContext);
+
+  const isWeekend = (date) => {
+    // Aseguramos que la fecha se maneje en la zona horaria local
+    const [year, month, day] = date.split('-').map(Number);
+    const dateObj = new Date(year, month - 1, day, 12, 0, 0);
+    // Obtenemos el día de la semana (0-6, donde 0 es domingo y 6 es sábado)
+    const dayOfWeek = dateObj.getDay();
+    // Retornamos true solo si es sábado (6) o domingo (0)
+    return dayOfWeek === 6 || dayOfWeek === 0;
+  };
+
+
+  const getTurnoLabel = (turno) => {
+    if (!isWeekend(selectedDate)) return turno;
+    
+    switch (turno) {
+      case "Matutino":
+      case "Vespertino":
+        return "ED";
+      case "Nocturno":
+        return "EN";
+      default:
+        return turno;
+    }
+  };
+
+  // Función para combinar estadísticas de turnos en fin de semana
+  const combinarTurnosFinDeSemana = (stats) => {
+    if (!isWeekend(selectedDate)) return stats;
+
+    return {
+      ...stats,
+      realizadasTM: stats.realizadasTM + stats.realizadasTV, // ED combina matutino y vespertino
+      realizadasTV: stats.realizadasTN, // EN (nocturno)
+      editablesTM: stats.editablesTM + stats.editablesTV, // ED combina matutino y vespertino
+      editablesTV: stats.editablesTN, // EN (nocturno)
+      urgenciasTM: stats.urgenciasTM + stats.urgenciasTV, // ED combina matutino y vespertino
+      urgenciasTV: stats.urgenciasTN, // EN (nocturno)
+    };
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -26,9 +66,13 @@ const SurgeryStatsTable = () => {
 
         // Calcular estadísticas
         const stats = {
-          // Nueva estadística para el total de solicitudes (excluyendo urgencias)
-          totalSolicitudes: filteredSurgeries.filter(s => s.estado_solicitud !== "Urgencia").length,
-          programadas: filteredSurgeries.filter(s => s.estado_solicitud === "Programada").length,
+          totalSolicitudes: filteredSurgeries.filter(s => 
+            s.estado_solicitud !== "Urgencia"
+          ).length,
+          programadas: filteredSurgeries.filter(s => 
+            s.estado_solicitud === "Programada" && 
+            s.tipo_intervencion !== "Procedimiento"
+          ).length,
           suspendidas: filteredSurgeries.filter(s => s.estado_solicitud === "Suspendida").length,
           realizadas: filteredSurgeries.filter(s => s.estado_solicitud === "Realizada").length,
           realizadasTM: filteredSurgeries.filter(s => 
@@ -57,7 +101,6 @@ const SurgeryStatsTable = () => {
           noAmbulatorias: filteredSurgeries.filter(s => 
             s.tipo_intervencion !== "Cirugia Ambulatoria"
           ).length,
-          // Nuevas estadísticas para urgencias
           urgencias: filteredSurgeries.filter(s => s.estado_solicitud === "Urgencia").length,
           urgenciasTM: filteredSurgeries.filter(s => 
             s.estado_solicitud === "Urgencia" && s.turno_solicitado === "Matutino"
@@ -70,7 +113,7 @@ const SurgeryStatsTable = () => {
           ).length,
         };
 
-        setStatsData(stats);
+        setStatsData(combinarTurnosFinDeSemana(stats));
       } catch (error) {
         setError('Error al cargar los datos: ' + error.message);
         console.error('Error al obtener estadísticas de cirugías:', error);
@@ -109,12 +152,22 @@ const SurgeryStatsTable = () => {
         <table className="min-w-full bg-white">
           <thead>
             <tr className="bg-gray-50">
-              <th className="px-4 py-2 border">Solicitudes Totales</th>
-              <th className="px-4 py-2 border">CX Programadas</th>
+              <th className="px-4 py-2 border">Solicitudes programadas (hoy)</th>
+              <th className="px-4 py-2 border">
+                <div className="flex items-center justify-center gap-1 group relative">
+                  CX por atender
+                  <div 
+                    className="cursor-help relative"
+                    title="No se cuentan las solicitudes cuya intervención quirurgica planeada sea un procedimiento, solo cirugías"
+                  >
+                    <HelpCircle className="h-4 w-4 text-gray-500 hover:text-gray-700" />
+                  </div>
+                </div>
+              </th>
               <th className="px-4 py-2 border">CX Suspendidas</th>
               <th className="px-4 py-2 border">CX Realizadas</th>
               <th className="px-4 py-2 border">CX Editada Parcial</th>
-              <th className="px-4 py-2 border text-center" colSpan="3">
+              <th className="px-4 py-2 border text-center" colSpan={isWeekend(selectedDate) ? "2" : "3"}>
                 {viewMode === "realizadas" ? "CX Realizadas por Turno" : "CX Editables por Turno"}
                 <button
                   onClick={() => setViewMode(viewMode === "realizadas" ? "editables" : "realizadas")}
@@ -133,9 +186,15 @@ const SurgeryStatsTable = () => {
               <th className="px-4 py-2 border"></th>
               <th className="px-4 py-2 border"></th>
               <th className="px-4 py-2 border"></th>
-              <th className="px-4 py-2 border bg-blue-50">TM</th>
-              <th className="px-4 py-2 border bg-orange-50">TV</th>
-              <th className="px-4 py-2 border bg-gray-100">TN</th>
+              <th className="px-4 py-2 border bg-blue-50">
+                {isWeekend(selectedDate) ? "ED" : "TM"}
+              </th>
+              <th className="px-4 py-2 border bg-orange-50">
+                {isWeekend(selectedDate) ? "EN" : "TV"}
+              </th>
+              {!isWeekend(selectedDate) && (
+                <th className="px-4 py-2 border bg-gray-100">TN</th>
+              )}
               <th className="px-4 py-2 border"></th>
               <th className="px-4 py-2 border"></th>
               <th className="px-4 py-2 border"></th>
@@ -154,14 +213,15 @@ const SurgeryStatsTable = () => {
               <td className="px-4 py-2 border font-medium bg-orange-50">
                 {viewMode === "realizadas" ? statsData.realizadasTV : statsData.editablesTV}
               </td>
-              <td className="px-4 py-2 border font-medium bg-gray-100">
-                {viewMode === "realizadas" ? statsData.realizadasTN : statsData.editablesTN}
-              </td>
+              {!isWeekend(selectedDate) && (
+                <td className="px-4 py-2 border font-medium bg-gray-100">
+                  {viewMode === "realizadas" ? statsData.realizadasTN : statsData.editablesTN}
+                </td>
+              )}
               <td className="px-4 py-2 border font-medium">{statsData.total24h}</td>
               <td className="px-4 py-2 border font-medium">{statsData.ambulatorias}</td>
               <td className="px-4 py-2 border font-medium">{statsData.noAmbulatorias}</td>
             </tr>
-            {/* Fila plegable de urgencias */}
             <tr 
               className="text-center hover:bg-gray-50 cursor-pointer bg-yellow-50"
               onClick={() => setShowUrgencias(!showUrgencias)}
@@ -178,9 +238,11 @@ const SurgeryStatsTable = () => {
               <td className={`px-4 py-2 border font-medium ${showUrgencias ? '' : 'hidden'}`}>
                 {statsData.urgenciasTV}
               </td>
-              <td className={`px-4 py-2 border font-medium ${showUrgencias ? '' : 'hidden'}`}>
-                {statsData.urgenciasTN}
-              </td>
+              {!isWeekend(selectedDate) && (
+                <td className={`px-4 py-2 border font-medium ${showUrgencias ? '' : 'hidden'}`}>
+                  {statsData.urgenciasTN}
+                </td>
+              )}
               <td colSpan="3" className="px-4 py-2 border"></td>
             </tr>
           </tbody>

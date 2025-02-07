@@ -199,39 +199,45 @@ function Programaranestesiologo() {
     const { name, value } = event.target;
     setFormData((prevFormData) => ({
       ...prevFormData,
-      [name]: value, // Esto actualizará el campo correspondiente
+      [name]: value,
     }));
 
     if (name === "turno_anestesio") {
+      let horaInicio = "";
+      let horaFin = "";
+
       switch (value) {
         case "Matutino":
-          setFormData((prevFormData) => ({
-            ...prevFormData,
-            hora_inicio: "08:00",
-            hora_fin: "15:00",
-          }));
+          horaInicio = "08:00";
+          horaFin = "14:00";
           break;
         case "Vespertino":
-          setFormData((prevFormData) => ({
-            ...prevFormData,
-            hora_inicio: "15:00",
-            hora_fin: "21:00",
-          }));
+          horaInicio = "14:00";
+          horaFin = "20:00";
           break;
         case "Nocturno":
-          setFormData((prevFormData) => ({
-            ...prevFormData,
-            hora_inicio: "21:00",
-            hora_fin: "06:00",
-          }));
+          horaInicio = "20:00";
+          horaFin = "06:00";
+          break;
+        case "Especial Diurno":
+          horaInicio = "07:00";
+          horaFin = "18:59";
+          break;
+        case "Especial Nocturno":
+          horaInicio = "19:00";
+          horaFin = "06:59";
           break;
         default:
-          setFormData((prevFormData) => ({
-            ...prevFormData,
-            hora_inicio: "",
-            hora_fin: "",
-          }));
+          horaInicio = "";
+          horaFin = "";
       }
+
+      setFormData((prevFormData) => ({
+        ...prevFormData,
+        turno_anestesio: value,
+        hora_inicio: horaInicio,
+        hora_fin: horaFin,
+      }));
     }
   };
 
@@ -513,6 +519,8 @@ function Programaranestesiologo() {
                     <option value="Matutino">Matutino</option>
                     <option value="Vespertino">Vespertino</option>
                     <option value="Nocturno">Nocturno</option>
+                    <option value="Especial Diurno">Especial Diurno</option>
+                    <option value="Especial Nocturno">Especial Nocturno</option>
                   </select>
                 </div>
 

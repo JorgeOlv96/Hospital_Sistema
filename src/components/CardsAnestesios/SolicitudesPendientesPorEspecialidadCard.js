@@ -17,8 +17,21 @@ const SolicitudesPendientesPorEspecialidadCard = () => {
   const [chartData, setChartData] = useState(null);
   const [error, setError] = useState(null);
   const [isPieChart, setIsPieChart] = useState(true);
+  const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth());
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const baseURL = process.env.REACT_APP_APP_BACK_SSQ || "http://localhost:4000";
   const { user } = useContext(AuthContext);
+
+  const months = [
+    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+  ];
+
+  // Generar array de años (desde 2020 hasta el año actual)
+  const years = Array.from(
+    { length: new Date().getFullYear() - 2024 + 1 },
+    (_, i) => 2024 + i
+  );
 
   useEffect(() => {
     const fetchSolicitudesData = async () => {
@@ -29,19 +42,24 @@ const SolicitudesPendientesPorEspecialidadCard = () => {
         }
         const solicitudes = await response.json();
 
-        // Filtrar primero por solicitudes pendientes
-        let solicitudesPendientes = solicitudes.filter(solicitud => 
-          solicitud.estado_solicitud === 'Pendiente'
-        );
+        // Filtrar por mes seleccionado y estado pendiente
+        let solicitudesFiltradas = solicitudes.filter(solicitud => {
+          const fechaSolicitud = new Date(solicitud.fecha_solicitud);
+          return (
+            solicitud.estado_solicitud === 'Pendiente' &&
+            fechaSolicitud.getMonth() === selectedMonth &&
+            fechaSolicitud.getFullYear() === selectedYear
+          );
+        });
 
-        // Si el usuario tiene una especialidad asignada, filtrar por ella
+        // Filtrar por especialidad si el usuario tiene una asignada
         if (user?.especialidad) {
-          solicitudesPendientes = solicitudesPendientes.filter(solicitud =>
+          solicitudesFiltradas = solicitudesFiltradas.filter(solicitud =>
             solicitud.nombre_especialidad === user.especialidad
           );
         }
 
-        const specialtyCounts = solicitudesPendientes.reduce((acc, solicitud) => {
+        const specialtyCounts = solicitudesFiltradas.reduce((acc, solicitud) => {
           const specialty = solicitud.nombre_especialidad;
           const clave = solicitud.clave_esp;
           if (specialty && clave) {
@@ -92,7 +110,7 @@ const SolicitudesPendientesPorEspecialidadCard = () => {
     const intervalId = setInterval(fetchSolicitudesData, 30000);
 
     return () => clearInterval(intervalId);
-  }, [baseURL, user?.especialidad]); // Agregamos user.especialidad como dependencia
+  }, [baseURL, user?.especialidad, selectedMonth, selectedYear]);
 
   if (error) return <div>Error: {error}</div>;
   if (!chartData) return <div>Cargando...</div>;
@@ -134,20 +152,41 @@ const SolicitudesPendientesPorEspecialidadCard = () => {
     </div>
   );
 
-  // Título dinámico según si hay especialidad filtrada o no
   const chartTitle = user?.especialidad
-    ? `Solicitudes Pendientes - Especialidad: ${user.especialidad}`
-    : 'Especialidades con Solicitudes Pendientes';
+    ? `Solicitudes Pendientes - ${user.especialidad} - ${months[selectedMonth]} ${selectedYear}`
+    : `Especialidades con Solicitudes Pendientes - ${months[selectedMonth]} ${selectedYear}`;
 
   return (
     <div className="bg-white rounded-xl border-[1px] border-border p-5 shadow-md card-zoom">
-      <h3 className="text-lg font-medium mb-4">{chartTitle}</h3>
-      <button
-        className="mb-4 px-3 py-1 bg-gray-200 text-gray-700 rounded-md text-sm"
-        onClick={toggleChartType}
-      >
-        {isPieChart ? 'Ver como Barras' : 'Ver como Pastel'}
-      </button>
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-lg font-medium">{chartTitle}</h3>
+        <div className="flex gap-4">
+          <select
+            className="px-3 py-1 border rounded-md text-sm"
+            value={selectedMonth}
+            onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
+          >
+            {months.map((month, index) => (
+              <option key={index} value={index}>{month}</option>
+            ))}
+          </select>
+          <select
+            className="px-3 py-1 border rounded-md text-sm"
+            value={selectedYear}
+            onChange={(e) => setSelectedYear(parseInt(e.target.value))}
+          >
+            {years.map((year) => (
+              <option key={year} value={year}>{year}</option>
+            ))}
+          </select>
+          <button
+            className="px-3 py-1 bg-gray-200 text-gray-700 rounded-md text-sm"
+            onClick={toggleChartType}
+          >
+            {isPieChart ? 'Ver como Barras' : 'Ver como Pastel'}
+          </button>
+        </div>
+      </div>
       <div className={`flex ${isPieChart ? 'flex-row' : 'flex-col'}`}>
         <div className={isPieChart ? 'w-3/4 pr-4' : 'w-full'} style={{ height: '400px' }}>
           {isPieChart ? (

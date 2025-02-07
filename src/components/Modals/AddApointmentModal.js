@@ -107,7 +107,7 @@ function AddAppointmentModal({
               Cerrar
             </button>
 
-{/*             {patientData.req_insumo === "SI" && (
+            {patientData.req_insumo === "SI" && (
       <button
         onClick={handleViewInsumos}
         className="bg-[#06ABC9] bg-opacity-20 text-[#001B58] text-sm p-3 rounded-lg font-light"
@@ -115,7 +115,7 @@ function AddAppointmentModal({
       >
         Ver solicitud de insumos
       </button>
-    )} */}
+    )}
 
             {patientData?.estado_solicitud === "Pendiente" && (
               <button
