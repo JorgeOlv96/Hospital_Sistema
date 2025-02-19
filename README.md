@@ -18,9 +18,10 @@ frontend/
 
 1. **Clonar el repositorio**
    ```bash
-   git clone https://github.com/JorgeOlv96/Hospital_Sistema.git
+   git clone -b 32_insumoscompras https://github.com/JorgeOlv96/Hospital_Sistema.git
    cd Hospital_Sistema
    ```
+    > ⚠️ **Nota:** Se recomienda clonar la rama `32_insumoscompras` ya que es la más actualizada y contiene las últimas mejoras y correcciones.
 
 2. **Instalar dependencias**
    ```bash
